@@ -32,20 +32,11 @@ import {
 } from "@/components/ui/carousel"
 import { Separator } from "@/components/ui/separator"
 import { properties } from "@/lib/mock-data"
-import type { Property } from "@/lib/types"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
-
-const chartConfig = {
-  price: {
-    label: "Price",
-    color: "hsl(var(--primary))",
-  },
-}
+import PriceHistoryChart from "@/components/price-history-chart"
 
 export default function PropertyDetailPage({ params }: { params: { id: string } }) {
   const property = properties.find((p) => p.id === params.id)
@@ -145,26 +136,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               <CardTitle className="font-headline">Price History</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="w-full h-[250px]">
-                <AreaChart data={property.priceHistory} margin={{ left: 12, right: 12 }}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(value) => `$${Number(value) / 1000}k`}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
-                  <Area
-                    dataKey="price"
-                    type="natural"
-                    fill="var(--color-price)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-price)"
-                  />
-                </AreaChart>
-              </ChartContainer>
+              <PriceHistoryChart data={property.priceHistory} />
             </CardContent>
           </Card>
         </div>
