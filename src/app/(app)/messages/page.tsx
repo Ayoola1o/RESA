@@ -2,15 +2,17 @@
 'use client';
 
 import Image from "next/image";
-import { useState } from "react";
-import { Search, Send, Check, CheckCheck } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Search, Send, Check, CheckCheck, Sparkles, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { getSuggestedReply } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 
-const conversations = [
+const initialConversations = [
   {
     id: 1,
     name: "Jane Doe (Agent)",
@@ -47,27 +49,57 @@ const conversations = [
 
 
 export default function MessagesPage() {
+    const { toast } = useToast();
+    const [conversations, setConversations] = useState(initialConversations);
     const [selectedConversation, setSelectedConversation] = useState(conversations[0]);
     const [newMessage, setNewMessage] = useState("");
+    const [isPending, startTransition] = useTransition();
+
+    const handleSelectConversation = (convId: number) => {
+        const conversation = conversations.find(c => c.id === convId);
+        if (conversation) {
+            setSelectedConversation(conversation);
+        }
+    }
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if(newMessage.trim() === "") return;
         
-        // This is a demo, so we'll just add the message to the local state
-        const updatedConversation = {
-            ...selectedConversation,
-            messages: [
-                ...selectedConversation.messages,
-                { from: "John Doe", text: newMessage, time: "Now" }
-            ]
-        };
+        const updatedMessages = [
+            ...selectedConversation.messages,
+            { from: "John Doe", text: newMessage, time: "Now" }
+        ];
+        
+        const updatedConversation = { ...selectedConversation, messages: updatedMessages };
 
-        const convIndex = conversations.findIndex(c => c.id === selectedConversation.id);
-        conversations[convIndex] = updatedConversation;
+        const updatedConversations = conversations.map(c => 
+            c.id === selectedConversation.id ? updatedConversation : c
+        );
 
+        setConversations(updatedConversations);
         setSelectedConversation(updatedConversation);
         setNewMessage("");
+    }
+
+    const handleSuggestReply = () => {
+        startTransition(async () => {
+            const conversationHistory = selectedConversation.messages
+                .map(m => `${m.from}: ${m.text}`)
+                .join('\n');
+            
+            const result = await getSuggestedReply({ conversationHistory, userName: 'John Doe' });
+
+            if(result.error) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: result.error,
+                });
+            } else if (result.data) {
+                setNewMessage(result.data.suggestedReply);
+            }
+        });
     }
 
     return (
@@ -90,7 +122,7 @@ export default function MessagesPage() {
                                     "flex items-center gap-4 p-4 cursor-pointer hover:bg-accent",
                                     selectedConversation.id === conv.id && "bg-accent"
                                 )}
-                                onClick={() => setSelectedConversation(conv)}
+                                onClick={() => handleSelectConversation(conv.id)}
                             >
                                 <Avatar className="h-10 w-10 border">
                                     <AvatarImage src={conv.avatar} alt={conv.name} />
@@ -164,13 +196,27 @@ export default function MessagesPage() {
 
                 {/* Message Input */}
                 <div className="border-t p-4 bg-background">
-                    <form className="flex items-center gap-4" onSubmit={handleSendMessage}>
-                        <Input 
-                            placeholder="Type a message..." 
-                            className="flex-1"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                        />
+                    <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
+                        <div className="relative flex-1">
+                             <Input 
+                                placeholder="Type a message..." 
+                                className="pr-12"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                            />
+                            <Button 
+                                type="button" 
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                                onClick={handleSuggestReply}
+                                disabled={isPending}
+                                aria-label="Suggest Reply"
+                            >
+                                {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                       
                         <Button type="submit">
                             <Send className="h-4 w-4" />
                         </Button>

@@ -1,6 +1,7 @@
 'use server';
 
 import { recommendProperties, type RecommendPropertiesInput } from '@/ai/flows/property-recommendation';
+import { suggestReply, type SuggestReplyInput } from '@/ai/flows/suggest-reply-flow';
 import { z } from 'zod';
 import { properties } from '@/lib/mock-data';
 
@@ -29,4 +30,25 @@ export async function getRecommendations(prevState: any, formData: FormData) {
     console.error(e);
     return { error: 'An unexpected error occurred. Please try again.' };
   }
+}
+
+const suggestReplySchema = z.object({
+    conversationHistory: z.string(),
+    userName: z.string(),
+});
+
+export async function getSuggestedReply(input: SuggestReplyInput) {
+    const parsed = suggestReplySchema.safeParse(input);
+
+    if (!parsed.success) {
+        return { error: 'Invalid input.' };
+    }
+
+    try {
+        const result = await suggestReply(parsed.data);
+        return { data: result };
+    } catch (e) {
+        console.error(e);
+        return { error: 'An unexpected error occurred while generating a reply.' };
+    }
 }
