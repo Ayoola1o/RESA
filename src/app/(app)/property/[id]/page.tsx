@@ -10,7 +10,7 @@ import {
   Heart,
   MapPin,
   Share,
-  SquareGantt,
+  SquareGanttChart,
   Star,
 } from "lucide-react"
 
@@ -117,7 +117,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                     <p className="text-sm text-muted-foreground">Bathrooms</p>
                 </div>
                  <div className="p-4 rounded-lg bg-accent/50">
-                    <SquareGantt className="h-6 w-6 mx-auto mb-2 text-primary" />
+                    <SquareGanttChart className="h-6 w-6 mx-auto mb-2 text-primary" />
                     <p className="font-semibold">{property.sqft.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">Sq. Ft.</p>
                 </div>
