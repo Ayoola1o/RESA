@@ -23,3 +23,16 @@ export type Property = {
   virtualTourUrl?: string;
   priceHistory: { date: string; price: number; label: string }[];
 };
+
+export type Conversation = {
+  id: number;
+  name: string;
+  property: string;
+  avatar: string;
+  messages: {
+    from: string;
+    text: string;
+    time: string;
+    read?: boolean;
+  }[];
+};

@@ -1,4 +1,4 @@
-import type { Property } from './types';
+import type { Property, Conversation } from './types';
 
 export const properties: Property[] = [
   {
@@ -116,6 +116,42 @@ export const properties: Property[] = [
       { date: '2023-04-01', price: 530000, label: 'Apr' },
       { date: '2023-07-01', price: 540000, label: 'Jul' },
       { date: '2023-10-01', price: 550000, label: 'Oct' },
+    ]
+  },
+];
+
+
+export const conversations: Conversation[] = [
+  {
+    id: 1,
+    name: "Jane Doe (Agent)",
+    property: "Modern Villa",
+    avatar: "https://placehold.co/100x100",
+    messages: [
+      { from: "Jane Doe (Agent)", text: "Hi John, I have some great news about the Modern Villa!", time: "10:00 AM", read: true },
+      { from: "John Doe", text: "That's exciting! What's the update?", time: "10:01 AM" },
+      { from: "Jane Doe (Agent)", text: "The seller has accepted your offer! Congratulations!", time: "10:02 AM", read: true },
+      { from: "John Doe", text: "Wow, that's fantastic! Thanks for all your help, Jane.", time: "10:05 AM" },
+    ]
+  },
+  {
+    id: 2,
+    name: "Tenant (456 Urban St)",
+    property: "Cozy Downtown Apartment",
+    avatar: "https://placehold.co/100x100",
+    messages: [
+        { from: "Tenant (456 Urban St)", text: "Hi John, the sink in the kitchen is leaking. Can you please take a look?", time: "Yesterday", read: true },
+        { from: "John Doe", text: "Oh no, sorry to hear that. I'll get a plumber to come over tomorrow morning. Is that okay?", time: "Yesterday" },
+        { from: "Tenant (456 Urban St)", text: "Yes, that works perfectly. Thank you!", time: "Yesterday", read: true },
+    ]
+  },
+    {
+    id: 3,
+    name: "Michael Brown (Agent)",
+    property: "Rustic Lakeside Cabin",
+    avatar: "https://placehold.co/100x100",
+    messages: [
+      { from: "Michael Brown (Agent)", text: "Following up on the Rustic Lakeside Cabin - are you still interested in scheduling a viewing?", time: "3 days ago", read: false },
     ]
   },
 ];
