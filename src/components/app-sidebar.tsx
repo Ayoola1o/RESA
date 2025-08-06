@@ -14,7 +14,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Button } from "./ui/button"
 
 export default function AppSidebar() {
   return (
@@ -44,7 +43,7 @@ export default function AppSidebar() {
             <TooltipTrigger asChild>
               <Link
                 href="/marketplace"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <Home className="h-5 w-5" />
                 <span className="sr-only">Marketplace</span>
@@ -68,7 +67,7 @@ export default function AppSidebar() {
             <TooltipTrigger asChild>
               <Link
                 href="/profile"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Profile</span>
@@ -80,10 +79,13 @@ export default function AppSidebar() {
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8">
+              <Link
+                href="/settings"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
                 <Settings className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
-              </Button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent side="right">Settings</TooltipContent>
           </Tooltip>

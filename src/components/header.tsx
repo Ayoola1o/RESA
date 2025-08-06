@@ -7,6 +7,7 @@ import {
   User,
   LayoutDashboard,
   Menu,
+  Settings,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -51,7 +52,7 @@ export default function Header() {
             </Link>
             <Link
               href="/marketplace"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <Home className="h-5 w-5" />
               Marketplace
@@ -65,10 +66,17 @@ export default function Header() {
             </Link>
             <Link
               href="/profile"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
             >
               <User className="h-5 w-5" />
               Profile
+            </Link>
+             <Link
+              href="/settings"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <Settings className="h-5 w-5" />
+              Settings
             </Link>
           </nav>
         </SheetContent>
@@ -103,7 +111,8 @@ export default function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+           <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
+          <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Logout</DropdownMenuItem>
