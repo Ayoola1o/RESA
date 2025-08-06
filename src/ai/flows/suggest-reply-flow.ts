@@ -10,13 +10,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SuggestReplyInputSchema = z.object({
+const SuggestReplyInputSchema = z.object({
   conversationHistory: z.string().describe('The full history of the conversation, with each message on a new line.'),
   userName: z.string().describe('The name of the user for whom to generate a reply.'),
 });
 export type SuggestReplyInput = z.infer<typeof SuggestReplyInputSchema>;
 
-export const SuggestReplyOutputSchema = z.object({
+const SuggestReplyOutputSchema = z.object({
   suggestedReply: z.string().describe('The suggested reply message.'),
 });
 export type SuggestReplyOutput = z.infer<typeof SuggestReplyOutputSchema>;
