@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bath, BedDouble, CheckCircle, Home, SquareGanttChart, Star } from 'lucide-react';
+import { Bath, BedDouble, CheckCircle, Home, SquareGanttChart } from 'lucide-react';
 import type { Property } from '@/lib/types';
 
 interface PropertyCardProps {
