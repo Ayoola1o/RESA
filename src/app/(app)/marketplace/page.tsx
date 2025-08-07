@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListFilter, ChevronLeft, ChevronRight } from "lucide-react";
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 16;
 
 export default function MarketplacePage() {
   const [currentPage, setCurrentPage] = useState(1);
