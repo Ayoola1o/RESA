@@ -7,6 +7,7 @@ import PropertyCard from "@/components/property-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ListFilter, ChevronLeft, ChevronRight, Save } from "lucide-react";
 
 const ITEMS_PER_PAGE = 16;
