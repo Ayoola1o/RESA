@@ -1,11 +1,61 @@
+
+'use client';
+
+import { useState } from 'react';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ListFilter } from "lucide-react";
+import { ListFilter, ChevronLeft, ChevronRight } from "lucide-react";
+
+const ITEMS_PER_PAGE = 15;
 
 export default function MarketplacePage() {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProperties = properties.slice(startIndex, endIndex);
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
+  };
+  
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    // Always show first page
+    if (totalPages > 0) pageNumbers.push(1);
+
+    // Ellipsis for start
+    if (currentPage > 3) pageNumbers.push('...');
+
+    // Middle pages
+    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        if (i > 1 && i < totalPages) {
+            pageNumbers.push(i);
+        }
+    }
+    
+    // Ellipsis for end
+    if (currentPage < totalPages - 2) pageNumbers.push('...');
+
+    // Always show last page
+    if (totalPages > 1) pageNumbers.push(totalPages);
+    
+    return pageNumbers;
+  }
+
   return (
     <div className="container mx-auto">
       <div className="mb-8">
@@ -69,10 +119,36 @@ export default function MarketplacePage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {properties.map((property) => (
+        {currentProperties.map((property) => (
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
+
+      <div className="flex justify-center items-center space-x-2 mt-8">
+        <Button variant="outline" size="icon" onClick={handlePreviousPage} disabled={currentPage === 1}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        {getPageNumbers().map((page, index) =>
+          typeof page === 'number' ? (
+            <Button
+              key={`${page}-${index}`}
+              variant={currentPage === page ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => handlePageClick(page)}
+            >
+              {page}
+            </Button>
+          ) : (
+            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">...</span>
+          )
+        )}
+        
+        <Button variant="outline" size="icon" onClick={handleNextPage} disabled={currentPage === totalPages}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+
     </div>
   );
 }
