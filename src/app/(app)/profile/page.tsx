@@ -20,7 +20,7 @@ const user = {
     email: "john.doe@example.com",
     location: "Austin, TX",
     role: "Buyer/Owner",
-    avatar: "https://placehold.co/128x128",
+    avatar: "https://www.freepik.com/free-vector/smiling-young-man-illustration_356306451.htm#fromView=keyword&page=1&position=3&uuid=36a45374-0d30-4981-a023-4dd4eb935dbb&query=Avatar",
     bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
 };
 

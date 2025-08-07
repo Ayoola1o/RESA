@@ -1,6 +1,5 @@
 import Link from "next/link"
 import {
-  Building,
   LayoutDashboard,
   Home,
   MessageCircle,
@@ -14,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import Logo from "./logo"
 
 export default function AppSidebar() {
   return (
@@ -24,7 +24,7 @@ export default function AppSidebar() {
             href="/dashboard"
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
-            <Building className="h-4 w-4 transition-all group-hover:scale-110" />
+            <Logo className="h-5 w-5 transition-all group-hover:scale-110" fill="white" />
             <span className="sr-only">RESA</span>
           </Link>
           <Tooltip>

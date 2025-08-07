@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building } from "lucide-react"
+import Logo from "@/components/logo"
 
 export default function SignupPage() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <div className="flex justify-center mb-4">
-            <Building className="h-10 w-10 text-primary"/>
+            <Logo className="h-12 w-12 text-primary"/>
         </div>
         <CardTitle className="text-2xl font-headline text-center">Create an Account</CardTitle>
         <CardDescription className="text-center">

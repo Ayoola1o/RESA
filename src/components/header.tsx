@@ -4,7 +4,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation";
 import {
-  Building,
   Home,
   Search,
   MessageCircle,
@@ -27,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AiRecommendations from "./ai-recommendations"
+import Logo from "./logo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -47,7 +47,7 @@ export default function Header() {
               href="#"
               className="flex items-center gap-2 text-lg font-semibold font-headline text-primary"
             >
-              <Building className="h-6 w-6" />
+              <Logo className="h-6 w-6" />
               <span>RESA</span>
             </Link>
             <Link
