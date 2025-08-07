@@ -1,3 +1,4 @@
+
 import Image from "next/image"
 import Link from "next/link"
 import { Mail, MapPin, MessageSquare, Building, ArrowRight } from "lucide-react"
@@ -20,15 +21,15 @@ const user = {
     email: "john.doe@example.com",
     location: "Austin, TX",
     role: "Buyer/Owner",
-    avatar: "https://www.freepik.com/free-vector/smiling-young-man-illustration_356306451.htm#fromView=keyword&page=1&position=3&uuid=36a45374-0d30-4981-a023-4dd4eb935dbb&query=Avatar",
+    avatar: "https://placehold.co/128x128.png",
     bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
 };
 
 const userProperties = properties.slice(1, 3);
 
 const recentMessages = [
-    { from: "Jane Doe (Agent)", snippet: "Great news! The seller has accepted your offer on the Modern Villa...", property: "Modern Villa", date: "2 days ago"},
-    { from: "Tenant (456 Urban St)", snippet: "Hi John, the sink in the kitchen is leaking. Can you please take a look?", property: "Cozy Downtown Apartment", date: "5 days ago"},
+    { from: "Jane Doe (Agent)", snippet: "Great news! The seller has accepted your offer on the Modern Villa...", property: "Modern Villa", date: "2 days ago", link: "/messages/1"},
+    { from: "Tenant (456 Urban St)", snippet: "Hi John, the sink in the kitchen is leaking. Can you please take a look?", property: "Cozy Downtown Apartment", date: "5 days ago", link: "/messages/2"},
 ]
 
 export default function ProfilePage() {
@@ -55,7 +56,7 @@ export default function ProfilePage() {
                  <Badge className="mt-3">{user.role}</Badge>
             </div>
             <Button asChild className="ml-auto mt-4 md:mt-0">
-                <Link href="/profile/edit">Edit Profile</Link>
+                <Link href="#">Edit Profile</Link>
             </Button>
         </CardContent>
       </Card>
@@ -87,12 +88,12 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {recentMessages.map((msg, index) => (
-                        <div key={index}>
+                        <Link href={msg.link} key={index} className="block hover:bg-muted/50 p-2 rounded-lg">
                             <div className="font-semibold">{msg.from}</div>
                             <p className="text-sm text-muted-foreground truncate">{msg.snippet}</p>
                             <p className="text-xs text-muted-foreground/70 mt-1">{msg.property} - {msg.date}</p>
-                            {index < recentMessages.length - 1 && <Separator className="my-4" />}
-                        </div>
+                            {index < recentMessages.length - 1 && <Separator className="my-2" />}
+                        </Link>
                     ))}
                 </CardContent>
             </Card>
