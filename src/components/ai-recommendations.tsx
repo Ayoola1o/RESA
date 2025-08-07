@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { Sparkles, Loader2 } from 'lucide-react';
 import { getRecommendations } from '@/app/actions';
 import { properties } from '@/lib/mock-data';
 import PropertyCard from './property-card';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useActionState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -37,7 +37,7 @@ function SubmitButton() {
 
 export default function AiRecommendations() {
   const { toast } = useToast();
-  const [state, formAction] = useFormState(getRecommendations, null);
+  const [state, formAction] = useActionState(getRecommendations, null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
