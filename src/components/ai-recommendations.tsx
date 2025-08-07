@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
@@ -19,6 +20,7 @@ import { properties } from '@/lib/mock-data';
 import PropertyCard from './property-card';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from './ui/scroll-area';
 
 const recentlyViewedIds = properties.slice(0, 2).map(p => p.id).join(', ');
 const savedPropertiesIds = properties.slice(2, 3).map(p => p.id).join(', ');
@@ -87,11 +89,13 @@ export default function AiRecommendations() {
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2 font-headline">Here are your recommendations:</h3>
             {state.data.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {state.data.map((property) => (
-                        <PropertyCard key={property.id} property={property} />
-                    ))}
-                </div>
+                <ScrollArea className="max-h-[50vh]">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pr-4">
+                        {state.data.map((property) => (
+                            <PropertyCard key={property.id} property={property} />
+                        ))}
+                    </div>
+                </ScrollArea>
             ) : (
                 <p>No matching properties found. Try refining your preferences.</p>
             )}
