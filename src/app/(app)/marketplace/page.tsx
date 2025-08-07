@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,12 +13,26 @@ const ITEMS_PER_PAGE = 16;
 
 export default function MarketplacePage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [listingType, setListingType] = useState('all');
 
-  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+  const filteredProperties = useMemo(() => {
+    return properties.filter(p => {
+        if (listingType === 'sale') return p.status === 'For Sale';
+        if (listingType === 'rent') return p.status === 'For Rent';
+        return p.status === 'For Sale' || p.status === 'For Rent';
+    });
+  }, [listingType]);
+
+  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentProperties = properties.slice(startIndex, endIndex);
+  const currentProperties = filteredProperties.slice(startIndex, endIndex);
+  
+  const handleListingTypeChange = (value: string) => {
+    setListingType(value);
+    setCurrentPage(1);
+  }
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -38,20 +52,23 @@ export default function MarketplacePage() {
     if (totalPages > 0) pageNumbers.push(1);
 
     // Ellipsis for start
-    if (currentPage > 3) pageNumbers.push('...');
+    if (currentPage > 3 && totalPages > 5) pageNumbers.push('...');
 
     // Middle pages
-    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-        if (i > 1 && i < totalPages) {
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+        if (!pageNumbers.includes(i)) {
             pageNumbers.push(i);
         }
     }
     
     // Ellipsis for end
-    if (currentPage < totalPages - 2) pageNumbers.push('...');
+    if (currentPage < totalPages - 2 && totalPages > 5) pageNumbers.push('...');
 
     // Always show last page
-    if (totalPages > 1) pageNumbers.push(totalPages);
+    if (totalPages > 1 && !pageNumbers.includes(totalPages)) pageNumbers.push(totalPages);
     
     return pageNumbers;
   }
@@ -68,6 +85,19 @@ export default function MarketplacePage() {
             <div className="grid gap-2">
               <label className="text-sm font-medium">Location</label>
               <Input placeholder="City, State, or Zip" />
+            </div>
+             <div className="grid gap-2">
+              <label className="text-sm font-medium">Listing Type</label>
+               <Select value={listingType} onValueChange={handleListingTypeChange}>
+                <SelectTrigger>
+                    <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Listings</SelectItem>
+                    <SelectItem value="sale">For Sale</SelectItem>
+                    <SelectItem value="rent">For Rent</SelectItem>
+                </SelectContent>
+                </Select>
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium">Property Type</label>
@@ -94,20 +124,6 @@ export default function MarketplacePage() {
                     <SelectItem value="<500k">&lt; $500,000</SelectItem>
                     <SelectItem value="500k-1m">$500,000 - $1M</SelectItem>
                     <SelectItem value=">1m">&gt; $1M</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Beds & Baths</label>
-               <Select>
-                <SelectTrigger>
-                    <SelectValue placeholder="Any" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1+">1+ Beds</SelectItem>
-                    <SelectItem value="2+">2+ Beds</SelectItem>
-                    <SelectItem value="3+">3+ Beds</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
