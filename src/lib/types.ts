@@ -22,6 +22,7 @@ export type Property = {
   postedDate: string;
   virtualTourUrl?: string;
   priceHistory: { date: string; price: number; label: string }[];
+  floodRisk: 'Low' | 'Medium' | 'High' | 'None';
 };
 
 export type Conversation = {

@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState } from "react";
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import {
@@ -12,6 +16,7 @@ import {
   Share,
   SquareGanttChart,
   Star,
+  ShieldAlert,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -37,9 +42,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
 import PriceHistoryChart from "@/components/price-history-chart"
+import { cn } from "@/lib/utils";
 
 export default function PropertyDetailPage({ params }: { params: { id: string } }) {
   const property = properties.find((p) => p.id === params.id)
+  const [isLiked, setIsLiked] = useState(false);
 
   if (!property) {
     notFound()
@@ -87,7 +94,9 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                 <h1 className="text-3xl font-bold font-headline">{property.title}</h1>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="icon"><Share className="h-4 w-4" /></Button>
-                  <Button variant="outline" size="icon"><Heart className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} aria-pressed={isLiked}>
+                    <Heart className={cn("h-4 w-4", isLiked && "fill-red-500 text-red-500")} />
+                  </Button>
                 </div>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -186,10 +195,14 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
 
              <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline">Location</CardTitle>
+                    <CardTitle className="font-headline">Location & Hazards</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                     <Image src="https://placehold.co/600x400/e2e8f0/e2e8f0" alt="Map" width={600} height={400} className="w-full rounded-md" data-ai-hint="map satellite" />
+                    <div className="border p-4 rounded-lg bg-muted/50">
+                        <h4 className="font-semibold flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" /> Flood Risk</h4>
+                        <p className="text-muted-foreground text-sm mt-1">This property is located in a <span className="font-bold text-destructive">{property.floodRisk}</span> risk flood zone. We recommend consulting with insurance providers about flood insurance.</p>
+                    </div>
                 </CardContent>
             </Card>
 

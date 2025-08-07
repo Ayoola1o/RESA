@@ -29,7 +29,8 @@ export const properties: Property[] = [
       { date: '2023-04-01', price: 3350000, label: 'Apr' },
       { date: '2023-07-01', price: 3450000, label: 'Jul' },
       { date: '2023-10-01', price: 3500000, label: 'Oct' },
-    ]
+    ],
+    floodRisk: 'Low'
   },
   {
     id: 'prop2',
@@ -58,7 +59,8 @@ export const properties: Property[] = [
       { date: '2023-05-01', price: 730000, label: 'May' },
       { date: '2023-08-01', price: 740000, label: 'Aug' },
       { date: '2023-11-01', price: 750000, label: 'Nov' },
-    ]
+    ],
+    floodRisk: 'Medium'
   },
   {
     id: 'prop3',
@@ -87,7 +89,8 @@ export const properties: Property[] = [
       { date: '2023-06-01', price: 965000, label: 'Jun' },
       { date: '2023-09-01', price: 975000, label: 'Sep' },
       { date: '2023-11-01', price: 980000, label: 'Nov' },
-    ]
+    ],
+    floodRisk: 'High'
   },
     {
     id: 'prop4',
@@ -116,7 +119,8 @@ export const properties: Property[] = [
       { date: '2023-04-01', price: 530000, label: 'Apr' },
       { date: '2023-07-01', price: 540000, label: 'Jul' },
       { date: '2023-10-01', price: 550000, label: 'Oct' },
-    ]
+    ],
+    floodRisk: 'None'
   },
 ];
 
