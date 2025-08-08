@@ -6,6 +6,7 @@ import {
   User,
   Settings,
   Heart,
+  FileText,
 } from "lucide-react"
 
 import {
@@ -63,6 +64,18 @@ export default function AppSidebar() {
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">Saved Properties</TooltipContent>
+          </Tooltip>
+           <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/applications"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                <FileText className="h-5 w-5" />
+                <span className="sr-only">My Applications</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">My Applications</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>

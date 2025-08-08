@@ -40,9 +40,6 @@ import {
 } from "@/components/ui/carousel"
 import { Separator } from "@/components/ui/separator"
 import { properties } from "@/lib/mock-data"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import Link from "next/link"
 import PriceHistoryChart from "@/components/price-history-chart"
 import { cn } from "@/lib/utils";
@@ -178,8 +175,10 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                 </CardHeader>
                 <CardContent>
                     {property.status === "For Rent" ? (
-                        <Button className="w-full" size="lg">
-                            <FileText className="mr-2 h-5 w-5" /> Apply Now
+                        <Button asChild className="w-full" size="lg">
+                            <Link href={`/apply/${property.id}`}>
+                                <FileText className="mr-2 h-5 w-5" /> Apply Now
+                            </Link>
                         </Button>
                     ) : (
                         <Button className="w-full" size="lg">
@@ -211,5 +210,3 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     </div>
   )
 }
-
-    

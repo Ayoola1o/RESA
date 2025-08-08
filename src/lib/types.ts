@@ -37,3 +37,13 @@ export type Conversation = {
     read?: boolean;
   }[];
 };
+
+export type Application = {
+  id: string;
+  propertyId: string;
+  propertyTitle: string;
+  propertyImage: string;
+  status: 'Submitted' | 'Under Review' | 'Approved' | 'Rejected';
+  dateSubmitted: string;
+  type: 'Rental' | 'Offer';
+};

@@ -12,6 +12,7 @@ import {
   Menu,
   Settings,
   Heart,
+  FileText,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -71,6 +72,13 @@ export default function Header() {
             >
               <Heart className="h-5 w-5" />
               Saved Properties
+            </Link>
+             <Link
+              href="/applications"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <FileText className="h-5 w-5" />
+              My Applications
             </Link>
             <Link
               href="/messages"

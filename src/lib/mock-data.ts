@@ -1,4 +1,4 @@
-import type { Property, Conversation } from './types';
+import type { Property, Conversation, Application } from './types';
 
 export const properties: Property[] = [
   {
@@ -303,3 +303,46 @@ export const conversations: Conversation[] = [
     ]
   },
 ];
+
+const rentalProperty = properties.find(p => p.status === 'For Rent');
+const forSaleProperty = properties.find(p => p.status === 'For Sale');
+
+
+export const applications: Application[] = [
+    {
+        id: 'app1',
+        propertyId: rentalProperty?.id || 'rent1',
+        propertyTitle: rentalProperty?.title || 'Modern Downtown Loft',
+        propertyImage: rentalProperty?.images[0] || 'https://placehold.co/800x600.png',
+        status: 'Approved',
+        dateSubmitted: '2023-11-15',
+        type: 'Rental',
+    },
+    {
+        id: 'app2',
+        propertyId: forSaleProperty?.id || 'prop2',
+        propertyTitle: forSaleProperty?.title || 'Cozy Downtown Apartment',
+        propertyImage: forSaleProperty?.images[0] || 'https://placehold.co/800x600.png',
+        status: 'Under Review',
+        dateSubmitted: '2023-11-20',
+        type: 'Offer',
+    },
+    {
+        id: 'app3',
+        propertyId: 'rent3',
+        propertyTitle: 'Modern Downtown Loft',
+        propertyImage: 'https://placehold.co/800x600.png',
+        status: 'Submitted',
+        dateSubmitted: '2023-11-22',
+        type: 'Rental',
+    },
+     {
+        id: 'app4',
+        propertyId: 'prop7',
+        propertyTitle: 'Historic Boston Brownstone',
+        propertyImage: 'https://placehold.co/800x600.png',
+        status: 'Rejected',
+        dateSubmitted: '2023-10-30',
+        type: 'Offer',
+    },
+]
