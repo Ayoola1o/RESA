@@ -13,6 +13,8 @@ import {
   Settings,
   Heart,
   FileText,
+  CreditCard,
+  FileSignature,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -79,6 +81,20 @@ export default function Header() {
             >
               <FileText className="h-5 w-5" />
               My Applications
+            </Link>
+            <Link
+              href="/lease"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <FileSignature className="h-5 w-5" />
+              My Lease
+            </Link>
+            <Link
+              href="/payments"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <CreditCard className="h-5 w-5" />
+              Payments
             </Link>
             <Link
               href="/messages"

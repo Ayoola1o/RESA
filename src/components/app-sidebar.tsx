@@ -7,6 +7,8 @@ import {
   Settings,
   Heart,
   FileText,
+  CreditCard,
+  FileSignature,
 } from "lucide-react"
 
 import {
@@ -76,6 +78,30 @@ export default function AppSidebar() {
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">My Applications</TooltipContent>
+          </Tooltip>
+           <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/lease"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                <FileSignature className="h-5 w-5" />
+                <span className="sr-only">My Lease</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">My Lease</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/payments"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                <CreditCard className="h-5 w-5" />
+                <span className="sr-only">Payments</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">Payments</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
