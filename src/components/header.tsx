@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Menu,
   Settings,
+  Heart,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -63,6 +64,13 @@ export default function Header() {
             >
               <Home className="h-5 w-5" />
               Marketplace
+            </Link>
+            <Link
+              href="/saved-properties"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+            >
+              <Heart className="h-5 w-5" />
+              Saved Properties
             </Link>
             <Link
               href="/messages"

@@ -5,6 +5,7 @@ import {
   MessageCircle,
   User,
   Settings,
+  Heart,
 } from "lucide-react"
 
 import {
@@ -50,6 +51,18 @@ export default function AppSidebar() {
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">Marketplace</TooltipContent>
+          </Tooltip>
+           <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/saved-properties"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Saved Properties</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">Saved Properties</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
