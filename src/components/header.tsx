@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link"
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Search,
@@ -32,10 +32,47 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AiRecommendations from "./ai-recommendations"
 import Logo from "./logo";
+import type { UserRole } from "@/app/(app)/layout";
 
-export default function Header() {
+interface HeaderProps {
+    userRole: UserRole;
+    setUserRole: (role: UserRole) => void;
+}
+
+const tenantLinks = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/marketplace", icon: Home, label: "Marketplace" },
+    { href: "/saved-properties", icon: Heart, label: "Saved Properties" },
+    { href: "/applications", icon: FileText, label: "My Applications" },
+    { href: "/lease", icon: FileSignature, label: "My Lease" },
+    { href: "/payments", icon: CreditCard, label: "Payments" },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profile", icon: User, label: "Profile" },
+]
+
+const landlordLinks = [
+    { href: "/landlord/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profile", icon: User, label: "Profile" },
+]
+
+export default function Header({ userRole, setUserRole }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const showSearch = pathname === '/dashboard' || pathname === '/marketplace';
+
+  const handleRoleChange = () => {
+    const newRole = userRole === 'tenant' ? 'landlord' : 'tenant';
+    setUserRole(newRole);
+    if (newRole === 'landlord') {
+        router.push('/landlord/dashboard');
+    } else {
+        router.push('/dashboard');
+    }
+  };
+
+  const links = userRole === 'tenant' ? tenantLinks : landlordLinks;
+  const isLandlordView = userRole === 'landlord';
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
@@ -55,69 +92,23 @@ export default function Header() {
               <Logo className="h-6 w-6" />
               <span>RESA</span>
             </Link>
-            <Link
-              href="/dashboard"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <LayoutDashboard className="h-5 w-5" />
-              Dashboard
-            </Link>
-            <Link
-              href="/marketplace"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <Home className="h-5 w-5" />
-              Marketplace
-            </Link>
-            <Link
-              href="/saved-properties"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <Heart className="h-5 w-5" />
-              Saved Properties
-            </Link>
-             <Link
-              href="/applications"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <FileText className="h-5 w-5" />
-              My Applications
-            </Link>
-            <Link
-              href="/lease"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <FileSignature className="h-5 w-5" />
-              My Lease
-            </Link>
-            <Link
-              href="/payments"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <CreditCard className="h-5 w-5" />
-              Payments
-            </Link>
-            <Link
-              href="/messages"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <MessageCircle className="h-5 w-5" />
-              Messages
-            </Link>
-            <Link
-              href="/profile"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-            >
-              <User className="h-5 w-5" />
-              Profile
-            </Link>
-            <Link
-              href="/landlord/dashboard"
+            {links.map(link => (
+                 <Link
+                    key={link.href}
+                    href={link.href}
+                    className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                >
+                    <link.icon className="h-5 w-5" />
+                    {link.label}
+                </Link>
+            ))}
+            <button
+              onClick={handleRoleChange}
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
             >
-              <Briefcase className="h-5 w-5" />
-              Landlord View
-            </Link>
+              {isLandlordView ? <Home className="h-5 w-5" /> : <Briefcase className="h-5 w-5" />}
+              {isLandlordView ? 'Tenant View' : 'Landlord View'}
+            </button>
              <Link
               href="/settings"
               className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
@@ -130,7 +121,7 @@ export default function Header() {
       </Sheet>
 
       <div className="w-full flex-1">
-        {showSearch && (
+        {showSearch && userRole === 'tenant' && (
           <form>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -143,7 +134,7 @@ export default function Header() {
           </form>
         )}
       </div>
-      {showSearch && <AiRecommendations />}
+      {showSearch && userRole === 'tenant' && <AiRecommendations />}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">

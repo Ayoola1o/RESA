@@ -1,4 +1,8 @@
+
+'use client';
+
 import Link from "next/link"
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Home,
@@ -19,8 +23,46 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Logo from "./logo"
+import type { UserRole } from "@/app/(app)/layout";
 
-export default function AppSidebar() {
+interface AppSidebarProps {
+    userRole: UserRole;
+    setUserRole: (role: UserRole) => void;
+}
+
+const tenantLinks = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/marketplace", icon: Home, label: "Marketplace" },
+    { href: "/saved-properties", icon: Heart, label: "Saved Properties" },
+    { href: "/applications", icon: FileText, label: "My Applications" },
+    { href: "/lease", icon: FileSignature, label: "My Lease" },
+    { href: "/payments", icon: CreditCard, label: "Payments" },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profile", icon: User, label: "Profile" },
+]
+
+const landlordLinks = [
+    { href: "/landlord/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/profile", icon: User, label: "Profile" },
+]
+
+export default function AppSidebar({ userRole, setUserRole }: AppSidebarProps) {
+    const router = useRouter();
+
+    const handleRoleChange = () => {
+        const newRole = userRole === 'tenant' ? 'landlord' : 'tenant';
+        setUserRole(newRole);
+        if (newRole === 'landlord') {
+            router.push('/landlord/dashboard');
+        } else {
+            router.push('/dashboard');
+        }
+    };
+
+    const links = userRole === 'tenant' ? tenantLinks : landlordLinks;
+    const isLandlordView = userRole === 'landlord';
+
   return (
     <aside className="hidden h-screen w-16 flex-col border-r bg-background sm:flex">
       <TooltipProvider>
@@ -32,115 +74,33 @@ export default function AppSidebar() {
             <Logo className="h-5 w-5 transition-all group-hover:scale-110" fill="white" />
             <span className="sr-only">RESA</span>
           </Link>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/dashboard"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <LayoutDashboard className="h-5 w-5" />
-                <span className="sr-only">Dashboard</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Dashboard</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/marketplace"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <Home className="h-5 w-5" />
-                <span className="sr-only">Marketplace</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Marketplace</TooltipContent>
-          </Tooltip>
-           <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/saved-properties"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <Heart className="h-5 w-5" />
-                <span className="sr-only">Saved Properties</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Saved Properties</TooltipContent>
-          </Tooltip>
-           <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/applications"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <FileText className="h-5 w-5" />
-                <span className="sr-only">My Applications</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">My Applications</TooltipContent>
-          </Tooltip>
-           <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/lease"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <FileSignature className="h-5 w-5" />
-                <span className="sr-only">My Lease</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">My Lease</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/payments"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <CreditCard className="h-5 w-5" />
-                <span className="sr-only">Payments</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Payments</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/messages"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <MessageCircle className="h-5 w-5" />
-                <span className="sr-only">Messages</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Messages</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/profile"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-              >
-                <User className="h-5 w-5" />
-                <span className="sr-only">Profile</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Profile</TooltipContent>
-          </Tooltip>
+          {links.map(link => (
+            <Tooltip key={link.href}>
+                <TooltipTrigger asChild>
+                <Link
+                    href={link.href}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                    <link.icon className="h-5 w-5" />
+                    <span className="sr-only">{link.label}</span>
+                </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{link.label}</TooltipContent>
+            </Tooltip>
+          ))}
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-4">
            <Tooltip>
             <TooltipTrigger asChild>
-              <Link
-                href="/landlord/dashboard"
+              <button
+                onClick={handleRoleChange}
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
-                <Briefcase className="h-5 w-5" />
-                <span className="sr-only">Landlord View</span>
-              </Link>
+                {isLandlordView ? <Home className="h-5 w-5" /> : <Briefcase className="h-5 w-5" />}
+                <span className="sr-only">{isLandlordView ? 'Tenant View' : 'Landlord View'}</span>
+              </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Landlord View</TooltipContent>
+            <TooltipContent side="right">{isLandlordView ? 'Tenant View' : 'Landlord View'}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
