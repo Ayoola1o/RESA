@@ -9,6 +9,7 @@ import {
   FileText,
   CreditCard,
   FileSignature,
+  Briefcase,
 } from "lucide-react"
 
 import {
@@ -119,7 +120,7 @@ export default function AppSidebar() {
             <TooltipTrigger asChild>
               <Link
                 href="/profile"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Profile</span>
@@ -129,6 +130,18 @@ export default function AppSidebar() {
           </Tooltip>
         </nav>
         <nav className="mt-auto flex flex-col items-center gap-4 px-2 py-4">
+           <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/landlord/dashboard"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              >
+                <Briefcase className="h-5 w-5" />
+                <span className="sr-only">Landlord View</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">Landlord View</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

@@ -15,6 +15,7 @@ import {
   FileText,
   CreditCard,
   FileSignature,
+  Briefcase,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -105,10 +106,17 @@ export default function Header() {
             </Link>
             <Link
               href="/profile"
-              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
             >
               <User className="h-5 w-5" />
               Profile
+            </Link>
+            <Link
+              href="/landlord/dashboard"
+              className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+            >
+              <Briefcase className="h-5 w-5" />
+              Landlord View
             </Link>
              <Link
               href="/settings"
