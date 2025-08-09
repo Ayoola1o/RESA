@@ -10,6 +10,7 @@ import { Trash2, FilePenLine } from 'lucide-react';
 import { properties as allProperties } from "@/lib/mock-data";
 import PropertyCard from '@/components/property-card';
 import { Separator } from '@/components/ui/separator';
+import PropertyComparisonDialog from '@/components/property-comparison-dialog';
 
 // Mock saved properties for demonstration
 const initialSavedProperties = allProperties.slice(0, 4).map(p => ({
@@ -20,6 +21,7 @@ const initialSavedProperties = allProperties.slice(0, 4).map(p => ({
 
 export default function SavedPropertiesPage() {
     const [savedProperties, setSavedProperties] = useState(initialSavedProperties);
+    const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
 
     const handleNoteChange = (id: string, notes: string) => {
         setSavedProperties(prev => 
@@ -28,6 +30,12 @@ export default function SavedPropertiesPage() {
     };
 
     const handleCompareChange = (id: string, isComparing: boolean) => {
+        const currentlyComparing = savedProperties.filter(p => p.isComparing).length;
+        if (isComparing && currentlyComparing >= 3) {
+            // Optional: Add a toast or alert here to inform the user of the limit.
+            alert("You can only compare up to 3 properties at a time.");
+            return;
+        }
         setSavedProperties(prev =>
             prev.map(p => p.id === id ? { ...p, isComparing } : p)
         );
@@ -100,7 +108,7 @@ export default function SavedPropertiesPage() {
                      <Card className="sticky top-24">
                         <CardHeader>
                             <CardTitle className="font-headline">Compare Properties</CardTitle>
-                            <CardDescription>Select up to 3 properties to compare side-by-side.</CardDescription>
+                            <CardDescription>Select 2-3 properties to compare side-by-side.</CardDescription>
                         </CardHeader>
                         <CardContent>
                              {propertiesToCompare.length > 0 ? (
@@ -113,9 +121,15 @@ export default function SavedPropertiesPage() {
                                             {index < propertiesToCompare.length - 1 && <Separator className="mt-4" />}
                                         </div>
                                     ))}
-                                    <Button className="w-full mt-4" disabled={propertiesToCompare.length < 2}>
-                                        Compare ({propertiesToCompare.length})
-                                    </Button>
+                                     <PropertyComparisonDialog
+                                        isOpen={isCompareDialogOpen}
+                                        onOpenChange={setIsCompareDialogOpen}
+                                        properties={propertiesToCompare}
+                                    >
+                                        <Button className="w-full mt-4" disabled={propertiesToCompare.length < 2 || propertiesToCompare.length > 3}>
+                                            Compare ({propertiesToCompare.length})
+                                        </Button>
+                                    </PropertyComparisonDialog>
                                 </div>
                             ) : (
                                 <div className="text-center text-muted-foreground py-8">
