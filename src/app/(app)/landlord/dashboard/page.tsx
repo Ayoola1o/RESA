@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
-import { AlertCircle, ArrowRight, Building, DollarSign, FileText, PlusCircle, Wrench } from "lucide-react"
+import { ArrowRight, Building, DollarSign, FileText, PlusCircle, Wrench } from "lucide-react"
 
 const landlordData = {
   metrics: [
