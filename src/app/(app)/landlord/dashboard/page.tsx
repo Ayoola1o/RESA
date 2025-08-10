@@ -73,7 +73,7 @@ export default function LandlordDashboardPage() {
                         <CardDescription>An overview of your managed properties.</CardDescription>
                     </div>
                     <Button asChild size="sm">
-                        <Link href="#"><PlusCircle className="mr-2 h-4 w-4"/> Add Property</Link>
+                        <Link href="/landlord/add-property"><PlusCircle className="mr-2 h-4 w-4"/> Add Property</Link>
                     </Button>
                 </CardHeader>
                 <CardContent>
@@ -91,6 +91,7 @@ export default function LandlordDashboardPage() {
                                 <TableRow key={prop.id}>
                                 <TableCell className="font-medium">
                                     <Link href={`/property/${prop.id}`} className="hover:underline">{prop.name}</Link>
+
                                 </TableCell>
                                 <TableCell>{prop.occupancy}</TableCell>
                                 <TableCell>
