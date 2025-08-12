@@ -77,4 +77,5 @@ export type Tenant = {
     leaseId: string;
     nextPaymentDue: string;
     rentAmount: number;
+    paymentStatus: 'Paid' | 'Upcoming' | 'Overdue';
 }

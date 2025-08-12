@@ -516,20 +516,28 @@ export const maintenanceRequests: MaintenanceRequest[] = [
     { id: 'maint5', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', dateSubmitted: '2023-11-18', description: "No hot water in the guest bathroom. The rest of the apartment is fine.", category: 'Plumbing', priority: 'Emergency', status: 'Pending' },
 ];
 
+const today = new Date();
+const futureDate = new Date();
+futureDate.setDate(today.getDate() + 15);
+const pastDate = new Date();
+pastDate.setDate(today.getDate() - 5);
+
 
 export const tenants: Record<string, Tenant> = {
     'prop2': {
         name: 'Alice Johnson',
         avatar: 'https://placehold.co/100x100.png',
         leaseId: 'lease1',
-        nextPaymentDue: '2023-12-01',
-        rentAmount: 3200
+        nextPaymentDue: futureDate.toISOString().split('T')[0],
+        rentAmount: 3200,
+        paymentStatus: 'Upcoming'
     },
     'prop5': {
         name: 'Bob Williams',
         avatar: 'https://placehold.co/100x100.png',
         leaseId: 'lease2',
-        nextPaymentDue: '2023-12-15',
-        rentAmount: 4500
+        nextPaymentDue: pastDate.toISOString().split('T')[0],
+        rentAmount: 4500,
+        paymentStatus: 'Overdue'
     }
 }

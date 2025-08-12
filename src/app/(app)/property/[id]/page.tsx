@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image"
 import { notFound, useParams } from "next/navigation"
 import {
@@ -23,6 +23,8 @@ import {
   Users,
   Banknote,
   FileSignature,
+  AlertTriangle,
+  Clock,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -62,6 +64,28 @@ export default function PropertyDetailPage() {
   const isRented = property.status === 'Rented';
   const tenantInfo = isRented ? tenants[property.id as keyof typeof tenants] : null;
   const leaseInfo = tenantInfo ? leases.find(l => l.id === tenantInfo.leaseId) : null;
+  
+  const [paymentDaysMessage, setPaymentDaysMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (tenantInfo) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); 
+      const dueDate = new Date(tenantInfo.nextPaymentDue);
+
+      const timeDiff = dueDate.getTime() - today.getTime();
+      const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
+      if (tenantInfo.paymentStatus === 'Upcoming') {
+        setPaymentDaysMessage(`${dayDiff} days left`);
+      } else if (tenantInfo.paymentStatus === 'Overdue') {
+        setPaymentDaysMessage(`${Math.abs(dayDiff)} days overdue`);
+      } else {
+        setPaymentDaysMessage('Paid for the month');
+      }
+    }
+  }, [tenantInfo]);
+
 
   const LandlordRentedPropertyCards = () => (
     <div className="space-y-8">
@@ -107,10 +131,23 @@ export default function PropertyDetailPage() {
                     <span className="text-muted-foreground">Monthly Rent</span>
                     <span className="font-semibold">${tenantInfo?.rentAmount.toLocaleString()}</span>
                 </div>
-                 <div className="flex justify-between">
-                    <span className="text-muted-foreground">Next Payment Due</span>
+                 <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Next Payment</span>
                     <span className="font-semibold">{tenantInfo ? new Date(tenantInfo.nextPaymentDue).toLocaleDateString() : 'N/A'}</span>
                 </div>
+                {tenantInfo && paymentDaysMessage && (
+                  <div className={cn(
+                    "border-l-4 p-3 rounded-r-lg flex items-center gap-2",
+                    tenantInfo.paymentStatus === 'Overdue' && 'border-destructive bg-destructive/10 text-destructive',
+                    tenantInfo.paymentStatus === 'Upcoming' && 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
+                    tenantInfo.paymentStatus === 'Paid' && 'border-green-500 bg-green-500/10 text-green-700'
+                  )}>
+                    {tenantInfo.paymentStatus === 'Overdue' && <AlertTriangle className="h-5 w-5" />}
+                    {tenantInfo.paymentStatus === 'Upcoming' && <Clock className="h-5 w-5" />}
+                    {tenantInfo.paymentStatus === 'Paid' && <CheckCircle className="h-5 w-5" />}
+                    <span className="text-sm font-medium">{paymentDaysMessage}</span>
+                  </div>
+                )}
                 <Button variant="outline" className="w-full">View Financial History</Button>
             </CardContent>
         </Card>
