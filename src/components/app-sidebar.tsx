@@ -11,7 +11,6 @@ import {
   Settings,
   Briefcase,
   DollarSign,
-  Wrench,
 } from "lucide-react"
 
 import {
@@ -21,12 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Logo from "./logo"
-import type { UserRole } from "@/app/(app)/layout";
-
-interface AppSidebarProps {
-    userRole: UserRole;
-    setUserRole: (role: UserRole) => void;
-}
+import { useUserRole } from "@/context/UserRoleContext";
 
 const tenantLinks = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -42,8 +36,9 @@ const landlordLinks = [
     { href: "/profile", icon: User, label: "Profile" },
 ]
 
-export default function AppSidebar({ userRole, setUserRole }: AppSidebarProps) {
+export default function AppSidebar() {
     const router = useRouter();
+    const { userRole, setUserRole } = useUserRole();
 
     const handleRoleChange = () => {
         const newRole = userRole === 'tenant' ? 'landlord' : 'tenant';

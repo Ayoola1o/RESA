@@ -45,6 +45,7 @@ import PropertyComparisonDialog from '@/components/property-comparison-dialog';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { getCategorizedMaintenance } from '@/app/actions';
+import { useUserRole } from '@/context/UserRoleContext';
 
 
 const user = {
@@ -183,6 +184,7 @@ function MaintenanceRequestForm() {
 
 
 export default function ProfilePage() {
+    const { userRole } = useUserRole();
     const [savedProperties, setSavedProperties] = useState(initialSavedProperties);
     const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
 
@@ -209,6 +211,16 @@ export default function ProfilePage() {
     
     const propertiesToCompare = savedProperties.filter(p => p.isComparing);
 
+    const tenantTabs = (
+        <>
+            <TabsTrigger value="saved"><Heart className="mr-2"/> Saved Properties</TabsTrigger>
+            <TabsTrigger value="applications"><FileText className="mr-2"/> Applications</TabsTrigger>
+            <TabsTrigger value="lease"><FileSignature className="mr-2"/> Lease</TabsTrigger>
+            <TabsTrigger value="payments"><CreditCard className="mr-2"/> Payments</TabsTrigger>
+            <TabsTrigger value="maintenance"><Wrench className="mr-2"/> Maintenance</TabsTrigger>
+        </>
+    );
+
   return (
     <div className="flex flex-col gap-8">
        {/* Profile Header */}
@@ -229,7 +241,7 @@ export default function ProfilePage() {
                     <span className="flex items-center gap-2"><MapPin className="h-4 w-4"/> {user.location}</span>
                 </div>
                  <p className="mt-4 max-w-2xl">{user.bio}</p>
-                 <Badge className="mt-3">{user.role}</Badge>
+                 <Badge className="mt-3">{userRole === 'tenant' ? "Tenant" : "Landlord"}</Badge>
             </div>
             <Button asChild className="ml-auto mt-4 md:mt-0">
                 <Link href="/settings">Edit Profile</Link>
@@ -238,13 +250,9 @@ export default function ProfilePage() {
       </Card>
 
       <Tabs defaultValue="properties" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-2')}>
             <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
-            <TabsTrigger value="saved"><Heart className="mr-2"/> Saved Properties</TabsTrigger>
-            <TabsTrigger value="applications"><FileText className="mr-2"/> Applications</TabsTrigger>
-            <TabsTrigger value="lease"><FileSignature className="mr-2"/> Lease</TabsTrigger>
-            <TabsTrigger value="payments"><CreditCard className="mr-2"/> Payments</TabsTrigger>
-            <TabsTrigger value="maintenance"><Wrench className="mr-2"/> Maintenance</TabsTrigger>
+            {userRole === 'tenant' ? tenantTabs : <TabsTrigger value="settings">Profile Settings</TabsTrigger>}
           </TabsList>
           
           <TabsContent value="properties">
@@ -550,8 +558,23 @@ export default function ProfilePage() {
                 </div>
             </div>
           </TabsContent>
+
            <TabsContent value="maintenance">
                 <MaintenanceRequestForm />
+          </TabsContent>
+
+           <TabsContent value="settings">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">Profile Settings</CardTitle>
+                        <CardDescription>
+                        This is a placeholder for landlord-specific profile settings.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Landlord settings content goes here...</p>
+                    </CardContent>
+                </Card>
           </TabsContent>
         </Tabs>
     </div>

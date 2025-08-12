@@ -14,7 +14,6 @@ import {
   Settings,
   Briefcase,
   DollarSign,
-  Wrench,
 } from "lucide-react"
 import Image from "next/image"
 
@@ -31,12 +30,7 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import AiRecommendations from "./ai-recommendations"
 import Logo from "./logo";
-import type { UserRole } from "@/app/(app)/layout";
-
-interface HeaderProps {
-    userRole: UserRole;
-    setUserRole: (role: UserRole) => void;
-}
+import { useUserRole } from "@/context/UserRoleContext";
 
 const tenantLinks = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -52,9 +46,10 @@ const landlordLinks = [
     { href: "/profile", icon: User, label: "Profile" },
 ]
 
-export default function Header({ userRole, setUserRole }: HeaderProps) {
+export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { userRole, setUserRole } = useUserRole();
   const [searchQuery, setSearchQuery] = useState('');
   const showSearch = pathname === '/dashboard' || pathname === '/marketplace';
 
