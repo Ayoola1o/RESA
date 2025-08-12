@@ -4,6 +4,7 @@
 import { recommendProperties, type RecommendPropertiesInput } from '@/ai/flows/property-recommendation';
 import { suggestReply, type SuggestReplyInput } from '@/ai/flows/suggest-reply-flow';
 import { categorizeMaintenanceRequest, type CategorizeMaintenanceInput } from '@/ai/flows/categorize-maintenance-flow';
+import { generateDescription, type GenerateDescriptionInput } from '@/ai/flows/generate-description-flow';
 import { z } from 'zod';
 import { properties } from '@/lib/mock-data';
 
@@ -74,5 +75,32 @@ export async function getCategorizedMaintenance(prevState: any, formData: FormDa
     } catch (e) {
         console.error(e);
         return { error: 'An unexpected error occurred. Please try again.' };
+    }
+}
+
+const generateDescriptionSchema = z.object({
+    title: z.string().min(1, 'Title is required.'),
+    propertyType: z.string().min(1, 'Property type is required.'),
+    city: z.string().min(1, 'City is required.'),
+    state: z.string().min(1, 'State is required.'),
+    bedrooms: z.string().min(1, 'Bedrooms are required.'),
+    bathrooms: z.string().min(1, 'Bathrooms are required.'),
+    sqft: z.string().min(1, 'Square footage is required.'),
+    features: z.array(z.string()),
+});
+
+export async function getGeneratedDescription(input: GenerateDescriptionInput) {
+    const parsed = generateDescriptionSchema.safeParse(input);
+
+    if (!parsed.success) {
+        return { error: parsed.error.flatten().fieldErrors };
+    }
+
+    try {
+        const result = await generateDescription(parsed.data);
+        return { data: result };
+    } catch (e) {
+        console.error(e);
+        return { error: 'An unexpected error occurred while generating the description.' };
     }
 }
