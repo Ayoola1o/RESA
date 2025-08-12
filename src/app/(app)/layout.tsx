@@ -12,13 +12,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>('tenant');
 
   return (
-    <div className="flex h-screen w-full bg-muted/20">
-      <AppSidebar userRole={userRole} setUserRole={setUserRole} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header userRole={userRole} setUserRole={setUserRole} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          {children}
-        </main>
+    <div className="flex min-h-screen w-full flex-col bg-muted/20">
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        <AppSidebar userRole={userRole} setUserRole={setUserRole} />
+        <div className="flex flex-1 flex-col sm:gap-4">
+          <Header userRole={userRole} setUserRole={setUserRole} />
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   )
