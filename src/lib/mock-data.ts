@@ -501,12 +501,31 @@ export const applications: Application[] = [
     },
 ]
 
-export const leases: Lease[] = [
-    { id: 'lease1', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', startDate: '2023-08-01', endDate: '2024-07-31', rentAmount: 3200, status: 'Active' },
-    { id: 'lease2', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', startDate: '2023-06-15', endDate: '2024-06-14', rentAmount: 4500, status: 'Active' },
-    { id: 'lease3', propertyId: 'rent4', propertyTitle: 'Modern Downtown Loft', tenantName: 'Charlie Brown', startDate: '2023-09-01', endDate: '2024-08-31', rentAmount: 2800, status: 'Active' },
-    { id: 'lease4', propertyId: 'rent8', propertyTitle: 'Modern Downtown Loft', tenantName: 'Diana Prince', startDate: '2022-12-01', endDate: '2023-11-30', rentAmount: 3100, status: 'Expired' },
-];
+const today = new Date();
+
+const tenantNames = ["Alice Johnson", "Bob Williams", "Charlie Brown", "Diana Prince", "Ethan Hunt", "Fiona Glenanne", "George Costanza", "Holly Golightly"];
+
+// Find all rented properties
+const rentedProperties = properties.filter(p => p.status === 'Rented');
+
+// Generate leases for each rented property
+export const leases: Lease[] = rentedProperties.map((prop, i) => {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - (i % 12));
+    const endDate = new Date(startDate);
+    endDate.setFullYear(startDate.getFullYear() + 1);
+
+    return {
+        id: `lease${i + 1}`,
+        propertyId: prop.id,
+        propertyTitle: prop.title,
+        tenantName: tenantNames[i % tenantNames.length],
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        rentAmount: prop.price,
+        status: 'Active'
+    };
+});
 
 export const maintenanceRequests: MaintenanceRequest[] = [
     { id: 'maint1', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', dateSubmitted: '2023-11-28', description: "The kitchen sink is clogged and water is not draining properly.", category: 'Plumbing', priority: 'High', status: 'Pending' },
@@ -516,28 +535,32 @@ export const maintenanceRequests: MaintenanceRequest[] = [
     { id: 'maint5', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', dateSubmitted: '2023-11-18', description: "No hot water in the guest bathroom. The rest of the apartment is fine.", category: 'Plumbing', priority: 'Emergency', status: 'Pending' },
 ];
 
-const today = new Date();
-const futureDate = new Date();
-futureDate.setDate(today.getDate() + 15);
-const pastDate = new Date();
-pastDate.setDate(today.getDate() - 5);
 
+export const tenants: Record<string, Tenant> = {};
 
-export const tenants: Record<string, Tenant> = {
-    'prop2': {
-        name: 'Alice Johnson',
-        avatar: 'https://placehold.co/100x100.png',
-        leaseId: 'lease1',
-        nextPaymentDue: futureDate.toISOString().split('T')[0],
-        rentAmount: 3200,
-        paymentStatus: 'Upcoming'
-    },
-    'prop5': {
-        name: 'Bob Williams',
-        avatar: 'https://placehold.co/100x100.png',
-        leaseId: 'lease2',
-        nextPaymentDue: pastDate.toISOString().split('T')[0],
-        rentAmount: 4500,
-        paymentStatus: 'Overdue'
+rentedProperties.forEach((prop, i) => {
+    const lease = leases.find(l => l.propertyId === prop.id);
+    if (lease) {
+        const paymentStatusOptions: Tenant['paymentStatus'][] = ['Paid', 'Upcoming', 'Overdue'];
+        const paymentStatus = paymentStatusOptions[i % 3];
+        
+        let nextPaymentDue = new Date();
+        if (paymentStatus === 'Upcoming') {
+            nextPaymentDue.setDate(today.getDate() + (i % 15) + 1);
+        } else if (paymentStatus === 'Overdue') {
+            nextPaymentDue.setDate(today.getDate() - ((i % 5) + 1));
+        } else { // Paid
+            nextPaymentDue.setMonth(today.getMonth() + 1);
+            nextPaymentDue.setDate(1);
+        }
+
+        tenants[prop.id] = {
+            name: lease.tenantName,
+            avatar: 'https://placehold.co/100x100.png',
+            leaseId: lease.id,
+            nextPaymentDue: nextPaymentDue.toISOString().split('T')[0],
+            rentAmount: prop.price,
+            paymentStatus: paymentStatus
+        };
     }
-}
+});
