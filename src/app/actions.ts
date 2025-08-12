@@ -5,6 +5,7 @@ import { recommendProperties, type RecommendPropertiesInput } from '@/ai/flows/p
 import { suggestReply, type SuggestReplyInput } from '@/ai/flows/suggest-reply-flow';
 import { categorizeMaintenanceRequest, type CategorizeMaintenanceInput } from '@/ai/flows/categorize-maintenance-flow';
 import { generateDescription, type GenerateDescriptionInput } from '@/ai/flows/generate-description-flow';
+import { generateNews, type GenerateNewsInput } from '@/ai/flows/generate-news-flow';
 import { z } from 'zod';
 import { properties } from '@/lib/mock-data';
 
@@ -103,4 +104,25 @@ export async function getGeneratedDescription(input: GenerateDescriptionInput) {
         console.error(e);
         return { error: 'An unexpected error occurred while generating the description.' };
     }
+}
+
+
+const generateNewsSchema = z.object({
+  topic: z.string(),
+});
+
+export async function getNews(input: GenerateNewsInput) {
+  const parsed = generateNewsSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return { error: 'Invalid input.' };
+  }
+
+  try {
+    const result = await generateNews(parsed.data);
+    return { data: result };
+  } catch (e) {
+    console.error(e);
+    return { error: 'An unexpected error occurred while generating news.' };
+  }
 }
