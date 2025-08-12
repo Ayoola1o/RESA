@@ -70,3 +70,11 @@ export type MaintenanceRequest = {
     priority: 'Low' | 'Medium' | 'High' | 'Emergency';
     status: 'Pending' | 'In Progress' | 'Completed';
 }
+
+export type Tenant = {
+    name: string;
+    avatar: string;
+    leaseId: string;
+    nextPaymentDue: string;
+    rentAmount: number;
+}

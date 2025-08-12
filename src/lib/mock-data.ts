@@ -1,4 +1,4 @@
-import type { Property, Conversation, Application, Lease, MaintenanceRequest } from './types';
+import type { Property, Conversation, Application, Lease, MaintenanceRequest, Tenant } from './types';
 
 export const properties: Property[] = [
   {
@@ -515,3 +515,21 @@ export const maintenanceRequests: MaintenanceRequest[] = [
     { id: 'maint4', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', dateSubmitted: '2023-11-20', description: "The main door lock is sticking and it's very difficult to turn the key.", category: 'Structural', priority: 'High', status: 'Completed' },
     { id: 'maint5', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', dateSubmitted: '2023-11-18', description: "No hot water in the guest bathroom. The rest of the apartment is fine.", category: 'Plumbing', priority: 'Emergency', status: 'Pending' },
 ];
+
+
+export const tenants: Record<string, Tenant> = {
+    'prop2': {
+        name: 'Alice Johnson',
+        avatar: 'https://placehold.co/100x100.png',
+        leaseId: 'lease1',
+        nextPaymentDue: '2023-12-01',
+        rentAmount: 3200
+    },
+    'prop5': {
+        name: 'Bob Williams',
+        avatar: 'https://placehold.co/100x100.png',
+        leaseId: 'lease2',
+        nextPaymentDue: '2023-12-15',
+        rentAmount: 4500
+    }
+}
