@@ -1,7 +1,9 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +17,9 @@ const ITEMS_PER_PAGE = 16;
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
 export default function MarketplacePage() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+
   const [currentPage, setCurrentPage] = useState(1);
   const [listingType, setListingType] = useState('all');
   const [propertyType, setPropertyType] = useState('all');
@@ -32,8 +37,15 @@ export default function MarketplacePage() {
         const propertyTypeMatch = propertyType === 'all' || p.type.toLowerCase() === propertyType;
         const bedroomsMatch = bedrooms === 'any' || p.bedrooms >= Number(bedrooms);
         const bathroomsMatch = bathrooms === 'any' || p.bathrooms >= Number(bathrooms);
+
+        const searchMatch = searchQuery ? 
+            p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.city.toLowerCase().includes(searchQuery.toLowerCase())
+            : true;
         
-        return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch;
+        return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch && searchMatch;
     });
 
     switch (sortOption) {
@@ -51,7 +63,7 @@ export default function MarketplacePage() {
 
     return filtered;
 
-  }, [listingType, propertyType, bedrooms, bathrooms, sortOption]);
+  }, [listingType, propertyType, bedrooms, bathrooms, sortOption, searchQuery]);
 
   const totalPages = Math.ceil(filteredAndSortedProperties.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -98,7 +110,9 @@ export default function MarketplacePage() {
     <div className="container mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold font-headline md:text-4xl">Find Your Dream Property</h1>
-        <p className="text-muted-foreground mt-2">Explore our curated list of properties across the country.</p>
+        <p className="text-muted-foreground mt-2">
+            {searchQuery ? `Showing results for "${searchQuery}"` : "Explore our curated list of properties across the country."}
+        </p>
       </div>
 
       <Card className="mb-8 p-4 shadow-sm">
@@ -184,7 +198,7 @@ export default function MarketplacePage() {
         {currentProperties.length === 0 && (
             <div className="col-span-full text-center text-muted-foreground py-16">
                 <p className="text-lg">No properties match your criteria.</p>
-                <p>Try adjusting your filters.</p>
+                <p>Try adjusting your filters or clearing your search.</p>
             </div>
         )}
       </div>

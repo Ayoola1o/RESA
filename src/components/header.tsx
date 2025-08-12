@@ -1,8 +1,10 @@
 
+
 'use client';
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Home,
   Search,
@@ -61,6 +63,7 @@ const landlordLinks = [
 export default function Header({ userRole, setUserRole }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
   const showSearch = pathname === '/dashboard' || pathname === '/marketplace';
 
   const handleRoleChange = () => {
@@ -70,6 +73,15 @@ export default function Header({ userRole, setUserRole }: HeaderProps) {
         router.push('/landlord/dashboard');
     } else {
         router.push('/dashboard');
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/marketplace?search=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/marketplace');
     }
   };
 
@@ -124,13 +136,15 @@ export default function Header({ userRole, setUserRole }: HeaderProps) {
 
       <div className="w-full flex-1">
         {showSearch && userRole === 'tenant' && (
-          <form>
+          <form onSubmit={handleSearchSubmit}>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search properties..."
                 className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </form>
