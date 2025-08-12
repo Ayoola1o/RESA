@@ -6,7 +6,7 @@ import { useState, useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from "next/image"
 import Link from "next/link"
-import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown, Wrench, Sparkles, Loader2, Users, HandPlatter, MessageSquare } from "lucide-react"
+import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown, Wrench, Sparkles, Loader2, Users, HandPlatter, MessageSquare, ArrowUpRight, DollarSign, MinusCircle, PlusCircle, TrendingUp } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -47,6 +47,7 @@ import { cn, getStatusVariant } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { getCategorizedMaintenance } from '@/app/actions';
 import { useUserRole } from '@/context/UserRoleContext';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 
 const user = {
@@ -56,6 +57,31 @@ const user = {
     role: "Buyer/Owner",
     avatar: "https://placehold.co/128x128.png",
     bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
+};
+
+const financialData = {
+  summary: [
+    { title: "Total Revenue", value: "$45,231.89", change: "+20.1% from last month", icon: DollarSign },
+    { title: "Total Expenses", value: "$12,874.21", change: "+12.5% from last month", icon: DollarSign },
+    { title: "Net Income", value: "$32,357.68", change: "+23.3% from last month", icon: DollarSign },
+    { title: "Occupancy Rate", value: "92%", change: "2 vacant units", icon: Users },
+  ],
+  chartData: [
+    { month: "Jan", income: 4000, expense: 2400 },
+    { month: "Feb", income: 3000, expense: 1398 },
+    { month: "Mar", income: 5000, expense: 6800 },
+    { month: "Apr", income: 2780, expense: 3908 },
+    { month: "May", income: 1890, expense: 4800 },
+    { month: "Jun", income: 2390, expense: 3800 },
+    { month: "Jul", income: 3490, expense: 4300 },
+  ],
+  transactions: [
+    { id: 'txn1', date: '2023-11-28', description: "Rent Payment - Unit 12B", category: 'Income', amount: 3200 },
+    { id: 'txn2', date: '2023-11-25', description: "Plumbing Repair - Unit 5A", category: 'Maintenance', amount: -450 },
+    { id: 'txn3', date: '2023-11-22', description: "Landscaping Services", category: 'Property Services', amount: -250 },
+    { id: 'txn4', date: '2023-11-20', description: "Late Fee - Unit 8C", category: 'Income', amount: 50 },
+    { id: 'txn5', date: '2023-11-18', description: "Property Insurance Premium", category: 'Insurance', amount: -1200 },
+  ]
 };
 
 const userProperties = allProperties.slice(1, 3);
@@ -214,6 +240,7 @@ export default function ProfilePage() {
             <TabsTrigger value="rented"><Users className="mr-2"/> Rented Properties</TabsTrigger>
             <TabsTrigger value="leases"><FileSignature className="mr-2"/> Leases</TabsTrigger>
             <TabsTrigger value="maintenance-landlord"><HandPlatter className="mr-2"/> Maintenance</TabsTrigger>
+            <TabsTrigger value="financials"><DollarSign className="mr-2"/> Financials</TabsTrigger>
             <TabsTrigger value="settings">Profile Settings</TabsTrigger>
         </>
     )
@@ -247,7 +274,7 @@ export default function ProfilePage() {
       </Card>
 
       <Tabs defaultValue="properties" className="w-full">
-          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-5')}>
+          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-6')}>
             <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
             {userRole === 'tenant' ? tenantTabs : landlordTabs}
           </TabsList>
@@ -680,6 +707,82 @@ export default function ProfilePage() {
                         </Table>
                     </CardContent>
                 </Card>
+            </TabsContent>
+
+            <TabsContent value="financials">
+                <div className="flex flex-1 flex-col gap-8">
+                    <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {financialData.summary.map((metric) => (
+                        <Card key={metric.title}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+                            <metric.icon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                            <div className="text-2xl font-bold">{metric.value}</div>
+                            <p className="text-xs text-muted-foreground">{metric.change}</p>
+                            </CardContent>
+                        </Card>
+                        ))}
+                    </section>
+                    
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="font-headline">Income vs. Expense</CardTitle>
+                                <CardDescription>Last 6 months</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={financialData.chartData}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="month" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Bar dataKey="income" fill="hsl(var(--primary))" name="Income" />
+                                        <Bar dataKey="expense" fill="hsl(var(--destructive))" name="Expense" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="font-headline">Recent Transactions</CardTitle>
+                                    <CardDescription>A log of your most recent income and expenses.</CardDescription>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline"><MinusCircle className="mr-2"/> Add Expense</Button>
+                                    <Button size="sm"><PlusCircle className="mr-2"/> Add Income</Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {financialData.transactions.map((txn) => (
+                                            <TableRow key={txn.id}>
+                                                <TableCell>{txn.date}</TableCell>
+                                                <TableCell className="font-medium">{txn.description}</TableCell>
+                                                <TableCell><Badge variant="outline">{txn.category}</Badge></TableCell>
+                                                <TableCell className={`text-right font-semibold ${txn.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {txn.amount > 0 ? '+' : ''}${Math.abs(txn.amount).toLocaleString()}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </TabsContent>
 
 

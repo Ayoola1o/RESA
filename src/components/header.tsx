@@ -41,7 +41,6 @@ const tenantLinks = [
 
 const landlordLinks = [
     { href: "/landlord/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/landlord/financials", icon: DollarSign, label: "Financials" },
     { href: "/messages", icon: MessageCircle, label: "Messages" },
     { href: "/profile", icon: User, label: "Profile" },
 ]
