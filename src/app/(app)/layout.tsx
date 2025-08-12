@@ -16,7 +16,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <AppSidebar userRole={userRole} setUserRole={setUserRole} />
       <div className="flex flex-1 flex-col">
         <Header userRole={userRole} setUserRole={setUserRole} />
-        <main className="flex flex-1 flex-col bg-muted/20 p-4 md:p-8">
+        <main className="flex flex-1 flex-col bg-muted/20 p-4 md:p-8 overflow-y-auto">
           {children}
         </main>
       </div>
