@@ -9,7 +9,7 @@ export type Property = {
   bedrooms: number;
   bathrooms: number;
   sqft: number;
-  type: 'House' | 'Apartment' | 'Condo' | 'Land';
+  type: 'House' | 'Apartment' | 'Condo' | 'Land' | 'Single Room' | 'R&P Apart' | 'Self Apart' | 'Office Space' | 'Warehouse' | 'Shop';
   status: 'For Sale' | 'For Rent' | 'Sold';
   description: string;
   images: string[];

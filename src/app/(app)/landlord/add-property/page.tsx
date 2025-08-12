@@ -62,7 +62,18 @@ export default function AddPropertyPage() {
                             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="type">Property Type</Label>
-                                    <Select><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger><SelectContent><SelectItem value="house">House</SelectItem><SelectItem value="apartment">Apartment</SelectItem><SelectItem value="condo">Condo</SelectItem></SelectContent></Select>
+                                    <Select><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger><SelectContent>
+                                        <SelectItem value="house">House</SelectItem>
+                                        <SelectItem value="apartment">Apartment</SelectItem>
+                                        <SelectItem value="condo">Condo</SelectItem>
+                                        <SelectItem value="single-room">Single Room</SelectItem>
+                                        <SelectItem value="rp-apart">R&amp;P Apart</SelectItem>
+                                        <SelectItem value="self-apart">Self Apart</SelectItem>
+                                        <SelectItem value="office-space">Office Space</SelectItem>
+                                        <SelectItem value="warehouse">Warehouse</SelectItem>
+                                        <SelectItem value="shop">Shop</SelectItem>
+                                        <SelectItem value="land">Land</SelectItem>
+                                    </SelectContent></Select>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="status">Listing Status</Label>
@@ -76,7 +87,7 @@ export default function AddPropertyPage() {
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Features & Amenities</h3>
+                            <h3 className="font-headline text-lg border-b pb-2">Features &amp; Amenities</h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {featuresList.map(feature => (
                                     <div key={feature} className="flex items-center space-x-2">
@@ -88,14 +99,14 @@ export default function AddPropertyPage() {
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Photo & Media</h3>
+                            <h3 className="font-headline text-lg border-b pb-2">Photo &amp; Media</h3>
                              <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>Property Photos</Label>
                                     <div className="flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md">
                                         <div className="text-center">
                                             <FileUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                                            <p className="mt-2 text-sm text-muted-foreground">Drag & drop files or</p>
+                                            <p className="mt-2 text-sm text-muted-foreground">Drag &amp; drop files or</p>
                                             <Button type="button" variant="outline" size="sm" className="mt-2">Choose files</Button>
                                         </div>
                                     </div>

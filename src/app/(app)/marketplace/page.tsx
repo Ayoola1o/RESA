@@ -34,7 +34,7 @@ export default function MarketplacePage() {
             (listingType === 'sale' && p.status === 'For Sale') ||
             (listingType === 'rent' && p.status === 'For Rent');
 
-        const propertyTypeMatch = propertyType === 'all' || p.type.toLowerCase() === propertyType;
+        const propertyTypeMatch = propertyType === 'all' || p.type.toLowerCase().replace(' ', '-') === propertyType;
         const bedroomsMatch = bedrooms === 'any' || p.bedrooms >= Number(bedrooms);
         const bathroomsMatch = bathrooms === 'any' || p.bathrooms >= Number(bathrooms);
 
@@ -137,6 +137,13 @@ export default function MarketplacePage() {
                     <SelectItem value="house">House</SelectItem>
                     <SelectItem value="apartment">Apartment</SelectItem>
                     <SelectItem value="condo">Condo</SelectItem>
+                    <SelectItem value="single-room">Single Room</SelectItem>
+                    <SelectItem value="rp-apart">R&amp;P Apart</SelectItem>
+                    <SelectItem value="self-apart">Self Apart</SelectItem>
+                    <SelectItem value="office-space">Office Space</SelectItem>
+                    <SelectItem value="warehouse">Warehouse</SelectItem>
+                    <SelectItem value="shop">Shop</SelectItem>
+                    <SelectItem value="land">Land</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
