@@ -16,25 +16,25 @@ import { Badge } from "@/components/ui/badge"
 const quickAccessLinks = [
     {
         title: "Saved Properties",
-        href: "/saved-properties",
+        href: "/profile",
         icon: Heart,
         description: "View your favorite listings.",
     },
     {
         title: "My Applications",
-        href: "/applications",
+        href: "/profile",
         icon: FileText,
         description: "Track your applications.",
     },
     {
         title: "Payments",
-        href: "/payments",
+        href: "/profile",
         icon: CreditCard,
         description: "Manage your rent payments.",
     },
      {
         title: "Maintenance",
-        href: "#",
+        href: "/maintenance",
         icon: Wrench,
         description: "Submit & track requests.",
     },

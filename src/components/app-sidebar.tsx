@@ -11,6 +11,7 @@ import {
   Settings,
   Briefcase,
   DollarSign,
+  Wrench,
 } from "lucide-react"
 
 import {
@@ -31,6 +32,7 @@ const tenantLinks = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/marketplace", icon: Home, label: "Marketplace" },
     { href: "/messages", icon: MessageCircle, label: "Messages" },
+    { href: "/maintenance", icon: Wrench, label: "Maintenance" },
     { href: "/profile", icon: User, label: "Profile" },
 ]
 

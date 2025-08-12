@@ -1,7 +1,9 @@
+
 'use server';
 
 import { recommendProperties, type RecommendPropertiesInput } from '@/ai/flows/property-recommendation';
 import { suggestReply, type SuggestReplyInput } from '@/ai/flows/suggest-reply-flow';
+import { categorizeMaintenanceRequest, type CategorizeMaintenanceInput } from '@/ai/flows/categorize-maintenance-flow';
 import { z } from 'zod';
 import { properties } from '@/lib/mock-data';
 
@@ -50,5 +52,27 @@ export async function getSuggestedReply(input: SuggestReplyInput) {
     } catch (e) {
         console.error(e);
         return { error: 'An unexpected error occurred while generating a reply.' };
+    }
+}
+
+const categorizeMaintenanceSchema = z.object({
+    requestText: z.string().min(10, 'Please describe your maintenance issue in more detail.'),
+});
+
+export async function getCategorizedMaintenance(prevState: any, formData: FormData) {
+    const parsed = categorizeMaintenanceSchema.safeParse({
+        requestText: formData.get('requestText'),
+    });
+
+    if (!parsed.success) {
+        return { error: parsed.error.flatten().fieldErrors };
+    }
+
+    try {
+        const result = await categorizeMaintenanceRequest(parsed.data);
+        return { data: result };
+    } catch (e) {
+        console.error(e);
+        return { error: 'An unexpected error occurred. Please try again.' };
     }
 }
