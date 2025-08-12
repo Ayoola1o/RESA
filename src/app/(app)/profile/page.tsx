@@ -5,7 +5,7 @@ import { useState, useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from "next/image"
 import Link from "next/link"
-import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown, Wrench, Sparkles, Loader2 } from "lucide-react"
+import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown, Wrench, Sparkles, Loader2, Users, HandPlatter, MessageSquare } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,7 +39,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
-import { properties as allProperties, applications } from "@/lib/mock-data"
+import { properties as allProperties, applications, leases, maintenanceRequests } from "@/lib/mock-data"
 import PropertyCard from "@/components/property-card"
 import PropertyComparisonDialog from '@/components/property-comparison-dialog';
 import { cn } from '@/lib/utils';
@@ -58,6 +58,7 @@ const user = {
 };
 
 const userProperties = allProperties.slice(1, 3);
+const rentedProperties = allProperties.filter(p => p.status === 'Rented');
 
 const initialSavedProperties = allProperties.slice(0, 4).map(p => ({
     ...p,
@@ -83,15 +84,21 @@ const paymentHistory = [
     { id: 'pay_3', date: '2023-09-01', amount: 3200, status: 'Paid', method: 'ACH' },
 ]
 
-function getStatusVariant(status: 'Submitted' | 'Under Review' | 'Approved' | 'Rejected') {
+function getStatusVariant(status: 'Submitted' | 'Under Review' | 'Approved' | 'Rejected' | 'Active' | 'Expired' | 'Terminated' | 'Pending' | 'In Progress' | 'Completed') {
     switch (status) {
         case 'Approved':
+        case 'Active':
+        case 'Completed':
             return 'default';
         case 'Under Review':
+        case 'In Progress':
             return 'secondary';
         case 'Rejected':
+        case 'Expired':
+        case 'Terminated':
             return 'destructive';
         case 'Submitted':
+        case 'Pending':
         default:
             return 'outline';
     }
@@ -221,6 +228,15 @@ export default function ProfilePage() {
         </>
     );
 
+    const landlordTabs = (
+         <>
+            <TabsTrigger value="rented"><Users className="mr-2"/> Rented Properties</TabsTrigger>
+            <TabsTrigger value="leases"><FileSignature className="mr-2"/> Leases</TabsTrigger>
+            <TabsTrigger value="maintenance-landlord"><HandPlatter className="mr-2"/> Maintenance</TabsTrigger>
+            <TabsTrigger value="settings">Profile Settings</TabsTrigger>
+        </>
+    )
+
   return (
     <div className="flex flex-col gap-8">
        {/* Profile Header */}
@@ -250,9 +266,9 @@ export default function ProfilePage() {
       </Card>
 
       <Tabs defaultValue="properties" className="w-full">
-          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-2')}>
+          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-5')}>
             <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
-            {userRole === 'tenant' ? tenantTabs : <TabsTrigger value="settings">Profile Settings</TabsTrigger>}
+            {userRole === 'tenant' ? tenantTabs : landlordTabs}
           </TabsList>
           
           <TabsContent value="properties">
@@ -562,6 +578,123 @@ export default function ProfilePage() {
            <TabsContent value="maintenance">
                 <MaintenanceRequestForm />
           </TabsContent>
+
+          {/* Landlord Tabs */}
+           <TabsContent value="rented">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">Rented Properties</CardTitle>
+                        <CardDescription>An overview of your currently occupied properties.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Property</TableHead>
+                                    <TableHead>Tenant</TableHead>
+                                    <TableHead>Monthly Rent</TableHead>
+                                    <TableHead>Lease End Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {rentedProperties.map(prop => (
+                                    <TableRow key={prop.id}>
+                                        <TableCell className="font-medium">
+                                            <Link href={`/property/${prop.id}`} className="hover:underline">{prop.title}</Link>
+                                            <p className="text-xs text-muted-foreground">{prop.address}</p>
+                                        </TableCell>
+                                        <TableCell>John Tenant</TableCell>
+                                        <TableCell>${prop.price.toLocaleString()}</TableCell>
+                                        <TableCell>2024-10-31</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+           </TabsContent>
+
+            <TabsContent value="leases">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">Lease Agreements</CardTitle>
+                        <CardDescription>Manage all active and past lease agreements.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Property</TableHead>
+                                    <TableHead>Tenant</TableHead>
+                                    <TableHead>Term</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {leases.map(lease => (
+                                    <TableRow key={lease.id}>
+                                        <TableCell className="font-medium">
+                                            <Link href={`/property/${lease.propertyId}`} className="hover:underline">{lease.propertyTitle}</Link>
+                                        </TableCell>
+                                        <TableCell>{lease.tenantName}</TableCell>
+                                        <TableCell>{new Date(lease.startDate).toLocaleDateString()} - {new Date(lease.endDate).toLocaleDateString()}</TableCell>
+                                        <TableCell><Badge variant={getStatusVariant(lease.status)}>{lease.status}</Badge></TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="outline" size="sm">View Lease</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+
+             <TabsContent value="maintenance-landlord">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">Incoming Maintenance Requests</CardTitle>
+                        <CardDescription>Review and manage maintenance requests from your tenants.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Property</TableHead>
+                                    <TableHead>Tenant</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead>Priority</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {maintenanceRequests.map(req => (
+                                    <TableRow key={req.id}>
+                                        <TableCell className="font-medium">
+                                             <Link href={`/property/${req.propertyId}`} className="hover:underline">{req.propertyTitle}</Link>
+                                        </TableCell>
+                                        <TableCell>{req.tenantName}</TableCell>
+                                        <TableCell><Badge variant="secondary">{req.category}</Badge></TableCell>
+                                        <TableCell>
+                                            <Badge variant={req.priority === 'Emergency' || req.priority === 'High' ? 'destructive' : 'outline'}>
+                                                {req.priority}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell><Badge variant={getStatusVariant(req.status)}>{req.status}</Badge></TableCell>
+                                        <TableCell className="text-right space-x-2">
+                                            <Button variant="outline" size="sm">Details</Button>
+                                            <Button variant="ghost" size="icon"><MessageSquare className="h-4 w-4"/></Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+
 
            <TabsContent value="settings">
                 <Card>

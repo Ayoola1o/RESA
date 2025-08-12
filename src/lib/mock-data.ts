@@ -1,4 +1,4 @@
-import type { Property, Conversation, Application } from './types';
+import type { Property, Conversation, Application, Lease, MaintenanceRequest } from './types';
 
 export const properties: Property[] = [
   {
@@ -27,7 +27,7 @@ export const properties: Property[] = [
   {
     id: 'prop2',
     title: 'Cozy Downtown Apartment',
-    price: 750000,
+    price: 3200,
     address: '456 Urban St, Apt 12B',
     city: 'San Francisco',
     state: 'CA',
@@ -36,7 +36,7 @@ export const properties: Property[] = [
     bathrooms: 2,
     sqft: 1200,
     type: 'Apartment',
-    status: 'For Sale',
+    status: 'Rented',
     description: 'A chic and cozy apartment in the heart of the city, featuring modern amenities and floor-to-ceiling windows with city views.',
     images: ['https://placehold.co/800x600.png', 'https://placehold.co/800x600.png'],
     features: ['City View', 'Modern Kitchen', 'Fitness Center', '24/7 Security'],
@@ -93,7 +93,7 @@ export const properties: Property[] = [
   {
     id: 'prop5',
     title: 'Miami Beachfront Condo',
-    price: 1200000,
+    price: 4500,
     address: '25 Ocean Drive',
     city: 'Miami',
     state: 'FL',
@@ -102,7 +102,7 @@ export const properties: Property[] = [
     bathrooms: 3,
     sqft: 2200,
     type: 'Condo',
-    status: 'For Sale',
+    status: 'Rented',
     description: 'Luxurious condo with direct beach access and panoramic ocean views. State-of-the-art amenities.',
     images: ['https://placehold.co/800x600.png'],
     features: ['Oceanfront', 'Rooftop Pool', 'Valet Parking', 'Gym'],
@@ -234,7 +234,7 @@ export const properties: Property[] = [
     bathrooms: 3,
     sqft: 2800 + i * 50,
     type: 'House' as Property['type'],
-    status: 'For Sale' as 'For Sale' | 'For Rent' | 'Sold',
+    status: 'For Sale' as 'For Sale' | 'For Rent' | 'Sold' | 'Rented',
     description: 'A beautiful and spacious home perfect for families, located in a friendly neighborhood.',
     images: [`https://placehold.co/800x600.png`],
     features: ['Large Yard', '2-Car Garage', 'Modern Kitchen', 'Community Park'],
@@ -256,7 +256,7 @@ export const properties: Property[] = [
     bathrooms: 1 + (i % 2),
     sqft: 800 + i * 20,
     type: 'Apartment' as Property['type'],
-    status: 'For Rent' as 'For Sale' | 'For Rent' | 'Sold',
+    status: i % 4 === 0 ? 'Rented' : 'For Rent' as 'For Sale' | 'For Rent' | 'Sold' | 'Rented',
     description: 'Stylish apartment for rent in a prime downtown location, with great amenities.',
     images: [`https://placehold.co/800x600.png`],
     features: ['Gym Access', 'Rooftop Terrace', 'In-unit Laundry', 'Concierge'],
@@ -500,3 +500,18 @@ export const applications: Application[] = [
         type: 'Offer',
     },
 ]
+
+export const leases: Lease[] = [
+    { id: 'lease1', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', startDate: '2023-08-01', endDate: '2024-07-31', rentAmount: 3200, status: 'Active' },
+    { id: 'lease2', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', startDate: '2023-06-15', endDate: '2024-06-14', rentAmount: 4500, status: 'Active' },
+    { id: 'lease3', propertyId: 'rent4', propertyTitle: 'Modern Downtown Loft', tenantName: 'Charlie Brown', startDate: '2023-09-01', endDate: '2024-08-31', rentAmount: 2800, status: 'Active' },
+    { id: 'lease4', propertyId: 'rent8', propertyTitle: 'Modern Downtown Loft', tenantName: 'Diana Prince', startDate: '2022-12-01', endDate: '2023-11-30', rentAmount: 3100, status: 'Expired' },
+];
+
+export const maintenanceRequests: MaintenanceRequest[] = [
+    { id: 'maint1', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', dateSubmitted: '2023-11-28', description: "The kitchen sink is clogged and water is not draining properly.", category: 'Plumbing', priority: 'High', status: 'Pending' },
+    { id: 'maint2', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', dateSubmitted: '2023-11-25', description: "The AC unit in the master bedroom is making a loud rattling noise.", category: 'HVAC', priority: 'Medium', status: 'In Progress' },
+    { id: 'maint3', propertyId: 'rent4', propertyTitle: 'Modern Downtown Loft', tenantName: 'Charlie Brown', dateSubmitted: '2023-11-22', description: "A light fixture in the hallway has burned out. I can't reach it to change the bulb.", category: 'Electrical', priority: 'Low', status: 'Completed' },
+    { id: 'maint4', propertyId: 'prop2', propertyTitle: 'Cozy Downtown Apartment', tenantName: 'Alice Johnson', dateSubmitted: '2023-11-20', description: "The main door lock is sticking and it's very difficult to turn the key.", category: 'Structural', priority: 'High', status: 'Completed' },
+    { id: 'maint5', propertyId: 'prop5', propertyTitle: 'Miami Beachfront Condo', tenantName: 'Bob Williams', dateSubmitted: '2023-11-18', description: "No hot water in the guest bathroom. The rest of the apartment is fine.", category: 'Plumbing', priority: 'Emergency', status: 'Pending' },
+];

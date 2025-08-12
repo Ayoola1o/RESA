@@ -10,7 +10,7 @@ export type Property = {
   bathrooms: number;
   sqft: number;
   type: 'House' | 'Apartment' | 'Condo' | 'Land' | 'Single Room' | 'R&P Apart' | 'Self Apart' | 'Office Space' | 'Warehouse' | 'Shop';
-  status: 'For Sale' | 'For Rent' | 'Sold';
+  status: 'For Sale' | 'For Rent' | 'Sold' | 'Rented';
   description: string;
   images: string[];
   features: string[];
@@ -47,3 +47,26 @@ export type Application = {
   dateSubmitted: string;
   type: 'Rental' | 'Offer';
 };
+
+export type Lease = {
+  id: string;
+  propertyId: string;
+  propertyTitle: string;
+  tenantName: string;
+  startDate: string;
+  endDate: string;
+  rentAmount: number;
+  status: 'Active' | 'Expired' | 'Terminated';
+}
+
+export type MaintenanceRequest = {
+    id: string;
+    propertyId: string;
+    propertyTitle: string;
+    tenantName: string;
+    dateSubmitted: string;
+    description: string;
+    category: 'Plumbing' | 'Electrical' | 'Appliance' | 'HVAC' | 'Structural' | 'General';
+    priority: 'Low' | 'Medium' | 'High' | 'Emergency';
+    status: 'Pending' | 'In Progress' | 'Completed';
+}
