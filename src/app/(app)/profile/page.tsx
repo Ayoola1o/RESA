@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useActionState, useEffect } from 'react';
@@ -641,7 +642,9 @@ export default function ProfilePage() {
                                         <TableCell>{new Date(lease.startDate).toLocaleDateString()} - {new Date(lease.endDate).toLocaleDateString()}</TableCell>
                                         <TableCell><Badge variant={getStatusVariant(lease.status)}>{lease.status}</Badge></TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="outline" size="sm">View Lease</Button>
+                                            <Button asChild variant="outline" size="sm">
+                                                <Link href={`/property/${lease.propertyId}`}>View Lease</Link>
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -684,8 +687,12 @@ export default function ProfilePage() {
                                         </TableCell>
                                         <TableCell><Badge variant={getStatusVariant(req.status)}>{req.status}</Badge></TableCell>
                                         <TableCell className="text-right space-x-2">
-                                            <Button variant="outline" size="sm">Details</Button>
-                                            <Button variant="ghost" size="icon"><MessageSquare className="h-4 w-4"/></Button>
+                                            <Button asChild variant="outline" size="sm">
+                                                <Link href={`/property/${req.propertyId}`}>Details</Link>
+                                            </Button>
+                                            <Button asChild variant="ghost" size="icon">
+                                                <Link href={`/messages`}><MessageSquare className="h-4 w-4"/></Link>
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
