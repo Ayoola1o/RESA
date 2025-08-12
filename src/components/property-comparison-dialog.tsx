@@ -20,12 +20,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { Property } from "@/lib/types";
 import { Check, X } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface PropertyComparisonDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
     properties: (Property & { isComparing: boolean; notes: string })[];
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 const FeatureRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
