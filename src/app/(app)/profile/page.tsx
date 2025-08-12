@@ -43,7 +43,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { properties as allProperties, applications, leases, maintenanceRequests } from "@/lib/mock-data"
 import PropertyCard from "@/components/property-card"
 import PropertyComparisonDialog from '@/components/property-comparison-dialog';
-import { cn } from '@/lib/utils';
+import { cn, getStatusVariant } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { getCategorizedMaintenance } from '@/app/actions';
 import { useUserRole } from '@/context/UserRoleContext';
@@ -84,26 +84,6 @@ const paymentHistory = [
     { id: 'pay_2', date: '2023-10-01', amount: 3200, status: 'Paid', method: 'Credit Card' },
     { id: 'pay_3', date: '2023-09-01', amount: 3200, status: 'Paid', method: 'ACH' },
 ]
-
-function getStatusVariant(status: 'Submitted' | 'Under Review' | 'Approved' | 'Rejected' | 'Active' | 'Expired' | 'Terminated' | 'Pending' | 'In Progress' | 'Completed') {
-    switch (status) {
-        case 'Approved':
-        case 'Active':
-        case 'Completed':
-            return 'default';
-        case 'Under Review':
-        case 'In Progress':
-            return 'secondary';
-        case 'Rejected':
-        case 'Expired':
-        case 'Terminated':
-            return 'destructive';
-        case 'Submitted':
-        case 'Pending':
-        default:
-            return 'outline';
-    }
-}
 
 function MaintenanceSubmitButton() {
   const { pending } = useFormStatus();
@@ -643,7 +623,7 @@ export default function ProfilePage() {
                                         <TableCell><Badge variant={getStatusVariant(lease.status)}>{lease.status}</Badge></TableCell>
                                         <TableCell className="text-right">
                                             <Button asChild variant="outline" size="sm">
-                                                <Link href={`/property/${lease.propertyId}`}>View Lease</Link>
+                                                <Link href={`/lease/${lease.id}`}>View Lease</Link>
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -688,7 +668,7 @@ export default function ProfilePage() {
                                         <TableCell><Badge variant={getStatusVariant(req.status)}>{req.status}</Badge></TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Button asChild variant="outline" size="sm">
-                                                <Link href={`/property/${req.propertyId}`}>Details</Link>
+                                                <Link href={`/maintenance/${req.id}`}>Details</Link>
                                             </Button>
                                             <Button asChild variant="ghost" size="icon">
                                                 <Link href={`/messages`}><MessageSquare className="h-4 w-4"/></Link>
