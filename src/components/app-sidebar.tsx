@@ -9,10 +9,6 @@ import {
   MessageCircle,
   User,
   Settings,
-  Heart,
-  FileText,
-  CreditCard,
-  FileSignature,
   Briefcase,
   DollarSign,
 } from "lucide-react"
@@ -34,10 +30,6 @@ interface AppSidebarProps {
 const tenantLinks = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/marketplace", icon: Home, label: "Marketplace" },
-    { href: "/saved-properties", icon: Heart, label: "Saved Properties" },
-    { href: "/applications", icon: FileText, label: "My Applications" },
-    { href: "/lease", icon: FileSignature, label: "My Lease" },
-    { href: "/payments", icon: CreditCard, label: "Payments" },
     { href: "/messages", icon: MessageCircle, label: "Messages" },
     { href: "/profile", icon: User, label: "Profile" },
 ]

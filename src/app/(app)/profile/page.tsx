@@ -1,7 +1,10 @@
 
+'use client';
+
+import { useState } from 'react';
 import Image from "next/image"
 import Link from "next/link"
-import { Mail, MapPin, MessageSquare, Building, ArrowRight } from "lucide-react"
+import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,11 +13,35 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { properties } from "@/lib/mock-data"
-import PropertyCard from "@/components/property-card"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+
+import { properties as allProperties, applications, conversations } from "@/lib/mock-data"
+import PropertyCard from "@/components/property-card"
+import PropertyComparisonDialog from '@/components/property-comparison-dialog';
+import { cn } from '@/lib/utils';
+
 
 const user = {
     name: "John Doe",
@@ -25,14 +52,75 @@ const user = {
     bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
 };
 
-const userProperties = properties.slice(1, 3);
+const userProperties = allProperties.slice(1, 3);
 
-const recentMessages = [
-    { from: "Jane Doe (Agent)", snippet: "Great news! The seller has accepted your offer on the Modern Villa...", property: "Modern Villa", date: "2 days ago", link: "/messages/1"},
-    { from: "Tenant (456 Urban St)", snippet: "Hi John, the sink in the kitchen is leaking. Can you please take a look?", property: "Cozy Downtown Apartment", date: "5 days ago", link: "/messages/2"},
+// Mock saved properties for demonstration
+const initialSavedProperties = allProperties.slice(0, 4).map(p => ({
+    ...p,
+    notes: '',
+    isComparing: false,
+}));
+
+const leaseDetails = {
+    property: "Cozy Downtown Apartment",
+    address: "456 Urban St, Apt 12B, San Francisco, CA 94105",
+    term: "12 Months",
+    startDate: "2023-08-01",
+    endDate: "2024-07-31",
+    rent: 3200,
+    securityDeposit: 3200,
+    status: "Active",
+    renewalNoticeDate: "2024-05-31",
+}
+
+const paymentHistory = [
+    { id: 'pay_1', date: '2023-11-01', amount: 3200, status: 'Paid', method: 'ACH' },
+    { id: 'pay_2', date: '2023-10-01', amount: 3200, status: 'Paid', method: 'Credit Card' },
+    { id: 'pay_3', date: '2023-09-01', amount: 3200, status: 'Paid', method: 'ACH' },
 ]
 
+function getStatusVariant(status: 'Submitted' | 'Under Review' | 'Approved' | 'Rejected') {
+    switch (status) {
+        case 'Approved':
+            return 'default';
+        case 'Under Review':
+            return 'secondary';
+        case 'Rejected':
+            return 'destructive';
+        case 'Submitted':
+        default:
+            return 'outline';
+    }
+}
+
+
 export default function ProfilePage() {
+    const [savedProperties, setSavedProperties] = useState(initialSavedProperties);
+    const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
+
+    const handleNoteChange = (id: string, notes: string) => {
+        setSavedProperties(prev => 
+            prev.map(p => p.id === id ? { ...p, notes } : p)
+        );
+    };
+
+    const handleCompareChange = (id: string, isComparing: boolean) => {
+        const currentlyComparing = savedProperties.filter(p => p.isComparing).length;
+        if (isComparing && currentlyComparing >= 3) {
+            alert("You can only compare up to 3 properties at a time.");
+            return;
+        }
+        setSavedProperties(prev =>
+            prev.map(p => p.id === id ? { ...p, isComparing } : p)
+        );
+    };
+
+    const handleRemoveProperty = (id: string) => {
+        setSavedProperties(prev => prev.filter(p => p.id !== id));
+    };
+    
+    const propertiesToCompare = savedProperties.filter(p => p.isComparing);
+
   return (
     <div className="flex flex-col gap-8">
        {/* Profile Header */}
@@ -56,49 +144,324 @@ export default function ProfilePage() {
                  <Badge className="mt-3">{user.role}</Badge>
             </div>
             <Button asChild className="ml-auto mt-4 md:mt-0">
-                <Link href="#">Edit Profile</Link>
+                <Link href="/settings">Edit Profile</Link>
             </Button>
         </CardContent>
       </Card>
-        
-      <div className="grid md:grid-cols-3 gap-8">
-        {/* Main Content: Owned Properties */}
-        <div className="md:col-span-2 space-y-8">
-             <Card>
+
+      <Tabs defaultValue="properties" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
+            <TabsTrigger value="saved"><Heart className="mr-2"/> Saved Properties</TabsTrigger>
+            <TabsTrigger value="applications"><FileText className="mr-2"/> Applications</TabsTrigger>
+            <TabsTrigger value="lease"><FileSignature className="mr-2"/> Lease</TabsTrigger>
+            <TabsTrigger value="payments"><CreditCard className="mr-2"/> Payments</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="properties">
+            <Card>
                 <CardHeader>
-                    <CardTitle className="font-headline flex items-center gap-2"><Building className="h-6 w-6"/> My Properties</CardTitle>
+                    <CardTitle className="font-headline">My Properties</CardTitle>
                     <CardDescription>A list of properties you currently own or are managing.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-6">
                     {userProperties.map(prop => <PropertyCard key={prop.id} property={prop}/>)}
                 </CardContent>
-             </Card>
-        </div>
-
-        {/* Sidebar: Messages */}
-        <div className="space-y-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline flex items-center justify-between">
-                       <span className="flex items-center gap-2"><MessageSquare className="h-6 w-6"/> Recent Messages</span>
-                       <Button variant="outline" size="sm" asChild>
-                            <Link href="/messages">View all <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                       </Button>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {recentMessages.map((msg, index) => (
-                        <Link href={msg.link} key={index} className="block hover:bg-muted/50 p-2 rounded-lg">
-                            <div className="font-semibold">{msg.from}</div>
-                            <p className="text-sm text-muted-foreground truncate">{msg.snippet}</p>
-                            <p className="text-xs text-muted-foreground/70 mt-1">{msg.property} - {msg.date}</p>
-                            {index < recentMessages.length - 1 && <Separator className="my-2" />}
-                        </Link>
-                    ))}
-                </CardContent>
             </Card>
-        </div>
-      </div>
+          </TabsContent>
+          
+          <TabsContent value="saved">
+             <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-6">
+                     {savedProperties.map(property => (
+                        <Card key={property.id} className="overflow-visible">
+                            <div className="flex flex-col md:flex-row">
+                                <div className="md:w-2/5">
+                                    <PropertyCard property={property} />
+                                </div>
+                                <div className="p-6 flex flex-col justify-between md:w-3/5">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`compare-${property.id}`}
+                                                    checked={property.isComparing}
+                                                    onCheckedChange={(checked) => handleCompareChange(property.id, !!checked)}
+                                                />
+                                                <label htmlFor={`compare-${property.id}`} className="text-sm font-medium">
+                                                    Compare
+                                                </label>
+                                            </div>
+                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveProperty(property.id)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                <span className="sr-only">Remove</span>
+                                            </Button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label htmlFor={`notes-${property.id}`} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                                <FilePenLine className="h-4 w-4" /> Your Notes
+                                            </label>
+                                            <Input
+                                                id={`notes-${property.id}`}
+                                                placeholder="Add a note..."
+                                                value={property.notes}
+                                                onChange={(e) => handleNoteChange(property.id, e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                    {savedProperties.length === 0 && (
+                        <Card className="text-center p-12">
+                            <p className="text-lg text-muted-foreground">You haven't saved any properties yet.</p>
+                            <p className="text-muted-foreground">Start exploring the marketplace to find your favorites!</p>
+                        </Card>
+                    )}
+                </div>
+
+                <div className="lg:col-span-1">
+                     <Card className="sticky top-24">
+                        <CardHeader>
+                            <CardTitle className="font-headline">Compare Properties</CardTitle>
+                            <CardDescription>Select 2-3 properties to compare side-by-side.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             {propertiesToCompare.length > 0 ? (
+                                <div className="space-y-4">
+                                    {propertiesToCompare.map((p, index) => (
+                                        <div key={p.id}>
+                                            <p className="font-semibold">{p.title}</p>
+                                            <p className="text-sm text-primary">${p.price.toLocaleString()}</p>
+                                            <p className="text-xs text-muted-foreground">{p.bedrooms} Beds | {p.bathrooms} Baths | {p.sqft} sqft</p>
+                                            {index < propertiesToCompare.length - 1 && <Separator className="mt-4" />}
+                                        </div>
+                                    ))}
+                                     <PropertyComparisonDialog
+                                        isOpen={isCompareDialogOpen}
+                                        onOpenChange={setIsCompareDialogOpen}
+                                        properties={propertiesToCompare}
+                                    >
+                                        <Button className="w-full mt-4" disabled={propertiesToCompare.length < 2 || propertiesToCompare.length > 3}>
+                                            Compare ({propertiesToCompare.length})
+                                        </Button>
+                                    </PropertyComparisonDialog>
+                                </div>
+                            ) : (
+                                <div className="text-center text-muted-foreground py-8">
+                                    <p>Select properties from your saved list to start comparing.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="applications">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">My Applications</CardTitle>
+                        <CardDescription>Track the status of your submitted applications and offers.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                    <div className="divide-y divide-border">
+                        {applications.map((app) => (
+                        <div key={app.id} className="p-6 grid grid-cols-1 md:grid-cols-4 items-center gap-4 hover:bg-muted/50">
+                            <div className="flex items-center gap-4 md:col-span-2">
+                            <Image
+                                src={app.propertyImage}
+                                alt={app.propertyTitle}
+                                width={100}
+                                height={75}
+                                className="rounded-lg object-cover aspect-video"
+                                data-ai-hint="house exterior"
+                            />
+                            <div>
+                                <Link href={`/property/${app.propertyId}`} className="font-semibold hover:underline">
+                                {app.propertyTitle}
+                                </Link>
+                                <p className="text-sm text-muted-foreground">{app.type} Application</p>
+                            </div>
+                            </div>
+                            <div className="text-center">
+                            <Badge variant={getStatusVariant(app.status)}>{app.status}</Badge>
+                            </div>
+                            <div className="flex flex-col items-end text-right">
+                            <p className="text-sm text-muted-foreground">Submitted: {new Date(app.dateSubmitted).toLocaleDateString()}</p>
+                            <Button variant="outline" size="sm" className="mt-2">View Details</Button>
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                    </CardContent>
+                     {applications.length === 0 && (
+                        <CardContent className="text-center p-12">
+                            <p className="text-lg text-muted-foreground">You haven't submitted any applications yet.</p>
+                            <p className="text-muted-foreground">Once you apply for a property, it will show up here.</p>
+                        </CardContent>
+                    )}
+                </Card>
+          </TabsContent>
+
+           <TabsContent value="lease">
+                <Card>
+                    <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                        <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileSignature className="h-6 w-6 text-primary"/>Lease for {leaseDetails.property}</CardTitle>
+                        <CardDescription>{leaseDetails.address}</CardDescription>
+                        </div>
+                        <Badge variant={leaseDetails.status === 'Active' ? 'default' : 'secondary'}>{leaseDetails.status}</Badge>
+                    </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="p-4 rounded-lg bg-muted/50">
+                            <p className="text-sm font-medium text-muted-foreground">Lease Term</p>
+                            <p className="text-lg font-semibold">{leaseDetails.term}</p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/50">
+                            <p className="text-sm font-medium text-muted-foreground">Start Date</p>
+                            <p className="text-lg font-semibold">{new Date(leaseDetails.startDate).toLocaleDateString()}</p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/50">
+                            <p className="text-sm font-medium text-muted-foreground">End Date</p>
+                            <p className="text-lg font-semibold">{new Date(leaseDetails.endDate).toLocaleDateString()}</p>
+                        </div>
+                        <div className="p-4 rounded-lg bg-muted/50">
+                            <p className="text-sm font-medium text-muted-foreground">Monthly Rent</p>
+                            <p className="text-lg font-semibold">${leaseDetails.rent.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <Separator />
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2 font-headline">Key Terms & Clauses</h3>
+                        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                            <li>No smoking is permitted inside the unit.</li>
+                            <li>Pets are allowed with a one-time pet fee of $500.</li>
+                            <li>Late rent payments are subject to a 5% late fee after a 3-day grace period.</li>
+                            <li>Tenant is responsible for electricity and internet utilities.</li>
+                        </ul>
+                    </div>
+                    <div className="border-l-4 border-yellow-500 bg-yellow-500/10 p-4 rounded-r-lg">
+                            <div className="flex items-start gap-3">
+                                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                                <div>
+                                    <h4 className="font-semibold text-yellow-800">Renewal Notice</h4>
+                                    <p className="text-sm text-yellow-700">Your lease is up for renewal. Please make a decision by {new Date(leaseDetails.renewalNoticeDate).toLocaleDateString()} to renew or terminate your lease.</p>
+                                </div>
+                            </div>
+                    </div>
+                    </CardContent>
+                    <CardFooter className="gap-4">
+                    <Button size="lg"><FileSignature className="mr-2"/> Renew Lease</Button>
+                    <Button size="lg" variant="outline"><FileDown className="mr-2"/> Download Lease (PDF)</Button>
+                    </CardFooter>
+                </Card>
+          </TabsContent>
+
+           <TabsContent value="payments">
+             <div className="grid md:grid-cols-3 gap-8 items-start">
+                <div className="md:col-span-2 space-y-8">
+                <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline">Upcoming Payment</CardTitle>
+                            <CardDescription>Your next rent payment is due December 1, 2023.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="border rounded-lg p-4 flex justify-between items-center bg-muted/20">
+                                <p className="text-lg font-semibold">Rent for December</p>
+                                <p className="text-2xl font-bold text-primary">$3,200.00</p>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="paymentMethod">Payment Method</Label>
+                                <Select defaultValue="ach">
+                                    <SelectTrigger id="paymentMethod">
+                                        <SelectValue placeholder="Select a payment method" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ach">Bank Account (ACH)</SelectItem>
+                                        <SelectItem value="cc">Credit Card</SelectItem>
+                                        <SelectItem value="wallet">Mobile Wallet</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button size="lg" className="w-full">
+                                <CreditCard className="mr-2" /> Pay $3,200.00 Now
+                            </Button>
+                        </CardFooter>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline">Payment History</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>Method</TableHead>
+                                        <TableHead className="text-right">Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {paymentHistory.map(p => (
+                                        <TableRow key={p.id}>
+                                            <TableCell>{p.date}</TableCell>
+                                            <TableCell>${p.amount.toLocaleString()}</TableCell>
+                                            <TableCell>{p.method}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Badge variant="default" className="bg-green-600">
+                                                    <CheckCircle className="mr-1 h-3 w-3"/>
+                                                    {p.status}
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="space-y-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline">Auto-Pay</CardTitle>
+                            <CardDescription>Set up recurring payments so you never miss a due date.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex items-center justify-between p-6">
+                        <div className="flex items-center gap-2">
+                            <RefreshCw className="h-5 w-5 text-primary"/>
+                            <Label htmlFor="autopay-switch" className="text-base">Enable Auto-Pay</Label>
+                        </div>
+                            <Switch id="autopay-switch" />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline">Payment Methods</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <div className="border p-3 rounded-lg flex items-center justify-between text-sm">
+                                <span className="flex items-center gap-2"><Banknote/> Bank of America ....1234</span>
+                                <Badge variant="secondary">Primary</Badge>
+                            </div>
+                            <div className="border p-3 rounded-lg flex items-center justify-between text-sm text-muted-foreground">
+                                <span className="flex items-center gap-2"><CreditCard/> Visa ....5678</span>
+                            </div>
+                            <Button variant="outline" className="w-full">Add a Method</Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+          </TabsContent>
+        </Tabs>
     </div>
   )
 }
