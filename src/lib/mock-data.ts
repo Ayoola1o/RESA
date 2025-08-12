@@ -222,7 +222,7 @@ export const properties: Property[] = [
     priceHistory: [ { date: '2023-04-01', price: 920000, label: 'Apr' }, { date: '2023-08-01', price: 935000, label: 'Aug' }, { date: '2023-11-01', price: 950000, label: 'Nov' } ],
     floodRisk: 'Low'
   },
-  ...Array.from({ length: 35 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `prop${11 + i}`,
     title: 'Spacious Family Home',
     price: 800000 + i * 10000,
@@ -240,11 +240,11 @@ export const properties: Property[] = [
     features: ['Large Yard', '2-Car Garage', 'Modern Kitchen', 'Community Park'],
     agent: { name: 'Agent Smith', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 2 === 0,
-    postedDate: `2023-10-${10 + i > 30 ? 30 : 10 + i}`,
+    postedDate: `2023-10-${(i % 30) + 1}`,
     priceHistory: [ { date: '2023-01-01', price: 780000 + i * 10000, label: 'Jan' }, { date: '2023-06-01', price: 790000 + i * 10000, label: 'Jun' } ],
     floodRisk: 'Low' as 'Low' | 'Medium' | 'High' | 'None'
   })),
-  ...Array.from({ length: 23 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `rent${1 + i}`,
     title: `Modern Downtown Loft`,
     price: 2500 + i * 100,
@@ -262,11 +262,11 @@ export const properties: Property[] = [
     features: ['Gym Access', 'Rooftop Terrace', 'In-unit Laundry', 'Concierge'],
     agent: { name: 'Rental Group', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 3 === 0,
-    postedDate: `2023-11-${1 + i > 30 ? 30 : 1 + i}`,
+    postedDate: `2023-11-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Low' as 'Low' | 'Medium' | 'High' | 'None'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `sr${i + 1}`,
     title: `Cozy Single Room ${i + 1}`,
     price: 600 + i * 20,
@@ -284,11 +284,11 @@ export const properties: Property[] = [
     features: ['Shared Kitchen', 'All Utilities Included', 'Furnished', 'Close to Campus'],
     agent: { name: 'Campus Rentals', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 3 === 0,
-    postedDate: `2023-11-${Math.max(1, i)}`,
+    postedDate: `2023-11-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Low'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `rp${i + 1}`,
     title: `Spacious Room & Parlor Apt ${i + 1}`,
     price: 1200 + i * 50,
@@ -306,11 +306,11 @@ export const properties: Property[] = [
     features: ['Separate Living Room', 'Balcony', 'Gated Community', 'Parking Space'],
     agent: { name: 'City Apartments', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 2 === 0,
-    postedDate: `2023-11-${Math.max(1, i)}`,
+    postedDate: `2023-11-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Medium'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `sa${i + 1}`,
     title: `Modern Self-Contained Apt ${i + 1}`,
     price: 1800 + i * 75,
@@ -328,11 +328,11 @@ export const properties: Property[] = [
     features: ['Private Kitchen', 'Modern Bathroom', 'Washer/Dryer', 'High-Speed Internet'],
     agent: { name: 'Prestige Living', avatar: 'https://placehold.co/100x100.png' },
     isVerified: true,
-    postedDate: `2023-11-${Math.max(1, i)}`,
+    postedDate: `2023-11-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Low'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `os${i + 1}`,
     title: `Prime Downtown Office Space ${i + 1}`,
     price: 5000 + i * 200,
@@ -350,11 +350,11 @@ export const properties: Property[] = [
     features: ['Conference Rooms', 'Reception Service', 'High-Speed Internet', 'Parking Garage'],
     agent: { name: 'Corporate Realty', avatar: 'https://placehold.co/100x100.png' },
     isVerified: true,
-    postedDate: `2023-10-${Math.max(1, i)}`,
+    postedDate: `2023-10-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Low'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `wh${i + 1}`,
     title: `Large Industrial Warehouse ${i + 1}`,
     price: 10000 + i * 500,
@@ -372,11 +372,11 @@ export const properties: Property[] = [
     features: ['Loading Docks', '30ft Ceilings', 'Office Space Included', 'Secure Yard'],
     agent: { name: 'Industrial Properties', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 2 === 0,
-    postedDate: `2023-10-${Math.max(1, i)}`,
+    postedDate: `2023-10-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Medium'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `sh${i + 1}`,
     title: `Retail Shop on Main Street ${i + 1}`,
     price: 3500 + i * 150,
@@ -394,11 +394,11 @@ export const properties: Property[] = [
     features: ['High Foot Traffic', 'Large Windows', 'Stock Room', 'Street Parking'],
     agent: { name: 'Retail Spaces Inc.', avatar: 'https://placehold.co/100x100.png' },
     isVerified: true,
-    postedDate: `2023-10-${Math.max(1, i)}`,
+    postedDate: `2023-10-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'Low'
   })),
-  ...Array.from({ length: 15 }, (_, i) => ({
+  ...Array.from({ length: 34 }, (_, i) => ({
     id: `ld${i + 1}`,
     title: `Residential Land Plot ${i + 1}`,
     price: 250000 + i * 10000,
@@ -416,7 +416,7 @@ export const properties: Property[] = [
     features: ['Utilities Available', 'Paved Road Access', 'No HOA', 'Zoned Residential'],
     agent: { name: 'Landmark Realty', avatar: 'https://placehold.co/100x100.png' },
     isVerified: i % 4 === 0,
-    postedDate: `2023-09-${Math.max(1, i)}`,
+    postedDate: `2023-09-${(i % 30) + 1}`,
     priceHistory: [],
     floodRisk: 'None'
   })),
