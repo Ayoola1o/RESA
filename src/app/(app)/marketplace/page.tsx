@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
@@ -107,6 +107,10 @@ export default function MarketplacePage() {
   }
 
   return (
+    // Wrap the main content with Suspense
+    <Suspense fallback={<div className="flex justify-center items-center min-h-[calc(100vh-100px)]">Loading...</div>}>
+      {/* The rest of the component content goes here */}
+
     <div className="container mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold font-headline md:text-4xl">Find Your Dream Property</h1>
@@ -238,5 +242,6 @@ export default function MarketplacePage() {
       )}
 
     </div>
+    </Suspense>
   );
 }
