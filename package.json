@@ -12,9 +12,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@genkit-ai/firebase": "^1.16.1",
     "@genkit-ai/googleai": "^1.16.1",
     "@genkit-ai/next": "^1.16.1",
     "@hookform/resolvers": "^5.2.1",
+    "@opentelemetry/exporter-jaeger": "^2.0.1",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",
