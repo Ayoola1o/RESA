@@ -1,8 +1,6 @@
-
-
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
@@ -16,7 +14,8 @@ const ITEMS_PER_PAGE = 16;
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
-export default function MarketplacePage() {
+
+function MarketplacePageContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
 
@@ -138,7 +137,7 @@ export default function MarketplacePage() {
                     <SelectItem value="apartment">Apartment</SelectItem>
                     <SelectItem value="condo">Condo</SelectItem>
                     <SelectItem value="single-room">Single Room</SelectItem>
-                    <SelectItem value="rp-apart">R&amp;P Apart</SelectItem>
+                    <SelectItem value="rp-apart">R&P Apart</SelectItem>
                     <SelectItem value="self-apart">Self Apart</SelectItem>
                     <SelectItem value="office-space">Office Space</SelectItem>
                     <SelectItem value="warehouse">Warehouse</SelectItem>
@@ -238,5 +237,13 @@ export default function MarketplacePage() {
       )}
 
     </div>
+  );
+}
+
+export default function MarketplacePage() {
+  return (
+    <Suspense>
+      <MarketplacePageContent />
+    </Suspense>
   );
 }
