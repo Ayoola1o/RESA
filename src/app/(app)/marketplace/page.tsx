@@ -14,7 +14,7 @@ const ITEMS_PER_PAGE = 16;
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
-export default function MarketplacePage() {
+export function MarketplacePageContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
 
