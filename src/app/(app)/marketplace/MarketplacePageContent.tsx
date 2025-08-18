@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
@@ -14,7 +14,7 @@ const ITEMS_PER_PAGE = 16;
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
-export default function MarketplacePage() {
+export default function MarketplacePageContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
 
@@ -27,8 +27,8 @@ export default function MarketplacePage() {
 
   const filteredAndSortedProperties = useMemo(() => {
     let filtered = properties.filter(p => {
-        const listingTypeMatch = 
-            listingType === 'all' || 
+        const listingTypeMatch =
+            listingType === 'all' ||
             (listingType === 'sale' && p.status === 'For Sale') ||
             (listingType === 'rent' && p.status === 'For Rent');
 
@@ -36,13 +36,13 @@ export default function MarketplacePage() {
         const bedroomsMatch = bedrooms === 'any' || p.bedrooms >= Number(bedrooms);
         const bathroomsMatch = bathrooms === 'any' || p.bathrooms >= Number(bathrooms);
 
-        const searchMatch = searchQuery ? 
+        const searchMatch = searchQuery ?
             p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.city.toLowerCase().includes(searchQuery.toLowerCase())
             : true;
-        
+
         return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch && searchMatch;
     });
 
@@ -67,12 +67,12 @@ export default function MarketplacePage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProperties = filteredAndSortedProperties.slice(startIndex, endIndex);
-  
+
   const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (value: string) => {
     setter(value);
     setCurrentPage(1);
   }
-  
+
   const handleSortChange = (value: SortOption) => {
     setSortOption(value);
     setCurrentPage(1);
@@ -89,7 +89,7 @@ export default function MarketplacePage() {
   const handlePageClick = (page: number) => {
     setCurrentPage(page);
   };
-  
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     if (totalPages > 0) pageNumbers.push(1);
@@ -213,7 +213,7 @@ export default function MarketplacePage() {
             <Button variant="outline" size="icon" onClick={handlePreviousPage} disabled={currentPage === 1}>
             <ChevronLeft className="h-4 w-4" />
             </Button>
-            
+
             {getPageNumbers().map((page, index) =>
             typeof page === 'number' ? (
                 <Button
@@ -228,7 +228,7 @@ export default function MarketplacePage() {
                 <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">...</span>
             )
             )}
-            
+
             <Button variant="outline" size="icon" onClick={handleNextPage} disabled={currentPage === totalPages}>
             <ChevronRight className="h-4 w-4" />
             </Button>
@@ -236,13 +236,5 @@ export default function MarketplacePage() {
       )}
 
     </div>
-  );
-}
-
-export default function MarketplacePage() {
-  return (
-    <Suspense>
-      <MarketplacePageContent />
-    </Suspense>
   );
 }

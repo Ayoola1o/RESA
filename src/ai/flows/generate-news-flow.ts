@@ -20,7 +20,7 @@ const ArticleSchema = z.object({
     category: z.string().describe("The category of the news, e.g., 'Market Trends', 'Finance', 'Technology'."),
     title: z.string().describe('A compelling, headline-style title for the news article.'),
     summary: z.string().describe('A concise, one-to-two-sentence summary of the article.'),
-    imageUrl: z.string().url().describe("A placeholder image URL from 'https://placehold.co' for the article."),
+    imageUrl: z.string().describe("A placeholder image URL from 'https://placehold.co' for the article."),
     imageHint: z.string().describe('One or two keywords for the image, e.g., "housing market" or "interest rates".'),
 });
 
