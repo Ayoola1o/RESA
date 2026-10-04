@@ -59,7 +59,7 @@
     "zod": "^3.24.1"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "devDependencies": {
     "@types/node": "^24",
