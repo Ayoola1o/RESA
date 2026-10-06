@@ -20,8 +20,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        body: ['PT Sans', 'sans-serif'],
-        headline: ['Space Grotesk', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        body: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        headline: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

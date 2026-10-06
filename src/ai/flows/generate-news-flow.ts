@@ -20,7 +20,7 @@ const ArticleSchema = z.object({
     category: z.string().describe("The category of the news, e.g., 'Market Trends', 'Finance', 'Technology'."),
     title: z.string().describe('A compelling, headline-style title for the news article.'),
     summary: z.string().describe('A concise, one-to-two-sentence summary of the article.'),
-    imageUrl: z.string().describe("A placeholder image URL from 'https://placehold.co' for the article."),
+    imageUrl: z.string().describe("A relevant real estate image URL from Unsplash (e.g. 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=240&auto=format&fit=crop&q=80')."),
     imageHint: z.string().describe('One or two keywords for the image, e.g., "housing market" or "interest rates".'),
 });
 
@@ -39,7 +39,7 @@ const prompt = ai.definePrompt({
   input: {schema: GenerateNewsInputSchema},
   output: {schema: GenerateNewsOutputSchema},
   prompt: `You are a real estate news editor. Generate 3 brief, engaging news articles about the requested topic.
-For each article, provide a category, a title, a short summary, a placeholder image URL from 'https://placehold.co/120x90.png', and a one or two word hint for the image.
+For each article, provide a category, a title, a short summary, a relevant real estate photography image URL (such as from https://images.unsplash.com), and a one or two word hint for the image.
 
 Topic: {{{topic}}}`,
 });

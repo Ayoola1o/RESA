@@ -7,6 +7,7 @@ import { getNews } from "@/app/actions";
 import { type GenerateNewsOutput } from "@/ai/flows/generate-news-flow";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Skeleton } from "./ui/skeleton";
 import { Rss } from "lucide-react";
 
 export default function NewsSection() {
@@ -45,10 +46,21 @@ export default function NewsSection() {
             </CardHeader>
             <CardContent className="space-y-6">
                 {loading && (
-                    <p>Loading real estate news...</p>
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-start gap-4">
+                                <Skeleton className="h-[90px] w-[120px] rounded-lg shrink-0" />
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-5 w-full" />
+                                    <Skeleton className="h-4 w-4/5" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
-                {error && (
-                    <p className="text-destructive">Could not load news: {error}</p>
+                {error && !news && (
+                    <p className="text-destructive text-sm">Could not load news: {error}</p>
                 )}
                 {news && news.map((article, index) => (
                     <div key={index} className="flex items-start gap-4">

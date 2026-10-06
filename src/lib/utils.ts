@@ -24,3 +24,14 @@ export function getStatusVariant(status: 'Submitted' | 'Under Review' | 'Approve
             return 'outline';
     }
 }
+
+export function formatCurrency(amount: number, status?: string, priceUnit?: string): string {
+  const formatted = `₦ ${amount.toLocaleString()}`;
+  if (priceUnit) {
+    return `${formatted}${priceUnit}`;
+  }
+  if (status === 'For Rent' || status === 'Rented') {
+    return `${formatted}/year`;
+  }
+  return formatted;
+}

@@ -42,12 +42,12 @@ export default function AiRecommendations() {
 
   useEffect(() => {
     if (state?.error) {
-       const errorMessage = typeof state.error === 'string' ? state.error : 'An error occurred';
-       toast({
-         variant: 'destructive',
-         title: 'Error',
-         description: errorMessage,
-       });
+      const errorMessage = typeof state.error === 'string' ? state.error : 'An error occurred';
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
     }
   }, [state, toast]);
 
@@ -77,7 +77,7 @@ export default function AiRecommendations() {
                 name="preferences"
                 placeholder="e.g., 'a 3-bedroom house with a large backyard, modern kitchen, and near a good school'"
               />
-               {state?.error?.preferences && <p className="text-sm text-destructive">{state.error.preferences[0]}</p>}
+              {state?.error?.preferences && <p className="text-sm text-destructive">{state.error.preferences[0]}</p>}
             </div>
           </div>
           <DialogFooter>
@@ -89,15 +89,15 @@ export default function AiRecommendations() {
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2 font-headline">Here are your recommendations:</h3>
             {state.data.length > 0 ? (
-                <ScrollArea className="max-h-[50vh]">
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pr-4">
-                        {state.data.map((property) => (
-                            <PropertyCard key={property.id} property={property} />
-                        ))}
-                    </div>
-                </ScrollArea>
+              <ScrollArea className="max-h-[50vh]">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pr-4">
+                  {state.data.map((property) => (
+                    <PropertyCard key={property.id} property={property} />
+                  ))}
+                </div>
+              </ScrollArea>
             ) : (
-                <p>No matching properties found. Try refining your preferences.</p>
+              <p>No matching properties found. Try refining your preferences.</p>
             )}
           </div>
         )}

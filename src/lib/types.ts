@@ -21,8 +21,12 @@ export type Property = {
   isVerified: boolean;
   postedDate: string;
   virtualTourUrl?: string;
-  priceHistory: { date: string; price: number; label: string }[];
-  floodRisk: 'Low' | 'Medium' | 'High' | 'None';
+  priceHistory?: { date: string; price: number; label: string }[];
+  floodRisk?: 'Low' | 'Medium' | 'High' | 'None';
+  rating?: number;
+  reviewsCount?: number;
+  priceUnit?: string;
+  isFeatured?: boolean;
 };
 
 export type Conversation = {

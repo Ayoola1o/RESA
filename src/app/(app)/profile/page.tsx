@@ -55,7 +55,7 @@ const user = {
     email: "john.doe@example.com",
     location: "Austin, TX",
     role: "Buyer/Owner",
-    avatar: "https://placehold.co/128x128.png",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
     bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
 };
 
@@ -123,7 +123,7 @@ function MaintenanceSubmitButton() {
 
 function MaintenanceRequestForm() {
     const { toast } = useToast();
-    const [state, formAction, isPending] = useActionState(getCategorizedMaintenance, null);
+    const [state, formAction, isPending] = useActionState<any, FormData>(getCategorizedMaintenance, null);
 
     useEffect(() => {
         if (state?.error && typeof state.error !== 'object') {
@@ -182,11 +182,11 @@ function MaintenanceRequestForm() {
             </div>
              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Summary</p>
-                <p className="text-card-foreground">{state.data.summary}</p>
+                <p className="text-card-foreground">{(state.data as any).summary || (state.data as any).estimatedCost || 'Report logged successfully'}</p>
             </div>
              <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Suggested Action</p>
-                <p className="text-card-foreground">{state.data.suggestedAction}</p>
+                <p className="text-card-foreground">{(state.data as any).suggestedAction || (state.data as any).recommendedAction || 'Technician dispatch requested'}</p>
             </div>
             <p className="text-sm text-muted-foreground pt-4">Thank you! A member of our property management team will be in touch with you shortly to schedule the repair.</p>
           </CardContent>

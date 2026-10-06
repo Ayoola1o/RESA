@@ -70,7 +70,8 @@ export default function ChatRoomPage() {
                     description: result.error,
                 });
             } else if (result.data) {
-                setNewMessage(result.data.suggestedReply);
+                const replyText = (result.data as any).suggestedReply || (result.data as any).reply || '';
+                setNewMessage(replyText);
             }
         });
     }

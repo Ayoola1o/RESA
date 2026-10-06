@@ -4,12 +4,12 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,7 +66,7 @@ export default function AddPropertyPage() {
             });
 
             if (result.error) {
-                 toast({
+                toast({
                     variant: 'destructive',
                     title: 'Error',
                     description: typeof result.error === 'string' ? result.error : 'Please fill out all property detail fields first.',
@@ -83,7 +83,7 @@ export default function AddPropertyPage() {
 
     return (
         <div className="max-w-4xl mx-auto">
-             <div className="mb-4">
+            <div className="mb-4">
                 <Link href="/landlord/dashboard" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Back to Dashboard
@@ -96,7 +96,7 @@ export default function AddPropertyPage() {
                         <CardDescription>Fill out the details below to create a new property listing.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
-                        
+
                         <div className="space-y-4">
                             <h3 className="font-headline text-lg border-b pb-2">Basic Information</h3>
                             <div className="space-y-2">
@@ -106,8 +106,8 @@ export default function AddPropertyPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="description">Description</Label>
-                                     <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={isPending}>
-                                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
+                                    <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={isPending}>
+                                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                                         Generate with AI
                                     </Button>
                                 </div>
@@ -127,7 +127,7 @@ export default function AddPropertyPage() {
                                 <div className="space-y-2"><Label htmlFor="zip">Zip Code</Label><Input id="zip" value={zip} onChange={e => setZip(e.target.value)} placeholder="90210" /></div>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <h3 className="font-headline text-lg border-b pb-2">Property Details</h3>
                             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -150,10 +150,10 @@ export default function AddPropertyPage() {
                                     <Label htmlFor="status">Listing Status</Label>
                                     <Select value={status} onValueChange={setStatus}><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger><SelectContent><SelectItem value="for-sale">For Sale</SelectItem><SelectItem value="for-rent">For Rent</SelectItem></SelectContent></Select>
                                 </div>
-                                 <div className="space-y-2"><Label htmlFor="price">Price / Rent</Label><Input id="price" value={price} onChange={e => setPrice(e.target.value)} type="number" placeholder="3500000" /></div>
-                                 <div className="space-y-2"><Label htmlFor="sqft">Square Feet</Label><Input id="sqft" value={sqft} onChange={e => setSqft(e.target.value)} type="number" placeholder="6000" /></div>
-                                 <div className="space-y-2"><Label htmlFor="bedrooms">Bedrooms</Label><Input id="bedrooms" value={bedrooms} onChange={e => setBedrooms(e.target.value)} type="number" placeholder="5" /></div>
-                                 <div className="space-y-2"><Label htmlFor="bathrooms">Bathrooms</Label><Input id="bathrooms" value={bathrooms} onChange={e => setBathrooms(e.target.value)} type="number" placeholder="6" /></div>
+                                <div className="space-y-2"><Label htmlFor="price">Price / Rent</Label><Input id="price" value={price} onChange={e => setPrice(e.target.value)} type="number" placeholder="3500000" /></div>
+                                <div className="space-y-2"><Label htmlFor="sqft">Square Feet</Label><Input id="sqft" value={sqft} onChange={e => setSqft(e.target.value)} type="number" placeholder="6000" /></div>
+                                <div className="space-y-2"><Label htmlFor="bedrooms">Bedrooms</Label><Input id="bedrooms" value={bedrooms} onChange={e => setBedrooms(e.target.value)} type="number" placeholder="5" /></div>
+                                <div className="space-y-2"><Label htmlFor="bathrooms">Bathrooms</Label><Input id="bathrooms" value={bathrooms} onChange={e => setBathrooms(e.target.value)} type="number" placeholder="6" /></div>
                             </div>
                         </div>
 
@@ -162,8 +162,8 @@ export default function AddPropertyPage() {
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {featuresList.map(feature => (
                                     <div key={feature} className="flex items-center space-x-2">
-                                        <Checkbox 
-                                            id={`feature-${feature}`} 
+                                        <Checkbox
+                                            id={`feature-${feature}`}
                                             onCheckedChange={(checked) => handleFeatureChange(feature, !!checked)}
                                         />
                                         <label htmlFor={`feature-${feature}`} className="text-sm font-medium">{feature}</label>
@@ -174,7 +174,7 @@ export default function AddPropertyPage() {
 
                         <div className="space-y-4">
                             <h3 className="font-headline text-lg border-b pb-2">Photo &amp; Media</h3>
-                             <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>Property Photos</Label>
                                     <div className="flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md">

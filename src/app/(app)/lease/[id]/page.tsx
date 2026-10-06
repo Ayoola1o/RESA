@@ -65,7 +65,7 @@ export default function LeaseDetailPage() {
                             </div>
                         </div>
                          <div className="flex items-center gap-4">
-                            <Image src="https://placehold.co/100x100.png" alt={lease.tenantName} width={80} height={80} className="rounded-full" data-ai-hint="person portrait"/>
+                            <Image src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt={lease.tenantName} width={80} height={80} className="rounded-full object-cover aspect-square" data-ai-hint="person portrait"/>
                             <div>
                                  <p className="text-sm text-muted-foreground">Tenant</p>
                                  <p className="font-semibold">{lease.tenantName}</p>

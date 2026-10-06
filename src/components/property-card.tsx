@@ -1,67 +1,119 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bath, BedDouble, CheckCircle, Home, SquareGanttChart } from 'lucide-react';
+import { Bath, BedDouble, CheckCircle2, Heart, Maximize2, Star } from 'lucide-react';
 import type { Property } from '@/lib/types';
+import { formatCurrency } from '@/lib/utils';
 
 interface PropertyCardProps {
   property: Property;
+  className?: string;
 }
 
-export default function PropertyCard({ property }: PropertyCardProps) {
+export default function PropertyCard({ property, className = '' }: PropertyCardProps) {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const isRent = property.status === 'For Rent' || property.status === 'Rented';
+  const isLand = property.type === 'Land';
+  const rating = property.rating || (4.2 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 7) * 0.1).toFixed(1);
+  const reviewsCount = property.reviewsCount || (8 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 20));
+
+  const areaDisplay = isLand
+    ? `${property.sqft >= 3000 ? Math.round(property.sqft / 10.764) : property.sqft} sqm`
+    : `${property.sqft.toLocaleString()} sqft`;
+
   return (
-    <Card className="w-full overflow-hidden shadow-lg transition-all hover:shadow-xl flex flex-col">
-      <CardHeader className="p-0 relative">
-        <Link href={`/property/${property.id}`}>
+    <div
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${className}`}
+    >
+      {/* Image container */}
+      <div className="relative aspect-[16/11] w-full overflow-hidden rounded-xl bg-slate-100">
+        <Link href={`/property/${property.id}`} className="block h-full w-full">
           <Image
             alt={property.title}
-            className="aspect-video w-full object-cover"
-            height={225}
-            src={property.images[0]}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            height={260}
+            src={property.images[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'}
             width={400}
             data-ai-hint="house exterior"
           />
         </Link>
-        <Badge
-          variant={property.isVerified ? 'default' : 'secondary'}
-          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
+
+        {/* Badges on Top-Left */}
+        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold text-white shadow-sm ${
+              isRent ? 'bg-blue-600' : 'bg-emerald-600'
+            }`}
+          >
+            {property.status}
+          </span>
+          {property.isVerified && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-900/80 backdrop-blur-sm text-white shadow-sm">
+              <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+              Verified
+            </span>
+          )}
+        </div>
+
+        {/* Favorite Button on Top-Right */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsFavorite(!isFavorite);
+          }}
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          className="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
         >
-          {property.isVerified ? <CheckCircle className="mr-1 h-3 w-3 text-primary" /> : <Home className="mr-1 h-3 w-3" />}
-          {property.isVerified ? 'Verified' : 'Unverified'}
-        </Badge>
-      </CardHeader>
-      <CardContent className="p-4 flex-grow">
-        <div className="grid gap-1">
-          <CardTitle className="text-lg font-headline hover:text-primary transition-colors">
-            <Link href={`/property/${property.id}`}>{property.title}</Link>
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">{property.address}</p>
-          <p className="text-2xl font-bold text-primary">
-            ${property.price.toLocaleString()}
-          </p>
+          <Heart
+            className={`h-4 w-4 transition-colors ${
+              isFavorite ? 'fill-red-500 text-red-500' : 'text-slate-600 hover:text-red-500'
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Card Content */}
+      <div className="flex flex-1 flex-col p-2.5">
+        <Link href={`/property/${property.id}`} className="group-hover:text-blue-600 transition-colors">
+          <h3 className="text-[15px] font-bold text-slate-900 line-clamp-1">{property.title}</h3>
+        </Link>
+        <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+          {property.address}, {property.city}
+        </p>
+
+        {/* Price */}
+        <div className="mt-2 text-base font-extrabold text-slate-900 tracking-tight">
+          {formatCurrency(property.price, property.status, property.priceUnit)}
         </div>
-        <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-                <BedDouble className="h-4 w-4" />
-                <span>{property.bedrooms} Beds</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <Bath className="h-4 w-4" />
-                <span>{property.bathrooms} Baths</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <SquareGanttChart className="h-4 w-4" />
-                <span>{property.sqft.toLocaleString()} sqft</span>
-            </div>
+
+        {/* Specs */}
+        <div className="mt-2.5 flex items-center justify-between text-xs text-slate-600 border-t border-slate-100 pt-2.5">
+          <div className="flex items-center gap-1">
+            <BedDouble className="h-3.5 w-3.5 text-slate-400" />
+            <span>{property.bedrooms}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Bath className="h-3.5 w-3.5 text-slate-400" />
+            <span>{property.bathrooms}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Maximize2 className="h-3.5 w-3.5 text-slate-400" />
+            <span>{areaDisplay}</span>
+          </div>
         </div>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button asChild size="sm" className="w-full">
-          <Link href={`/property/${property.id}`}>View Details</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+
+        {/* Rating */}
+        <div className="mt-2.5 flex items-center gap-1 text-[11px] text-slate-500">
+          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+          <span className="font-semibold text-slate-700">{rating}</span>
+          <span>({reviewsCount} reviews)</span>
+        </div>
+      </div>
+    </div>
   );
-}
+}
