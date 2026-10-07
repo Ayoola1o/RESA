@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
@@ -16,22 +17,55 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { leases, properties } from "@/lib/mock-data";
-import { ChevronLeft, FileDown, FileSignature, MessageSquare, ShieldAlert } from "lucide-react";
-import { getStatusVariant } from "@/lib/utils";
+import { ChevronLeft, FileDown, FileSignature, MessageSquare, ShieldAlert, AlertTriangle } from "lucide-react";
+import { getStatusVariant, formatCurrency } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function LeaseDetailPage() {
     const params = useParams();
+    const { toast } = useToast();
+    const [isTerminating, setIsTerminating] = useState(false);
+    const [leaseStatus, setLeaseStatus] = useState<string | null>(null);
     const lease = leases.find(l => l.id === params.id);
 
     if (!lease) {
         notFound();
     }
 
+    const currentStatus = leaseStatus || lease.status;
     const property = properties.find(p => p.id === lease.propertyId);
 
     if (!property) {
         notFound();
     }
+
+    const handleDownloadPdf = () => {
+        if (typeof window !== 'undefined') {
+            window.print();
+            toast({
+                title: "Lease Document Prepared",
+                description: `Official lease agreement for ${lease.propertyTitle} prepared for download/print.`,
+            });
+        }
+    };
+
+    const handleConfirmTermination = () => {
+        setLeaseStatus('Terminated');
+        setIsTerminating(false);
+        toast({
+            variant: "destructive",
+            title: "Lease Termination Submitted",
+            description: "Termination notice has been recorded and served to the tenant.",
+        });
+    };
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -48,7 +82,7 @@ export default function LeaseDetailPage() {
                         <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileSignature className="h-6 w-6 text-primary"/>Lease Details</CardTitle>
                         <CardDescription>for {lease.propertyTitle}</CardDescription>
                         </div>
-                        <Badge variant={getStatusVariant(lease.status)}>{lease.status}</Badge>
+                        <Badge variant={getStatusVariant(currentStatus as any)}>{currentStatus}</Badge>
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-8">
@@ -70,7 +104,7 @@ export default function LeaseDetailPage() {
                                  <p className="text-sm text-muted-foreground">Tenant</p>
                                  <p className="font-semibold">{lease.tenantName}</p>
                                  <Button asChild variant="link" className="p-0 h-auto mt-1">
-                                    <Link href={`/messages`}>Contact Tenant</Link>
+                                    <Link href={`/messages/2`}>Contact Tenant</Link>
                                  </Button>
                             </div>
                         </div>
@@ -96,7 +130,7 @@ export default function LeaseDetailPage() {
                             </div>
                             <div className="p-4 rounded-lg bg-muted/50">
                                 <p className="text-sm font-medium text-muted-foreground">Monthly Rent</p>
-                                <p className="text-lg font-semibold">${lease.rentAmount.toLocaleString()}</p>
+                                <p className="text-lg font-semibold">{formatCurrency(lease.rentAmount, 'For Rent')}</p>
                             </div>
                         </div>
                     </div>
@@ -108,19 +142,49 @@ export default function LeaseDetailPage() {
                         <h3 className="text-lg font-semibold mb-2 font-headline">Key Terms & Clauses</h3>
                         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                             <li>No smoking is permitted inside the unit.</li>
-                            <li>Pets are allowed with a one-time pet fee of $500.</li>
-                            <li>Late rent payments are subject to a 5% late fee after a 3-day grace period.</li>
-                            <li>Tenant is responsible for electricity and internet utilities.</li>
+                            <li>Pets are allowed with a one-time pet deposit.</li>
+                            <li>Late rent payments are subject to a 5% late surcharge after a 3-day grace period.</li>
+                            <li>Tenant is responsible for electricity (PHCN) and internet service.</li>
                             <li>Subletting is not permitted without prior written consent from the landlord.</li>
                         </ul>
                     </div>
 
                 </CardContent>
                 <CardFooter className="gap-4">
-                    <Button size="lg" variant="outline"><FileDown className="mr-2"/> Download Lease (PDF)</Button>
-                    <Button size="lg" variant="destructive"><FileSignature className="mr-2"/> Terminate Lease</Button>
+                    <Button onClick={handleDownloadPdf} size="lg" variant="outline">
+                        <FileDown className="mr-2 h-4 w-4"/> Download Lease (PDF)
+                    </Button>
+                    <Button
+                        onClick={() => setIsTerminating(true)}
+                        size="lg"
+                        variant="destructive"
+                        disabled={currentStatus === 'Terminated'}
+                    >
+                        <FileSignature className="mr-2 h-4 w-4"/>
+                        {currentStatus === 'Terminated' ? 'Lease Terminated' : 'Terminate Lease'}
+                    </Button>
                 </CardFooter>
             </Card>
+
+            {/* Terminate Lease Dialog */}
+            <Dialog open={isTerminating} onOpenChange={setIsTerminating}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-destructive font-headline">
+                            <AlertTriangle className="h-5 w-5" /> Confirm Lease Termination
+                        </DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to terminate the lease for {lease.propertyTitle} with tenant {lease.tenantName}? This action will record an early termination notice.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsTerminating(false)}>Cancel</Button>
+                        <Button variant="destructive" onClick={handleConfirmTermination}>
+                            Yes, Terminate Lease
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

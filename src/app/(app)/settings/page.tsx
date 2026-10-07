@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -17,8 +20,34 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const [name, setName] = useState("Ayoola O.");
+  const [email, setEmail] = useState("ayoola@example.com");
+
+  const handleSaveProfile = () => {
+    toast({
+      title: "Profile Updated",
+      description: "Your personal details have been saved successfully.",
+    });
+  };
+
+  const handleSaveSecurity = () => {
+    toast({
+      title: "Security Settings Updated",
+      description: "Password and multi-factor authentication preferences have been saved.",
+    });
+  };
+
+  const handleSaveNotifications = () => {
+    toast({
+      title: "Preferences Saved",
+      description: "Your email and message notification preferences are up to date.",
+    });
+  };
+
   return (
     <div className="flex justify-center items-start py-8">
       <div className="w-full max-w-4xl">
@@ -45,19 +74,28 @@ export default function SettingsPage() {
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" defaultValue="John Doe" />
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="john.doe@example.com" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                  <Input id="role" disabled defaultValue="Buyer/Owner" />
+                  <Input id="role" disabled defaultValue="Buyer / Landlord" />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button>Save Changes</Button>
+                <Button onClick={handleSaveProfile}>Save Changes</Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -90,7 +128,7 @@ export default function SettingsPage() {
                   </div>
               </CardContent>
               <CardFooter>
-                <Button>Update Security Settings</Button>
+                <Button onClick={handleSaveSecurity}>Update Security Settings</Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -134,7 +172,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button>Save Preferences</Button>
+                <Button onClick={handleSaveNotifications}>Save Preferences</Button>
               </CardFooter>
             </Card>
           </TabsContent>

@@ -42,12 +42,25 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { properties, tenants, leases } from "@/lib/mock-data";
 import Link from "next/link";
 import PriceHistoryChart from "@/components/price-history-chart";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { useUserRole } from "@/context/UserRoleContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface PropertyDetailClientProps {
   id: string;
@@ -55,8 +68,17 @@ interface PropertyDetailClientProps {
 
 export default function PropertyDetailClient({ id }: PropertyDetailClientProps) {
   const { userRole } = useUserRole();
+  const { toast } = useToast();
   const property = properties.find((p) => p.id === id);
   const [isLiked, setIsLiked] = useState(false);
+  const [isTourDialogOpen, setIsTourDialogOpen] = useState(false);
+  const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
+  const [tourDate, setTourDate] = useState("");
+  const [tourTime, setTourTime] = useState("11:00");
+  const [tourType, setTourType] = useState("in-person");
+  const [offerAmount, setOfferAmount] = useState("");
+  const [financingType, setFinancingType] = useState("cash");
+  const [offerNotes, setOfferNotes] = useState("");
 
   if (!property) {
     notFound();
@@ -99,7 +121,11 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
           <div>
             <p className="font-semibold">{tenantInfo?.name}</p>
             <p className="text-sm text-muted-foreground">Current Tenant</p>
-            <Button variant="outline" size="sm" className="mt-2"><MessageSquare className="mr-2" /> Contact Tenant</Button>
+            <Button asChild variant="outline" size="sm" className="mt-2">
+              <Link href="/messages/2">
+                <MessageSquare className="mr-2 h-4 w-4" /> Contact Tenant
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -130,7 +156,7 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
         <CardContent className="space-y-4">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Monthly Rent</span>
-            <span className="font-semibold">${tenantInfo?.rentAmount.toLocaleString()}</span>
+            <span className="font-semibold">{formatCurrency(tenantInfo?.rentAmount || 0, 'For Rent')}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Next Payment</span>
@@ -149,7 +175,9 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
               <span className="text-sm font-medium">{paymentDaysMessage}</span>
             </div>
           )}
-          <Button variant="outline" className="w-full">View Financial History</Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/profile?tab=financials">View Financial History</Link>
+          </Button>
         </CardContent>
       </Card>
     </div>
@@ -167,8 +195,14 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
           </div>
         </CardHeader>
         <CardContent className="p-4 space-y-4">
-          <Button className="w-full" size="lg"><MessageSquare className="mr-2" /> Contact Agent</Button>
-          <Button variant="outline" className="w-full" size="lg"><Calendar className="mr-2" /> Schedule a Tour</Button>
+          <Button asChild className="w-full" size="lg">
+            <Link href="/messages/1">
+              <MessageSquare className="mr-2" /> Contact Agent
+            </Link>
+          </Button>
+          <Button onClick={() => setIsTourDialogOpen(true)} variant="outline" className="w-full" size="lg">
+            <Calendar className="mr-2" /> Schedule a Tour
+          </Button>
         </CardContent>
       </Card>
 
@@ -184,7 +218,7 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
               </Link>
             </Button>
           ) : (
-            <Button className="w-full" size="lg">
+            <Button onClick={() => setIsOfferDialogOpen(true)} className="w-full" size="lg">
               <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
             </Button>
           )}
@@ -260,7 +294,22 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
                 </div>
                 {!isLandlordView && (
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button variant="outline" size="icon"><Share className="h-4 w-4" /></Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        if (typeof window !== 'undefined') {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast({
+                            title: "Link copied",
+                            description: "Property listing URL copied to clipboard!",
+                          });
+                        }
+                      }}
+                      aria-label="Share property listing"
+                    >
+                      <Share className="h-4 w-4" />
+                    </Button>
                     <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} aria-pressed={isLiked}>
                       <Heart className={cn("h-4 w-4", isLiked && "fill-red-500 text-red-500")} />
                     </Button>
@@ -271,7 +320,9 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
                 <MapPin className="h-4 w-4" />
                 <span>{property.address}, {property.city}, {property.state} {property.zip}</span>
               </div>
-              <p className="text-4xl font-bold text-primary">${property.price.toLocaleString()} {property.status === 'For Rent' && '/ month'}</p>
+              <p className="text-4xl font-bold text-primary">
+                {formatCurrency(property.price, property.status, property.priceUnit)}
+              </p>
 
             </CardHeader>
             <CardContent className="space-y-6">
@@ -316,7 +367,7 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
               <CardTitle className="font-headline">Price History</CardTitle>
             </CardHeader>
             <CardContent>
-              <PriceHistoryChart data={property.priceHistory} />
+              <PriceHistoryChart data={property.priceHistory || []} />
             </CardContent>
           </Card>
         </div>
@@ -324,6 +375,135 @@ export default function PropertyDetailClient({ id }: PropertyDetailClientProps) 
         {isLandlordView && isRented && tenantInfo ? <LandlordRentedPropertyCards /> : <DefaultSidebar />}
 
       </div>
+
+      {/* Schedule Tour Dialog */}
+      <Dialog open={isTourDialogOpen} onOpenChange={setIsTourDialogOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-xl">Schedule a Property Tour</DialogTitle>
+            <DialogDescription>
+              Book an in-person or virtual walkthrough for {property.title}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor="tour-date">Preferred Date</Label>
+              <Input
+                id="tour-date"
+                type="date"
+                value={tourDate}
+                onChange={(e) => setTourDate(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="tour-time">Preferred Time</Label>
+                <Input
+                  id="tour-time"
+                  type="time"
+                  value={tourTime}
+                  onChange={(e) => setTourTime(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="tour-type">Tour Format</Label>
+                <Select value={tourType} onValueChange={setTourType}>
+                  <SelectTrigger id="tour-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in-person">In-Person Tour</SelectItem>
+                    <SelectItem value="virtual">Video Walkthrough</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="tour-notes">Special Requests (optional)</Label>
+              <Textarea
+                id="tour-notes"
+                placeholder="e.g. Inquire about parking access, security gate, and utility meters"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsTourDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                setIsTourDialogOpen(false);
+                toast({
+                  title: "Tour request submitted!",
+                  description: `Your tour request for ${tourDate || 'this week'} has been sent to ${property.agent.name}.`,
+                });
+              }}
+            >
+              Confirm Tour
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Make an Offer Dialog */}
+      <Dialog open={isOfferDialogOpen} onOpenChange={setIsOfferDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-xl">Make an Offer</DialogTitle>
+            <DialogDescription>
+              Submit an official purchase or lease offer for {property.title}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor="offer-amount">Offer Amount (₦)</Label>
+              <Input
+                id="offer-amount"
+                placeholder={`e.g. ${property.price.toLocaleString()}`}
+                value={offerAmount}
+                onChange={(e) => setOfferAmount(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="financing-type">Financing Method</Label>
+              <Select value={financingType} onValueChange={setFinancingType}>
+                <SelectTrigger id="financing-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Full Cash Payment</SelectItem>
+                  <SelectItem value="mortgage">Mortgage Pre-approved</SelectItem>
+                  <SelectItem value="installment">Milestone / Installment Plan</SelectItem>
+                  <SelectItem value="bank-guarantee">Bank Guarantee</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="offer-notes">Offer Contingencies & Terms</Label>
+              <Textarea
+                id="offer-notes"
+                placeholder="Specify inspection periods, closing timelines, or payment schedules..."
+                rows={3}
+                value={offerNotes}
+                onChange={(e) => setOfferNotes(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsOfferDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                setIsOfferDialogOpen(false);
+                toast({
+                  title: "Offer submitted successfully!",
+                  description: `Your offer for ${property.title} has been sent to the listing agent for review.`,
+                });
+              }}
+            >
+              Submit Offer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

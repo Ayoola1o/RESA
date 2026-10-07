@@ -1,6 +1,6 @@
-
 'use client';
 
+import { useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
@@ -16,15 +16,25 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { maintenanceRequests, properties } from "@/lib/mock-data";
-import { ChevronLeft, MessageSquare, Wrench, Calendar, CheckCircle, Sparkles, User, FileText } from "lucide-react";
+import { ChevronLeft, MessageSquare, Wrench, Calendar, CheckCircle, Sparkles, User, FileText, Send } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getStatusVariant } from "@/lib/utils";
-
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function MaintenanceDetailPage() {
     const params = useParams();
+    const { toast } = useToast();
     const request = maintenanceRequests.find(r => r.id === params.id);
 
     if (!request) {
@@ -36,6 +46,53 @@ export default function MaintenanceDetailPage() {
     if (!property) {
         notFound();
     }
+
+    const [currentStatus, setCurrentStatus] = useState(request.status);
+    const [notes, setNotes] = useState("");
+    const [noteList, setNoteList] = useState<string[]>([
+        "- November 29, 2023: Landlord assigned 'Pro Plumbers' to the job.",
+        "- November 28, 2023: Tenant submitted request.",
+    ]);
+    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [serviceProvider, setServiceProvider] = useState("Pro Plumbers & Electrical Services");
+    const [serviceDate, setServiceDate] = useState("");
+
+    const handleStatusChange = (val: string) => {
+        const formatted = val === 'completed' ? 'Completed' : val === 'in-progress' ? 'In Progress' : 'Pending';
+        setCurrentStatus(formatted);
+        toast({
+            title: "Status Updated",
+            description: `Request status changed to ${formatted}.`,
+        });
+    };
+
+    const handleMarkComplete = () => {
+        setCurrentStatus('Completed');
+        toast({
+            title: "Request Completed",
+            description: `Maintenance ticket #${request.id} has been marked as resolved.`,
+        });
+    };
+
+    const handleAddNote = () => {
+        if (!notes.trim()) return;
+        const newEntry = `- Today: ${notes.trim()}`;
+        setNoteList(prev => [newEntry, ...prev]);
+        setNotes("");
+        toast({
+            title: "Note Saved",
+            description: "Internal note has been added to this ticket's history.",
+        });
+    };
+
+    const handleScheduleService = () => {
+        setIsScheduleOpen(false);
+        setCurrentStatus('In Progress');
+        toast({
+            title: "Service Dispatched",
+            description: `${serviceProvider} has been assigned for ${serviceDate || 'tomorrow'}. Tenant notified.`,
+        });
+    };
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -56,12 +113,12 @@ export default function MaintenanceDetailPage() {
                                     </CardTitle>
                                     <CardDescription>Submitted on {new Date(request.dateSubmitted).toLocaleDateString()}</CardDescription>
                                 </div>
-                                <Badge variant={getStatusVariant(request.status)} className="text-base">{request.status}</Badge>
+                                <Badge variant={getStatusVariant(currentStatus)} className="text-base">{currentStatus}</Badge>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 font-headline flex items-center gap-2"><FileText /> Tenant's Request</h3>
+                                <h3 className="text-lg font-semibold mb-2 font-headline flex items-center gap-2"><FileText /> Tenant&apos;s Request</h3>
                                 <p className="text-muted-foreground bg-muted/30 p-4 rounded-lg border">{request.description}</p>
                             </div>
                             <Separator />
@@ -85,10 +142,21 @@ export default function MaintenanceDetailPage() {
                              <Separator />
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 font-headline">Internal Notes & History</h3>
-                                <Textarea placeholder="Add notes for your team..." rows={4}/>
+                                <div className="space-y-2">
+                                    <Textarea
+                                        placeholder="Add notes for your property management team..."
+                                        rows={3}
+                                        value={notes}
+                                        onChange={(e) => setNotes(e.target.value)}
+                                    />
+                                    <Button onClick={handleAddNote} size="sm" variant="outline">
+                                        <Send className="mr-2 h-3.5 w-3.5" /> Save Note
+                                    </Button>
+                                </div>
                                 <div className="text-xs text-muted-foreground mt-4 space-y-2">
-                                    <p>- November 29, 2023: Landlord assigned 'Pro Plumbers' to the job.</p>
-                                    <p>- November 28, 2023: Tenant submitted request.</p>
+                                    {noteList.map((entry, idx) => (
+                                        <p key={idx}>{entry}</p>
+                                    ))}
                                 </div>
                             </div>
 
@@ -129,7 +197,10 @@ export default function MaintenanceDetailPage() {
                         <CardContent className="space-y-4">
                              <div className="grid gap-1.5">
                                 <Label htmlFor="status">Update Status</Label>
-                                <Select defaultValue={request.status.toLowerCase().replace(' ', '-')}>
+                                <Select
+                                    value={currentStatus.toLowerCase().replace(' ', '-')}
+                                    onValueChange={handleStatusChange}
+                                >
                                     <SelectTrigger id="status">
                                         <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
@@ -140,13 +211,65 @@ export default function MaintenanceDetailPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button className="w-full"><CheckCircle className="mr-2"/> Mark as Complete</Button>
-                            <Button variant="outline" className="w-full"><Calendar className="mr-2"/> Schedule Service</Button>
-                            <Button variant="outline" className="w-full"><MessageSquare className="mr-2"/> Message Tenant</Button>
+                            <Button
+                                onClick={handleMarkComplete}
+                                className="w-full"
+                                disabled={currentStatus === 'Completed'}
+                            >
+                                <CheckCircle className="mr-2 h-4 w-4"/>
+                                {currentStatus === 'Completed' ? 'Already Completed' : 'Mark as Complete'}
+                            </Button>
+                            <Button
+                                onClick={() => setIsScheduleOpen(true)}
+                                variant="outline"
+                                className="w-full"
+                            >
+                                <Calendar className="mr-2 h-4 w-4"/> Schedule Service
+                            </Button>
+                            <Button asChild variant="outline" className="w-full">
+                                <Link href="/messages/2">
+                                    <MessageSquare className="mr-2 h-4 w-4"/> Message Tenant
+                                </Link>
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
             </div>
+
+            {/* Schedule Service Dialog */}
+            <Dialog open={isScheduleOpen} onOpenChange={setIsScheduleOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="font-headline">Dispatch Maintenance Service</DialogTitle>
+                        <DialogDescription>
+                            Assign a contractor or technician for {property.title}.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-2">
+                        <div className="grid gap-2">
+                            <Label htmlFor="provider">Service Contractor</Label>
+                            <Input
+                                id="provider"
+                                value={serviceProvider}
+                                onChange={(e) => setServiceProvider(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="service-date">Appointment Date</Label>
+                            <Input
+                                id="service-date"
+                                type="date"
+                                value={serviceDate}
+                                onChange={(e) => setServiceDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsScheduleOpen(false)}>Cancel</Button>
+                        <Button onClick={handleScheduleService}>Dispatch Technician</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

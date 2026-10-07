@@ -197,10 +197,37 @@ function MaintenanceRequestForm() {
 }
 
 
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading profile...</div>}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+function ProfileContent() {
     const { userRole } = useUserRole();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const tabFromUrl = searchParams.get('tab');
+
+    const [activeTab, setActiveTab] = useState(tabFromUrl || 'properties');
     const [savedProperties, setSavedProperties] = useState(initialSavedProperties);
     const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (tabFromUrl) {
+            setActiveTab(tabFromUrl);
+        }
+    }, [tabFromUrl]);
+
+    const handleTabChange = (val: string) => {
+        setActiveTab(val);
+        router.replace(`/profile?tab=${val}`, { scroll: false });
+    };
 
     const handleNoteChange = (id: string, notes: string) => {
         setSavedProperties(prev => 
@@ -273,7 +300,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="properties" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-6')}>
             <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
             {userRole === 'tenant' ? tenantTabs : landlordTabs}

@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Property } from "@/lib/types";
 import { Check, X } from "lucide-react";
 import type { ReactNode } from "react";
+import { formatCurrency } from "@/lib/utils";
 
 interface PropertyComparisonDialogProps {
     isOpen: boolean;
@@ -66,7 +67,7 @@ export default function PropertyComparisonDialog({ isOpen, onOpenChange, propert
                         </TableHeader>
                         <TableBody>
                             <FeatureRow label="Price">
-                                {properties.map(p => <TableCell key={p.id} className="font-bold text-primary">${p.price.toLocaleString()}</TableCell>)}
+                                {properties.map(p => <TableCell key={p.id} className="font-bold text-primary">{formatCurrency(p.price, p.status, p.priceUnit)}</TableCell>)}
                             </FeatureRow>
                             <FeatureRow label="Bedrooms">
                                 {properties.map(p => <TableCell key={p.id}>{p.bedrooms}</TableCell>)}

@@ -35,14 +35,35 @@ function SubmitButton() {
   );
 }
 
-export default function AiRecommendations() {
+interface AiRecommendationsProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
+}
+
+export default function AiRecommendations({
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  trigger,
+}: AiRecommendationsProps = {}) {
   const { toast } = useToast();
-  const [state, formAction] = useActionState(getRecommendations, null);
-  const [open, setOpen] = useState(false);
+  const [state, formAction] = useActionState<any, FormData>(getRecommendations, null);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = (newOpen: boolean) => {
+    if (isControlled) {
+      controlledOnOpenChange?.(newOpen);
+    } else {
+      setUncontrolledOpen(newOpen);
+    }
+  };
 
   useEffect(() => {
-    if (state?.error) {
-      const errorMessage = typeof state.error === 'string' ? state.error : 'An error occurred';
+    const s = state as any;
+    if (s?.error) {
+      const errorMessage = typeof s.error === 'string' ? s.error : 'An error occurred';
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -54,10 +75,14 @@ export default function AiRecommendations() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Sparkles className="mr-2 h-4 w-4" />
-          AI Recommendations
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm">
+            <Sparkles className="mr-2 h-4 w-4" />
+            AI Recommendations
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-2xl lg:max-w-4xl">
         <DialogHeader>
@@ -91,7 +116,7 @@ export default function AiRecommendations() {
             {state.data.length > 0 ? (
               <ScrollArea className="max-h-[50vh]">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pr-4">
-                  {state.data.map((property) => (
+                  {state.data.map((property: any) => (
                     <PropertyCard key={property.id} property={property} />
                   ))}
                 </div>

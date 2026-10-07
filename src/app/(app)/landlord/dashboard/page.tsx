@@ -19,23 +19,24 @@ import {
 } from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
 import { ArrowRight, Building, DollarSign, FileText, PlusCircle, Wrench } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
 const landlordData = {
   metrics: [
     { title: "Active Listings", value: 5, icon: Building, change: "+1 this month" },
     { title: "Occupancy Rate", value: "92%", icon: FileText, change: "8% vacancy" },
     { title: "Pending Applications", value: 3, icon: FileText, change: "2 new" },
-    { title: "Monthly Revenue", value: "$12,800", icon: DollarSign, change: "+3.2%" },
+    { title: "Monthly Revenue", value: "₦ 14,800,000", icon: DollarSign, change: "+3.2%" },
   ],
   properties: [
-    { id: 'prop2', name: "Cozy Downtown Apartment", occupancy: "1/1 Occupied", issues: 0, revenue: 3200 },
+    { id: 'prop2', name: "Cozy Downtown Apartment", occupancy: "1/1 Occupied", issues: 0, revenue: 3200000 },
     { id: 'prop3', name: "Suburban Family Home", occupancy: "0/1 Vacant", issues: 1, revenue: 0 },
-    { id: 'prop5', name: "Miami Beachfront Condo", occupancy: "1/1 Occupied", issues: 0, revenue: 4500 },
+    { id: 'prop5', name: "Miami Beachfront Condo", occupancy: "1/1 Occupied", issues: 0, revenue: 4500000 },
   ],
   recentActivity: [
-    { type: "application", text: "New application for 'Suburban Family Home' from Sarah L.", link: "#" },
-    { type: "maintenance", text: "Maintenance request for 'Cozy Downtown Apartment': Leaky faucet", link: "#" },
-    { type: "payment", text: "Payment of $3,200 received from tenant at 'Cozy Downtown Apartment'", link: "#" },
+    { type: "application", text: "New application for 'Suburban Family Home' from Sarah L.", link: "/profile?tab=applications" },
+    { type: "maintenance", text: "Maintenance request for 'Cozy Downtown Apartment': Leaky faucet", link: "/maintenance/maint1" },
+    { type: "payment", text: "Rent payment received from tenant at 'Cozy Downtown Apartment'", link: "/profile?tab=payments" },
   ]
 }
 
@@ -97,7 +98,7 @@ export default function LandlordDashboardPage() {
                                 <TableCell>
                                     <Badge variant={prop.issues > 0 ? "destructive" : "secondary"}>{prop.issues}</Badge>
                                 </TableCell>
-                                <TableCell className="text-right">${prop.revenue.toLocaleString()}</TableCell>
+                                <TableCell className="text-right font-semibold">{formatCurrency(prop.revenue, 'For Rent')}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -137,11 +138,15 @@ export default function LandlordDashboardPage() {
                     <div>
                         <div className="flex justify-between items-center mb-1">
                             <span className="text-sm font-medium">October Revenue</span>
-                            <span className="text-sm font-semibold">$12,800 / $17,300</span>
+                            <span className="text-sm font-semibold">₦ 12.8M / ₦ 17.3M</span>
                         </div>
                         <Progress value={74} />
                     </div>
-                     <Button variant="outline" className="w-full">View Financial Report <ArrowRight className="ml-2 h-4 w-4"/></Button>
+                     <Button asChild variant="outline" className="w-full">
+                        <Link href="/profile?tab=financials">
+                            View Financial Report <ArrowRight className="ml-2 h-4 w-4"/>
+                        </Link>
+                     </Button>
                 </CardContent>
             </Card>
         </div>

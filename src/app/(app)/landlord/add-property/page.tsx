@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
     Card,
     CardContent,
@@ -17,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, FileUp, Loader2, PlusCircle, Sparkles, Trash2 } from "lucide-react";
+import { ChevronLeft, FileUp, Loader2, PlusCircle, Sparkles, Trash2, CheckCircle2 } from "lucide-react";
 import { getGeneratedDescription } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,7 +29,10 @@ const featuresList = [
 
 export default function AddPropertyPage() {
     const { toast } = useToast();
+    const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [photosUploaded, setPhotosUploaded] = useState(false);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -65,20 +69,43 @@ export default function AddPropertyPage() {
                 features: selectedFeatures,
             });
 
-            if (result.error) {
+            const res = result as any;
+            if (res.error) {
                 toast({
                     variant: 'destructive',
                     title: 'Error',
-                    description: typeof result.error === 'string' ? result.error : 'Please fill out all property detail fields first.',
+                    description: typeof res.error === 'string' ? res.error : 'Please fill out all property detail fields first.',
                 });
-            } else if (result.data) {
-                setDescription(result.data.description);
+            } else if (res.data) {
+                setDescription(res.data.description);
                 toast({
                     title: 'Success!',
                     description: 'A new property description has been generated.',
                 });
             }
         });
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!title.trim() || !price) {
+            toast({
+                variant: 'destructive',
+                title: 'Missing Required Fields',
+                description: 'Please provide at least a property title and price.',
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+        setTimeout(() => {
+            setIsSubmitting(false);
+            toast({
+                title: 'Listing Published! 🏡',
+                description: `"${title}" has been added to your managed listings.`,
+            });
+            router.push('/profile?tab=properties');
+        }, 700);
     };
 
     return (
@@ -89,7 +116,7 @@ export default function AddPropertyPage() {
                     Back to Dashboard
                 </Link>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <Card>
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl">Add New Property</CardTitle>
@@ -177,11 +204,25 @@ export default function AddPropertyPage() {
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>Property Photos</Label>
-                                    <div className="flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md">
+                                    <div
+                                        onClick={() => {
+                                            setPhotosUploaded(true);
+                                            toast({ title: "Photos Attached", description: "3 high-resolution property images selected." });
+                                        }}
+                                        className="flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md cursor-pointer hover:bg-slate-50 transition"
+                                    >
                                         <div className="text-center">
-                                            <FileUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                                            <p className="mt-2 text-sm text-muted-foreground">Drag &amp; drop files or</p>
-                                            <Button type="button" variant="outline" size="sm" className="mt-2">Choose files</Button>
+                                            {photosUploaded ? (
+                                                <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
+                                            ) : (
+                                                <FileUp className="mx-auto h-12 w-12 text-muted-foreground" />
+                                            )}
+                                            <p className="mt-2 text-sm text-slate-700 font-medium">
+                                                {photosUploaded ? "3 Photos Uploaded (Villa_Main.jpg, Interior.jpg)" : "Drag & drop files or click to choose"}
+                                            </p>
+                                            <Button type="button" variant="outline" size="sm" className="mt-2">
+                                                {photosUploaded ? "Change Photos" : "Choose files"}
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +235,16 @@ export default function AddPropertyPage() {
 
                     </CardContent>
                     <CardFooter>
-                        <Button size="lg" className="w-full">Create Listing</Button>
+                        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Publishing Listing...
+                                </>
+                            ) : (
+                                "Create & Publish Listing"
+                            )}
+                        </Button>
                     </CardFooter>
                 </Card>
             </form>
