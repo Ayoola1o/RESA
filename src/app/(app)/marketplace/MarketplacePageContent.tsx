@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useMemo, Suspense, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { properties } from "@/lib/mock-data";
 import PropertyCard from "@/components/property-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -14,17 +13,20 @@ import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
 
 const ITEMS_PER_PAGE = 16;
-
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 
-export default function MarketplacePageContent() {
+interface MarketplacePageContentProps {
+  initialProperties?: any[];
+}
+
+export default function MarketplacePageContent({ initialProperties = [] }: MarketplacePageContentProps) {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const searchQuery = searchParams.get('search') || '';
   const initialView = searchParams.get('view') === 'map' ? 'map' : 'grid';
 
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(initialView);
-  const [selectedMapPropertyId, setSelectedMapPropertyId] = useState<string | null>(properties[0]?.id || null);
+  const [selectedMapPropertyId, setSelectedMapPropertyId] = useState<string | null>(initialProperties[0]?.id || null);
   const [currentPage, setCurrentPage] = useState(1);
   const [listingType, setListingType] = useState('all');
   const [propertyType, setPropertyType] = useState('all');
@@ -39,11 +41,11 @@ export default function MarketplacePageContent() {
   }, [searchParams]);
 
   const filteredAndSortedProperties = useMemo(() => {
-    let filtered = properties.filter(p => {
+    let filtered = initialProperties.filter(p => {
         const listingTypeMatch =
             listingType === 'all' ||
-            (listingType === 'sale' && p.status === 'For Sale') ||
-            (listingType === 'rent' && p.status === 'For Rent');
+            (listingType === 'sale' && (p.status === 'For Sale' || p.listingType === 'SALE')) ||
+            (listingType === 'rent' && (p.status === 'For Rent' || p.listingType === 'RENT'));
 
         const propertyTypeMatch = propertyType === 'all' || p.type.toLowerCase().replace(' ', '-') === propertyType;
         const bedroomsMatch = bedrooms === 'any' || p.bedrooms >= Number(bedrooms);
@@ -81,6 +83,10 @@ export default function MarketplacePageContent() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProperties = filteredAndSortedProperties.slice(startIndex, endIndex);
 
+  const selectedProperty = useMemo(() => {
+    return initialProperties.find(p => p.id === selectedMapPropertyId) || initialProperties[0];
+  }, [initialProperties, selectedMapPropertyId]);
+
   const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (value: string) => {
     setter(value);
     setCurrentPage(1);
@@ -116,8 +122,6 @@ export default function MarketplacePageContent() {
     if (totalPages > 1 && !pageNumbers.includes(totalPages)) pageNumbers.push(totalPages);
     return pageNumbers;
   }
-
-  const selectedProperty = properties.find(p => p.id === selectedMapPropertyId) || properties[0];
 
   const handleApplyFilters = () => {
     toast({
@@ -284,7 +288,7 @@ export default function MarketplacePageContent() {
               </svg>
 
               {/* Interactive Region Pins */}
-              {properties.slice(0, 8).map((prop, idx) => {
+              {initialProperties.slice(0, 8).map((prop, idx) => {
                 const positions = [
                   { top: '38%', left: '68%', name: 'Lekki Phase 1' },
                   { top: '22%', left: '32%', name: 'Gwarinpa Abuja' },

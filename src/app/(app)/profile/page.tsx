@@ -1,832 +1,673 @@
-
-
 'use client';
 
-import { useState, useActionState, useEffect } from 'react';
-import { useFormStatus } from 'react-dom';
-import Image from "next/image"
-import Link from "next/link"
-import { Mail, MapPin, Building, Heart, FileText, FileSignature, CreditCard, Trash2, FilePenLine, CheckCircle, RefreshCw, Banknote, AlertCircle, FileDown, Wrench, Sparkles, Loader2, Users, HandPlatter, MessageSquare, ArrowUpRight, DollarSign, MinusCircle, PlusCircle, TrendingUp } from "lucide-react"
+import { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
+import {
+  Building2,
+  Calendar,
+  Clock,
+  FileText,
+  ShieldCheck,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Mail,
+  Phone,
+  User,
+  Plus,
+  Heart,
+  ChevronRight,
+  ExternalLink,
+  ShieldAlert,
+  Loader2,
+  MapPin,
+  Briefcase,
+  Award,
+  Trash2,
+  Sparkles,
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
-} from "@/components/ui/card"
+  CardFooter,
+} from '@/components/ui/card';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-
-import { properties as allProperties, applications, leases, maintenanceRequests } from "@/lib/mock-data"
-import PropertyCard from "@/components/property-card"
-import PropertyComparisonDialog from '@/components/property-comparison-dialog';
-import { cn, getStatusVariant } from '@/lib/utils';
+} from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { getCategorizedMaintenance } from '@/app/actions';
 import { useUserRole } from '@/context/UserRoleContext';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-
-
-const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    location: "Austin, TX",
-    role: "Buyer/Owner",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
-    bio: "Real estate enthusiast and investor with a passion for modern architecture. Looking for my next property in a vibrant city neighborhood. Also a landlord for several properties.",
-};
-
-const financialData = {
-  summary: [
-    { title: "Total Revenue", value: "$45,231.89", change: "+20.1% from last month", icon: DollarSign },
-    { title: "Total Expenses", value: "$12,874.21", change: "+12.5% from last month", icon: DollarSign },
-    { title: "Net Income", value: "$32,357.68", change: "+23.3% from last month", icon: DollarSign },
-    { title: "Occupancy Rate", value: "92%", change: "2 vacant units", icon: Users },
-  ],
-  chartData: [
-    { month: "Jan", income: 4000, expense: 2400 },
-    { month: "Feb", income: 3000, expense: 1398 },
-    { month: "Mar", income: 5000, expense: 6800 },
-    { month: "Apr", income: 2780, expense: 3908 },
-    { month: "May", income: 1890, expense: 4800 },
-    { month: "Jun", income: 2390, expense: 3800 },
-    { month: "Jul", income: 3490, expense: 4300 },
-  ],
-  transactions: [
-    { id: 'txn1', date: '2023-11-28', description: "Rent Payment - Unit 12B", category: 'Income', amount: 3200 },
-    { id: 'txn2', date: '2023-11-25', description: "Plumbing Repair - Unit 5A", category: 'Maintenance', amount: -450 },
-    { id: 'txn3', date: '2023-11-22', description: "Landscaping Services", category: 'Property Services', amount: -250 },
-    { id: 'txn4', date: '2023-11-20', description: "Late Fee - Unit 8C", category: 'Income', amount: 50 },
-    { id: 'txn5', date: '2023-11-18', description: "Property Insurance Premium", category: 'Insurance', amount: -1200 },
-  ]
-};
-
-const userProperties = allProperties.slice(1, 3);
-const rentedProperties = allProperties.filter(p => p.status === 'Rented');
-
-const initialSavedProperties = allProperties.slice(0, 4).map(p => ({
-    ...p,
-    notes: '',
-    isComparing: false,
-}));
-
-const leaseDetails = {
-    property: "Cozy Downtown Apartment",
-    address: "456 Urban St, Apt 12B, San Francisco, CA 94105",
-    term: "12 Months",
-    startDate: "2023-08-01",
-    endDate: "2024-07-31",
-    rent: 3200,
-    securityDeposit: 3200,
-    status: "Active",
-    renewalNoticeDate: "2024-05-31",
-}
-
-const paymentHistory = [
-    { id: 'pay_1', date: '2023-11-01', amount: 3200, status: 'Paid', method: 'ACH' },
-    { id: 'pay_2', date: '2023-10-01', amount: 3200, status: 'Paid', method: 'Credit Card' },
-    { id: 'pay_3', date: '2023-09-01', amount: 3200, status: 'Paid', method: 'ACH' },
-]
-
-function MaintenanceSubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full" size="lg">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wrench className="mr-2 h-4 w-4" />}
-      Submit Request
-    </Button>
-  );
-}
-
-function MaintenanceRequestForm() {
-    const { toast } = useToast();
-    const [state, formAction, isPending] = useActionState<any, FormData>(getCategorizedMaintenance, null);
-
-    useEffect(() => {
-        if (state?.error && typeof state.error !== 'object') {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: state.error,
-            });
-        }
-    }, [state, toast]);
-
-    return (
-        <div className="max-w-2xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl">Submit a Maintenance Request</CardTitle>
-          <CardDescription>
-            Please describe the issue you are experiencing in detail. Our team will review it shortly.
-          </CardDescription>
-        </CardHeader>
-        <form action={formAction}>
-            <CardContent>
-            <div className="grid w-full gap-2">
-              <Label htmlFor="requestText">Maintenance Issue Description</Label>
-              <Textarea
-                id="requestText"
-                name="requestText"
-                placeholder="e.g., 'The kitchen sink is clogged and water is not draining properly. I've tried using a plunger but it did not work.'"
-                rows={6}
-              />
-               {state?.error?.requestText && <p className="text-sm text-destructive">{state.error.requestText[0]}</p>}
-            </div>
-            </CardContent>
-            <CardFooter>
-                <MaintenanceSubmitButton />
-            </CardFooter>
-        </form>
-      </Card>
-
-      {state?.data && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> AI Analysis Complete</CardTitle>
-            <CardDescription>We've received and analyzed your request. Here are the details for our team:</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">Category</p>
-                    <Badge>{state.data.category}</Badge>
-                </div>
-                 <div className="space-y-1">
-                    <p className="text-sm font-medium text-muted-foreground">Priority</p>
-                    <Badge variant={state.data.priority === 'Emergency' || state.data.priority === 'High' ? 'destructive' : 'secondary'}>{state.data.priority}</Badge>
-                </div>
-            </div>
-             <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Summary</p>
-                <p className="text-card-foreground">{(state.data as any).summary || (state.data as any).estimatedCost || 'Report logged successfully'}</p>
-            </div>
-             <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Suggested Action</p>
-                <p className="text-card-foreground">{(state.data as any).suggestedAction || (state.data as any).recommendedAction || 'Technician dispatch requested'}</p>
-            </div>
-            <p className="text-sm text-muted-foreground pt-4">Thank you! A member of our property management team will be in touch with you shortly to schedule the repair.</p>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-    )
-}
-
-
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense } from 'react';
+import {
+  getUserInspectionsAction,
+  getUserApplicationsAction,
+  getUserPropertiesAction,
+  updateInspectionStatusAction,
+  updateApplicationStatusAction,
+  getPropertiesAction,
+} from '@/server/actions/prophunta-actions';
+import { Property, InspectionRequest, Application, InspectionStatus, ApplicationStatus } from '@/types/prophunta';
+import PropertyCard from '@/components/property-card';
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading profile...</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-muted-foreground">Loading verified profile...</div>}>
       <ProfileContent />
     </Suspense>
   );
 }
 
+function formatNaira(amount: number) {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
 function ProfileContent() {
-    const { userRole } = useUserRole();
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const tabFromUrl = searchParams.get('tab');
+  const { currentUser, role } = useUserRole();
+  const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-    const [activeTab, setActiveTab] = useState(tabFromUrl || 'properties');
-    const [savedProperties, setSavedProperties] = useState(initialSavedProperties);
-    const [isCompareDialogOpen, setIsCompareDialogOpen] = useState(false);
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || (role === 'SEEKER' ? 'inspections' : 'properties'));
 
-    useEffect(() => {
-        if (tabFromUrl) {
-            setActiveTab(tabFromUrl);
-        }
-    }, [tabFromUrl]);
+  // Data states
+  const [inspections, setInspections] = useState<InspectionRequest[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [userProperties, setUserProperties] = useState<Property[]>([]);
+  const [savedProperties, setSavedProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-    const handleTabChange = (val: string) => {
-        setActiveTab(val);
-        router.replace(`/profile?tab=${val}`, { scroll: false });
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    router.replace(`/profile?tab=${val}`, { scroll: false });
+  };
+
+  // Load user data
+  useEffect(() => {
+    let mounted = true;
+    async function loadData() {
+      try {
+        const [inspData, appData, propData, allProps] = await Promise.all([
+          getUserInspectionsAction(),
+          getUserApplicationsAction(),
+          getUserPropertiesAction(),
+          getPropertiesAction(),
+        ]);
+
+        if (!mounted) return;
+        setInspections(inspData || []);
+        setApplications(appData || []);
+        setUserProperties(propData || []);
+        // Seed first 2 verified properties as saved for demonstration
+        setSavedProperties(allProps.slice(0, 2));
+      } catch (err) {
+        console.error('Failed to load profile data', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    loadData();
+    return () => {
+      mounted = false;
     };
+  }, [currentUser?.id]);
 
-    const handleNoteChange = (id: string, notes: string) => {
-        setSavedProperties(prev => 
-            prev.map(p => p.id === id ? { ...p, notes } : p)
-        );
-    };
+  // Inspection status handlers
+  const handleCancelInspection = async (id: string) => {
+    setUpdatingId(id);
+    const res = await updateInspectionStatusAction(id, 'CANCELLED', 'Cancelled by user');
+    setUpdatingId(null);
+    if (res.success) {
+      toast({ title: 'Inspection Cancelled', description: 'The inspection request has been cancelled.' });
+      setInspections(prev => prev.map(i => i.id === id ? { ...i, status: 'CANCELLED' as InspectionStatus } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to cancel inspection.' });
+    }
+  };
 
-    const handleCompareChange = (id: string, isComparing: boolean) => {
-        const currentlyComparing = savedProperties.filter(p => p.isComparing).length;
-        if (isComparing && currentlyComparing >= 3) {
-            alert("You can only compare up to 3 properties at a time.");
-            return;
-        }
-        setSavedProperties(prev =>
-            prev.map(p => p.id === id ? { ...p, isComparing } : p)
-        );
-    };
+  const handleConfirmInspection = async (id: string) => {
+    setUpdatingId(id);
+    const res = await updateInspectionStatusAction(id, 'SCHEDULED', 'Confirmed by host');
+    setUpdatingId(null);
+    if (res.success) {
+      toast({ title: 'Inspection Confirmed', description: 'The inspection slot has been confirmed with the seeker.' });
+      setInspections(prev => prev.map(i => i.id === id ? { ...i, status: 'SCHEDULED' as InspectionStatus } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to confirm inspection.' });
+    }
+  };
 
-    const handleRemoveProperty = (id: string) => {
-        setSavedProperties(prev => prev.filter(p => p.id !== id));
-    };
-    
-    const propertiesToCompare = savedProperties.filter(p => p.isComparing);
+  // Application status handlers
+  const handleApplicationStatus = async (id: string, newStatus: ApplicationStatus) => {
+    setUpdatingId(id);
+    const res = await updateApplicationStatusAction(id, newStatus);
+    setUpdatingId(null);
+    if (res.success) {
+      toast({ title: `Application ${newStatus}`, description: `The application status is now ${newStatus}.` });
+      setApplications(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to update application.' });
+    }
+  };
 
-    const tenantTabs = (
-        <>
-            <TabsTrigger value="saved"><Heart className="mr-2"/> Saved Properties</TabsTrigger>
-            <TabsTrigger value="applications"><FileText className="mr-2"/> Applications</TabsTrigger>
-            <TabsTrigger value="lease"><FileSignature className="mr-2"/> Lease</TabsTrigger>
-            <TabsTrigger value="payments"><CreditCard className="mr-2"/> Payments</TabsTrigger>
-            <TabsTrigger value="maintenance"><Wrench className="mr-2"/> Maintenance</TabsTrigger>
-        </>
-    );
+  const handleRemoveSaved = (propId: string) => {
+    setSavedProperties(prev => prev.filter(p => p.id !== propId));
+    toast({ title: 'Removed', description: 'Property removed from saved listings.' });
+  };
 
-    const landlordTabs = (
-         <>
-            <TabsTrigger value="rented"><Users className="mr-2"/> Rented Properties</TabsTrigger>
-            <TabsTrigger value="leases"><FileSignature className="mr-2"/> Leases</TabsTrigger>
-            <TabsTrigger value="maintenance-landlord"><HandPlatter className="mr-2"/> Maintenance</TabsTrigger>
-            <TabsTrigger value="financials"><DollarSign className="mr-2"/> Financials</TabsTrigger>
-            <TabsTrigger value="settings">Profile Settings</TabsTrigger>
-        </>
-    )
+  const getRoleLabel = () => {
+    switch (role) {
+      case 'SEEKER': return 'Property Seeker';
+      case 'OWNER': return 'Property Owner / Landlord';
+      case 'AGENT': return 'Licensed Agent / Manager';
+      case 'ADMIN': return 'Verification Officer (Admin)';
+      default: return 'User';
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-8">
-       {/* Profile Header */}
-      <Card>
-        <CardContent className="p-6 flex flex-col md:flex-row items-center gap-6">
-            <Image
-              src={user.avatar}
-              alt={user.name}
-              width={128}
-              height={128}
-              className="rounded-full border-4 border-primary"
-              data-ai-hint="person portrait"
-            />
-            <div className="text-center md:text-left">
-                <h1 className="text-3xl font-bold font-headline">{user.name}</h1>
-                <div className="flex items-center justify-center md:justify-start gap-4 text-muted-foreground mt-2">
-                    <span className="flex items-center gap-2"><Mail className="h-4 w-4"/> {user.email}</span>
-                    <span className="flex items-center gap-2"><MapPin className="h-4 w-4"/> {user.location}</span>
-                </div>
-                 <p className="mt-4 max-w-2xl">{user.bio}</p>
-                 <Badge className="mt-3">{userRole === 'tenant' ? "Tenant" : "Landlord"}</Badge>
+    <div className="space-y-8">
+      {/* Profile Header */}
+      <Card className="border shadow-sm">
+        <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="relative">
+              <div className="h-20 w-20 rounded-full bg-blue-100 border-2 border-blue-600 flex items-center justify-center text-blue-900 font-bold text-2xl shadow-sm">
+                {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : 'PH'}
+              </div>
+              <div className="absolute -bottom-1 -right-1 bg-emerald-600 text-white rounded-full p-1" title="Trust Verified Account">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
             </div>
-            <Button asChild className="ml-auto mt-4 md:mt-0">
-                <Link href="/settings">Edit Profile</Link>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl md:text-3xl font-bold font-headline text-slate-900">
+                  {currentUser?.name || 'PropHunta Member'}
+                </h1>
+                <Badge className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+                  {getRoleLabel()}
+                </Badge>
+                <Badge variant="outline" className="border-emerald-500 text-emerald-700 bg-emerald-50 gap-1">
+                  <ShieldCheck className="h-3 w-3" /> Identity Verified
+                </Badge>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-muted-foreground pt-1">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-slate-400" /> {currentUser?.email}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5 text-slate-400" /> {currentUser?.phone || '+234 800 000 0000'}
+                </span>
+                {currentUser?.agencyName && (
+                  <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                    <Briefcase className="h-3.5 w-3.5 text-blue-600" /> {currentUser.agencyName}
+                  </span>
+                )}
+                {currentUser?.licenseNumber && (
+                  <span className="flex items-center gap-1.5 text-slate-600">
+                    <Award className="h-3.5 w-3.5 text-amber-600" /> Lic: {currentUser.licenseNumber}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {role === 'ADMIN' && (
+              <Button asChild className="bg-slate-900 hover:bg-black text-white">
+                <Link href="/admin">
+                  <ShieldCheck className="mr-2 h-4 w-4" /> Go to Verification Portal
+                </Link>
+              </Button>
+            )}
+            {(role === 'OWNER' || role === 'AGENT') && (
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Link href="/landlord/add-property">
+                  <Plus className="mr-2 h-4 w-4" /> Add Listing
+                </Link>
+              </Button>
+            )}
+            <Button asChild variant="outline">
+              <Link href="/settings">Account Settings</Link>
             </Button>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className={cn("grid w-full", userRole === 'tenant' ? 'grid-cols-6' : 'grid-cols-6')}>
-            <TabsTrigger value="properties"><Building className="mr-2"/> My Properties</TabsTrigger>
-            {userRole === 'tenant' ? tenantTabs : landlordTabs}
-          </TabsList>
-          
-          <TabsContent value="properties">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline">My Properties</CardTitle>
-                    <CardDescription>A list of properties you currently own or are managing.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-6">
-                    {userProperties.map(prop => <PropertyCard key={prop.id} property={prop}/>)}
-                </CardContent>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-auto lg:inline-flex mb-4">
+          {(role === 'OWNER' || role === 'AGENT') && (
+            <TabsTrigger value="properties" className="gap-2">
+              <Building2 className="h-4 w-4" /> My Listings ({userProperties.length})
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="inspections" className="gap-2">
+            <Calendar className="h-4 w-4" /> Inspections ({inspections.length})
+          </TabsTrigger>
+          <TabsTrigger value="applications" className="gap-2">
+            <FileText className="h-4 w-4" /> Applications ({applications.length})
+          </TabsTrigger>
+          {role === 'SEEKER' && (
+            <TabsTrigger value="saved" className="gap-2">
+              <Heart className="h-4 w-4" /> Saved Listings ({savedProperties.length})
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="identity" className="gap-2">
+            <ShieldCheck className="h-4 w-4" /> Trust & Verification
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Tab: My Listings (Owner / Agent) */}
+        {(role === 'OWNER' || role === 'AGENT') && (
+          <TabsContent value="properties" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold font-headline text-slate-900">Your Managed Properties</h2>
+                <p className="text-sm text-muted-foreground">Properties currently assigned to your ownership or agency account.</p>
+              </div>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Link href="/landlord/add-property">
+                  <Plus className="mr-2 h-4 w-4" /> New Property Draft
+                </Link>
+              </Button>
+            </div>
+
+            {loading ? (
+              <div className="p-12 text-center text-sm text-muted-foreground">Loading your listings...</div>
+            ) : userProperties.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Building2 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                <h3 className="font-semibold text-slate-900">No properties listed yet</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                  Create your first property listing, attach proof of title documents, and submit for verification.
+                </p>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href="/landlord/add-property">Create Listing</Link>
+                </Button>
+              </Card>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userProperties.map((prop) => (
+                  <div key={prop.id} className="relative group">
+                    <PropertyCard property={prop} />
+                    <div className="mt-2 flex items-center justify-between px-1">
+                      <Badge
+                        variant={
+                          prop.listingStatus === 'ACTIVE'
+                            ? 'default'
+                            : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
+                            ? 'secondary'
+                            : 'outline'
+                        }
+                        className="text-xs"
+                      >
+                        {prop.listingStatus === 'ACTIVE'
+                          ? 'Verified Trust Badge'
+                          : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
+                          ? 'In Review by Verification Team'
+                          : prop.listingStatus}
+                      </Badge>
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/property/${prop.id}`}>View &rarr;</Link>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        )}
+
+        {/* Tab: Inspections */}
+        <TabsContent value="inspections" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold font-headline text-slate-900">Scheduled Inspections</h2>
+            <p className="text-sm text-muted-foreground">
+              {role === 'SEEKER'
+                ? 'Your requested physical and virtual property walkthroughs.'
+                : 'Incoming inspection appointments for your listed properties.'}
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="p-12 text-center text-sm text-muted-foreground">Loading inspections...</div>
+          ) : inspections.length === 0 ? (
+            <Card className="p-12 text-center">
+              <Calendar className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+              <h3 className="font-semibold text-slate-900">No inspections scheduled</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                {role === 'SEEKER'
+                  ? 'Explore properties and schedule an on-site or virtual inspection with the verified host.'
+                  : 'You have no pending or completed inspections for your listings.'}
+              </p>
+              {role === 'SEEKER' && (
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href="/marketplace">Find Properties</Link>
+                </Button>
+              )}
             </Card>
-          </TabsContent>
-          
-          <TabsContent value="saved">
-             <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                     {savedProperties.map(property => (
-                        <Card key={property.id} className="overflow-visible">
-                            <div className="flex flex-col md:flex-row">
-                                <div className="md:w-2/5">
-                                    <PropertyCard property={property} />
-                                </div>
-                                <div className="p-6 flex flex-col justify-between md:w-3/5">
-                                    <div>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`compare-${property.id}`}
-                                                    checked={property.isComparing}
-                                                    onCheckedChange={(checked) => handleCompareChange(property.id, !!checked)}
-                                                />
-                                                <label htmlFor={`compare-${property.id}`} className="text-sm font-medium">
-                                                    Compare
-                                                </label>
-                                            </div>
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveProperty(property.id)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                                <span className="sr-only">Remove</span>
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label htmlFor={`notes-${property.id}`} className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                                                <FilePenLine className="h-4 w-4" /> Your Notes
-                                            </label>
-                                            <Input
-                                                id={`notes-${property.id}`}
-                                                placeholder="Add a note..."
-                                                value={property.notes}
-                                                onChange={(e) => handleNoteChange(property.id, e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
-                    ))}
-                    {savedProperties.length === 0 && (
-                        <Card className="text-center p-12">
-                            <p className="text-lg text-muted-foreground">You haven't saved any properties yet.</p>
-                            <p className="text-muted-foreground">Start exploring the marketplace to find your favorites!</p>
-                        </Card>
-                    )}
-                </div>
+          ) : (
+            <div className="space-y-4">
+              {inspections.map((insp) => {
+                const isHost = currentUser?.id === insp.hostId;
+                const dateFormatted = new Date(insp.preferredDate).toLocaleDateString('en-GB', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                });
 
-                <div className="lg:col-span-1">
-                     <Card className="sticky top-24">
-                        <CardHeader>
-                            <CardTitle className="font-headline">Compare Properties</CardTitle>
-                            <CardDescription>Select 2-3 properties to compare side-by-side.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             {propertiesToCompare.length > 0 ? (
-                                <div className="space-y-4">
-                                    {propertiesToCompare.map((p, index) => (
-                                        <div key={p.id}>
-                                            <p className="font-semibold">{p.title}</p>
-                                            <p className="text-sm text-primary">${p.price.toLocaleString()}</p>
-                                            <p className="text-xs text-muted-foreground">{p.bedrooms} Beds | {p.bathrooms} Baths | {p.sqft} sqft</p>
-                                            {index < propertiesToCompare.length - 1 && <Separator className="mt-4" />}
-                                        </div>
-                                    ))}
-                                     <PropertyComparisonDialog
-                                        isOpen={isCompareDialogOpen}
-                                        onOpenChange={setIsCompareDialogOpen}
-                                        properties={propertiesToCompare}
-                                    >
-                                        <Button className="w-full mt-4" disabled={propertiesToCompare.length < 2 || propertiesToCompare.length > 3}>
-                                            Compare ({propertiesToCompare.length})
-                                        </Button>
-                                    </PropertyComparisonDialog>
-                                </div>
-                            ) : (
-                                <div className="text-center text-muted-foreground py-8">
-                                    <p>Select properties from your saved list to start comparing.</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
+                return (
+                  <Card key={insp.id} className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border shadow-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
+                        <Calendar className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link href={`/property/${insp.propertyId}`} className="font-semibold text-slate-900 hover:text-blue-600 text-base">
+                            {insp.propertyTitle}
+                          </Link>
+                          <Badge
+                            className={
+                              insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED'
+                                ? 'bg-emerald-600 text-white'
+                                : insp.status === 'REQUESTED'
+                                ? 'bg-amber-500 text-white'
+                                : insp.status === 'COMPLETED'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-200 text-slate-700'
+                            }
+                          >
+                            {insp.status}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {insp.type}
+                          </Badge>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1 font-medium text-slate-700">
+                            <Clock className="h-3.5 w-3.5 text-slate-400" /> {dateFormatted} &bull; {insp.preferredTimeSlot}
+                          </span>
+                          <span>
+                            {isHost ? `Requested by: ${insp.seekerName}` : `Host Assigned`}
+                          </span>
+                        </div>
+
+                        {insp.notes && (
+                          <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 max-w-xl">
+                            Note: &ldquo;{insp.notes}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end md:self-center">
+                      {isHost && insp.status === 'REQUESTED' && (
+                        <Button
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          disabled={updatingId === insp.id}
+                          onClick={() => handleConfirmInspection(insp.id)}
+                        >
+                          Confirm
+                        </Button>
+                      )}
+                      {insp.status !== 'CANCELLED' && insp.status !== 'COMPLETED' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                          disabled={updatingId === insp.id}
+                          onClick={() => handleCancelInspection(insp.id)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                      <Button asChild size="sm" variant="ghost">
+                        <Link href={`/property/${insp.propertyId}`}>
+                          View Listing <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
-          </TabsContent>
+          )}
+        </TabsContent>
 
-          <TabsContent value="applications">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">My Applications</CardTitle>
-                        <CardDescription>Track the status of your submitted applications and offers.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                    <div className="divide-y divide-border">
-                        {applications.map((app) => (
-                        <div key={app.id} className="p-6 grid grid-cols-1 md:grid-cols-4 items-center gap-4 hover:bg-muted/50">
-                            <div className="flex items-center gap-4 md:col-span-2">
-                            <Image
-                                src={app.propertyImage}
-                                alt={app.propertyTitle}
-                                width={100}
-                                height={75}
-                                className="rounded-lg object-cover aspect-video"
-                                data-ai-hint="house exterior"
-                            />
-                            <div>
-                                <Link href={`/property/${app.propertyId}`} className="font-semibold hover:underline">
-                                {app.propertyTitle}
-                                </Link>
-                                <p className="text-sm text-muted-foreground">{app.type} Application</p>
-                            </div>
-                            </div>
-                            <div className="text-center">
-                            <Badge variant={getStatusVariant(app.status)}>{app.status}</Badge>
-                            </div>
-                            <div className="flex flex-col items-end text-right">
-                            <p className="text-sm text-muted-foreground">Submitted: {new Date(app.dateSubmitted).toLocaleDateString()}</p>
-                            <Button variant="outline" size="sm" className="mt-2">View Details</Button>
-                            </div>
-                        </div>
-                        ))}
-                    </div>
-                    </CardContent>
-                     {applications.length === 0 && (
-                        <CardContent className="text-center p-12">
-                            <p className="text-lg text-muted-foreground">You haven't submitted any applications yet.</p>
-                            <p className="text-muted-foreground">Once you apply for a property, it will show up here.</p>
-                        </CardContent>
-                    )}
-                </Card>
-          </TabsContent>
+        {/* Tab: Applications / Expressions of Interest */}
+        <TabsContent value="applications" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold font-headline text-slate-900">
+              {role === 'SEEKER' ? 'My Expressions of Interest' : 'Received Offers & Applications'}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Rental and purchase applications with verified transparent cost breakdowns.
+            </p>
+          </div>
 
-           <TabsContent value="lease">
-                <Card>
-                    <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                        <CardTitle className="font-headline text-2xl flex items-center gap-2"><FileSignature className="h-6 w-6 text-primary"/>Lease for {leaseDetails.property}</CardTitle>
-                        <CardDescription>{leaseDetails.address}</CardDescription>
-                        </div>
-                        <Badge variant={leaseDetails.status === 'Active' ? 'default' : 'secondary'}>{leaseDetails.status}</Badge>
-                    </div>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-sm font-medium text-muted-foreground">Lease Term</p>
-                            <p className="text-lg font-semibold">{leaseDetails.term}</p>
-                        </div>
-                        <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-sm font-medium text-muted-foreground">Start Date</p>
-                            <p className="text-lg font-semibold">{new Date(leaseDetails.startDate).toLocaleDateString()}</p>
-                        </div>
-                        <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-sm font-medium text-muted-foreground">End Date</p>
-                            <p className="text-lg font-semibold">{new Date(leaseDetails.endDate).toLocaleDateString()}</p>
-                        </div>
-                        <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-sm font-medium text-muted-foreground">Monthly Rent</p>
-                            <p className="text-lg font-semibold">${leaseDetails.rent.toLocaleString()}</p>
-                        </div>
-                    </div>
-                    <Separator />
-                    <div>
-                        <h3 className="text-lg font-semibold mb-2 font-headline">Key Terms & Clauses</h3>
-                        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                            <li>No smoking is permitted inside the unit.</li>
-                            <li>Pets are allowed with a one-time pet fee of $500.</li>
-                            <li>Late rent payments are subject to a 5% late fee after a 3-day grace period.</li>
-                            <li>Tenant is responsible for electricity and internet utilities.</li>
-                        </ul>
-                    </div>
-                    <div className="border-l-4 border-yellow-500 bg-yellow-500/10 p-4 rounded-r-lg">
-                            <div className="flex items-start gap-3">
-                                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                                <div>
-                                    <h4 className="font-semibold text-yellow-800">Renewal Notice</h4>
-                                    <p className="text-sm text-yellow-700">Your lease is up for renewal. Please make a decision by {new Date(leaseDetails.renewalNoticeDate).toLocaleDateString()} to renew or terminate your lease.</p>
-                                </div>
-                            </div>
-                    </div>
-                    </CardContent>
-                    <CardFooter className="gap-4">
-                    <Button size="lg"><FileSignature className="mr-2"/> Renew Lease</Button>
-                    <Button size="lg" variant="outline"><FileDown className="mr-2"/> Download Lease (PDF)</Button>
-                    </CardFooter>
-                </Card>
-          </TabsContent>
+          {loading ? (
+            <div className="p-12 text-center text-sm text-muted-foreground">Loading applications...</div>
+          ) : applications.length === 0 ? (
+            <Card className="p-12 text-center">
+              <FileText className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+              <h3 className="font-semibold text-slate-900">No applications on file</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                {role === 'SEEKER'
+                  ? 'Submit an expression of interest on any verified listing to commence tenancy or purchase discussions.'
+                  : 'No seekers have submitted applications for your listings yet.'}
+              </p>
+              {role === 'SEEKER' && (
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href="/marketplace">Browse Verified Listings</Link>
+                </Button>
+              )}
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {applications.map((app) => {
+                const isHost = (role === 'OWNER' || role === 'AGENT');
+                const dateFormatted = new Date(app.createdAt).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                });
 
-           <TabsContent value="payments">
-             <div className="grid md:grid-cols-3 gap-8 items-start">
-                <div className="md:col-span-2 space-y-8">
-                <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline">Upcoming Payment</CardTitle>
-                            <CardDescription>Your next rent payment is due December 1, 2023.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="border rounded-lg p-4 flex justify-between items-center bg-muted/20">
-                                <p className="text-lg font-semibold">Rent for December</p>
-                                <p className="text-2xl font-bold text-primary">$3,200.00</p>
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="paymentMethod">Payment Method</Label>
-                                <Select defaultValue="ach">
-                                    <SelectTrigger id="paymentMethod">
-                                        <SelectValue placeholder="Select a payment method" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ach">Bank Account (ACH)</SelectItem>
-                                        <SelectItem value="cc">Credit Card</SelectItem>
-                                        <SelectItem value="wallet">Mobile Wallet</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button size="lg" className="w-full">
-                                <CreditCard className="mr-2" /> Pay $3,200.00 Now
-                            </Button>
-                        </CardFooter>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline">Payment History</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Method</TableHead>
-                                        <TableHead className="text-right">Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {paymentHistory.map(p => (
-                                        <TableRow key={p.id}>
-                                            <TableCell>{p.date}</TableCell>
-                                            <TableCell>${p.amount.toLocaleString()}</TableCell>
-                                            <TableCell>{p.method}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Badge variant="default" className="bg-green-600">
-                                                    <CheckCircle className="mr-1 h-3 w-3"/>
-                                                    {p.status}
-                                                </Badge>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="space-y-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline">Auto-Pay</CardTitle>
-                            <CardDescription>Set up recurring payments so you never miss a due date.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex items-center justify-between p-6">
-                        <div className="flex items-center gap-2">
-                            <RefreshCw className="h-5 w-5 text-primary"/>
-                            <Label htmlFor="autopay-switch" className="text-base">Enable Auto-Pay</Label>
+                return (
+                  <Card key={app.id} className="p-5 border shadow-sm">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link href={`/property/${app.propertyId}`} className="font-semibold text-slate-900 hover:text-blue-600 text-base">
+                            {app.propertyTitle}
+                          </Link>
+                          <Badge
+                            className={
+                              app.status === 'APPROVED'
+                                ? 'bg-emerald-600 text-white'
+                                : app.status === 'SUBMITTED'
+                                ? 'bg-amber-500 text-white'
+                                : app.status === 'UNDER_REVIEW'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-200 text-slate-700'
+                            }
+                          >
+                            {app.status}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {app.type === 'RENTAL' ? 'Rental Application' : 'Purchase Offer'}
+                          </Badge>
                         </div>
-                            <Switch id="autopay-switch" />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline">Payment Methods</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="border p-3 rounded-lg flex items-center justify-between text-sm">
-                                <span className="flex items-center gap-2"><Banknote/> Bank of America ....1234</span>
-                                <Badge variant="secondary">Primary</Badge>
-                            </div>
-                            <div className="border p-3 rounded-lg flex items-center justify-between text-sm text-muted-foreground">
-                                <span className="flex items-center gap-2"><CreditCard/> Visa ....5678</span>
-                            </div>
-                            <Button variant="outline" className="w-full">Add a Method</Button>
-                        </CardContent>
-                    </Card>
-                </div>
+
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                          <span>Applicant: <strong>{app.applicantName}</strong></span>
+                          <span>Submitted: {dateFormatted}</span>
+                          {app.offerAmount && (
+                            <span className="font-semibold text-slate-900">
+                              Offer: {formatNaira(app.offerAmount)}
+                            </span>
+                          )}
+                          {app.financingStatus && (
+                            <span>Financing: <strong className="text-slate-700">{app.financingStatus}</strong></span>
+                          )}
+                        </div>
+
+                        {app.message && (
+                          <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-100 max-w-2xl mt-1">
+                            &ldquo;{app.message}&rdquo;
+                          </p>
+                        )}
+                      </div>
+
+                      {isHost && app.status === 'SUBMITTED' && (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            disabled={updatingId === app.id}
+                            onClick={() => handleApplicationStatus(app.id, 'APPROVED')}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            disabled={updatingId === app.id}
+                            onClick={() => handleApplicationStatus(app.id, 'REJECTED')}
+                          >
+                            Decline
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
+          )}
+        </TabsContent>
+
+        {/* Tab: Saved Listings (Seeker) */}
+        {role === 'SEEKER' && (
+          <TabsContent value="saved" className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold font-headline text-slate-900">Saved Properties</h2>
+              <p className="text-sm text-muted-foreground">Shortlisted verified listings you are tracking.</p>
+            </div>
+
+            {savedProperties.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                <h3 className="font-semibold text-slate-900">No saved properties</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                  Save listings you are interested in while exploring the marketplace.
+                </p>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href="/marketplace">Explore Marketplace</Link>
+                </Button>
+              </Card>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {savedProperties.map((prop) => (
+                  <div key={prop.id} className="relative group">
+                    <PropertyCard property={prop} />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-3 right-3 opacity-90 hover:opacity-100 shadow-md"
+                      onClick={() => handleRemoveSaved(prop.id)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" /> Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
+        )}
 
-           <TabsContent value="maintenance">
-                <MaintenanceRequestForm />
-          </TabsContent>
-
-          {/* Landlord Tabs */}
-           <TabsContent value="rented">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Rented Properties</CardTitle>
-                        <CardDescription>An overview of your currently occupied properties.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Property</TableHead>
-                                    <TableHead>Tenant</TableHead>
-                                    <TableHead>Monthly Rent</TableHead>
-                                    <TableHead>Lease End Date</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {rentedProperties.map(prop => (
-                                    <TableRow key={prop.id}>
-                                        <TableCell className="font-medium">
-                                            <Link href={`/property/${prop.id}`} className="hover:underline">{prop.title}</Link>
-                                            <p className="text-xs text-muted-foreground">{prop.address}</p>
-                                        </TableCell>
-                                        <TableCell>John Tenant</TableCell>
-                                        <TableCell>${prop.price.toLocaleString()}</TableCell>
-                                        <TableCell>2024-10-31</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-           </TabsContent>
-
-            <TabsContent value="leases">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Lease Agreements</CardTitle>
-                        <CardDescription>Manage all active and past lease agreements.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Property</TableHead>
-                                    <TableHead>Tenant</TableHead>
-                                    <TableHead>Term</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {leases.map(lease => (
-                                    <TableRow key={lease.id}>
-                                        <TableCell className="font-medium">
-                                            <Link href={`/property/${lease.propertyId}`} className="hover:underline">{lease.propertyTitle}</Link>
-                                        </TableCell>
-                                        <TableCell>{lease.tenantName}</TableCell>
-                                        <TableCell>{new Date(lease.startDate).toLocaleDateString()} - {new Date(lease.endDate).toLocaleDateString()}</TableCell>
-                                        <TableCell><Badge variant={getStatusVariant(lease.status)}>{lease.status}</Badge></TableCell>
-                                        <TableCell className="text-right">
-                                            <Button asChild variant="outline" size="sm">
-                                                <Link href={`/lease/${lease.id}`}>View Lease</Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-             <TabsContent value="maintenance-landlord">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Incoming Maintenance Requests</CardTitle>
-                        <CardDescription>Review and manage maintenance requests from your tenants.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Property</TableHead>
-                                    <TableHead>Tenant</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Priority</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {maintenanceRequests.map(req => (
-                                    <TableRow key={req.id}>
-                                        <TableCell className="font-medium">
-                                             <Link href={`/property/${req.propertyId}`} className="hover:underline">{req.propertyTitle}</Link>
-                                        </TableCell>
-                                        <TableCell>{req.tenantName}</TableCell>
-                                        <TableCell><Badge variant="secondary">{req.category}</Badge></TableCell>
-                                        <TableCell>
-                                            <Badge variant={req.priority === 'Emergency' || req.priority === 'High' ? 'destructive' : 'outline'}>
-                                                {req.priority}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell><Badge variant={getStatusVariant(req.status)}>{req.status}</Badge></TableCell>
-                                        <TableCell className="text-right space-x-2">
-                                            <Button asChild variant="outline" size="sm">
-                                                <Link href={`/maintenance/${req.id}`}>Details</Link>
-                                            </Button>
-                                            <Button asChild variant="ghost" size="icon">
-                                                <Link href={`/messages`}><MessageSquare className="h-4 w-4"/></Link>
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="financials">
-                <div className="flex flex-1 flex-col gap-8">
-                    <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {financialData.summary.map((metric) => (
-                        <Card key={metric.title}>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
-                            <metric.icon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                            <div className="text-2xl font-bold">{metric.value}</div>
-                            <p className="text-xs text-muted-foreground">{metric.change}</p>
-                            </CardContent>
-                        </Card>
-                        ))}
-                    </section>
-                    
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="font-headline">Income vs. Expense</CardTitle>
-                                <CardDescription>Last 6 months</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={financialData.chartData}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="month" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Bar dataKey="income" fill="hsl(var(--primary))" name="Income" />
-                                        <Bar dataKey="expense" fill="hsl(var(--destructive))" name="Expense" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="font-headline">Recent Transactions</CardTitle>
-                                    <CardDescription>A log of your most recent income and expenses.</CardDescription>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button size="sm" variant="outline"><MinusCircle className="mr-2"/> Add Expense</Button>
-                                    <Button size="sm"><PlusCircle className="mr-2"/> Add Income</Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Description</TableHead>
-                                            <TableHead>Category</TableHead>
-                                            <TableHead className="text-right">Amount</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {financialData.transactions.map((txn) => (
-                                            <TableRow key={txn.id}>
-                                                <TableCell>{txn.date}</TableCell>
-                                                <TableCell className="font-medium">{txn.description}</TableCell>
-                                                <TableCell><Badge variant="outline">{txn.category}</Badge></TableCell>
-                                                <TableCell className={`text-right font-semibold ${txn.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {txn.amount > 0 ? '+' : ''}${Math.abs(txn.amount).toLocaleString()}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                    </div>
+        {/* Tab: Trust & Verification Info */}
+        <TabsContent value="identity" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline text-lg flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                PropHunta Trust Infrastructure Status
+              </CardTitle>
+              <CardDescription>
+                Verification credentials that establish your trust profile across the platform.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Account Role</span>
+                    <Badge variant="outline">{role}</Badge>
+                  </div>
+                  <p className="font-semibold text-slate-900">{getRoleLabel()}</p>
                 </div>
-            </TabsContent>
 
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Identity Verification</span>
+                    <Badge className="bg-emerald-600 text-white text-[10px]">VERIFIED</Badge>
+                  </div>
+                  <p className="font-semibold text-slate-900">National ID / BVN Matched</p>
+                </div>
 
-           <TabsContent value="settings">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Profile Settings</CardTitle>
-                        <CardDescription>
-                        This is a placeholder for landlord-specific profile settings.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>Landlord settings content goes here...</p>
-                    </CardContent>
-                </Card>
-          </TabsContent>
-        </Tabs>
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Trust Score</span>
+                    <Badge className="bg-blue-600 text-white text-[10px]">98 / 100</Badge>
+                  </div>
+                  <p className="font-semibold text-slate-900">Zero Unresolved Reports</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <h3 className="font-semibold text-sm text-slate-900">Audit & Accountability Guarantees</h3>
+                <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
+                  <li>Every action taken (inspection scheduling, enquiry dispatch, review submission) is immutably logged to the PropHunta audit store.</li>
+                  <li>Title documentation undergoes independent verification by authorized officers prior to receiving the verified trust shield.</li>
+                  <li>Pricing transparency enforces explicit itemization of legal fees, caution deposits, and service charges.</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
-  )
+  );
 }

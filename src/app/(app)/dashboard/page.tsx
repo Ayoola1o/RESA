@@ -42,6 +42,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { useUserRole } from '@/context/UserRoleContext';
 
 // Chart data representing Lagos average property prices over the year (in Millions of Naira)
 const marketPriceData = {
@@ -109,27 +111,76 @@ export default function DashboardPage() {
 
   const chartData = marketPriceData[selectedCity] || marketPriceData.Lagos;
 
+  const { currentUser, role } = useUserRole();
+  const userName = currentUser?.name ? currentUser.name.split(' ')[0] : 'Member';
+
   return (
     <div className="flex flex-col gap-6 pb-12">
       {/* 1. Greeting & Context Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Good morning, Ayoola 👋
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Welcome back, {userName} 👋
+            </h1>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+              {role === 'SEEKER' ? 'Property Seeker' : role === 'OWNER' ? 'Property Owner' : role === 'AGENT' ? 'Agent / Manager' : 'Verification Officer'}
+            </span>
+          </div>
           <p className="text-sm font-medium text-slate-500 mt-1">
-            Here&apos;s what&apos;s happening with your real estate journey today.
+            PropHunta AI &mdash; Building the verified trust infrastructure for Nigerian property.
           </p>
         </div>
 
         <div className="flex flex-col items-start sm:items-end">
-          <span className="text-xs font-semibold text-slate-400">Tuesday, Apr 22, 2025</span>
+          <span className="text-xs font-semibold text-slate-400">
+            {new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mt-0.5">
             <MapPin className="h-3.5 w-3.5 text-blue-600" />
-            <span>Lagos, Nigeria</span>
+            <span>Lagos &bull; Abuja, Nigeria</span>
           </div>
         </div>
       </div>
+
+      {/* Role Action Banners */}
+      {role === 'ADMIN' && (
+        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+          <div className="flex items-center gap-3.5">
+            <div className="h-10 w-10 rounded-xl bg-blue-600/30 text-blue-400 flex items-center justify-center border border-blue-500/40 shrink-0">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-white">Verification Officer Portal Active</h3>
+              <p className="text-xs text-slate-300">
+                Audit pending property titles (C of O, Governor&apos;s Consent), manage trust reports, and enforce listing compliance.
+              </p>
+            </div>
+          </div>
+          <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
+            <Link href="/admin">Open Verification Queue &rarr;</Link>
+          </Button>
+        </div>
+      )}
+
+      {(role === 'OWNER' || role === 'AGENT') && (
+        <div className="rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-950 border border-blue-800/60 p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+          <div className="flex items-center gap-3.5">
+            <div className="h-10 w-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-400/30 shrink-0">
+              <PlusCircle className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-white">List Your Property with Verified Trust Status</h3>
+              <p className="text-xs text-blue-200">
+                Upload survey plan or title documentation to receive the PropHunta Verified Trust Shield and unlock serious seekers.
+              </p>
+            </div>
+          </div>
+          <Button asChild className="bg-white text-blue-950 hover:bg-blue-50 font-semibold shrink-0">
+            <Link href="/landlord/add-property">Add New Listing &rarr;</Link>
+          </Button>
+        </div>
+      )}
 
       {/* 2. Top Metric Cards (4 Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

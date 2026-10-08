@@ -1,44 +1,66 @@
-
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { UserRole } from '@/app/(app)/layout';
-
-const ROLE_STORAGE_KEY = 'resa_user_role';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { User, UserRole } from '@/types/prophunta';
+import { getCurrentUserAction, switchDemoRoleAction } from '@/server/actions/prophunta-actions';
 
 interface UserRoleContextType {
   userRole: UserRole;
-  setUserRole: (role: UserRole) => void;
+  role: UserRole;
+  currentUser: User | null;
+  setUserRole: (role: UserRole) => Promise<void>;
+  refreshUser: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
 
 export function UserRoleProvider({ children }: { children: ReactNode }) {
-  const [userRole, setUserRoleState] = useState<UserRole>('tenant');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userRole, setUserRoleState] = useState<UserRole>('SEEKER');
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const refreshUser = useCallback(async () => {
     try {
-      const storedRole = localStorage.getItem(ROLE_STORAGE_KEY) as UserRole | null;
-      if (storedRole === 'tenant' || storedRole === 'landlord') {
-        setUserRoleState(storedRole);
+      const user = await getCurrentUserAction();
+      if (user) {
+        setCurrentUser(user);
+        setUserRoleState(user.role);
       }
-    } catch {
-      // Ignore storage access errors
+    } catch (err) {
+      console.warn('Could not fetch active user session:', err);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  const setUserRole = (role: UserRole) => {
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  const setUserRole = async (role: UserRole) => {
     setUserRoleState(role);
     try {
-      localStorage.setItem(ROLE_STORAGE_KEY, role);
-      document.cookie = `${ROLE_STORAGE_KEY}=${role}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch {
-      // Ignore storage access errors
+      const res = await switchDemoRoleAction(role);
+      if (res.success && res.user) {
+        setCurrentUser(res.user);
+      }
+    } catch (err) {
+      console.warn('Could not switch server role:', err);
     }
   };
 
   return (
-    <UserRoleContext.Provider value={{ userRole, setUserRole }}>
+    <UserRoleContext.Provider
+      value={{
+        userRole,
+        role: userRole,
+        currentUser,
+        setUserRole,
+        refreshUser,
+        isLoading,
+      }}
+    >
       {children}
     </UserRoleContext.Provider>
   );

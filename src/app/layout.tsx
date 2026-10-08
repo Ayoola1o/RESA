@@ -3,8 +3,8 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'RESA: Real Estate Solutions AI',
-  description: 'The future of real estate, powered by AI.',
+  title: 'PropHunta AI — Verified Property Trust Infrastructure',
+  description: 'Building the verified trust infrastructure for property. Verified property. Smarter decisions.',
 };
 
 export default function RootLayout({

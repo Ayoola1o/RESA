@@ -3,26 +3,45 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Bath, BedDouble, CheckCircle2, Heart, Maximize2, Star } from 'lucide-react';
-import type { Property } from '@/lib/types';
+import { Bath, BedDouble, CheckCircle2, Heart, Maximize2, Star, ShieldCheck } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PropertyCardProps {
-  property: Property;
+  property: any;
   className?: string;
 }
 
 export default function PropertyCard({ property, className = '' }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const isRent = property.status === 'For Rent' || property.status === 'Rented';
-  const isLand = property.type === 'Land';
-  const rating = property.rating || (4.2 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 7) * 0.1).toFixed(1);
-  const reviewsCount = property.reviewsCount || (8 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 20));
+  const isRent =
+    property.listingType === 'RENT' ||
+    property.status === 'For Rent' ||
+    property.status === 'Rented';
 
-  const areaDisplay = isLand
-    ? `${property.sqft >= 3000 ? Math.round(property.sqft / 10.764) : property.sqft} sqm`
-    : `${property.sqft.toLocaleString()} sqft`;
+  const isVerified =
+    property.listingStatus === 'VERIFIED' ||
+    property.isVerified === true;
+
+  const statusLabel =
+    property.status ||
+    (property.listingType === 'RENT' ? 'For Rent' : property.listingType === 'SALE' ? 'For Sale' : 'Available');
+
+  const rating =
+    property.rating ||
+    (4.3 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 7) * 0.1).toFixed(1);
+
+  const reviewsCount =
+    property.reviewsCount ||
+    8 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 20);
+
+  const sqft = property.sqft || 350;
+  const areaDisplay = `${sqft.toLocaleString()} sqm`;
+
+  const imageUrl =
+    (property.media && property.media[0]?.url) ||
+    (property.images && property.images[0]) ||
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
 
   return (
     <div
@@ -35,7 +54,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             alt={property.title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             height={260}
-            src={property.images[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'}
+            src={imageUrl}
             width={400}
             data-ai-hint="house exterior"
           />
@@ -48,11 +67,11 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
               isRent ? 'bg-blue-600' : 'bg-emerald-600'
             }`}
           >
-            {property.status}
+            {statusLabel}
           </span>
-          {property.isVerified && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-900/80 backdrop-blur-sm text-white shadow-sm">
-              <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+          {isVerified && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-900/85 backdrop-blur-sm text-emerald-400 shadow-sm border border-emerald-500/30">
+              <ShieldCheck className="h-3 w-3 text-emerald-400" />
               Verified
             </span>
           )}
@@ -83,23 +102,23 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
           <h3 className="text-[15px] font-bold text-slate-900 line-clamp-1">{property.title}</h3>
         </Link>
         <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
-          {property.address}, {property.city}
+          {property.address}, {property.area ? `${property.area}, ` : ''}{property.city}
         </p>
 
         {/* Price */}
         <div className="mt-2 text-base font-extrabold text-slate-900 tracking-tight">
-          {formatCurrency(property.price, property.status, property.priceUnit)}
+          {formatCurrency(property.price, statusLabel, property.priceUnit)}
         </div>
 
         {/* Specs */}
         <div className="mt-2.5 flex items-center justify-between text-xs text-slate-600 border-t border-slate-100 pt-2.5">
           <div className="flex items-center gap-1">
             <BedDouble className="h-3.5 w-3.5 text-slate-400" />
-            <span>{property.bedrooms}</span>
+            <span>{property.bedrooms} Beds</span>
           </div>
           <div className="flex items-center gap-1">
             <Bath className="h-3.5 w-3.5 text-slate-400" />
-            <span>{property.bathrooms}</span>
+            <span>{property.bathrooms} Baths</span>
           </div>
           <div className="flex items-center gap-1">
             <Maximize2 className="h-3.5 w-3.5 text-slate-400" />
@@ -116,4 +135,4 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
       </div>
     </div>
   );
-}
+}

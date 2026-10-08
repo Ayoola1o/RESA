@@ -1,47 +1,50 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { notFound } from "next/navigation";
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Bath,
   BedDouble,
   Building,
   CheckCircle,
   ChevronLeft,
-  DollarSign,
   Heart,
   MapPin,
   Share,
-  SquareGanttChart,
-  Star,
+  ShieldCheck,
   ShieldAlert,
   Calendar,
   FileText,
   MessageSquare,
-  Users,
   Banknote,
   FileSignature,
   AlertTriangle,
   Clock,
-} from "lucide-react";
+  Loader2,
+  Info,
+  BadgeCheck,
+  Check,
+  Flag,
+} from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel';
 import {
   Dialog,
   DialogContent,
@@ -49,459 +52,875 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import { properties, tenants, leases } from "@/lib/mock-data";
-import Link from "next/link";
-import PriceHistoryChart from "@/components/price-history-chart";
-import { cn, formatCurrency } from "@/lib/utils";
-import { useUserRole } from "@/context/UserRoleContext";
-import { useToast } from "@/hooks/use-toast";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Property, ReportReason, VerificationSubStatus } from '@/types/prophunta';
+import { formatCurrency } from '@/lib/utils';
+import { useUserRole } from '@/context/UserRoleContext';
+import { useToast } from '@/hooks/use-toast';
+import {
+  requestInspectionAction,
+  submitApplicationAction,
+  sendEnquiryAction,
+  fileReportAction,
+} from '@/server/actions/prophunta-actions';
 
 interface PropertyDetailClientProps {
-  id: string;
+  initialProperty: Property;
 }
 
-export default function PropertyDetailClient({ id }: PropertyDetailClientProps) {
-  const { userRole } = useUserRole();
+export default function PropertyDetailClient({ initialProperty }: PropertyDetailClientProps) {
+  const router = useRouter();
+  const { userRole, currentUser } = useUserRole();
   const { toast } = useToast();
-  const property = properties.find((p) => p.id === id);
+  const [property] = useState<Property>(initialProperty);
+
   const [isLiked, setIsLiked] = useState(false);
   const [isTourDialogOpen, setIsTourDialogOpen] = useState(false);
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
-  const [tourDate, setTourDate] = useState("");
-  const [tourTime, setTourTime] = useState("11:00");
-  const [tourType, setTourType] = useState("in-person");
-  const [offerAmount, setOfferAmount] = useState("");
-  const [financingType, setFinancingType] = useState("cash");
-  const [offerNotes, setOfferNotes] = useState("");
+  const [isEnquiryDialogOpen, setIsEnquiryDialogOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!property) {
-    notFound();
-  }
+  // Form states
+  const [tourDate, setTourDate] = useState('');
+  const [tourTimeSlot, setTourTimeSlot] = useState('10:00 AM - 12:00 PM');
+  const [tourType, setTourType] = useState<'IN_PERSON' | 'VIDEO'>('IN_PERSON');
+  const [tourNotes, setTourNotes] = useState('');
 
-  const isLandlordView = userRole === 'landlord';
-  const isRented = property.status === 'Rented';
-  const tenantInfo = isRented ? tenants[property.id as keyof typeof tenants] : null;
-  const leaseInfo = tenantInfo ? leases.find(l => l.id === tenantInfo.leaseId) : null;
+  const [offerAmount, setOfferAmount] = useState('');
+  const [financingStatus, setFinancingStatus] = useState<'CASH' | 'MORTGAGE_PRE_APPROVED' | 'INSTALLMENT'>('CASH');
+  const [occupation, setOccupation] = useState('');
+  const [moveInDate, setMoveInDate] = useState('');
+  const [occupants, setOccupants] = useState(1);
+  const [applicationMessage, setApplicationMessage] = useState('');
 
-  const [paymentDaysMessage, setPaymentDaysMessage] = useState<string | null>(null);
+  const [enquiryMessage, setEnquiryMessage] = useState('');
 
-  useEffect(() => {
-    if (tenantInfo) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const dueDate = new Date(tenantInfo.nextPaymentDue);
+  const [reportReason, setReportReason] = useState<ReportReason>('Suspected Scam');
+  const [reportDescription, setReportDescription] = useState('');
 
-      const timeDiff = dueDate.getTime() - today.getTime();
-      const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  // Cost breakdown calculations
+  const basePrice = property.price;
+  const agreementFee = property.agreementFee || 0;
+  const cautionFee = property.cautionFee || 0;
+  const serviceCharge = property.serviceCharge || 0;
+  const otherCharges = property.otherCharges || 0;
+  const totalOutlay = basePrice + agreementFee + cautionFee + serviceCharge + otherCharges;
 
-      if (tenantInfo.paymentStatus === 'Upcoming') {
-        setPaymentDaysMessage(`${dayDiff} days left`);
-      } else if (tenantInfo.paymentStatus === 'Overdue') {
-        setPaymentDaysMessage(`${Math.abs(dayDiff)} days overdue`);
-      } else {
-        setPaymentDaysMessage('Paid for the month');
-      }
+  // Handlers
+  const handleScheduleInspection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tourDate) {
+      toast({ variant: 'destructive', title: 'Please select a date for the inspection.' });
+      return;
     }
-  }, [tenantInfo]);
 
-  const LandlordRentedPropertyCards = () => (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center gap-2"><Users /> Tenant Information</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center gap-4">
-          <Image src={tenantInfo?.avatar || ''} alt={tenantInfo?.name || ''} width={64} height={64} className="rounded-full object-cover" data-ai-hint="person portrait" />
-          <div>
-            <p className="font-semibold">{tenantInfo?.name}</p>
-            <p className="text-sm text-muted-foreground">Current Tenant</p>
-            <Button asChild variant="outline" size="sm" className="mt-2">
-              <Link href="/messages/2">
-                <MessageSquare className="mr-2 h-4 w-4" /> Contact Tenant
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center gap-2"><FileSignature /> Lease Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Lease Start Date</span>
-            <span className="font-semibold">{leaseInfo ? new Date(leaseInfo.startDate).toLocaleDateString() : 'N/A'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Lease End Date</span>
-            <span className="font-semibold">{leaseInfo ? new Date(leaseInfo.endDate).toLocaleDateString() : 'N/A'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Status</span>
-            <Badge variant={leaseInfo?.status === 'Active' ? 'default' : 'secondary'}>{leaseInfo?.status}</Badge>
-          </div>
-          <Button asChild variant="outline" className="w-full"><Link href={`/lease/${leaseInfo?.id}`}>View Full Lease</Link></Button>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline flex items-center gap-2"><Banknote /> Financials</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Monthly Rent</span>
-            <span className="font-semibold">{formatCurrency(tenantInfo?.rentAmount || 0, 'For Rent')}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Next Payment</span>
-            <span className="font-semibold">{tenantInfo ? new Date(tenantInfo.nextPaymentDue).toLocaleDateString() : 'N/A'}</span>
-          </div>
-          {tenantInfo && paymentDaysMessage && (
-            <div className={cn(
-              "border-l-4 p-3 rounded-r-lg flex items-center gap-2",
-              tenantInfo.paymentStatus === 'Overdue' && 'border-destructive bg-destructive/10 text-destructive',
-              tenantInfo.paymentStatus === 'Upcoming' && 'border-yellow-500 bg-yellow-500/10 text-yellow-700',
-              tenantInfo.paymentStatus === 'Paid' && 'border-green-500 bg-green-500/10 text-green-700'
-            )}>
-              {tenantInfo.paymentStatus === 'Overdue' && <AlertTriangle className="h-5 w-5" />}
-              {tenantInfo.paymentStatus === 'Upcoming' && <Clock className="h-5 w-5" />}
-              {tenantInfo.paymentStatus === 'Paid' && <CheckCircle className="h-5 w-5" />}
-              <span className="text-sm font-medium">{paymentDaysMessage}</span>
-            </div>
-          )}
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/profile?tab=financials">View Financial History</Link>
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    setIsSubmitting(true);
+    const res = await requestInspectionAction({
+      propertyId: property.id,
+      preferredDate: tourDate,
+      preferredTimeSlot: tourTimeSlot,
+      type: tourType,
+      notes: tourNotes,
+    });
+    setIsSubmitting(false);
 
-  const DefaultSidebar = () => (
-    <div className="space-y-8">
-      <Card className="overflow-hidden">
-        <CardHeader className="items-center bg-muted/30 pb-4">
-          <Image src={property.agent.avatar} alt={property.agent.name} width={80} height={80} className="rounded-full border-4 border-background shadow-md object-cover" data-ai-hint="person portrait" />
-          <CardTitle className="font-headline">{property.agent.name}</CardTitle>
-          <CardDescription>Listing Agent</CardDescription>
-          <div className="flex items-center gap-0.5">
-            {[...Array(5)].map((_, i) => <Star key={i} className={cn("w-4 h-4", i < 4 ? "fill-primary stroke-primary" : "fill-muted stroke-muted-foreground")} />)}
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          <Button asChild className="w-full" size="lg">
-            <Link href="/messages/1">
-              <MessageSquare className="mr-2" /> Contact Agent
-            </Link>
-          </Button>
-          <Button onClick={() => setIsTourDialogOpen(true)} variant="outline" className="w-full" size="lg">
-            <Calendar className="mr-2" /> Schedule a Tour
-          </Button>
-        </CardContent>
-      </Card>
+    if (res.success) {
+      toast({
+        title: 'Inspection Requested',
+        description: `Your inspection for ${tourDate} has been sent to the host for confirmation.`,
+      });
+      setIsTourDialogOpen(false);
+      setTourNotes('');
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to request inspection.' });
+    }
+  };
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {property.status === "For Rent" ? (
-            <Button asChild className="w-full" size="lg">
-              <Link href={`/apply/${property.id}`}>
-                <FileText className="mr-2 h-5 w-5" /> Apply Now
-              </Link>
-            </Button>
-          ) : (
-            <Button onClick={() => setIsOfferDialogOpen(true)} className="w-full" size="lg">
-              <DollarSign className="mr-2 h-5 w-5" /> Make an Offer
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+  const handleSubmitOfferOrApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Location & Hazards</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Image
-            src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop&q=80"
-            alt="Property Location Map"
-            width={600}
-            height={400}
-            className="w-full h-48 object-cover rounded-md"
-            data-ai-hint="map satellite"
-          />
-          <Badge variant={property.isVerified ? 'default' : 'destructive'} className="w-full justify-center text-sm p-2">
-            {property.isVerified ? <CheckCircle className="mr-2 h-4 w-4" /> : <ShieldAlert className="mr-2 h-4 w-4" />}
-            {property.isVerified ? "Verified Listing" : "Unverified Listing"}
-          </Badge>
-          <div className="border p-4 rounded-lg bg-muted/50">
-            <h4 className="font-semibold flex items-center gap-2"><ShieldAlert className="h-5 w-5 text-destructive" /> Flood Risk</h4>
-            <p className="text-muted-foreground text-sm mt-1">This property is located in a <span className="font-bold text-destructive">{property.floodRisk}</span> risk flood zone. We recommend consulting with insurance providers about flood insurance.</p>
-          </div>
-        </CardContent>
-      </Card>
+    const isRental = property.listingType === 'RENT';
+    const res = await submitApplicationAction({
+      propertyId: property.id,
+      type: isRental ? 'RENTAL' : 'SALE_OFFER',
+      occupation: isRental ? occupation : undefined,
+      moveInDate: isRental ? moveInDate : undefined,
+      occupants: isRental ? Number(occupants) : undefined,
+      offerAmount: !isRental && offerAmount ? Number(offerAmount) : undefined,
+      financingStatus: !isRental ? financingStatus : undefined,
+      message: applicationMessage || (isRental ? 'Rental Application' : 'Formal Purchase Offer'),
+    });
+    setIsSubmitting(false);
 
-    </div>
-  );
+    if (res.success) {
+      toast({
+        title: isRental ? 'Rental Application Submitted' : 'Offer Submitted',
+        description: 'Your submission has been recorded and the owner/agent has been notified.',
+      });
+      setIsOfferDialogOpen(false);
+      router.push('/profile?tab=applications');
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to submit.' });
+    }
+  };
+
+  const handleSendEnquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!enquiryMessage.trim()) return;
+
+    setIsSubmitting(true);
+    const res = await sendEnquiryAction(property.id, enquiryMessage.trim());
+    setIsSubmitting(false);
+
+    if (res.success) {
+      toast({
+        title: 'Enquiry Sent',
+        description: 'Your enquiry is now active in your Messages.',
+      });
+      setIsEnquiryDialogOpen(false);
+      setEnquiryMessage('');
+      router.push('/messages');
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to send message.' });
+    }
+  };
+
+  const handleReportListing = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const res = await fileReportAction(property.id, reportReason, reportDescription.trim());
+    setIsSubmitting(false);
+
+    if (res.success) {
+      toast({
+        title: 'Report Submitted',
+        description: 'Our verification and trust officers will investigate this property.',
+      });
+      setIsReportDialogOpen(false);
+      setReportDescription('');
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to submit report.' });
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({ title: 'Link copied to clipboard!' });
+    } catch {
+      toast({ title: 'Could not copy link.' });
+    }
+  };
+
+  const v = property.verification;
+
+  const renderStatusBadge = (status?: VerificationSubStatus) => {
+    switch (status) {
+      case 'PASSED':
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+            <Check className="h-3 w-3" />
+            Verified
+          </span>
+        );
+      case 'IN_REVIEW':
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+            <Clock className="h-3 w-3" />
+            In Review
+          </span>
+        );
+      case 'CHANGES_REQUIRED':
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md">
+            <AlertTriangle className="h-3 w-3" />
+            Clarification
+          </span>
+        );
+      case 'FAILED':
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-md">
+            <ShieldAlert className="h-3 w-3" />
+            Failed
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+            Pending
+          </span>
+        );
+    }
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="mb-4">
-        <Link href="/marketplace" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Back to marketplace
-        </Link>
+    <div className="space-y-8 pb-16">
+      {/* Top Navigation Row */}
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" asChild className="gap-2 text-slate-600 hover:text-slate-900">
+          <Link href="/marketplace">
+            <ChevronLeft className="h-4 w-4" />
+            Back to Marketplace
+          </Link>
+        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsReportDialogOpen(true)}
+            className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+          >
+            <Flag className="h-3.5 w-3.5 mr-1.5" />
+            Report Listing
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleShare}>
+            <Share className="h-4 w-4 mr-2" />
+            Share
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsLiked(!isLiked)}
+            className={isLiked ? 'text-red-500 border-red-200' : ''}
+          >
+            <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-red-500' : ''}`} />
+            {isLiked ? 'Saved' : 'Save'}
+          </Button>
+        </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-8">
-          <Card>
-            <CardContent className="p-0">
-              <Carousel className="w-full">
-                <CarouselContent>
-                  {property.images.map((img, index) => (
-                    <CarouselItem key={index}>
+
+      {/* Main Grid: Left Details & Right Action / Verification Column */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column (2 Cols) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Media Carousel */}
+          <div className="relative rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-200/80">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {property.media.map((med, index) => (
+                  <CarouselItem key={med.id || index}>
+                    <div className="relative h-[340px] sm:h-[460px] w-full">
                       <Image
-                        src={img}
-                        alt={`${property.title} image ${index + 1}`}
-                        width={800}
-                        height={600}
-                        className="w-full aspect-video object-cover rounded-t-lg"
-                        data-ai-hint="house interior"
+                        src={med.url}
+                        alt={med.caption || property.title}
+                        fill
+                        className="object-cover"
+                        priority={index === 0}
                       />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-4" />
-                <CarouselNext className="right-4" />
-              </Carousel>
-            </CardContent>
-          </Card>
+                      {med.caption && (
+                        <div className="absolute bottom-3 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                          {med.caption}
+                        </div>
+                      )}
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-4" />
+              <CarouselNext className="right-4" />
+            </Carousel>
 
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
+            {/* Badges Overlay */}
+            <div className="absolute top-4 left-4 flex gap-2">
+              <Badge
+                className={`text-xs font-bold px-3 py-1 ${
+                  property.listingStatus === 'VERIFIED'
+                    ? 'bg-emerald-600 text-white'
+                    : property.listingStatus === 'UNDER_REVIEW'
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-slate-700 text-white'
+                }`}
+              >
+                {property.listingStatus === 'VERIFIED' ? '✓ Verified Listing' : property.listingStatus}
+              </Badge>
+              <Badge variant="secondary" className="text-xs font-bold bg-white/90 text-slate-800 shadow-sm">
+                {property.listingType === 'RENT' ? 'For Rent' : 'For Sale'}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Title & Core Overview */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
+                  {property.title}
+                </h1>
+                <p className="flex items-center text-sm font-medium text-slate-500 mt-1.5">
+                  <MapPin className="h-4 w-4 mr-1 text-blue-600 shrink-0" />
+                  {property.address}, {property.area}, {property.city}, {property.state}
+                </p>
+              </div>
+              <div className="text-left sm:text-right shrink-0">
+                <div className="text-2xl sm:text-3xl font-black text-blue-700">
+                  {formatCurrency(property.price, property.listingType === 'RENT' ? 'For Rent' : 'For Sale', property.priceUnit)}
+                </div>
+                <p className="text-xs font-semibold text-slate-400">
+                  {property.listingType === 'RENT' ? 'Annual Rent' : 'Purchase Price'}
+                </p>
+              </div>
+            </div>
+
+            {/* Metric Pills */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 pt-2">
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <BedDouble className="h-5 w-5 text-blue-600" />
                 <div>
-                  <Badge variant={property.status === 'For Sale' ? "destructive" : "secondary"}>{property.status}</Badge>
-                  <h1 className="text-3xl font-bold font-headline mt-2">{property.title}</h1>
+                  <div className="text-xs font-bold text-slate-900">{property.bedrooms} Beds</div>
+                  <div className="text-[10px] text-slate-400">Bedrooms</div>
                 </div>
-                {!isLandlordView && (
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        if (typeof window !== 'undefined') {
-                          navigator.clipboard.writeText(window.location.href);
-                          toast({
-                            title: "Link copied",
-                            description: "Property listing URL copied to clipboard!",
-                          });
-                        }
-                      }}
-                      aria-label="Share property listing"
-                    >
-                      <Share className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => setIsLiked(!isLiked)} aria-pressed={isLiked}>
-                      <Heart className={cn("h-4 w-4", isLiked && "fill-red-500 text-red-500")} />
-                    </Button>
+              </div>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <Bath className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="text-xs font-bold text-slate-900">{property.bathrooms} Baths</div>
+                  <div className="text-[10px] text-slate-400">Bathrooms</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <Building className="h-5 w-5 text-blue-600" />
+                <div>
+                  <div className="text-xs font-bold text-slate-900">{property.propertyType}</div>
+                  <div className="text-[10px] text-slate-400">Building Type</div>
+                </div>
+              </div>
+              {property.sqft && (
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">{property.sqft} sqm</div>
+                    <div className="text-[10px] text-slate-400">Floor Area</div>
                   </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{property.address}, {property.city}, {property.state} {property.zip}</span>
-              </div>
-              <p className="text-4xl font-bold text-primary">
-                {formatCurrency(property.price, property.status, property.priceUnit)}
-              </p>
-
-            </CardHeader>
-            <CardContent className="space-y-6">
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div className="p-4 rounded-lg bg-accent/50">
-                  <BedDouble className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <p className="font-semibold">{property.bedrooms}</p>
-                  <p className="text-sm text-muted-foreground">Bedrooms</p>
                 </div>
-                <div className="p-4 rounded-lg bg-accent/50">
-                  <Bath className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <p className="font-semibold">{property.bathrooms}</p>
-                  <p className="text-sm text-muted-foreground">Bathrooms</p>
-                </div>
-                <div className="p-4 rounded-lg bg-accent/50">
-                  <SquareGanttChart className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <p className="font-semibold">{property.sqft.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">Sq. Ft.</p>
-                </div>
-                <div className="p-4 rounded-lg bg-accent/50">
-                  <Building className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <p className="font-semibold">{property.type}</p>
-                  <p className="text-sm text-muted-foreground">Type</p>
-                </div>
-              </div>
+              )}
+            </div>
+          </div>
 
-              <Separator />
-
-              <h3 className="font-semibold font-headline text-xl">Description</h3>
-              <p className="text-muted-foreground">{property.description}</p>
-
-              <h3 className="font-semibold font-headline text-xl">Features</h3>
-              <div className="flex flex-wrap gap-2">
-                {property.features.map(feature => <Badge key={feature} variant="secondary">{feature}</Badge>)}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Price History</CardTitle>
+          {/* Description */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-bold text-slate-900">About this Property</CardTitle>
             </CardHeader>
             <CardContent>
-              <PriceHistoryChart data={property.priceHistory || []} />
+              <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-line">
+                {property.description}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Verified Features */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-bold text-slate-900">Verified Features & Amenities</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {property.features.map((feat) => (
+                  <div key={feat} className="flex items-center gap-2 text-xs font-medium text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                    <span>{feat}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Full Cost Breakdown (PRD Section 11) */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold text-slate-900">
+                  Transparent Cost Breakdown
+                </CardTitle>
+                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                  No Hidden Agency Fees
+                </span>
+              </div>
+              <CardDescription className="text-xs text-slate-500">
+                Detailed schedule of mandatory outlays, caution reserves, and service fees
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2 text-sm divide-y divide-slate-100">
+                <div className="flex justify-between pt-1">
+                  <span className="text-slate-600 font-medium">Base Price ({property.listingType === 'RENT' ? 'Annual Rent' : 'Purchase'})</span>
+                  <span className="font-bold text-slate-900">₦{basePrice.toLocaleString()}</span>
+                </div>
+                {agreementFee > 0 && (
+                  <div className="flex justify-between pt-2">
+                    <span className="text-slate-600 font-medium">Legal / Agreement Fee</span>
+                    <span className="font-bold text-slate-900">₦{agreementFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {cautionFee > 0 && (
+                  <div className="flex justify-between pt-2">
+                    <span className="text-slate-600 font-medium">Refundable Caution Deposit</span>
+                    <span className="font-bold text-slate-900">₦{cautionFee.toLocaleString()}</span>
+                  </div>
+                )}
+                {serviceCharge > 0 && (
+                  <div className="flex justify-between pt-2">
+                    <span className="text-slate-600 font-medium">Annual Facility Service Charge</span>
+                    <span className="font-bold text-slate-900">₦{serviceCharge.toLocaleString()}</span>
+                  </div>
+                )}
+                {otherCharges > 0 && (
+                  <div className="flex justify-between pt-2">
+                    <span className="text-slate-600 font-medium">Survey / Documentation / Stamp</span>
+                    <span className="font-bold text-slate-900">₦{otherCharges.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-3 text-base font-black text-blue-900 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
+                  <span>Total First Outlay</span>
+                  <span>₦{totalOutlay.toLocaleString()}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {isLandlordView && isRented && tenantInfo ? <LandlordRentedPropertyCards /> : <DefaultSidebar />}
+        {/* Right Column: Verification Panel & CTAs (PRD Section 11 & 12) */}
+        <div className="space-y-6">
+          {/* Granular Verification Panel */}
+          <Card className="rounded-2xl border-blue-900/20 bg-white shadow-lg overflow-hidden">
+            <div className="bg-[#0b132b] p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                  <span className="font-black text-sm tracking-wide">Verification Audit</span>
+                </div>
+                <span className="text-[10px] font-bold bg-blue-600/80 px-2 py-0.5 rounded text-white uppercase">
+                  {v?.overallStatus || 'IN_REVIEW'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Granular compliance parameters audited by PropHunta trust officers.
+              </p>
+            </div>
 
+            <CardContent className="p-4 space-y-3">
+              {/* Granular Checklist Items */}
+              <div className="space-y-2.5 divide-y divide-slate-100">
+                <div className="flex items-center justify-between pt-1">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Owner Identity</p>
+                    <p className="text-[10px] text-slate-400">KYC & Government ID verified</p>
+                  </div>
+                  {renderStatusBadge(v?.ownerIdentityStatus)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Property Location</p>
+                    <p className="text-[10px] text-slate-400">Cadastral coordinates authenticated</p>
+                  </div>
+                  {renderStatusBadge(v?.locationStatus)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Documentation Reviewed</p>
+                    <p className="text-[10px] text-slate-400">Governor&apos;s Consent / C of O / Survey</p>
+                  </div>
+                  {renderStatusBadge(v?.authorityDocumentStatus)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Availability Status</p>
+                    <p className="text-[10px] text-slate-400">Confirmed vacant & ready for handover</p>
+                  </div>
+                  {renderStatusBadge(v?.availabilityStatus)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Media Authentication</p>
+                    <p className="text-[10px] text-slate-400">Timestamped photos & verified video</p>
+                  </div>
+                  {renderStatusBadge(v?.mediaStatus)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-800">Physical Inspection</p>
+                    <p className="text-[10px] text-slate-400">Field agent condition score logged</p>
+                  </div>
+                  {renderStatusBadge(v?.inspectionStatus)}
+                </div>
+              </div>
+
+              {/* Disclaimer per PRD Section 11 */}
+              <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 leading-snug flex items-start gap-2">
+                <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Legal Notice:</strong> PropHunta audits public records and documentation reviewed. This constitutes verified due diligence, not an insurance guarantee.
+                </span>
+              </div>
+
+              {v?.lastVerifiedAt && (
+                <div className="text-[10px] text-slate-400 text-center pt-1 font-medium">
+                  Last verified on {new Date(v.lastVerifiedAt).toLocaleDateString()}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Action CTAs Card */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-md bg-white p-5 space-y-3.5">
+            <h3 className="text-sm font-bold text-slate-900">Property Next Steps</h3>
+
+            {/* Request Inspection CTA */}
+            <Button
+              onClick={() => setIsTourDialogOpen(true)}
+              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-900/20"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Schedule Inspection (Physical / Video)
+            </Button>
+
+            {/* Submit Application / Make Offer CTA */}
+            <Button
+              onClick={() => setIsOfferDialogOpen(true)}
+              variant="outline"
+              className="w-full h-11 rounded-xl border-blue-300 text-blue-700 hover:bg-blue-50 font-bold text-xs"
+            >
+              <Banknote className="h-4 w-4 mr-2" />
+              {property.listingType === 'RENT' ? 'Submit Rental Expression of Interest' : 'Submit Purchase Offer'}
+            </Button>
+
+            {/* Send Enquiry CTA */}
+            <Button
+              onClick={() => setIsEnquiryDialogOpen(true)}
+              variant="secondary"
+              className="w-full h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs"
+            >
+              <MessageSquare className="h-3.5 w-3.5 mr-2 text-slate-600" />
+              Send Direct Enquiry to Authorized Host
+            </Button>
+          </Card>
+
+          {/* Authorized Party Info */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+              <BadgeCheck className="h-4 w-4 text-blue-600" />
+              <span>Authorized Listing Representative</span>
+            </div>
+            <p className="text-xs text-slate-600">
+              {property.authorizedAgentId ? 'Licensed Agent with validated power of representation.' : 'Direct verified title holder.'}
+            </p>
+            <div className="pt-1">
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                Identity & Authority Documented
+              </span>
+            </div>
+          </Card>
+        </div>
       </div>
 
-      {/* Schedule Tour Dialog */}
+      {/* --- DIALOG 1: SCHEDULE INSPECTION (PRD Section 15) --- */}
       <Dialog open={isTourDialogOpen} onOpenChange={setIsTourDialogOpen}>
-        <DialogContent className="sm:max-w-[480px]">
+        <DialogContent className="sm:max-w-[450px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-xl">Schedule a Property Tour</DialogTitle>
-            <DialogDescription>
-              Book an in-person or virtual walkthrough for {property.title}.
+            <DialogTitle className="text-lg font-bold">Schedule Property Inspection</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Request a physical or live video walkthrough for {property.title}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="grid gap-2">
-              <Label htmlFor="tour-date">Preferred Date</Label>
+
+          <form onSubmit={handleScheduleInspection} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="tourDate" className="text-xs font-bold">Preferred Inspection Date</Label>
               <Input
-                id="tour-date"
+                id="tourDate"
                 type="date"
+                min={new Date().toISOString().split('T')[0]}
                 value={tourDate}
                 onChange={(e) => setTourDate(e.target.value)}
+                required
+                className="rounded-xl h-10"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="tour-time">Preferred Time</Label>
-                <Input
-                  id="tour-time"
-                  type="time"
-                  value={tourTime}
-                  onChange={(e) => setTourTime(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="tour-type">Tour Format</Label>
-                <Select value={tourType} onValueChange={setTourType}>
-                  <SelectTrigger id="tour-type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="in-person">In-Person Tour</SelectItem>
-                    <SelectItem value="virtual">Video Walkthrough</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="tour-notes">Special Requests (optional)</Label>
-              <Textarea
-                id="tour-notes"
-                placeholder="e.g. Inquire about parking access, security gate, and utility meters"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsTourDialogOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setIsTourDialogOpen(false);
-                toast({
-                  title: "Tour request submitted!",
-                  description: `Your tour request for ${tourDate || 'this week'} has been sent to ${property.agent.name}.`,
-                });
-              }}
-            >
-              Confirm Tour
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* Make an Offer Dialog */}
-      <Dialog open={isOfferDialogOpen} onOpenChange={setIsOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="font-headline text-xl">Make an Offer</DialogTitle>
-            <DialogDescription>
-              Submit an official purchase or lease offer for {property.title}.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="grid gap-2">
-              <Label htmlFor="offer-amount">Offer Amount (₦)</Label>
-              <Input
-                id="offer-amount"
-                placeholder={`e.g. ${property.price.toLocaleString()}`}
-                value={offerAmount}
-                onChange={(e) => setOfferAmount(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="financing-type">Financing Method</Label>
-              <Select value={financingType} onValueChange={setFinancingType}>
-                <SelectTrigger id="financing-type">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">Preferred Time Window</Label>
+              <Select value={tourTimeSlot} onValueChange={setTourTimeSlot}>
+                <SelectTrigger className="rounded-xl h-10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cash">Full Cash Payment</SelectItem>
-                  <SelectItem value="mortgage">Mortgage Pre-approved</SelectItem>
-                  <SelectItem value="installment">Milestone / Installment Plan</SelectItem>
-                  <SelectItem value="bank-guarantee">Bank Guarantee</SelectItem>
+                  <SelectItem value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM (Morning)</SelectItem>
+                  <SelectItem value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM (Midday)</SelectItem>
+                  <SelectItem value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM (Afternoon)</SelectItem>
+                  <SelectItem value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM (Late Afternoon)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="offer-notes">Offer Contingencies & Terms</Label>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">Inspection Format</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTourType('IN_PERSON')}
+                  className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
+                    tourType === 'IN_PERSON'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold'
+                      : 'border-slate-200 text-slate-600'
+                  }`}
+                >
+                  Physical On-Site Visit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTourType('VIDEO')}
+                  className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
+                    tourType === 'VIDEO'
+                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold'
+                      : 'border-slate-200 text-slate-600'
+                  }`}
+                >
+                  Live Video Walkthrough
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="tourNotes" className="text-xs font-bold">Inspection Notes (Optional)</Label>
               <Textarea
-                id="offer-notes"
-                placeholder="Specify inspection periods, closing timelines, or payment schedules..."
-                rows={3}
-                value={offerNotes}
-                onChange={(e) => setOfferNotes(e.target.value)}
+                id="tourNotes"
+                placeholder="e.g. Bringing independent surveyor to verify boundaries; check generator capacity..."
+                value={tourNotes}
+                onChange={(e) => setTourNotes(e.target.value)}
+                rows={2}
+                className="rounded-xl resize-none text-xs"
               />
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOfferDialogOpen(false)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                setIsOfferDialogOpen(false);
-                toast({
-                  title: "Offer submitted successfully!",
-                  description: `Your offer for ${property.title} has been sent to the listing agent for review.`,
-                });
-              }}
-            >
-              Submit Offer
-            </Button>
-          </DialogFooter>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsTourDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Confirm Inspection Request
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DIALOG 2: SUBMIT APPLICATION / MAKE OFFER (PRD Section 17) --- */}
+      <Dialog open={isOfferDialogOpen} onOpenChange={setIsOfferDialogOpen}>
+        <DialogContent className="sm:max-w-[480px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">
+              {property.listingType === 'RENT' ? 'Rental Expression of Interest' : 'Submit Purchase Offer'}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Formal submission to the property owner and authorized agent
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitOfferOrApplication} className="space-y-3.5 pt-2">
+            {property.listingType === 'RENT' ? (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="occupation" className="text-xs font-bold">Occupation / Employer</Label>
+                  <Input
+                    id="occupation"
+                    placeholder="e.g. Senior Partner, Advisory firm"
+                    value={occupation}
+                    onChange={(e) => setOccupation(e.target.value)}
+                    required
+                    className="rounded-xl h-10"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="moveInDate" className="text-xs font-bold">Desired Move-in Date</Label>
+                    <Input
+                      id="moveInDate"
+                      type="date"
+                      value={moveInDate}
+                      onChange={(e) => setMoveInDate(e.target.value)}
+                      required
+                      className="rounded-xl h-10"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="occupants" className="text-xs font-bold">Total Occupants</Label>
+                    <Input
+                      id="occupants"
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={occupants}
+                      onChange={(e) => setOccupants(Number(e.target.value))}
+                      required
+                      className="rounded-xl h-10"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="offerAmount" className="text-xs font-bold">Proposed Offer Amount (₦)</Label>
+                  <Input
+                    id="offerAmount"
+                    type="number"
+                    placeholder={`Guide price: ₦${property.price.toLocaleString()}`}
+                    value={offerAmount}
+                    onChange={(e) => setOfferAmount(e.target.value)}
+                    required
+                    className="rounded-xl h-10"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold">Financing Status</Label>
+                  <Select
+                    value={financingStatus}
+                    onValueChange={(v: any) => setFinancingStatus(v)}
+                  >
+                    <SelectTrigger className="rounded-xl h-10">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CASH">Full Cash Settlement</SelectItem>
+                      <SelectItem value="MORTGAGE_PRE_APPROVED">Bank Mortgage Pre-Approved</SelectItem>
+                      <SelectItem value="INSTALLMENT">Milestone / Installment Plan</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="applicationMessage" className="text-xs font-bold">Message & Terms</Label>
+              <Textarea
+                id="applicationMessage"
+                placeholder="Include special clauses, lease term preference, or payment schedule..."
+                value={applicationMessage}
+                onChange={(e) => setApplicationMessage(e.target.value)}
+                rows={3}
+                required
+                className="rounded-xl resize-none text-xs"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsOfferDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Submit Application
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DIALOG 3: DIRECT ENQUIRY (PRD Section 16) --- */}
+      <Dialog open={isEnquiryDialogOpen} onOpenChange={setIsEnquiryDialogOpen}>
+        <DialogContent className="sm:max-w-[420px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Send Property Enquiry</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Message will be tied directly to this property record and logged for compliance
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSendEnquiry} className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="enquiryMessage" className="text-xs font-bold">Your Question or Enquiry</Label>
+              <Textarea
+                id="enquiryMessage"
+                placeholder="e.g. Is the service charge payable quarterly or annually? Are pets permitted?"
+                value={enquiryMessage}
+                onChange={(e) => setEnquiryMessage(e.target.value)}
+                rows={4}
+                required
+                className="rounded-xl resize-none text-xs"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEnquiryDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Send Message
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DIALOG 4: REPORT LISTING (PRD Section 18) --- */}
+      <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+        <DialogContent className="sm:max-w-[450px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-rose-700 flex items-center gap-2">
+              <Flag className="h-5 w-5" />
+              Report this Listing
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Trust & safety reports are audited by PropHunta verification officers within 2 hours
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleReportListing} className="space-y-3.5 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">Reason for Report</Label>
+              <Select value={reportReason} onValueChange={(r: any) => setReportReason(r)}>
+                <SelectTrigger className="rounded-xl h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Suspected Scam">Suspected Scam</SelectItem>
+                  <SelectItem value="Incorrect Information">Incorrect Information</SelectItem>
+                  <SelectItem value="Unavailable Property">Unavailable Property</SelectItem>
+                  <SelectItem value="Unauthorized Representation">Unauthorized Representation</SelectItem>
+                  <SelectItem value="Duplicate Listing">Duplicate Listing</SelectItem>
+                  <SelectItem value="Misleading Price/Photos">Misleading Price/Photos</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="reportDescription" className="text-xs font-bold">Detailed Observations</Label>
+              <Textarea
+                id="reportDescription"
+                placeholder="Provide specific reasons, links, or conflicting information..."
+                value={reportDescription}
+                onChange={(e) => setReportDescription(e.target.value)}
+                rows={3}
+                required
+                className="rounded-xl resize-none text-xs"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsReportDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-rose-600 hover:bg-rose-500 text-white font-bold">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Submit Report to Trust Officer
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

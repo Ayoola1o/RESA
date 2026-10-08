@@ -5,7 +5,8 @@ import { UserRoleProvider } from "@/context/UserRoleContext";
 import AppSidebar from "@/components/app-sidebar";
 import Header from "@/components/header";
 
-export type UserRole = 'tenant' | 'landlord';
+import type { UserRole } from "@/types/prophunta";
+export type { UserRole };
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (

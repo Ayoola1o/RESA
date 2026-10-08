@@ -1,253 +1,652 @@
-
 'use client';
 
-import Link from "next/link";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, FileUp, Loader2, PlusCircle, Sparkles, Trash2, CheckCircle2 } from "lucide-react";
-import { getGeneratedDescription } from "@/app/actions";
-import { useToast } from "@/hooks/use-toast";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  ChevronLeft,
+  FileUp,
+  Loader2,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Building2,
+  FileText,
+  Save,
+  Send,
+} from 'lucide-react';
+import { getGeneratedDescription } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
+import {
+  createPropertyDraftAction,
+  submitPropertyAction,
+  addPropertyDocumentAction,
+} from '@/server/actions/prophunta-actions';
+import { PropertyType, ListingType, DocumentType } from '@/types/prophunta';
 
 const featuresList = [
-    "Swimming Pool", "Fireplace", "Large Backyard", "Modern Kitchen", "Home Theater", "City View", "Lake Access", "Mountain Views", "Pet Friendly", "Gated Community"
+  '24/7 Dedicated Power',
+  'Water Treatment Plant',
+  'Gated Estate Security',
+  'CCTV Perimeter Monitoring',
+  'Private Swimming Pool',
+  'Industrial Generator',
+  'Boys Quarters (BQ)',
+  'Fitted Italian Kitchen',
+  'Solar Inverter Backup',
+  'Adequate Parking (4+ cars)',
+  'High-speed Fiber Optic',
+  'Automated Smart Home',
 ];
 
-
 export default function AddPropertyPage() {
-    const { toast } = useToast();
-    const router = useRouter();
-    const [isPending, startTransition] = useTransition();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [photosUploaded, setPhotosUploaded] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zip, setZip] = useState('');
-    const [propertyType, setPropertyType] = useState('');
-    const [status, setStatus] = useState('');
-    const [price, setPrice] = useState('');
-    const [sqft, setSqft] = useState('');
-    const [bedrooms, setBedrooms] = useState('');
-    const [bathrooms, setBathrooms] = useState('');
-    const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  // Form Fields
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [address, setAddress] = useState('');
+  const [area, setArea] = useState('');
+  const [city, setCity] = useState('Lagos');
+  const [state, setState] = useState('Lagos');
+  const [propertyType, setPropertyType] = useState<PropertyType>('Apartment');
+  const [listingType, setListingType] = useState<ListingType>('RENT');
+  const [price, setPrice] = useState('');
+  const [agreementFee, setAgreementFee] = useState('');
+  const [cautionFee, setCautionFee] = useState('');
+  const [serviceCharge, setServiceCharge] = useState('');
+  const [otherCharges, setOtherCharges] = useState('');
+  const [sqft, setSqft] = useState('');
+  const [bedrooms, setBedrooms] = useState('3');
+  const [bathrooms, setBathrooms] = useState('3');
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
+    '24/7 Dedicated Power',
+    'Gated Estate Security',
+  ]);
 
-    const handleFeatureChange = (feature: string, checked: boolean) => {
-        if (checked) {
-            setSelectedFeatures(prev => [...prev, feature]);
-        } else {
-            setSelectedFeatures(prev => prev.filter(f => f !== feature));
-        }
-    };
+  // Media
+  const [imageUrl, setImageUrl] = useState('');
+  const [images, setImages] = useState<string[]>([
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+  ]);
 
-    const handleGenerateDescription = () => {
-        startTransition(async () => {
-            const result = await getGeneratedDescription({
-                title,
-                propertyType,
-                city,
-                state,
-                bedrooms,
-                bathrooms,
-                sqft,
-                features: selectedFeatures,
-            });
+  // Documents
+  const [docType, setDocType] = useState<DocumentType>('GOVERNORS_CONSENT');
+  const [docFileName, setDocFileName] = useState('');
+  const [uploadedDocs, setUploadedDocs] = useState<{ type: DocumentType; name: string }[]>([]);
 
-            const res = result as any;
-            if (res.error) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: typeof res.error === 'string' ? res.error : 'Please fill out all property detail fields first.',
-                });
-            } else if (res.data) {
-                setDescription(res.data.description);
-                toast({
-                    title: 'Success!',
-                    description: 'A new property description has been generated.',
-                });
-            }
+  const handleFeatureChange = (feature: string, checked: boolean) => {
+    if (checked) {
+      setSelectedFeatures((prev) => [...prev, feature]);
+    } else {
+      setSelectedFeatures((prev) => prev.filter((f) => f !== feature));
+    }
+  };
+
+  const handleAddImage = () => {
+    if (imageUrl.trim()) {
+      setImages((prev) => [...prev, imageUrl.trim()]);
+      setImageUrl('');
+    }
+  };
+
+  const handleAddDocumentRecord = () => {
+    if (!docFileName.trim()) return;
+    setUploadedDocs((prev) => [...prev, { type: docType, name: docFileName.trim() }]);
+    setDocFileName('');
+    toast({
+      title: 'Document Attached',
+      description: `${docType} attached for verification officer review.`,
+    });
+  };
+
+  const handleGenerateDescription = () => {
+    startTransition(async () => {
+      const result = await getGeneratedDescription({
+        title,
+        propertyType,
+        city,
+        state,
+        bedrooms,
+        bathrooms,
+        sqft,
+        features: selectedFeatures,
+      });
+
+      const res = result as any;
+      if (res.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: typeof res.error === 'string' ? res.error : 'Please fill out all property detail fields first.',
         });
-    };
+      } else if (res.data) {
+        setDescription(res.data.description);
+        toast({
+          title: 'Description Generated',
+          description: 'AI description populated with local Nigerian context.',
+        });
+      }
+    });
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!title.trim() || !price) {
-            toast({
-                variant: 'destructive',
-                title: 'Missing Required Fields',
-                description: 'Please provide at least a property title and price.',
-            });
-            return;
-        }
+  const saveOrSubmit = async (shouldSubmitForReview: boolean) => {
+    if (!title.trim() || !price || !address.trim() || !area.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Required Fields',
+        description: 'Please provide Title, Location/Area, Address, and Price.',
+      });
+      return;
+    }
 
-        setIsSubmitting(true);
-        setTimeout(() => {
-            setIsSubmitting(false);
-            toast({
-                title: 'Listing Published! 🏡',
-                description: `"${title}" has been added to your managed listings.`,
-            });
-            router.push('/profile?tab=properties');
-        }, 700);
-    };
+    setIsSubmitting(true);
+    const res = await createPropertyDraftAction({
+      title: title.trim(),
+      propertyType,
+      listingType,
+      description: description.trim() || `${title} located in ${area}, ${city}. Verified trust listing.`,
+      state,
+      city,
+      area: area.trim(),
+      address: address.trim(),
+      price: Number(price),
+      agreementFee: agreementFee ? Number(agreementFee) : 0,
+      cautionFee: cautionFee ? Number(cautionFee) : 0,
+      serviceCharge: serviceCharge ? Number(serviceCharge) : 0,
+      otherCharges: otherCharges ? Number(otherCharges) : 0,
+      bedrooms: Number(bedrooms) || 1,
+      bathrooms: Number(bathrooms) || 1,
+      sqft: sqft ? Number(sqft) : undefined,
+      features: selectedFeatures,
+      images: images.length > 0 ? images : [
+        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
+      ],
+    });
 
-    return (
-        <div className="max-w-4xl mx-auto">
-            <div className="mb-4">
-                <Link href="/landlord/dashboard" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Back to Dashboard
-                </Link>
-            </div>
-            <form onSubmit={handleSubmit}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Add New Property</CardTitle>
-                        <CardDescription>Fill out the details below to create a new property listing.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-8">
+    if (!res.success || !res.property) {
+      setIsSubmitting(false);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: res.error || 'Failed to create listing record.',
+      });
+      return;
+    }
 
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Basic Information</h3>
-                            <div className="space-y-2">
-                                <Label htmlFor="title">Property Title</Label>
-                                <Input id="title" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Modern Villa in Beverly Hills" />
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <Label htmlFor="description">Description</Label>
-                                    <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={isPending}>
-                                        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                                        Generate with AI
-                                    </Button>
-                                </div>
-                                <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the property..." />
-                            </div>
-                        </div>
+    const createdProp = res.property;
 
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Location</h3>
-                            <div className="space-y-2">
-                                <Label htmlFor="address">Address</Label>
-                                <Input id="address" value={address} onChange={e => setAddress(e.target.value)} placeholder="123 Luxury Lane" />
-                            </div>
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <div className="space-y-2"><Label htmlFor="city">City</Label><Input id="city" value={city} onChange={e => setCity(e.target.value)} placeholder="Beverly Hills" /></div>
-                                <div className="space-y-2"><Label htmlFor="state">State</Label><Input id="state" value={state} onChange={e => setState(e.target.value)} placeholder="CA" /></div>
-                                <div className="space-y-2"><Label htmlFor="zip">Zip Code</Label><Input id="zip" value={zip} onChange={e => setZip(e.target.value)} placeholder="90210" /></div>
-                            </div>
-                        </div>
+    // Attach any documents
+    for (const d of uploadedDocs) {
+      await addPropertyDocumentAction(createdProp.id, d.type, d.name);
+    }
 
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Property Details</h3>
-                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="type">Property Type</Label>
-                                    <Select value={propertyType} onValueChange={setPropertyType}><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger><SelectContent>
-                                        <SelectItem value="house">House</SelectItem>
-                                        <SelectItem value="apartment">Apartment</SelectItem>
-                                        <SelectItem value="condo">Condo</SelectItem>
-                                        <SelectItem value="single-room">Single Room</SelectItem>
-                                        <SelectItem value="rp-apart">R&amp;P Apart</SelectItem>
-                                        <SelectItem value="self-apart">Self Apart</SelectItem>
-                                        <SelectItem value="office-space">Office Space</SelectItem>
-                                        <SelectItem value="warehouse">Warehouse</SelectItem>
-                                        <SelectItem value="shop">Shop</SelectItem>
-                                        <SelectItem value="land">Land</SelectItem>
-                                    </SelectContent></Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="status">Listing Status</Label>
-                                    <Select value={status} onValueChange={setStatus}><SelectTrigger><SelectValue placeholder="Select status" /></SelectTrigger><SelectContent><SelectItem value="for-sale">For Sale</SelectItem><SelectItem value="for-rent">For Rent</SelectItem></SelectContent></Select>
-                                </div>
-                                <div className="space-y-2"><Label htmlFor="price">Price / Rent</Label><Input id="price" value={price} onChange={e => setPrice(e.target.value)} type="number" placeholder="3500000" /></div>
-                                <div className="space-y-2"><Label htmlFor="sqft">Square Feet</Label><Input id="sqft" value={sqft} onChange={e => setSqft(e.target.value)} type="number" placeholder="6000" /></div>
-                                <div className="space-y-2"><Label htmlFor="bedrooms">Bedrooms</Label><Input id="bedrooms" value={bedrooms} onChange={e => setBedrooms(e.target.value)} type="number" placeholder="5" /></div>
-                                <div className="space-y-2"><Label htmlFor="bathrooms">Bathrooms</Label><Input id="bathrooms" value={bathrooms} onChange={e => setBathrooms(e.target.value)} type="number" placeholder="6" /></div>
-                            </div>
-                        </div>
+    // Submit for review if requested
+    if (shouldSubmitForReview) {
+      await submitPropertyAction(createdProp.id);
+      toast({
+        title: 'Listing Submitted for Review! 🛡️',
+        description: `"${title}" has entered the PropHunta AI verification queue. Status: SUBMITTED.`,
+      });
+    } else {
+      toast({
+        title: 'Draft Saved! 📝',
+        description: `"${title}" has been saved as a DRAFT. You can edit or submit later.`,
+      });
+    }
 
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Features &amp; Amenities</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {featuresList.map(feature => (
-                                    <div key={feature} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`feature-${feature}`}
-                                            onCheckedChange={(checked) => handleFeatureChange(feature, !!checked)}
-                                        />
-                                        <label htmlFor={`feature-${feature}`} className="text-sm font-medium">{feature}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+    setIsSubmitting(false);
+    router.push('/profile?tab=properties');
+  };
 
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Photo &amp; Media</h3>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label>Property Photos</Label>
-                                    <div
-                                        onClick={() => {
-                                            setPhotosUploaded(true);
-                                            toast({ title: "Photos Attached", description: "3 high-resolution property images selected." });
-                                        }}
-                                        className="flex items-center justify-center w-full p-6 border-2 border-dashed rounded-md cursor-pointer hover:bg-slate-50 transition"
-                                    >
-                                        <div className="text-center">
-                                            {photosUploaded ? (
-                                                <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
-                                            ) : (
-                                                <FileUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                                            )}
-                                            <p className="mt-2 text-sm text-slate-700 font-medium">
-                                                {photosUploaded ? "3 Photos Uploaded (Villa_Main.jpg, Interior.jpg)" : "Drag & drop files or click to choose"}
-                                            </p>
-                                            <Button type="button" variant="outline" size="sm" className="mt-2">
-                                                {photosUploaded ? "Change Photos" : "Choose files"}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="virtual-tour">Virtual Tour URL</Label>
-                                    <Input id="virtual-tour" placeholder="https://your-tour-link.com" />
-                                </div>
-                            </div>
-                        </div>
-
-                    </CardContent>
-                    <CardFooter>
-                        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Publishing Listing...
-                                </>
-                            ) : (
-                                "Create & Publish Listing"
-                            )}
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </form>
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 pb-16">
+      <div className="flex items-center justify-between">
+        <Link
+          href="/dashboard"
+          className="flex items-center text-sm font-semibold text-slate-500 hover:text-slate-900"
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back to Dashboard
+        </Link>
+        <div className="flex items-center gap-2 text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200">
+          <ShieldCheck className="h-4 w-4 text-blue-600" />
+          <span>Trust Infrastructure Onboarding</span>
         </div>
-    )
+      </div>
+
+      <Card className="rounded-2xl shadow-md border-slate-200/80 bg-white">
+        <CardHeader className="border-b border-slate-100">
+          <CardTitle className="text-2xl font-black text-slate-900">
+            Create Verified Property Listing
+          </CardTitle>
+          <CardDescription className="text-xs text-slate-500">
+            Follow the 8-step compliance workflow to list property on PropHunta AI.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-8 pt-6">
+          {/* SECTION 1: Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+              Basic Information
+            </h3>
+
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-xs font-bold">Property Title *</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. 4 Bedroom Contemporary Detached Villa with BQ"
+                required
+                className="h-10 rounded-xl"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold">Listing Type *</Label>
+                <Select value={listingType} onValueChange={(v: any) => setListingType(v)}>
+                  <SelectTrigger className="h-10 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RENT">For Rent (Annual / Short Let)</SelectItem>
+                    <SelectItem value="SALE">For Sale (Outright Purchase)</SelectItem>
+                    <SelectItem value="LEASE">Commercial Lease</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-bold">Property Type *</Label>
+                <Select value={propertyType} onValueChange={(v: any) => setPropertyType(v)}>
+                  <SelectTrigger className="h-10 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Apartment">Apartment / Flat</SelectItem>
+                    <SelectItem value="House">Detached / Semi-Detached House</SelectItem>
+                    <SelectItem value="Condo">Terrace Duplex</SelectItem>
+                    <SelectItem value="Land">Bare Land / Plot</SelectItem>
+                    <SelectItem value="Office Space">Commercial Office Space</SelectItem>
+                    <SelectItem value="Warehouse">Warehouse / Industrial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 2: Location */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+              Location & Cadaster
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="state" className="text-xs font-bold">State *</Label>
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger className="h-10 rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Lagos">Lagos State</SelectItem>
+                    <SelectItem value="Abuja (FCT)">Abuja (FCT)</SelectItem>
+                    <SelectItem value="Rivers">Rivers State</SelectItem>
+                    <SelectItem value="Ogun">Ogun State</SelectItem>
+                    <SelectItem value="Oyo">Oyo State</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-xs font-bold">City / LGA *</Label>
+                <Input
+                  id="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Lagos, Abuja, Port Harcourt"
+                  required
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="area" className="text-xs font-bold">Neighborhood / Area *</Label>
+                <Input
+                  id="area"
+                  value={area}
+                  onChange={(e) => setArea(e.target.value)}
+                  placeholder="e.g. Lekki Phase 1, Ikoyi, Ikeja GRA, Gwarinpa"
+                  required
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address" className="text-xs font-bold">Street Address *</Label>
+              <Input
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="e.g. 14 Admiralty Way, Off Freedom Way"
+                required
+                className="h-10 rounded-xl"
+              />
+            </div>
+          </div>
+
+          {/* SECTION 3: Pricing & Cost Schedule */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">3</span>
+              Pricing & Transparent Cost Breakdown
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="price" className="text-xs font-bold">
+                  {listingType === 'RENT' ? 'Annual Rent (₦) *' : 'Purchase Price (₦) *'}
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="e.g. 25000000"
+                  required
+                  className="h-10 rounded-xl font-bold"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="serviceCharge" className="text-xs font-bold">Annual Service Charge (₦)</Label>
+                <Input
+                  id="serviceCharge"
+                  type="number"
+                  value={serviceCharge}
+                  onChange={(e) => setServiceCharge(e.target.value)}
+                  placeholder="e.g. 3500000 (0 if self-serviced)"
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="agreementFee" className="text-xs font-bold">Agreement / Legal Fee (₦)</Label>
+                <Input
+                  id="agreementFee"
+                  type="number"
+                  value={agreementFee}
+                  onChange={(e) => setAgreementFee(e.target.value)}
+                  placeholder="e.g. 1250000"
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cautionFee" className="text-xs font-bold">Refundable Caution Deposit (₦)</Label>
+                <Input
+                  id="cautionFee"
+                  type="number"
+                  value={cautionFee}
+                  onChange={(e) => setCautionFee(e.target.value)}
+                  placeholder="e.g. 1000000"
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 4: Property Details */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">4</span>
+              Property Specs & Features
+            </h3>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="bedrooms" className="text-xs font-bold">Bedrooms</Label>
+                <Input
+                  id="bedrooms"
+                  type="number"
+                  value={bedrooms}
+                  onChange={(e) => setBedrooms(e.target.value)}
+                  min={0}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bathrooms" className="text-xs font-bold">Bathrooms</Label>
+                <Input
+                  id="bathrooms"
+                  type="number"
+                  value={bathrooms}
+                  onChange={(e) => setBathrooms(e.target.value)}
+                  min={1}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sqft" className="text-xs font-bold">Floor Area (sqm)</Label>
+                <Input
+                  id="sqft"
+                  type="number"
+                  value={sqft}
+                  onChange={(e) => setSqft(e.target.value)}
+                  placeholder="e.g. 350"
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-bold">Verified Features</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                {featuresList.map((feat) => (
+                  <div key={feat} className="flex items-center space-x-2 bg-slate-50 p-2 rounded-lg border border-slate-200/60">
+                    <Checkbox
+                      id={`feat-${feat}`}
+                      checked={selectedFeatures.includes(feat)}
+                      onCheckedChange={(c) => handleFeatureChange(feat, !!c)}
+                    />
+                    <label htmlFor={`feat-${feat}`} className="text-xs font-medium text-slate-700 cursor-pointer">
+                      {feat}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description" className="text-xs font-bold">Property Description</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateDescription}
+                  disabled={isPending}
+                  className="text-xs text-blue-600 border-blue-200 hover:bg-blue-50"
+                >
+                  <Sparkles className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                  {isPending ? 'Generating...' : 'AI Listing Assistant'}
+                </Button>
+              </div>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Comprehensive description of layout, compound, electrical capacity, and security..."
+                rows={4}
+                className="rounded-xl resize-none text-xs leading-relaxed"
+              />
+            </div>
+          </div>
+
+          {/* SECTION 5: Media & Photos */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">5</span>
+              Media & High-Res Walkthroughs
+            </h3>
+
+            <div className="flex gap-2">
+              <Input
+                placeholder="Paste high-res image URL (e.g. Unsplash or Cloud Storage URL)"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="h-10 rounded-xl text-xs"
+              />
+              <Button type="button" onClick={handleAddImage} className="bg-blue-600 hover:bg-blue-500 font-bold text-xs rounded-xl shrink-0">
+                Add Photo
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+              {images.map((img, idx) => (
+                <div key={idx} className="relative h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                  <img src={img} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                  {idx === 0 && (
+                    <span className="absolute top-1 left-1 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                      Primary
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SECTION 6: Title & Authority Documents (PRD Section 8) */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">6</span>
+              Title & Authority Documents
+            </h3>
+            <p className="text-xs text-slate-500">
+              Attach supporting title proof (Governor&apos;s Consent, Survey Plan, C of O, or Letter of Representation). Documents remain protected in secure access-controlled storage.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-xs font-bold">Document Type</Label>
+                <Select value={docType} onValueChange={(v: any) => setDocType(v)}>
+                  <SelectTrigger className="h-10 rounded-xl mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GOVERNORS_CONSENT">Governor&apos;s Consent</SelectItem>
+                    <SelectItem value="CERTIFICATE_OF_OCCUPANCY">Certificate of Occupancy (C of O)</SelectItem>
+                    <SelectItem value="DEED_OF_ASSIGNMENT">Deed of Assignment</SelectItem>
+                    <SelectItem value="SURVEY_PLAN">Registered Survey Plan</SelectItem>
+                    <SelectItem value="LETTER_OF_AUTHORITY">Letter of Representation / Authority</SelectItem>
+                    <SelectItem value="RECEIPT_OF_PURCHASE">Purchase Receipt / Allocation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-xs font-bold">Document Reference Name</Label>
+                <Input
+                  placeholder="e.g. Lekki_Block14_Consent.pdf"
+                  value={docFileName}
+                  onChange={(e) => setDocFileName(e.target.value)}
+                  className="h-10 rounded-xl mt-1 text-xs"
+                />
+              </div>
+
+              <div className="flex items-end">
+                <Button
+                  type="button"
+                  onClick={handleAddDocumentRecord}
+                  variant="outline"
+                  className="w-full h-10 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 font-bold text-xs"
+                >
+                  <FileUp className="h-4 w-4 mr-1.5" />
+                  Attach Document
+                </Button>
+              </div>
+            </div>
+
+            {uploadedDocs.length > 0 && (
+              <div className="space-y-1.5 pt-2">
+                <span className="text-xs font-bold text-slate-700">Attached Compliance Documents ({uploadedDocs.length}):</span>
+                {uploadedDocs.map((d, i) => (
+                  <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-600" />
+                      <span className="font-semibold text-slate-800">{d.name}</span>
+                      <span className="text-[10px] text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded font-mono">
+                        {d.type}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                      Pending Audit
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        {/* SECTION 7 & 8: Review & Submit Actions */}
+        <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 p-6 bg-slate-50/50">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSubmitting}
+            onClick={() => saveOrSubmit(false)}
+            className="w-full sm:w-auto rounded-xl border-slate-300 font-bold text-xs h-11"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save as Draft
+          </Button>
+
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => saveOrSubmit(true)}
+            className="w-full sm:w-auto rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-11 shadow-md shadow-blue-900/20"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Submitting to verification queue...
+              </>
+            ) : (
+              <>
+                <Send className="h-4 w-4 mr-2" />
+                Submit for Compliance & Verification Review
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
 }
