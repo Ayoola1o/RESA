@@ -17,6 +17,7 @@ import {
   VerificationSubStatus,
   VerificationOverallStatus,
   DocumentType,
+  UserVerificationStatus,
 } from '@/types/prophunta';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
@@ -460,3 +461,56 @@ export async function getAuditLogsAction(limit = 50) {
   const admin = await authService.requireRole(['ADMIN']);
   return auditService.getRecentLogs(admin, limit);
 }
+
+// --- MODERATION & USER MANAGEMENT ACTIONS (PRD Section 13) ---
+
+export async function suspendPropertyAction(
+  propertyId: string,
+  reason?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    await propertyService.suspendProperty(admin, propertyId, reason);
+    revalidatePath('/admin');
+    revalidatePath('/marketplace');
+    revalidatePath(`/property/${propertyId}`);
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to suspend property.' };
+  }
+}
+
+export async function restorePropertyAction(
+  propertyId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    await propertyService.restoreProperty(admin, propertyId);
+    revalidatePath('/admin');
+    revalidatePath('/marketplace');
+    revalidatePath(`/property/${propertyId}`);
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to restore property.' };
+  }
+}
+
+export async function getUsersAction(): Promise<User[]> {
+  const admin = await authService.requireRole(['ADMIN']);
+  return authService.getAllUsers(admin);
+}
+
+export async function updateUserStatusAction(
+  userId: string,
+  status: UserVerificationStatus
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    await authService.updateUserVerificationStatus(admin, userId, status);
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update user status.' };
+  }
+}
+

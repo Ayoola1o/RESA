@@ -25,6 +25,8 @@ import {
   Eye,
   History,
   Lock,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,6 +58,10 @@ import {
   updateReportStatusAction,
   updateInspectionStatusAction,
   completeInspectionAction,
+  getUsersAction,
+  updateUserStatusAction,
+  suspendPropertyAction,
+  restorePropertyAction,
 } from '@/server/actions/prophunta-actions';
 import {
   Property,
@@ -64,6 +70,8 @@ import {
   AuditLog,
   VerificationSubStatus,
   ReportStatus,
+  User,
+  UserVerificationStatus,
 } from '@/types/prophunta';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
@@ -76,6 +84,7 @@ function AdminPortalContent() {
 
   const [activeTab, setActiveTab] = useState(initialTab);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [reports, setReports] = useState<ListingReport[]>([]);
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -98,16 +107,18 @@ function AdminPortalContent() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [props, reps, insps, auds] = await Promise.all([
+      const [props, reps, insps, auds, usrs] = await Promise.all([
         getPropertiesAction(),
         getReportsAction().catch(() => []),
         getUserInspectionsAction().catch(() => []),
         getAuditLogsAction().catch(() => []),
+        getUsersAction().catch(() => []),
       ]);
       setProperties(props);
       setReports(reps);
       setInspections(insps);
       setAuditLogs(auds);
+      setUsers(usrs);
     } catch (err) {
       console.warn('Error loading admin portal data:', err);
     } finally {
@@ -135,6 +146,15 @@ function AdminPortalContent() {
   const handleApprove = async () => {
     if (!reviewProperty) return;
     setSubmittingAction(true);
+    await updateVerificationChecklistAction(reviewProperty.id, {
+      ownerIdentityStatus: ownerIdStatus,
+      locationStatus: locStatus,
+      authorityDocumentStatus: docStatus,
+      availabilityStatus: availStatus,
+      mediaStatus: mediaStatus,
+      inspectionStatus: inspStatus,
+      reviewNotes,
+    });
     const res = await approveVerificationAction(reviewProperty.id, reviewNotes);
     setSubmittingAction(false);
 
@@ -153,6 +173,15 @@ function AdminPortalContent() {
   const handleReject = async () => {
     if (!reviewProperty) return;
     setSubmittingAction(true);
+    await updateVerificationChecklistAction(reviewProperty.id, {
+      ownerIdentityStatus: ownerIdStatus,
+      locationStatus: locStatus,
+      authorityDocumentStatus: docStatus,
+      availabilityStatus: availStatus,
+      mediaStatus: mediaStatus,
+      inspectionStatus: inspStatus,
+      reviewNotes,
+    });
     const res = await rejectVerificationAction(reviewProperty.id, reviewNotes);
     setSubmittingAction(false);
 
@@ -172,6 +201,15 @@ function AdminPortalContent() {
   const handleRequestChanges = async () => {
     if (!reviewProperty) return;
     setSubmittingAction(true);
+    await updateVerificationChecklistAction(reviewProperty.id, {
+      ownerIdentityStatus: ownerIdStatus,
+      locationStatus: locStatus,
+      authorityDocumentStatus: docStatus,
+      availabilityStatus: availStatus,
+      mediaStatus: mediaStatus,
+      inspectionStatus: inspStatus,
+      reviewNotes,
+    });
     const res = await requestVerificationChangesAction(reviewProperty.id, reviewNotes);
     setSubmittingAction(false);
 
@@ -192,6 +230,40 @@ function AdminPortalContent() {
     if (res.success) {
       toast({ title: 'Report Status Updated', description: `Report is now ${status}` });
       loadData();
+    }
+  };
+
+  const handleSuspendProperty = async (propId: string) => {
+    const res = await suspendPropertyAction(propId, 'Suspended by compliance officer.');
+    if (res.success) {
+      toast({ title: 'Listing Suspended', description: 'Listing pulled from public marketplace.' });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to suspend property.' });
+    }
+  };
+
+  const handleRestoreProperty = async (propId: string) => {
+    const res = await restorePropertyAction(propId);
+    if (res.success) {
+      toast({ title: 'Listing Restored', description: 'Listing is now active on public marketplace.' });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to restore property.' });
+    }
+  };
+
+  const handleToggleUserStatus = async (user: User) => {
+    const nextStatus: UserVerificationStatus = user.verificationStatus === 'SUSPENDED' ? 'VERIFIED' : 'SUSPENDED';
+    const res = await updateUserStatusAction(user.id, nextStatus);
+    if (res.success) {
+      toast({
+        title: nextStatus === 'SUSPENDED' ? 'User Suspended' : 'User Reinstated',
+        description: `${user.name} status is now ${nextStatus}.`,
+      });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to update user.' });
     }
   };
 
@@ -233,8 +305,32 @@ function AdminPortalContent() {
         </div>
       </div>
 
-      {/* 5 Top Platform Metric Cards */}
+      {/* 5 Top Platform Metric Cards (PRD Section 13) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
+              <Users className="h-4 w-4 text-purple-600" />
+            </div>
+            <div className="text-2xl font-black text-slate-900 mt-1.5">{users.length}</div>
+            <p className="text-[10px] text-purple-600 font-semibold mt-0.5">Seekers, Hosts & Agents</p>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Properties</span>
+              <Home className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="text-2xl font-black text-slate-900 mt-1.5">{properties.length}</div>
+            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
+              {properties.filter((p) => p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE').length} Verified Active
+            </p>
+          </CardContent>
+        </Card>
+
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -243,19 +339,6 @@ function AdminPortalContent() {
             </div>
             <div className="text-2xl font-black text-slate-900 mt-1.5">{pendingVerificationList.length}</div>
             <p className="text-[10px] text-amber-600 font-semibold mt-0.5">Pending Compliance Audit</p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Listings</span>
-              <Home className="h-4 w-4 text-blue-600" />
-            </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{properties.length}</div>
-            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
-              {properties.filter((p) => p.listingStatus === 'VERIFIED').length} Verified Active
-            </p>
           </CardContent>
         </Card>
 
@@ -280,22 +363,11 @@ function AdminPortalContent() {
             <p className="text-[10px] text-rose-600 font-semibold mt-0.5">Trust & Safety Flags</p>
           </CardContent>
         </Card>
-
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Audit Trail</span>
-              <History className="h-4 w-4 text-emerald-600" />
-            </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{auditLogs.length}</div>
-            <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Immutable Logs</p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Main Tabs Console */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-slate-100 p-1 rounded-2xl flex flex-wrap gap-1 w-full max-w-3xl">
+        <TabsList className="bg-slate-100 p-1 rounded-2xl flex flex-wrap gap-1 w-full max-w-4xl">
           <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5" />
             Verification Queue ({pendingVerificationList.length})
@@ -303,6 +375,10 @@ function AdminPortalContent() {
           <TabsTrigger value="properties" className="rounded-xl text-xs font-bold gap-1.5">
             <Home className="h-3.5 w-3.5" />
             Property Moderation ({properties.length})
+          </TabsTrigger>
+          <TabsTrigger value="users" className="rounded-xl text-xs font-bold gap-1.5">
+            <Users className="h-3.5 w-3.5" />
+            User Management ({users.length})
           </TabsTrigger>
           <TabsTrigger value="reports" className="rounded-xl text-xs font-bold gap-1.5">
             <BadgeAlert className="h-3.5 w-3.5" />
@@ -314,7 +390,7 @@ function AdminPortalContent() {
           </TabsTrigger>
           <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5">
             <History className="h-3.5 w-3.5" />
-            System Audit Trail
+            System Audit Trail ({auditLogs.length})
           </TabsTrigger>
         </TabsList>
 
@@ -427,7 +503,7 @@ function AdminPortalContent() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button variant="ghost" size="sm" asChild className="h-8 text-xs">
                         <Link href={`/property/${p.id}`}>Inspect Page</Link>
                       </Button>
@@ -439,10 +515,123 @@ function AdminPortalContent() {
                       >
                         Audit Checklist
                       </Button>
+                      {p.listingStatus === 'SUSPENDED' ? (
+                        <Button
+                          size="sm"
+                          onClick={() => handleRestoreProperty(p.id)}
+                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
+                        >
+                          Restore Listing
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleSuspendProperty(p.id)}
+                          className="h-8 text-xs font-bold"
+                        >
+                          Suspend Listing
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 3: USER MANAGEMENT (PRD Section 13) */}
+        <TabsContent value="users" className="space-y-4">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-600" />
+                User Directory & Role Enforcement
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-500">
+                Inspect registered seekers, property owners, licensed agents, and administrators.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {users.length === 0 ? (
+                <div className="py-12 text-center text-slate-400">
+                  <p className="text-sm font-bold text-slate-700">No Registered Users</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {users.map((u) => (
+                    <div key={u.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-bold text-slate-900">{u.name}</h4>
+                          <Badge
+                            className={`text-[10px] font-bold ${
+                              u.role === 'ADMIN'
+                                ? 'bg-purple-600'
+                                : u.role === 'AGENT'
+                                ? 'bg-blue-600'
+                                : u.role === 'OWNER'
+                                ? 'bg-amber-600'
+                                : 'bg-slate-600'
+                            }`}
+                          >
+                            {u.role}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] font-semibold ${
+                              u.verificationStatus === 'VERIFIED'
+                                ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                                : u.verificationStatus === 'SUSPENDED'
+                                ? 'text-rose-700 bg-rose-50 border-rose-200'
+                                : 'text-amber-700 bg-amber-50 border-amber-200'
+                            }`}
+                          >
+                            {u.verificationStatus}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          {u.email} • {u.phone}
+                          {u.agencyName ? ` • Agency: ${u.agencyName}` : ''}
+                          {u.licenseNumber ? ` • Lic: ${u.licenseNumber}` : ''}
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          Joined: {new Date(u.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        {u.role !== 'ADMIN' && (
+                          <>
+                            {u.verificationStatus === 'SUSPENDED' ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleToggleUserStatus(u)}
+                                className="h-8 text-xs font-bold text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                              >
+                                <UserCheck className="h-3.5 w-3.5 mr-1 text-emerald-600" />
+                                Reactivate Account
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleToggleUserStatus(u)}
+                                className="h-8 text-xs font-bold"
+                              >
+                                <UserX className="h-3.5 w-3.5 mr-1" />
+                                Suspend User
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

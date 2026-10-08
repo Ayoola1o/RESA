@@ -70,7 +70,7 @@ export class PropertyRepository {
     }
 
     if (filters.verifiedOnly) {
-      results = results.filter((p) => p.listingStatus === 'VERIFIED');
+      results = results.filter((p) => p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE');
     }
 
     if (filters.status && filters.status.length > 0) {

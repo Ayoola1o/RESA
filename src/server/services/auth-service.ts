@@ -228,6 +228,38 @@ export class AuthService {
     }
     return user;
   }
+
+  async getAllUsers(adminUser: User): Promise<User[]> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only Administrators can view all platform users');
+    }
+    return userRepository.listAll();
+  }
+
+  async updateUserVerificationStatus(
+    adminUser: User,
+    targetUserId: string,
+    status: import('@/types/prophunta').UserVerificationStatus
+  ): Promise<User> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only Administrators can modify user verification status');
+    }
+    const updated = await userRepository.update(targetUserId, { verificationStatus: status });
+    if (!updated) throw new Error('User not found');
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: status === 'SUSPENDED' ? 'USER_SUSPENDED' : 'USER_STATUS_UPDATED',
+      objectType: 'USER',
+      objectId: targetUserId,
+      result: 'SUCCESS',
+      metadata: { newStatus: status },
+    });
+
+    return updated;
+  }
 }
 
 export const authService = new AuthService();

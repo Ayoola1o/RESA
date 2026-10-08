@@ -21,7 +21,10 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
 
   const isVerified =
     property.listingStatus === 'VERIFIED' ||
+    property.listingStatus === 'ACTIVE' ||
     property.isVerified === true;
+
+  const availabilityStatus = property.availabilityStatus || 'AVAILABLE';
 
   const statusLabel =
     property.status ||
@@ -61,7 +64,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         </Link>
 
         {/* Badges on Top-Left */}
-        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
           <span
             className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold text-white shadow-sm ${
               isRent ? 'bg-blue-600' : 'bg-emerald-600'
@@ -72,7 +75,12 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
           {isVerified && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-900/85 backdrop-blur-sm text-emerald-400 shadow-sm border border-emerald-500/30">
               <ShieldCheck className="h-3 w-3 text-emerald-400" />
-              Verified
+              Verified Trust
+            </span>
+          )}
+          {availabilityStatus !== 'AVAILABLE' && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500 text-white shadow-sm">
+              {availabilityStatus.replace('_', ' ')}
             </span>
           )}
         </div>
@@ -98,6 +106,9 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
 
       {/* Card Content */}
       <div className="flex flex-1 flex-col p-2.5">
+        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 mb-0.5">
+          <span>{property.propertyType || property.type || 'Residential'}</span>
+        </div>
         <Link href={`/property/${property.id}`} className="group-hover:text-blue-600 transition-colors">
           <h3 className="text-[15px] font-bold text-slate-900 line-clamp-1">{property.title}</h3>
         </Link>

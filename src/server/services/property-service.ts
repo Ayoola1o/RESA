@@ -193,6 +193,56 @@ export class PropertyService {
 
     return updated!;
   }
+
+  async suspendProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only Administrators can suspend listings');
+    }
+    const prop = await propertyRepository.findById(propertyId);
+    if (!prop) throw new Error('Property not found');
+
+    const updated = await propertyRepository.update(propertyId, {
+      listingStatus: 'SUSPENDED',
+    });
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: 'LISTING_SUSPENDED',
+      objectType: 'PROPERTY',
+      objectId: propertyId,
+      result: 'SUCCESS',
+      metadata: { reason: reason || 'Suspended by compliance officer.' },
+    });
+
+    return updated!;
+  }
+
+  async restoreProperty(adminUser: User, propertyId: string): Promise<Property> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only Administrators can restore listings');
+    }
+    const prop = await propertyRepository.findById(propertyId);
+    if (!prop) throw new Error('Property not found');
+
+    const updated = await propertyRepository.update(propertyId, {
+      listingStatus: 'ACTIVE',
+    });
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: 'LISTING_RESTORED',
+      objectType: 'PROPERTY',
+      objectId: propertyId,
+      result: 'SUCCESS',
+      metadata: { title: prop.title },
+    });
+
+    return updated!;
+  }
 }
 
 export const propertyService = new PropertyService();

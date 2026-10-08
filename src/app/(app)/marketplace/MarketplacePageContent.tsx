@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ListFilter, ChevronLeft, ChevronRight, Save, LayoutGrid, Map as MapIcon, MapPin, Building, ArrowRight } from "lucide-react";
+import { ListFilter, ChevronLeft, ChevronRight, Save, LayoutGrid, Map as MapIcon, MapPin, Building, ArrowRight, ShieldCheck, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
@@ -32,6 +32,10 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
   const [propertyType, setPropertyType] = useState('all');
   const [bedrooms, setBedrooms] = useState('any');
   const [bathrooms, setBathrooms] = useState('any');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [availability, setAvailability] = useState('all');
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sortOption, setSortOption] = useState<SortOption>('newest');
 
   useEffect(() => {
@@ -47,18 +51,30 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             (listingType === 'sale' && (p.status === 'For Sale' || p.listingType === 'SALE')) ||
             (listingType === 'rent' && (p.status === 'For Rent' || p.listingType === 'RENT'));
 
-        const propertyTypeMatch = propertyType === 'all' || p.type.toLowerCase().replace(' ', '-') === propertyType;
-        const bedroomsMatch = bedrooms === 'any' || p.bedrooms >= Number(bedrooms);
-        const bathroomsMatch = bathrooms === 'any' || p.bathrooms >= Number(bathrooms);
+        const propTypeValue = (p.propertyType || p.type || '').toLowerCase().replace(/\s+/g, '-');
+        const propertyTypeMatch = propertyType === 'all' || propTypeValue === propertyType.toLowerCase().replace(/\s+/g, '-');
+        const bedroomsMatch = bedrooms === 'any' || (p.bedrooms !== undefined && p.bedrooms >= Number(bedrooms));
+        const bathroomsMatch = bathrooms === 'any' || (p.bathrooms !== undefined && p.bathrooms >= Number(bathrooms));
+
+        const minPriceMatch = !minPrice || p.price >= Number(minPrice);
+        const maxPriceMatch = !maxPrice || p.price <= Number(maxPrice);
+
+        const propAvailability = p.availabilityStatus || 'AVAILABLE';
+        const availabilityMatch = availability === 'all' || propAvailability === availability;
+
+        const isVerified = p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE' || p.isVerified === true;
+        const verifiedOnlyMatch = !verifiedOnly || isVerified;
 
         const searchMatch = searchQuery ?
-            p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.city.toLowerCase().includes(searchQuery.toLowerCase())
+            (p.title && p.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (p.address && p.address.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (p.city && p.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (p.area && p.area.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (p.state && p.state.toLowerCase().includes(searchQuery.toLowerCase()))
             : true;
 
-        return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch && searchMatch;
+        return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch && minPriceMatch && maxPriceMatch && availabilityMatch && verifiedOnlyMatch && searchMatch;
     });
 
     switch (sortOption) {
@@ -70,13 +86,13 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             break;
         case 'newest':
         default:
-             filtered.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
+             filtered.sort((a, b) => new Date(b.createdAt || b.postedDate || 0).getTime() - new Date(a.createdAt || a.postedDate || 0).getTime());
             break;
     }
 
     return filtered;
 
-  }, [listingType, propertyType, bedrooms, bathrooms, sortOption, searchQuery]);
+  }, [initialProperties, listingType, propertyType, bedrooms, bathrooms, minPrice, maxPrice, availability, verifiedOnly, sortOption, searchQuery]);
 
   const totalPages = Math.ceil(filteredAndSortedProperties.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -96,6 +112,23 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
     setSortOption(value);
     setCurrentPage(1);
   }
+
+  const handleResetFilters = () => {
+    setListingType('all');
+    setPropertyType('all');
+    setBedrooms('any');
+    setBathrooms('any');
+    setMinPrice('');
+    setMaxPrice('');
+    setAvailability('all');
+    setVerifiedOnly(false);
+    setSortOption('newest');
+    setCurrentPage(1);
+    toast({
+      title: "Filters reset",
+      description: "Showing all available properties.",
+    });
+  };
 
   const handlePreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -137,13 +170,15 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
     });
   };
 
+  const hasActiveFilters = listingType !== 'all' || propertyType !== 'all' || bedrooms !== 'any' || bathrooms !== 'any' || minPrice !== '' || maxPrice !== '' || availability !== 'all' || verifiedOnly;
+
   return (
     <div className="container mx-auto">
       <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-headline md:text-4xl">Find Your Dream Property</h1>
+          <h1 className="text-3xl font-bold font-headline md:text-4xl">Find Verified Properties</h1>
           <p className="text-muted-foreground mt-2">
-              {searchQuery ? `Showing results for "${searchQuery}"` : "Explore our curated list of properties across the country."}
+              {searchQuery ? `Showing results for "${searchQuery}"` : "Explore audited and verified listings with zero fake deposits."}
           </p>
         </div>
 
@@ -176,12 +211,13 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         </div>
       </div>
 
-      <Card className="mb-8 p-4 shadow-sm">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
-             <div className="grid gap-2">
-              <label className="text-sm font-medium">Listing Type</label>
+      <Card className="mb-8 p-5 shadow-sm border-slate-200/90 rounded-2xl bg-white">
+        {/* Row 1: Primary Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 items-end">
+             <div className="grid gap-1.5">
+              <label className="text-xs font-bold text-slate-700">Listing Type</label>
                <Select value={listingType} onValueChange={handleFilterChange(setListingType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Listings</SelectItem>
                     <SelectItem value="sale">For Sale</SelectItem>
@@ -189,10 +225,10 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                 </SelectContent>
                 </Select>
             </div>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">Property Type</label>
+            <div className="grid gap-1.5">
+              <label className="text-xs font-bold text-slate-700">Property Type</label>
                <Select value={propertyType} onValueChange={handleFilterChange(setPropertyType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="house">House</SelectItem>
@@ -208,51 +244,125 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                 </SelectContent>
                 </Select>
             </div>
-             <div className="grid gap-2">
-              <label className="text-sm font-medium">Beds</label>
+             <div className="grid gap-1.5">
+              <label className="text-xs font-bold text-slate-700">Beds</label>
                <Select value={bedrooms} onValueChange={handleFilterChange(setBedrooms)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
+                    <SelectItem value="any">Any Beds</SelectItem>
+                    <SelectItem value="1">1+ Bed</SelectItem>
+                    <SelectItem value="2">2+ Beds</SelectItem>
+                    <SelectItem value="3">3+ Beds</SelectItem>
+                    <SelectItem value="4">4+ Beds</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
-             <div className="grid gap-2">
-              <label className="text-sm font-medium">Baths</label>
+             <div className="grid gap-1.5">
+              <label className="text-xs font-bold text-slate-700">Baths</label>
                <Select value={bathrooms} onValueChange={handleFilterChange(setBathrooms)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
+                    <SelectItem value="any">Any Baths</SelectItem>
+                    <SelectItem value="1">1+ Bath</SelectItem>
+                    <SelectItem value="2">2+ Baths</SelectItem>
+                    <SelectItem value="3">3+ Baths</SelectItem>
+                </SelectContent>
+                </Select>
+            </div>
+            <div className="grid gap-1.5">
+              <label className="text-xs font-bold text-slate-700">Availability</label>
+               <Select value={availability} onValueChange={handleFilterChange(setAvailability)}>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Availabilities</SelectItem>
+                    <SelectItem value="AVAILABLE">Available</SelectItem>
+                    <SelectItem value="UNDER_OFFER">Under Offer</SelectItem>
+                    <SelectItem value="OCCUPIED">Occupied</SelectItem>
                 </SelectContent>
                 </Select>
             </div>
         </div>
-        <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex-grow w-full sm:w-auto">
-                <label className="text-sm font-medium">Sort by</label>
-                <Select value={sortOption} onValueChange={handleSortChange}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="newest">Newest</SelectItem>
-                        <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                        <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                    </SelectContent>
-                </Select>
+
+        {/* Row 2: Price Range & Trust Filter */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 items-end mt-3 pt-3 border-t border-slate-100">
+          <div className="md:col-span-3 grid gap-1.5">
+            <label className="text-xs font-bold text-slate-700">Min Price (₦)</label>
+            <Input
+              type="number"
+              placeholder="e.g. 500,000"
+              value={minPrice}
+              onChange={(e) => {
+                setMinPrice(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-9 text-xs rounded-xl"
+            />
+          </div>
+          <div className="md:col-span-3 grid gap-1.5">
+            <label className="text-xs font-bold text-slate-700">Max Price (₦)</label>
+            <Input
+              type="number"
+              placeholder="e.g. 20,000,000"
+              value={maxPrice}
+              onChange={(e) => {
+                setMaxPrice(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-9 text-xs rounded-xl"
+            />
+          </div>
+          <div className="md:col-span-3 grid gap-1.5">
+            <label className="text-xs font-bold text-slate-700">Sort by</label>
+            <Select value={sortOption} onValueChange={handleSortChange}>
+                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+          <div className="md:col-span-3 flex items-center h-9">
+            <button
+              type="button"
+              onClick={() => {
+                setVerifiedOnly(!verifiedOnly);
+                setCurrentPage(1);
+              }}
+              className={`w-full h-9 flex items-center justify-center gap-2 rounded-xl text-xs font-bold border transition ${
+                verifiedOnly
+                  ? 'bg-slate-900 text-emerald-400 border-slate-900 shadow-sm'
+                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              <ShieldCheck className={`h-4 w-4 ${verifiedOnly ? 'text-emerald-400' : 'text-slate-500'}`} />
+              <span>Verified Trust Only</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Row 3: Actions & Active Filters Reset */}
+        <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span>Showing <strong>{filteredAndSortedProperties.length}</strong> matching listings</span>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline font-semibold ml-2"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                    Reset filters
+                  </button>
+                )}
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
-                <Button onClick={handleApplyFilters} className="w-full">
-                    <ListFilter className="mr-2 h-4 w-4" />
+                <Button onClick={handleApplyFilters} className="w-full sm:w-auto h-9 text-xs rounded-xl bg-blue-600 hover:bg-blue-500">
+                    <ListFilter className="mr-1.5 h-3.5 w-3.5" />
                     Apply Filters
                 </Button>
-                <Button onClick={handleSaveSearch} variant="outline" className="w-full">
-                    <Save className="mr-2 h-4 w-4" />
+                <Button onClick={handleSaveSearch} variant="outline" className="w-full sm:w-auto h-9 text-xs rounded-xl">
+                    <Save className="mr-1.5 h-3.5 w-3.5" />
                     Save Search
                 </Button>
             </div>
