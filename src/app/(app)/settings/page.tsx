@@ -22,14 +22,20 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/context/UserRoleContext';
+import { updateProfileDetailsAction, resetPasswordAction } from '@/server/actions/prophunta-actions';
+import { Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { currentUser, role } = useUserRole();
+  const { currentUser, role, refreshUser } = useUserRole();
 
   const [name, setName] = useState(currentUser?.name || 'PropHunta Member');
   const [email, setEmail] = useState(currentUser?.email || 'user@prophunta.ai');
   const [phone, setPhone] = useState(currentUser?.phone || '+234 800 000 0000');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingSecurity, setSavingSecurity] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -39,24 +45,82 @@ export default function SettingsPage() {
     }
   }, [currentUser]);
 
-  const handleSaveProfile = () => {
-    toast({
-      title: 'Profile Updated',
-      description: 'Your personal verified profile details have been saved.',
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    const res = await updateProfileDetailsAction({
+      name,
+      phone,
+      agencyName: role === 'AGENT' ? currentUser?.agencyName : undefined,
+      licenseNumber: role === 'AGENT' ? currentUser?.licenseNumber : undefined,
     });
+    setSavingProfile(false);
+
+    if (res.success) {
+      toast({
+        title: 'Profile Updated',
+        description: 'Your verified personal profile details have been saved to the database.',
+      });
+      await refreshUser();
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: res.error || 'Could not update profile.',
+      });
+    }
   };
 
-  const handleSaveSecurity = () => {
-    toast({
-      title: 'Security Settings Updated',
-      description: 'Password and session authentication preferences have been saved.',
-    });
+  const handleSaveSecurity = async () => {
+    if (!newPassword) {
+      toast({
+        title: 'Preferences Saved',
+        description: 'Multi-factor authentication preferences updated.',
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        variant: 'destructive',
+        title: 'Password Too Short',
+        description: 'New password must be at least 6 characters.',
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        variant: 'destructive',
+        title: 'Passwords Do Not Match',
+        description: 'New password and confirmation do not match.',
+      });
+      return;
+    }
+
+    setSavingSecurity(true);
+    const res = await resetPasswordAction(currentUser?.email || email, newPassword);
+    setSavingSecurity(false);
+
+    if (res.success) {
+      toast({
+        title: 'Password Updated',
+        description: 'Your account password has been updated securely.',
+      });
+      setNewPassword('');
+      setConfirmPassword('');
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: res.error || 'Could not update password.',
+      });
+    }
   };
 
   const handleSaveNotifications = () => {
     toast({
       title: 'Preferences Saved',
-      description: 'Your inspection and messaging notification preferences are up to date.',
+      description: 'Your notification preferences are up to date.',
     });
   };
 
@@ -160,7 +224,8 @@ export default function SettingsPage() {
                 )}
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveProfile} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleSaveProfile} disabled={savingProfile} className="bg-blue-600 hover:bg-blue-700 text-white">
+                  {savingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save Changes
                 </Button>
               </CardFooter>
@@ -183,11 +248,23 @@ export default function SettingsPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" placeholder="Enter new secure password" />
+                    <Input
+                      id="new-password"
+                      type="password"
+                      placeholder="Enter new secure password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm New Password</Label>
-                    <Input id="confirm-password" type="password" placeholder="Re-enter new password" />
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="Re-enter new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
@@ -203,7 +280,8 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveSecurity} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleSaveSecurity} disabled={savingSecurity} className="bg-blue-600 hover:bg-blue-700 text-white">
+                  {savingSecurity ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Update Security Settings
                 </Button>
               </CardFooter>

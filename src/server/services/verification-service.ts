@@ -83,6 +83,11 @@ export class VerificationService {
       reviewNotes: notes || 'All verification parameters audited and passed.',
     });
 
+    await propertyRepository.update(propertyId, {
+      listingStatus: 'ACTIVE',
+      publishedAt: new Date().toISOString(),
+    });
+
     await auditRepository.create({
       actorId: adminUser.id,
       actorEmail: adminUser.email,
@@ -107,6 +112,10 @@ export class VerificationService {
       reviewNotes: notes || 'Listing rejected due to non-compliance.',
     });
 
+    await propertyRepository.update(propertyId, {
+      listingStatus: 'REJECTED',
+    });
+
     await auditRepository.create({
       actorId: adminUser.id,
       actorEmail: adminUser.email,
@@ -129,6 +138,10 @@ export class VerificationService {
     const res = await this.updateChecklist(adminUser, propertyId, {
       overallStatus: 'CHANGES_REQUIRED',
       reviewNotes: notes || 'Additional documentation or clarification required.',
+    });
+
+    await propertyRepository.update(propertyId, {
+      listingStatus: 'CHANGES_REQUIRED',
     });
 
     await auditRepository.create({

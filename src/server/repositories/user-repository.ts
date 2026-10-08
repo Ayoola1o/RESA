@@ -52,6 +52,13 @@ export class UserRepository {
     return db.users[idx];
   }
 
+  async updatePassword(userId: string, newPlainPassword: string): Promise<boolean> {
+    const db = getDb();
+    db.passwords[userId] = hashPassword(newPlainPassword);
+    saveDb(db);
+    return true;
+  }
+
   async listAll(): Promise<User[]> {
     const db = getDb();
     return [...db.users];

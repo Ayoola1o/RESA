@@ -96,6 +96,29 @@ export async function switchDemoRoleAction(role: UserRole): Promise<{ success: b
   return { success: true, user };
 }
 
+export async function resetPasswordAction(email: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+  return authService.resetPassword(email, newPassword);
+}
+
+export async function updateProfileDetailsAction(data: {
+  name: string;
+  phone: string;
+  agencyName?: string;
+  licenseNumber?: string;
+  bio?: string;
+}): Promise<{ success: boolean; user?: User; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const { userRepository } = await import('../repositories/user-repository');
+    const updated = await userRepository.update(user.id, data);
+    revalidatePath('/profile');
+    revalidatePath('/settings');
+    return { success: true, user: updated || undefined };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update profile.' };
+  }
+}
+
 // --- PROPERTY ACTIONS ---
 
 export async function getPropertiesAction(filters: {

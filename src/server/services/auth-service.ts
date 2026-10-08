@@ -93,15 +93,44 @@ export class AuthService {
     return { user };
   }
 
-  async logout(): Promise<void> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-    if (token) {
-      const db = getDb();
-      delete db.sessions[token];
-      saveDb(db);
+  async resetPassword(email: string, newPlainPassword: string): Promise<{ success: boolean; error?: string }> {
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      return { success: false, error: 'No account found with this email address.' };
     }
-    cookieStore.delete(SESSION_COOKIE_NAME);
+
+    if (newPlainPassword.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters.' };
+    }
+
+    await userRepository.updatePassword(user.id, newPlainPassword);
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'USER_PASSWORD_RESET',
+      objectType: 'USER',
+      objectId: user.id,
+      result: 'SUCCESS',
+    });
+
+    return { success: true };
+  }
+
+  async logout(): Promise<void> {
+    try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+      if (token) {
+        const db = getDb();
+        delete db.sessions[token];
+        saveDb(db);
+      }
+      cookieStore.delete(SESSION_COOKIE_NAME);
+    } catch {
+      // Non-request scope
+    }
   }
 
   async createSession(user: User): Promise<string> {
@@ -116,21 +145,30 @@ export class AuthService {
     };
     saveDb(db);
 
-    const cookieStore = await cookies();
-    cookieStore.set(SESSION_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 14 * 24 * 60 * 60,
-    });
+    try {
+      const cookieStore = await cookies();
+      cookieStore.set(SESSION_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 14 * 24 * 60 * 60,
+      });
+    } catch {
+      // Non-request scope
+    }
 
     return token;
   }
 
   async getCurrentUser(): Promise<User | null> {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    let token: string | undefined;
+    try {
+      const cookieStore = await cookies();
+      token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    } catch {
+      // Non-request scope
+    }
 
     if (!token) {
       // Default fallback for preview / demo if no session yet: first seeker user
