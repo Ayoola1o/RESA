@@ -19,10 +19,10 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
     property.status === 'For Rent' ||
     property.status === 'Rented';
 
+  // Strict verification: Do not display a generic "Verified" badge unless the verification model supports it
   const isVerified =
     property.listingStatus === 'VERIFIED' ||
-    property.listingStatus === 'ACTIVE' ||
-    property.isVerified === true;
+    property.verification?.overallStatus === 'PASSED';
 
   const availabilityStatus = property.availabilityStatus || 'AVAILABLE';
 
@@ -136,6 +136,23 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
           {property.address}, {property.area ? `${property.area}, ` : ''}{property.city}
         </p>
+
+        {/* Key Features */}
+        {property.features && property.features.length > 0 && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {property.features.slice(0, 2).map((feat: string) => (
+              <span
+                key={feat}
+                className="inline-flex items-center text-[10px] font-medium bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded"
+              >
+                {feat}
+              </span>
+            ))}
+            {property.features.length > 2 && (
+              <span className="text-[10px] text-slate-400 font-medium self-center">+{property.features.length - 2}</span>
+            )}
+          </div>
+        )}
 
         {/* Price */}
         <div className="mt-2 text-base font-extrabold text-slate-900 tracking-tight">

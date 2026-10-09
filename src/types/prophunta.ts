@@ -93,6 +93,8 @@ export interface PropertyDocument {
   reviewedAt?: string;
   reviewedBy?: string;
   reviewNotes?: string;
+  mimeType?: string;
+  sizeBytes?: number;
 }
 
 export type VerificationSubStatus = 'PENDING' | 'IN_REVIEW' | 'PASSED' | 'FAILED' | 'CHANGES_REQUIRED' | 'NOT_REVIEWED';
@@ -315,6 +317,7 @@ export type AuditAction =
   | 'PROPERTY_EDITED'
   | 'DOCUMENT_UPLOADED'
   | 'DOCUMENT_REVIEWED'
+  | 'DOCUMENT_DELETED'
   | 'VERIFICATION_UPDATED'
   | 'VERIFICATION_APPROVED'
   | 'VERIFICATION_REJECTED'

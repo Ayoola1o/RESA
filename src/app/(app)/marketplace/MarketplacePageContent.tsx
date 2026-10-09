@@ -27,6 +27,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
 
   const [viewMode, setViewMode] = useState<'grid' | 'map'>(initialView);
   const [selectedMapPropertyId, setSelectedMapPropertyId] = useState<string | null>(initialProperties[0]?.id || null);
+  const [locationSearch, setLocationSearch] = useState(searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const [listingType, setListingType] = useState('all');
   const [propertyType, setPropertyType] = useState('all');
@@ -73,16 +74,18 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
           return false;
         }
 
-        const isVerified = p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE' || p.isVerified === true;
-        const verifiedOnlyMatch = !verifiedOnly || isVerified;
+        // Strict verification: Do not display a generic "Verified" badge unless the verification model supports it
+        const hasVerifiedProof = p.listingStatus === 'VERIFIED' || p.verification?.overallStatus === 'PASSED';
+        const verifiedOnlyMatch = !verifiedOnly || hasVerifiedProof;
 
-        const searchMatch = searchQuery ?
-            (p.title && p.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (p.address && p.address.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (p.city && p.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (p.area && p.area.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (p.state && p.state.toLowerCase().includes(searchQuery.toLowerCase()))
+        const activeSearch = (locationSearch || searchQuery).trim().toLowerCase();
+        const searchMatch = activeSearch ?
+            (p.title && p.title.toLowerCase().includes(activeSearch)) ||
+            (p.description && p.description.toLowerCase().includes(activeSearch)) ||
+            (p.address && p.address.toLowerCase().includes(activeSearch)) ||
+            (p.city && p.city.toLowerCase().includes(activeSearch)) ||
+            (p.area && p.area.toLowerCase().includes(activeSearch)) ||
+            (p.state && p.state.toLowerCase().includes(activeSearch))
             : true;
 
         return listingTypeMatch && propertyTypeMatch && bedroomsMatch && bathroomsMatch && minPriceMatch && maxPriceMatch && availabilityMatch && verifiedOnlyMatch && searchMatch;
@@ -103,7 +106,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
 
     return filtered;
 
-  }, [initialProperties, listingType, propertyType, bedrooms, bathrooms, minPrice, maxPrice, availability, verifiedOnly, sortOption, searchQuery]);
+  }, [initialProperties, listingType, propertyType, bedrooms, bathrooms, minPrice, maxPrice, availability, verifiedOnly, sortOption, searchQuery, locationSearch]);
 
   const totalPages = Math.ceil(filteredAndSortedProperties.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -223,6 +226,35 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
       </div>
 
       <Card className="mb-8 p-5 shadow-sm border-slate-200/90 rounded-2xl bg-white">
+        {/* Row 0: Location Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
+            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-600" />
+            <Input
+              type="text"
+              placeholder="Search by area, neighborhood, street, or city (e.g. Lekki, Ikoyi, Victoria Island, Ikeja)..."
+              value={locationSearch}
+              onChange={(e) => {
+                setLocationSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="h-10 pl-10 pr-16 rounded-xl text-xs sm:text-sm font-medium border-slate-200 bg-slate-50/70 focus:bg-white transition-colors"
+            />
+            {locationSearch && (
+              <button
+                type="button"
+                onClick={() => {
+                  setLocationSearch('');
+                  setCurrentPage(1);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Row 1: Primary Filters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 items-end">
              <div className="grid gap-1.5">

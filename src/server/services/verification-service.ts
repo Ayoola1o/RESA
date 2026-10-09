@@ -46,6 +46,7 @@ export class VerificationService {
     const updated: PropertyVerification = {
       ...current,
       ...updates,
+      propertyId,
       reviewerId: adminUser.id,
       reviewedAt: now,
       lastVerifiedAt: updates.overallStatus === 'PASSED' ? now : current.lastVerifiedAt,
@@ -84,7 +85,7 @@ export class VerificationService {
     });
 
     await propertyRepository.update(propertyId, {
-      listingStatus: 'ACTIVE',
+      listingStatus: 'VERIFIED',
       publishedAt: new Date().toISOString(),
     });
 

@@ -13,11 +13,14 @@ import {
   InspectionRecord,
   ReportReason,
   ReportStatus,
+  ListingReport,
   ApplicationType,
   ApplicationStatus,
   VerificationSubStatus,
   VerificationOverallStatus,
   DocumentType,
+  DocumentStatus,
+  PropertyDocument,
   UserVerificationStatus,
   PropertyMedia,
   MediaType,
@@ -25,6 +28,7 @@ import {
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
 import { mediaService } from '../services/media-service';
+import { documentService } from '../services/document-service';
 import { verificationService } from '../services/verification-service';
 import { inspectionService } from '../services/inspection-service';
 import { enquiryService } from '../services/enquiry-service';
@@ -192,6 +196,105 @@ export async function addPropertyDocumentAction(
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to upload document.' };
+  }
+}
+
+export async function uploadPropertyDocumentAction(
+  formData: FormData
+): Promise<{ success: boolean; document?: PropertyDocument; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const propertyId = formData.get('propertyId') as string;
+    const documentType = formData.get('documentType') as DocumentType;
+    const file = formData.get('file') as File;
+
+    if (!propertyId || !documentType || !file) {
+      return { success: false, error: 'Property ID, document type, and file are required.' };
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const doc = await documentService.uploadDocument(
+      user,
+      propertyId,
+      buffer,
+      file.name,
+      file.type,
+      documentType
+    );
+
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true, document: doc };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to upload confidential document.' };
+  }
+}
+
+export async function deletePropertyDocumentAction(
+  propertyId: string,
+  documentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await documentService.deleteDocument(user, propertyId, documentId);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to delete document.' };
+  }
+}
+
+export async function reviewPropertyDocumentAction(
+  propertyId: string,
+  documentId: string,
+  status: DocumentStatus,
+  reviewNotes?: string
+): Promise<{ success: boolean; document?: PropertyDocument; error?: string }> {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    const doc = await documentService.reviewDocument(admin, propertyId, documentId, status, reviewNotes);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/admin');
+    return { success: true, document: doc };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to audit document.' };
+  }
+}
+
+export async function updatePropertyDraftAction(
+  propertyId: string,
+  data: any
+): Promise<{ success: boolean; property?: Property; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const property = await propertyService.updateDraft(user, propertyId, data);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    revalidatePath('/profile');
+    return { success: true, property };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update draft.' };
+  }
+}
+
+export async function getPropertyDraftAction(
+  propertyId: string
+): Promise<{ success: boolean; property?: Property; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const property = await propertyService.getProperty(propertyId);
+    if (!property) return { success: false, error: 'Property not found.' };
+
+    if (property.ownerId !== user.id && property.authorizedAgentId !== user.id && user.role !== 'ADMIN') {
+      return { success: false, error: 'Unauthorized to view this draft.' };
+    }
+
+    return { success: true, property };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve draft.' };
   }
 }
 
@@ -429,15 +532,17 @@ export async function fileReportAction(
   propertyId: string,
   reason: ReportReason,
   description: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; report?: ListingReport; error?: string }> {
   try {
     const user = await authService.requireUser();
-    await reportService.fileReport(user, { propertyId, reason, description });
-    return { success: true };
+    const report = await reportService.fileReport(user, { propertyId, reason, description });
+    return { success: true, report };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to file report.' };
   }
 }
+
+export const createListingReportAction = fileReportAction;
 
 export async function getReportsAction() {
   const admin = await authService.requireRole(['ADMIN']);

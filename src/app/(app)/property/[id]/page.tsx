@@ -41,6 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+import { userRepository } from '@/server/repositories/user-repository';
+
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { id } = await params;
   const property = await propertyService.getProperty(id);
@@ -49,5 +51,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <PropertyDetailClient initialProperty={property} />;
+  const hostUser = property.authorizedAgentId
+    ? await userRepository.findById(property.authorizedAgentId)
+    : await userRepository.findById(property.ownerId);
+
+  return <PropertyDetailClient initialProperty={property} authorizedParty={hostUser || undefined} />;
 }

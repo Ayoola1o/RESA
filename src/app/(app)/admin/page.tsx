@@ -27,6 +27,14 @@ import {
   Lock,
   UserCheck,
   UserX,
+  Download,
+  FileCheck,
+  FileWarning,
+  Info,
+  Phone,
+  Mail,
+  MapPin,
+  Building,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,6 +63,7 @@ import {
   rejectVerificationAction,
   requestVerificationChangesAction,
   updateVerificationChecklistAction,
+  reviewPropertyDocumentAction,
   updateReportStatusAction,
   updateInspectionStatusAction,
   completeInspectionAction,
@@ -72,9 +81,20 @@ import {
   ReportStatus,
   User,
   UserVerificationStatus,
+  PropertyDocument,
+  DocumentStatus,
 } from '@/types/prophunta';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
+
+const VERIFICATION_STATUS_OPTIONS: { value: VerificationSubStatus; label: string }[] = [
+  { value: 'PASSED', label: 'Passed' },
+  { value: 'IN_REVIEW', label: 'In Review' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'CHANGES_REQUIRED', label: 'Changes Required' },
+  { value: 'FAILED', label: 'Failed' },
+  { value: 'NOT_REVIEWED', label: 'Not Reviewed' },
+];
 
 function AdminPortalContent() {
   const { userRole, currentUser } = useUserRole();
@@ -90,19 +110,27 @@ function AdminPortalContent() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Review Dialog State
+  // Review Dialog State (PRD Section 12)
   const [reviewProperty, setReviewProperty] = useState<Property | null>(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [reviewNotes, setReviewNotes] = useState('');
   const [submittingAction, setSubmittingAction] = useState(false);
 
-  // Granular states for review dialog
-  const [ownerIdStatus, setOwnerIdStatus] = useState<VerificationSubStatus>('PASSED');
-  const [locStatus, setLocStatus] = useState<VerificationSubStatus>('PASSED');
-  const [docStatus, setDocStatus] = useState<VerificationSubStatus>('PASSED');
-  const [availStatus, setAvailStatus] = useState<VerificationSubStatus>('PASSED');
-  const [mediaStatus, setMediaStatus] = useState<VerificationSubStatus>('PASSED');
-  const [inspStatus, setInspStatus] = useState<VerificationSubStatus>('PASSED');
+  // Granular sub-statuses for verification checklist
+  const [ownerIdStatus, setOwnerIdStatus] = useState<VerificationSubStatus>('PENDING');
+  const [locStatus, setLocStatus] = useState<VerificationSubStatus>('PENDING');
+  const [docStatus, setDocStatus] = useState<VerificationSubStatus>('PENDING');
+  const [availStatus, setAvailStatus] = useState<VerificationSubStatus>('PENDING');
+  const [mediaStatus, setMediaStatus] = useState<VerificationSubStatus>('PENDING');
+  const [inspStatus, setInspStatus] = useState<VerificationSubStatus>('PENDING');
+
+  // User Inspection Modal State (PRD Section 13)
+  const [inspectedUser, setInspectedUser] = useState<User | null>(null);
+  const [isUserInspectOpen, setIsUserInspectOpen] = useState(false);
+
+  // Property Documents Modal State (PRD Section 13)
+  const [inspectDocsProperty, setInspectDocsProperty] = useState<Property | null>(null);
+  const [isDocsDialogOpen, setIsDocsDialogOpen] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -133,12 +161,12 @@ function AdminPortalContent() {
   const openReviewDialog = (prop: Property) => {
     setReviewProperty(prop);
     const v = prop.verification;
-    setOwnerIdStatus(v?.ownerIdentityStatus || 'PASSED');
-    setLocStatus(v?.locationStatus || 'PASSED');
-    setDocStatus(v?.authorityDocumentStatus || 'PASSED');
-    setAvailStatus(v?.availabilityStatus || 'PASSED');
-    setMediaStatus(v?.mediaStatus || 'PASSED');
-    setInspStatus(v?.inspectionStatus || 'PASSED');
+    setOwnerIdStatus(v?.ownerIdentityStatus || 'PENDING');
+    setLocStatus(v?.locationStatus || 'PENDING');
+    setDocStatus(v?.authorityDocumentStatus || 'PENDING');
+    setAvailStatus(v?.availabilityStatus || 'PENDING');
+    setMediaStatus(v?.mediaStatus || 'PENDING');
+    setInspStatus(v?.inspectionStatus || 'PENDING');
     setReviewNotes(v?.reviewNotes || '');
     setIsReviewOpen(true);
   };
@@ -147,12 +175,12 @@ function AdminPortalContent() {
     if (!reviewProperty) return;
     setSubmittingAction(true);
     await updateVerificationChecklistAction(reviewProperty.id, {
-      ownerIdentityStatus: ownerIdStatus,
-      locationStatus: locStatus,
-      authorityDocumentStatus: docStatus,
-      availabilityStatus: availStatus,
-      mediaStatus: mediaStatus,
-      inspectionStatus: inspStatus,
+      ownerIdentityStatus: ownerIdStatus === 'PENDING' ? 'PASSED' : ownerIdStatus,
+      locationStatus: locStatus === 'PENDING' ? 'PASSED' : locStatus,
+      authorityDocumentStatus: docStatus === 'PENDING' ? 'PASSED' : docStatus,
+      availabilityStatus: availStatus === 'PENDING' ? 'PASSED' : availStatus,
+      mediaStatus: mediaStatus === 'PENDING' ? 'PASSED' : mediaStatus,
+      inspectionStatus: inspStatus === 'PENDING' ? 'PASSED' : inspStatus,
       reviewNotes,
     });
     const res = await approveVerificationAction(reviewProperty.id, reviewNotes);
@@ -161,7 +189,7 @@ function AdminPortalContent() {
     if (res.success) {
       toast({
         title: 'Listing Approved & Verified',
-        description: `"${reviewProperty.title}" is now active with verified credentials.`,
+        description: `"${reviewProperty.title}" is now officially marked VERIFIED with audited badges.`,
       });
       setIsReviewOpen(false);
       loadData();
@@ -225,6 +253,62 @@ function AdminPortalContent() {
     }
   };
 
+  const handleSaveChecklistDraft = async () => {
+    if (!reviewProperty) return;
+    setSubmittingAction(true);
+    const res = await updateVerificationChecklistAction(reviewProperty.id, {
+      ownerIdentityStatus: ownerIdStatus,
+      locationStatus: locStatus,
+      authorityDocumentStatus: docStatus,
+      availabilityStatus: availStatus,
+      mediaStatus: mediaStatus,
+      inspectionStatus: inspStatus,
+      reviewNotes,
+    });
+    setSubmittingAction(false);
+
+    if (res.success) {
+      toast({
+        title: 'Verification Checklist Saved',
+        description: 'Audit parameters updated without finalizing approval.',
+      });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to save checklist.' });
+    }
+  };
+
+  const handleReviewDocument = async (propertyId: string, docId: string, status: DocumentStatus, notes?: string) => {
+    const res = await reviewPropertyDocumentAction(propertyId, docId, status, notes);
+    if (res.success) {
+      toast({
+        title: 'Document Audited',
+        description: `Document status updated to ${status}.`,
+      });
+      loadData();
+      if (reviewProperty && reviewProperty.id === propertyId) {
+        setReviewProperty((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            documents: prev.documents?.map((d) => (d.id === docId ? { ...d, status, reviewNotes: notes } : d)),
+          };
+        });
+      }
+      if (inspectDocsProperty && inspectDocsProperty.id === propertyId) {
+        setInspectDocsProperty((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            documents: prev.documents?.map((d) => (d.id === docId ? { ...d, status, reviewNotes: notes } : d)),
+          };
+        });
+      }
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to review document.' });
+    }
+  };
+
   const handleUpdateReport = async (reportId: string, status: ReportStatus, notes: string) => {
     const res = await updateReportStatusAction(reportId, status, notes);
     if (res.success) {
@@ -262,6 +346,9 @@ function AdminPortalContent() {
         description: `${user.name} status is now ${nextStatus}.`,
       });
       loadData();
+      if (inspectedUser && inspectedUser.id === user.id) {
+        setInspectedUser({ ...inspectedUser, verificationStatus: nextStatus });
+      }
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to update user.' });
     }
@@ -270,6 +357,15 @@ function AdminPortalContent() {
   const pendingVerificationList = properties.filter(
     (p) => p.listingStatus === 'SUBMITTED' || p.listingStatus === 'UNDER_REVIEW' || p.listingStatus === 'CHANGES_REQUIRED'
   );
+
+  const getHostForProperty = (p: Property) => {
+    const hostId = p.authorizedAgentId || p.ownerId;
+    return users.find((u) => u.id === hostId);
+  };
+
+  const getReportsForProperty = (propertyId: string) => {
+    return reports.filter((r) => r.propertyId === propertyId);
+  };
 
   return (
     <div className="space-y-8 pb-16">
@@ -297,6 +393,7 @@ function AdminPortalContent() {
             disabled={loading}
             className="text-xs font-semibold rounded-xl"
           >
+            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
             Refresh Records
           </Button>
           <Button size="sm" asChild className="bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold">
@@ -305,9 +402,10 @@ function AdminPortalContent() {
         </div>
       </div>
 
-      {/* 5 Top Platform Metric Cards (PRD Section 13) */}
+      {/* --- SECTION 13: OVERVIEW METRIC CARDS --- */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+        {/* Total Users */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
@@ -318,10 +416,11 @@ function AdminPortalContent() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+        {/* Total Properties */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Properties</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Properties</span>
               <Home className="h-4 w-4 text-blue-600" />
             </div>
             <div className="text-2xl font-black text-slate-900 mt-1.5">{properties.length}</div>
@@ -331,18 +430,20 @@ function AdminPortalContent() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+        {/* Pending Verification */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Queue</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pending Verification</span>
               <ShieldCheck className="h-4 w-4 text-amber-500" />
             </div>
             <div className="text-2xl font-black text-slate-900 mt-1.5">{pendingVerificationList.length}</div>
-            <p className="text-[10px] text-amber-600 font-semibold mt-0.5">Pending Compliance Audit</p>
+            <p className="text-[10px] text-amber-600 font-semibold mt-0.5">Awaiting Compliance Audit</p>
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+        {/* Inspections */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Inspections</span>
@@ -353,7 +454,8 @@ function AdminPortalContent() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-slate-200/80 shadow-2xs">
+        {/* Reports */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Reports</span>
@@ -394,16 +496,23 @@ function AdminPortalContent() {
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB 1: VERIFICATION QUEUE (PRD Section 12 & 13) */}
+        {/* --- TAB 1: VERIFICATION QUEUE (PRD Section 12 & 13) --- */}
         <TabsContent value="verification" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-lg font-black text-slate-900">
-                Pending Verification Queue
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-500">
-                Listings awaiting title validation, Cadaster check, and official PropHunta trust badge approval.
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-black text-slate-900">
+                    Verification Queue
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-500">
+                    Mandatory review queue for submitted listings requiring title authentication, location cadaster audit, and checklist verification.
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="text-xs font-bold text-amber-700 bg-amber-50 border-amber-200">
+                  {pendingVerificationList.length} Awaiting Audit
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               {pendingVerificationList.length === 0 ? (
@@ -414,153 +523,310 @@ function AdminPortalContent() {
                 </div>
               ) : (
                 <div className="divide-y divide-slate-100">
-                  {pendingVerificationList.map((p) => (
-                    <div key={p.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
-                      <div className="flex items-start gap-3.5">
-                        <div className="relative h-16 w-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                          <img
-                            src={p.media[0]?.url || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80'}
-                            alt={p.title}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h3>
-                            <Badge variant="outline" className="text-[10px] uppercase font-bold text-amber-700 bg-amber-50 border-amber-200">
-                              {p.listingStatus}
-                            </Badge>
+                  {pendingVerificationList.map((p) => {
+                    const host = getHostForProperty(p);
+                    return (
+                      <div
+                        key={p.id}
+                        className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover:bg-slate-50/60 transition-colors"
+                      >
+                        {/* Property Details */}
+                        <div className="flex items-start gap-4 min-w-0">
+                          <div className="relative h-20 w-24 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                            <img
+                              src={
+                                p.media[0]?.url ||
+                                'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80'
+                              }
+                              alt={p.title}
+                              className="h-full w-full object-cover"
+                            />
                           </div>
-                          <p className="text-xs text-slate-500">
-                            {p.address}, {p.area}, {p.city} • <strong className="text-slate-800 font-bold">{formatCurrency(p.price, p.listingType === 'RENT' ? 'For Rent' : 'For Sale')}</strong>
-                          </p>
-                          <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                            <span>Docs Attached: <strong>{p.documents?.length || 0}</strong></span>
-                            <span>Submitted: {new Date(p.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                          className="h-9 rounded-xl text-xs"
-                        >
-                          <Link href={`/property/${p.id}`} target="_blank">
-                            <Eye className="h-3.5 w-3.5 mr-1" />
-                            Preview
-                          </Link>
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => openReviewDialog(p)}
-                          className="h-9 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-xs shadow-sm"
-                        >
-                          <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
-                          Perform Compliance Audit
-                        </Button>
+                          <div className="space-y-1.5 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm font-bold text-slate-900 truncate max-w-[280px]">
+                                {p.title}
+                              </h3>
+                              <Badge
+                                variant="outline"
+                                className={`text-[10px] font-bold uppercase ${
+                                  p.listingStatus === 'SUBMITTED'
+                                    ? 'text-blue-700 bg-blue-50 border-blue-200'
+                                    : p.listingStatus === 'CHANGES_REQUIRED'
+                                    ? 'text-orange-700 bg-orange-50 border-orange-200'
+                                    : 'text-amber-700 bg-amber-50 border-amber-200'
+                                }`}
+                              >
+                                {p.listingStatus}
+                              </Badge>
+                              <span className="text-xs font-black text-slate-900">
+                                {formatCurrency(p.price, p.listingType === 'RENT' ? 'For Rent' : 'For Sale')}
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-500 flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-slate-400 shrink-0" />
+                              {p.address}, {p.area}, {p.city}
+                            </p>
+
+                            {/* Owner / Agent & Submission Date Info */}
+                            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 pt-0.5">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-semibold text-slate-500">Host:</span>
+                                <span className="font-bold text-slate-800">
+                                  {host ? host.name : (p.authorizedAgentId ? 'Authorized Agent' : 'Direct Owner')}
+                                </span>
+                                <Badge variant="secondary" className="text-[10px] font-semibold py-0">
+                                  {host?.role || (p.authorizedAgentId ? 'AGENT' : 'OWNER')}
+                                </Badge>
+                              </div>
+
+                              <div className="flex items-center gap-1 text-slate-400">
+                                <Clock className="h-3 w-3" />
+                                <span>Submitted: {new Date(p.createdAt).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+
+                            {/* Documents Attached Chips */}
+                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                              <span className="text-[11px] font-bold text-slate-500">Documents ({p.documents?.length || 0}):</span>
+                              {(!p.documents || p.documents.length === 0) ? (
+                                <span className="text-[11px] text-amber-600 italic">No title documents uploaded yet</span>
+                              ) : (
+                                p.documents.map((doc) => (
+                                  <a
+                                    key={doc.id}
+                                    href={`/api/documents/${doc.id}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded border border-slate-200"
+                                  >
+                                    <FileText className="h-2.5 w-2.5 text-blue-600" />
+                                    <span>{doc.documentType.replace(/_/g, ' ')}</span>
+                                    <span
+                                      className={`text-[9px] px-1 rounded ${
+                                        doc.status === 'APPROVED'
+                                          ? 'bg-emerald-100 text-emerald-800'
+                                          : doc.status === 'REJECTED'
+                                          ? 'bg-rose-100 text-rose-800'
+                                          : 'bg-amber-100 text-amber-800'
+                                      }`}
+                                    >
+                                      {doc.status}
+                                    </span>
+                                  </a>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Actions (Review, Approve, Reject, Request Changes) */}
+                        <div className="flex flex-wrap items-center gap-2 self-start lg:self-center shrink-0">
+                          {/* Review Action */}
+                          <Button
+                            size="sm"
+                            onClick={() => openReviewDialog(p)}
+                            className="h-9 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs"
+                          >
+                            <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
+                            Review
+                          </Button>
+
+                          {/* Quick Approve Action */}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              openReviewDialog(p);
+                            }}
+                            className="h-9 rounded-xl border-emerald-300 text-emerald-700 hover:bg-emerald-50 font-bold text-xs"
+                          >
+                            <Check className="h-3.5 w-3.5 mr-1" />
+                            Approve
+                          </Button>
+
+                          {/* Quick Request Changes Action */}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              openReviewDialog(p);
+                            }}
+                            className="h-9 rounded-xl border-amber-300 text-amber-700 hover:bg-amber-50 font-semibold text-xs"
+                          >
+                            <FileSignature className="h-3.5 w-3.5 mr-1" />
+                            Request Changes
+                          </Button>
+
+                          {/* Quick Reject Action */}
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              openReviewDialog(p);
+                            }}
+                            className="h-9 rounded-xl font-semibold text-xs"
+                          >
+                            <X className="h-3.5 w-3.5 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* TAB 2: PROPERTY MODERATION (PRD Section 13) */}
+        {/* --- TAB 2: PROPERTY MODERATION (PRD Section 13) --- */}
         <TabsContent value="properties" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-lg font-black text-slate-900">All Platform Properties</CardTitle>
+              <CardTitle className="text-lg font-black text-slate-900">Property Moderation</CardTitle>
               <CardDescription className="text-xs text-slate-500">
-                Inspect live properties, review titles, or suspend listings violating platform safety.
+                Inspect platform listings, audit title documentation, review user incident reports, and suspend non-compliant properties.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-slate-100">
-                {properties.map((p) => (
-                  <div key={p.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-slate-900">{p.title}</h4>
-                        <Badge
-                          className={`text-[10px] font-bold ${
-                            p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE'
-                              ? 'bg-emerald-600'
-                              : p.listingStatus === 'UNDER_REVIEW' || p.listingStatus === 'SUBMITTED'
-                              ? 'bg-amber-500'
-                              : p.listingStatus === 'CHANGES_REQUIRED'
-                              ? 'bg-orange-500'
-                              : p.listingStatus === 'RESERVED'
-                              ? 'bg-purple-600'
-                              : p.listingStatus === 'OCCUPIED'
-                              ? 'bg-blue-600'
-                              : p.listingStatus === 'SOLD'
-                              ? 'bg-slate-800'
-                              : p.listingStatus === 'SUSPENDED' || p.listingStatus === 'REJECTED'
-                              ? 'bg-rose-600'
-                              : 'bg-slate-600'
-                          }`}
-                        >
-                          {p.listingStatus}
-                        </Badge>
+                {properties.map((p) => {
+                  const propReports = getReportsForProperty(p.id);
+                  return (
+                    <div
+                      key={p.id}
+                      className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-sm font-bold text-slate-900">{p.title}</h4>
+                          <Badge
+                            className={`text-[10px] font-bold ${
+                              p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE'
+                                ? 'bg-emerald-600 text-white'
+                                : p.listingStatus === 'UNDER_REVIEW' || p.listingStatus === 'SUBMITTED'
+                                ? 'bg-amber-500 text-white'
+                                : p.listingStatus === 'CHANGES_REQUIRED'
+                                ? 'bg-orange-500 text-white'
+                                : p.listingStatus === 'RESERVED'
+                                ? 'bg-purple-600 text-white'
+                                : p.listingStatus === 'OCCUPIED'
+                                ? 'bg-blue-600 text-white'
+                                : p.listingStatus === 'SOLD'
+                                ? 'bg-slate-800 text-white'
+                                : p.listingStatus === 'SUSPENDED' || p.listingStatus === 'REJECTED'
+                                ? 'bg-rose-600 text-white'
+                                : 'bg-slate-600 text-white'
+                            }`}
+                          >
+                            {p.listingStatus}
+                          </Badge>
+                          {propReports.length > 0 && (
+                            <Badge variant="destructive" className="text-[10px] font-bold animate-pulse">
+                              {propReports.length} Active Flag{propReports.length > 1 ? 's' : ''}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          {p.area}, {p.city} • {formatCurrency(p.price, p.listingType === 'RENT' ? 'For Rent' : 'For Sale')} • {p.bedrooms} Beds, {p.bathrooms} Baths
+                        </p>
+                        <div className="flex items-center gap-3 text-[11px] text-slate-400 pt-0.5">
+                          <span>Docs: <strong>{p.documents?.length || 0}</strong></span>
+                          <span>Reports: <strong>{propReports.length}</strong></span>
+                          <span>Created: {new Date(p.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {p.area}, {p.city} • ₦{p.price.toLocaleString()}
-                      </p>
-                    </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button variant="ghost" size="sm" asChild className="h-8 text-xs">
-                        <Link href={`/property/${p.id}`}>Inspect Page</Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openReviewDialog(p)}
-                        className="h-8 text-xs font-semibold"
-                      >
-                        Audit Checklist
-                      </Button>
-                      {p.listingStatus === 'SUSPENDED' ? (
-                        <Button
-                          size="sm"
-                          onClick={() => handleRestoreProperty(p.id)}
-                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                        >
-                          Restore Listing
+                      {/* Moderation Actions: Inspect Property, Review Documents, Review Reports, Suspend/Restore */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* 1. Inspect Property */}
+                        <Button variant="outline" size="sm" asChild className="h-8 text-xs rounded-xl">
+                          <Link href={`/property/${p.id}`} target="_blank">
+                            <Eye className="h-3.5 w-3.5 mr-1" />
+                            Inspect Property
+                          </Link>
                         </Button>
-                      ) : (
+
+                        {/* 2. Review Documents */}
                         <Button
-                          variant="destructive"
+                          variant="outline"
                           size="sm"
-                          onClick={() => handleSuspendProperty(p.id)}
-                          className="h-8 text-xs font-bold"
+                          onClick={() => {
+                            setInspectDocsProperty(p);
+                            setIsDocsDialogOpen(true);
+                          }}
+                          className="h-8 text-xs font-semibold rounded-xl text-blue-700 border-blue-200 hover:bg-blue-50"
                         >
-                          Suspend Listing
+                          <FileText className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                          Review Documents ({p.documents?.length || 0})
                         </Button>
-                      )}
+
+                        {/* 3. Review Reports */}
+                        {propReports.length > 0 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setActiveTab('reports');
+                            }}
+                            className="h-8 text-xs font-bold rounded-xl text-rose-700 border-rose-200 hover:bg-rose-50"
+                          >
+                            <BadgeAlert className="h-3.5 w-3.5 mr-1 text-rose-600" />
+                            Review Reports ({propReports.length})
+                          </Button>
+                        )}
+
+                        {/* 4. Audit Checklist */}
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => openReviewDialog(p)}
+                          className="h-8 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200"
+                        >
+                          Audit Checklist
+                        </Button>
+
+                        {/* 5. Suspend / Restore Listing */}
+                        {p.listingStatus === 'SUSPENDED' ? (
+                          <Button
+                            size="sm"
+                            onClick={() => handleRestoreProperty(p.id)}
+                            className="h-8 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"
+                          >
+                            Restore Listing
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleSuspendProperty(p.id)}
+                            className="h-8 text-xs font-bold rounded-xl"
+                          >
+                            Suspend Listing
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* TAB 3: USER MANAGEMENT (PRD Section 13) */}
+        {/* --- TAB 3: USER MANAGEMENT (PRD Section 13) --- */}
         <TabsContent value="users" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
               <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <Users className="h-5 w-5 text-blue-600" />
-                User Directory & Role Enforcement
+                User Management Directory
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
-                Inspect registered seekers, property owners, licensed agents, and administrators.
+                Inspect registered users, view roles, verify credentials, and suspend accounts where appropriate.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -571,7 +837,10 @@ function AdminPortalContent() {
               ) : (
                 <div className="divide-y divide-slate-100">
                   {users.map((u) => (
-                    <div key={u.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+                    <div
+                      key={u.id}
+                      className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"
+                    >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <h4 className="text-sm font-bold text-slate-900">{u.name}</h4>
@@ -607,11 +876,27 @@ function AdminPortalContent() {
                           {u.licenseNumber ? ` • Lic: ${u.licenseNumber}` : ''}
                         </p>
                         <p className="text-[11px] text-slate-400">
-                          Joined: {new Date(u.createdAt).toLocaleDateString()}
+                          Joined: {new Date(u.createdAt).toLocaleDateString()} • ID: {u.id}
                         </p>
                       </div>
 
+                      {/* User Actions: Inspect User & Suspend / Reactivate */}
                       <div className="flex items-center gap-2 shrink-0">
+                        {/* Inspect User Button */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setInspectedUser(u);
+                            setIsUserInspectOpen(true);
+                          }}
+                          className="h-8 text-xs font-semibold rounded-xl text-blue-700 border-blue-200 hover:bg-blue-50"
+                        >
+                          <Eye className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                          Inspect User
+                        </Button>
+
+                        {/* Suspend / Reactivate User */}
                         {u.role !== 'ADMIN' && (
                           <>
                             {u.verificationStatus === 'SUSPENDED' ? (
@@ -619,20 +904,20 @@ function AdminPortalContent() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleToggleUserStatus(u)}
-                                className="h-8 text-xs font-bold text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                                className="h-8 text-xs font-bold rounded-xl text-emerald-700 border-emerald-300 hover:bg-emerald-50"
                               >
                                 <UserCheck className="h-3.5 w-3.5 mr-1 text-emerald-600" />
-                                Reactivate Account
+                                Reactivate
                               </Button>
                             ) : (
                               <Button
                                 size="sm"
                                 variant="destructive"
                                 onClick={() => handleToggleUserStatus(u)}
-                                className="h-8 text-xs font-bold"
+                                className="h-8 text-xs font-bold rounded-xl"
                               >
                                 <UserX className="h-3.5 w-3.5 mr-1" />
-                                Suspend User
+                                Suspend
                               </Button>
                             )}
                           </>
@@ -646,16 +931,16 @@ function AdminPortalContent() {
           </Card>
         </TabsContent>
 
-        {/* TAB 3: TRUST & SAFETY REPORTS (PRD Section 18) */}
+        {/* --- TAB 4: TRUST & SAFETY REPORTS (PRD Section 18) --- */}
         <TabsContent value="reports" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
               <CardTitle className="text-lg font-black text-rose-700 flex items-center gap-2">
                 <BadgeAlert className="h-5 w-5" />
                 Trust & Safety Incident Reports
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
-                User reports for suspected scam, incorrect info, or unavailable properties.
+                User reports for suspected scam, incorrect info, unauthorized representation, or unavailable properties.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -668,7 +953,7 @@ function AdminPortalContent() {
               ) : (
                 <div className="divide-y divide-slate-100">
                   {reports.map((r) => (
-                    <div key={r.id} className="p-4 sm:p-5 space-y-3 hover:bg-slate-50/60">
+                    <div key={r.id} className="p-5 space-y-3 hover:bg-slate-50/60">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-2">
@@ -695,7 +980,7 @@ function AdminPortalContent() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleUpdateReport(r.id, 'UNDER_INVESTIGATION', 'Investigating with land registry.')}
-                          className="h-8 text-xs font-semibold"
+                          className="h-8 text-xs font-semibold rounded-xl"
                         >
                           Mark Under Investigation
                         </Button>
@@ -703,7 +988,7 @@ function AdminPortalContent() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleUpdateReport(r.id, 'DOCUMENTATION_REQUESTED', 'Requested fresh survey from host.')}
-                          className="h-8 text-xs font-semibold"
+                          className="h-8 text-xs font-semibold rounded-xl"
                         >
                           Request Documents
                         </Button>
@@ -711,14 +996,14 @@ function AdminPortalContent() {
                           size="sm"
                           variant="destructive"
                           onClick={() => handleUpdateReport(r.id, 'SUSPENDED', 'Suspended listing due to verified report.')}
-                          className="h-8 text-xs font-bold"
+                          className="h-8 text-xs font-bold rounded-xl"
                         >
                           Suspend Listing
                         </Button>
                         <Button
                           size="sm"
                           onClick={() => handleUpdateReport(r.id, 'RESOLVED', 'Issue investigated and cleared.')}
-                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500"
+                          className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 rounded-xl"
                         >
                           Resolve & Dismiss
                         </Button>
@@ -731,9 +1016,9 @@ function AdminPortalContent() {
           </Card>
         </TabsContent>
 
-        {/* TAB 4: INSPECTIONS MANAGEMENT (PRD Section 15) */}
+        {/* --- TAB 5: INSPECTIONS MANAGEMENT (PRD Section 15) --- */}
         <TabsContent value="inspections" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
               <CardTitle className="text-lg font-black text-slate-900">
                 Scheduled Inspections & Field Audits
@@ -745,44 +1030,34 @@ function AdminPortalContent() {
             <CardContent className="p-0">
               <div className="divide-y divide-slate-100">
                 {inspections.map((i) => (
-                  <div key={i.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={i.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                        <span className="text-sm font-bold text-slate-900">{i.propertyTitle}</span>
+                        <Badge variant="outline" className="text-xs font-semibold">
                           {i.type === 'IN_PERSON' ? 'Physical Visit' : 'Video Tour'}
-                        </span>
-                        <h4 className="text-sm font-bold text-slate-900">{i.propertyTitle}</h4>
+                        </Badge>
                       </div>
                       <p className="text-xs text-slate-500">
-                        Seeker: <strong>{i.seekerName}</strong> ({i.seekerPhone}) • Window: {i.preferredDate} ({i.preferredTimeSlot})
+                        Requested by <strong>{i.seekerName}</strong> for{' '}
+                        <strong>{new Date(i.preferredDate).toLocaleDateString()} ({i.preferredTimeSlot})</strong>
                       </p>
-                      {i.notes && (
-                        <p className="text-[11px] text-slate-400 italic">Notes: {i.notes}</p>
-                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant="outline" className="text-xs font-bold">
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={`text-xs font-bold ${
+                          i.status === 'COMPLETED'
+                            ? 'bg-emerald-600'
+                            : i.status === 'SCHEDULED' || i.status === 'ACCEPTED'
+                            ? 'bg-blue-600'
+                            : i.status === 'CANCELLED'
+                            ? 'bg-rose-600'
+                            : 'bg-amber-500'
+                        }`}
+                      >
                         {i.status}
                       </Badge>
-                      {i.status === 'REQUESTED' && (
-                        <Button
-                          size="sm"
-                          onClick={() => updateInspectionStatusAction(i.id, 'ACCEPTED', 'Host accepted inspection')}
-                          className="h-8 text-xs font-bold bg-blue-600 hover:bg-blue-500"
-                        >
-                          Accept
-                        </Button>
-                      )}
-                      {i.status === 'ACCEPTED' && (
-                        <Button
-                          size="sm"
-                          onClick={() => updateInspectionStatusAction(i.id, 'SCHEDULED', 'Time finalized')}
-                          className="h-8 text-xs font-bold bg-indigo-600 hover:bg-indigo-500"
-                        >
-                          Confirm Schedule
-                        </Button>
-                      )}
                     </div>
                   </div>
                 ))}
@@ -791,12 +1066,11 @@ function AdminPortalContent() {
           </Card>
         </TabsContent>
 
-        {/* TAB 5: SYSTEM AUDIT TRAIL (PRD Section 14) */}
+        {/* --- TAB 6: SYSTEM AUDIT TRAIL (PRD Section 14) --- */}
         <TabsContent value="audit" className="space-y-4">
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Lock className="h-5 w-5 text-emerald-600" />
+              <CardTitle className="text-lg font-black text-slate-900">
                 Immutable System Audit Logs
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
@@ -806,7 +1080,7 @@ function AdminPortalContent() {
             <CardContent className="p-0">
               <div className="divide-y divide-slate-100 font-mono text-xs">
                 {auditLogs.map((log) => (
-                  <div key={log.id} className="p-3.5 hover:bg-slate-50/80 flex items-start justify-between gap-4">
+                  <div key={log.id} className="p-4 hover:bg-slate-50/80 flex items-start justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">
@@ -831,120 +1105,210 @@ function AdminPortalContent() {
         </TabsContent>
       </Tabs>
 
-      {/* --- MODAL: GRANULAR COMPLIANCE AUDIT CHECKLIST (PRD Section 12) --- */}
+      {/* --- MODAL 1: GRANULAR VERIFICATION CHECKLIST (PRD Section 12) --- */}
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[620px] rounded-2xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-blue-600" />
               Granular Verification Checklist
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Auditing: {reviewProperty?.title}
+              Auditing listing: <strong>{reviewProperty?.title}</strong> ({reviewProperty?.id})
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 pt-2">
-            {/* Checklist parameter toggles */}
+            {/* Attached Confidential Documents Audit Panel */}
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  Attached Title & Survey Documents ({reviewProperty?.documents?.length || 0})
+                </span>
+                <span className="text-[10px] text-slate-500">Access-Controlled Vault</span>
+              </div>
+
+              {(!reviewProperty?.documents || reviewProperty.documents.length === 0) ? (
+                <p className="text-xs text-amber-700 italic bg-amber-50 p-2 rounded-lg border border-amber-200">
+                  ⚠️ No legal title documents have been attached to this property.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {reviewProperty.documents.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="p-2.5 rounded-lg bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900">
+                            {doc.documentType.replace(/_/g, ' ')}
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                              doc.status === 'APPROVED'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : doc.status === 'REJECTED'
+                                ? 'bg-rose-100 text-rose-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}
+                          >
+                            {doc.status}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">
+                          {doc.fileName} {doc.sizeBytes ? `• ${(doc.sizeBytes / 1024).toFixed(1)} KB` : ''}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button size="sm" variant="outline" asChild className="h-7 text-[10px] rounded-lg">
+                          <a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer">
+                            <Download className="h-3 w-3 mr-1" />
+                            View
+                          </a>
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleReviewDocument(reviewProperty.id, doc.id, 'APPROVED', 'Verified by officer')}
+                          className="h-7 text-[10px] rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleReviewDocument(reviewProperty.id, doc.id, 'REJECTED', 'Illegible or incorrect')}
+                          className="h-7 text-[10px] rounded-lg"
+                        >
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Checklist Parameter Toggles (Supporting all 6 states) */}
             <div className="space-y-3 divide-y divide-slate-100 text-xs">
+              {/* 1. Owner Identity */}
               <div className="flex items-center justify-between pt-1">
                 <div>
                   <p className="font-bold text-slate-900">1. Owner / Authority Identity</p>
                   <p className="text-[11px] text-slate-400">KYC check & NIN / Passport verification</p>
                 </div>
                 <Select value={ownerIdStatus} onValueChange={(v: any) => setOwnerIdStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* 2. Location Status */}
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <p className="font-bold text-slate-900">2. Location & Cadaster</p>
                   <p className="text-[11px] text-slate-400">Coordinates confirmed against Land Survey</p>
                 </div>
                 <Select value={locStatus} onValueChange={(v: any) => setLocStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* 3. Authority Document Status */}
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <p className="font-bold text-slate-900">3. Title Documents Reviewed</p>
-                  <p className="text-[11px] text-slate-400">Governor&apos;s Consent / C of O / Deed</p>
+                  <p className="text-[11px] text-slate-400">Governor&apos;s Consent / C of O / Deed of Assignment</p>
                 </div>
                 <Select value={docStatus} onValueChange={(v: any) => setDocStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* 4. Availability Status */}
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <p className="font-bold text-slate-900">4. Availability & Vacancy</p>
-                  <p className="text-[11px] text-slate-400">Confirmed vacant and not double-let</p>
+                  <p className="text-[11px] text-slate-400">Confirmed vacant and not double-let or disputed</p>
                 </div>
                 <Select value={availStatus} onValueChange={(v: any) => setAvailStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* 5. Media Status */}
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <p className="font-bold text-slate-900">5. Media Authenticity</p>
-                  <p className="text-[11px] text-slate-400">Confirmed original non-misleading photos</p>
+                  <p className="text-[11px] text-slate-400">Confirmed non-misleading photos & timestamped video</p>
                 </div>
                 <Select value={mediaStatus} onValueChange={(v: any) => setMediaStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
+              {/* 6. Inspection Status */}
               <div className="flex items-center justify-between pt-2">
                 <div>
                   <p className="font-bold text-slate-900">6. Physical Inspection Record</p>
-                  <p className="text-[11px] text-slate-400">Field agent verified score on site</p>
+                  <p className="text-[11px] text-slate-400">Field agent verified condition log on-site</p>
                 </div>
                 <Select value={inspStatus} onValueChange={(v: any) => setInspStatus(v)}>
-                  <SelectTrigger className="w-32 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PASSED">Passed</SelectItem>
-                    <SelectItem value="IN_REVIEW">In Review</SelectItem>
-                    <SelectItem value="FAILED">Failed</SelectItem>
+                    {VERIFICATION_STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -969,19 +1333,28 @@ function AdminPortalContent() {
           <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-100">
             <Button
               type="button"
+              variant="outline"
+              disabled={submittingAction}
+              onClick={handleSaveChecklistDraft}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Save Checklist
+            </Button>
+            <Button
+              type="button"
               variant="destructive"
               disabled={submittingAction}
               onClick={handleReject}
               className="text-xs font-bold rounded-xl"
             >
-              Reject Listing
+              Reject
             </Button>
             <Button
               type="button"
               variant="outline"
               disabled={submittingAction}
               onClick={handleRequestChanges}
-              className="text-xs font-bold rounded-xl text-amber-700 border-amber-300"
+              className="text-xs font-bold rounded-xl text-amber-700 border-amber-300 hover:bg-amber-50"
             >
               Request Changes
             </Button>
@@ -995,6 +1368,179 @@ function AdminPortalContent() {
               Approve as VERIFIED
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 2: INSPECT USER DETAILS (PRD Section 13) --- */}
+      <Dialog open={isUserInspectOpen} onOpenChange={setIsUserInspectOpen}>
+        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Users className="h-5 w-5 text-blue-600" />
+              User Profile & Role Inspection
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Platform identity details for {inspectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+
+          {inspectedUser && (
+            <div className="space-y-4 pt-2 text-xs">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-base">
+                  {inspectedUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900">{inspectedUser.name}</p>
+                  <p className="text-slate-500">{inspectedUser.email}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge className="text-[10px]">{inspectedUser.role}</Badge>
+                    <Badge variant="outline" className="text-[10px]">{inspectedUser.verificationStatus}</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 border-t border-slate-100 pt-3">
+                <div className="flex justify-between py-1 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium">User ID</span>
+                  <span className="font-mono text-slate-800">{inspectedUser.id}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium">Phone Number</span>
+                  <span className="font-semibold text-slate-800">{inspectedUser.phone}</span>
+                </div>
+                {inspectedUser.agencyName && (
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">Agency Name</span>
+                    <span className="font-semibold text-slate-800">{inspectedUser.agencyName}</span>
+                  </div>
+                )}
+                {inspectedUser.licenseNumber && (
+                  <div className="flex justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500 font-medium">License / Reg Number</span>
+                    <span className="font-mono font-semibold text-slate-800">{inspectedUser.licenseNumber}</span>
+                  </div>
+                )}
+                <div className="flex justify-between py-1 border-b border-slate-100">
+                  <span className="text-slate-500 font-medium">Account Created</span>
+                  <span className="text-slate-800">{new Date(inspectedUser.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Properties Owned / Represented</span>
+                  <span className="font-bold text-blue-700">
+                    {properties.filter((p) => p.ownerId === inspectedUser.id || p.authorizedAgentId === inspectedUser.id).length} Listings
+                  </span>
+                </div>
+              </div>
+
+              {inspectedUser.role !== 'ADMIN' && (
+                <div className="pt-2">
+                  <Button
+                    variant={inspectedUser.verificationStatus === 'SUSPENDED' ? 'outline' : 'destructive'}
+                    className="w-full text-xs font-bold rounded-xl"
+                    onClick={() => handleToggleUserStatus(inspectedUser)}
+                  >
+                    {inspectedUser.verificationStatus === 'SUSPENDED' ? (
+                      <>
+                        <UserCheck className="h-4 w-4 mr-1 text-emerald-600" />
+                        Reactivate User Account
+                      </>
+                    ) : (
+                      <>
+                        <UserX className="h-4 w-4 mr-1" />
+                        Suspend User Account
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 3: REVIEW DOCUMENTS FOR PROPERTY (PRD Section 13) --- */}
+      <Dialog open={isDocsDialogOpen} onOpenChange={setIsDocsDialogOpen}>
+        <DialogContent className="sm:max-w-[550px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-600" />
+              Confidential Documents Audit
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Reviewing legal papers for {inspectDocsProperty?.title}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2">
+            {(!inspectDocsProperty?.documents || inspectDocsProperty.documents.length === 0) ? (
+              <div className="p-6 text-center text-slate-400">
+                <FileWarning className="h-8 w-8 text-amber-500 mx-auto mb-2" />
+                <p className="text-xs font-bold text-slate-700">No Attached Documents</p>
+                <p className="text-[11px] text-slate-400">The host has not uploaded survey or title certificates.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {inspectDocsProperty.documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900">
+                          {doc.documentType.replace(/_/g, ' ')}
+                        </span>
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                            doc.status === 'APPROVED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : doc.status === 'REJECTED'
+                              ? 'bg-rose-100 text-rose-800'
+                              : 'bg-amber-100 text-amber-800'
+                          }`}
+                        >
+                          {doc.status}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {doc.fileName} {doc.sizeBytes ? `• ${(doc.sizeBytes / 1024).toFixed(1)} KB` : ''} • Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
+                      </p>
+                      {doc.reviewNotes && (
+                        <p className="text-[10px] text-slate-500 mt-1 italic">
+                          Audit note: &quot;{doc.reviewNotes}&quot;
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Button size="sm" variant="outline" asChild className="h-7 text-[10px] rounded-lg">
+                        <a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer">
+                          <Download className="h-3 w-3 mr-1" />
+                          View
+                        </a>
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleReviewDocument(inspectDocsProperty.id, doc.id, 'APPROVED', 'Approved by officer')}
+                        className="h-7 text-[10px] rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleReviewDocument(inspectDocsProperty.id, doc.id, 'REJECTED', 'Rejected')}
+                        className="h-7 text-[10px] rounded-lg"
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

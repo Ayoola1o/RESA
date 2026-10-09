@@ -108,6 +108,11 @@ export class PropertyService {
       },
     });
 
+    if (property.verification) {
+      property.verification.propertyId = property.id;
+      await propertyRepository.update(property.id, { verification: property.verification });
+    }
+
     await auditRepository.create({
       actorId: user.id,
       actorEmail: user.email,
@@ -120,6 +125,68 @@ export class PropertyService {
     });
 
     return property;
+  }
+
+  async updateDraft(
+    user: User,
+    propertyId: string,
+    data: Partial<{
+      title: string;
+      propertyType: Property['propertyType'];
+      listingType: Property['listingType'];
+      description: string;
+      state: string;
+      city: string;
+      area: string;
+      address: string;
+      price: number;
+      priceUnit?: string;
+      agreementFee?: number;
+      cautionFee?: number;
+      serviceCharge?: number;
+      otherCharges?: number;
+      bedrooms: number;
+      bathrooms: number;
+      sqft?: number;
+      features: string[];
+      latitude?: number;
+      longitude?: number;
+      intendedUse?: 'Residential' | 'Commercial' | 'Mixed';
+      authorizedAgentId?: string;
+    }>
+  ): Promise<Property> {
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) throw new Error('Property not found');
+
+    const isOwner = property.ownerId === user.id;
+    const isAgent = property.authorizedAgentId === user.id;
+    const isAdmin = user.role === 'ADMIN';
+
+    if (!isOwner && !isAgent && !isAdmin) {
+      throw new Error('Unauthorized to edit this property draft');
+    }
+
+    if (property.listingStatus !== 'DRAFT' && property.listingStatus !== 'CHANGES_REQUIRED' && !isAdmin) {
+      throw new Error(`Cannot edit listing while in status: ${property.listingStatus}`);
+    }
+
+    const updated = await propertyRepository.update(propertyId, {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    });
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'PROPERTY_EDITED',
+      objectType: 'PROPERTY',
+      objectId: propertyId,
+      result: 'SUCCESS',
+      metadata: { title: updated?.title },
+    });
+
+    return updated!;
   }
 
   async addDocument(
@@ -213,6 +280,7 @@ export class PropertyService {
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'SUSPENDED',
+      availabilityStatus: 'UNAVAILABLE',
     });
 
     await auditRepository.create({
@@ -238,6 +306,7 @@ export class PropertyService {
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'ACTIVE',
+      availabilityStatus: 'AVAILABLE',
     });
 
     await auditRepository.create({

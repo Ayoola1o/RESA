@@ -10,7 +10,7 @@
       "location": "Lekki Phase 1, Lagos",
       "verificationStatus": "VERIFIED",
       "createdAt": "2026-09-01T10:00:00Z",
-      "updatedAt": "2026-10-08T21:38:21.240Z",
+      "updatedAt": "2026-10-09T20:16:03.995Z",
       "bio": "Tech entrepreneur searching for high-security residences and investment properties in Lagos and Abuja."
     },
     {
@@ -383,6 +383,38 @@
       "id": "user_1791572453076_0lxfl",
       "createdAt": "2026-10-09T19:00:53.076Z",
       "updatedAt": "2026-10-09T19:00:53.076Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791573524078@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791573524085_dnpna",
+      "createdAt": "2026-10-09T19:18:44.085Z",
+      "updatedAt": "2026-10-09T19:18:44.085Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791573524240@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791573524240_gexzq",
+      "createdAt": "2026-10-09T19:18:44.240Z",
+      "updatedAt": "2026-10-09T19:18:44.240Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791573524305@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791573524305_qwuxl",
+      "createdAt": "2026-10-09T19:18:44.305Z",
+      "updatedAt": "2026-10-09T19:18:44.305Z"
     }
   ],
   "passwords": {
@@ -420,7 +452,10 @@
     "user_1791571299219_1dwzy": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_1791572452807_ncoqa": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_1791572453006_wor52": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
-    "user_1791572453076_0lxfl": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
+    "user_1791572453076_0lxfl": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791573524085_dnpna": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791573524240_gexzq": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791573524305_qwuxl": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
   },
   "sessions": {
     "sess_1791489503052_5oxus5ckcs": {
@@ -627,9 +662,849 @@
       "userId": "user_1791572453076_0lxfl",
       "role": "AGENT",
       "expiresAt": "2026-10-23T19:00:53.086Z"
+    },
+    "sess_1791573524091_ii4gl99lhz": {
+      "userId": "user_1791573524085_dnpna",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T19:18:44.091Z"
+    },
+    "sess_1791573524107_9pw3ty1lvm": {
+      "userId": "user_1791573524085_dnpna",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T19:18:44.107Z"
+    },
+    "sess_1791573524249_oxggpe1gfu": {
+      "userId": "user_1791573524240_gexzq",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T19:18:44.249Z"
+    },
+    "sess_1791573524312_gepst731ay": {
+      "userId": "user_1791573524305_qwuxl",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T19:18:44.312Z"
     }
   },
   "properties": [
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791576963683_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:16:03.683Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791576963686",
+        "propertyId": "prop_1791576963686_4yuu",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed.",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-09T20:16:03.863Z",
+        "lastVerifiedAt": "2026-10-09T20:16:03.863Z"
+      },
+      "id": "prop_1791576963686_4yuu",
+      "createdAt": "2026-10-09T20:16:03.686Z",
+      "updatedAt": "2026-10-09T20:16:04.015Z",
+      "publishedAt": "2026-10-09T20:16:03.882Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "authorizedAgentId": "user_agent_1",
+      "title": "Crown Heights Luxury Smart Duplex",
+      "propertyType": "House",
+      "listingType": "RENT",
+      "description": "Ultra-contemporary duplex with automated access and clean title.",
+      "state": "Lagos",
+      "city": "Lekki",
+      "area": "Lekki Phase 1",
+      "address": "14 Admiralty Way, Lekki Phase 1",
+      "latitude": 6.4485,
+      "longitude": 3.4735,
+      "price": 25000000,
+      "priceUnit": "/year",
+      "agreementFee": 2500000,
+      "cautionFee": 2000000,
+      "serviceCharge": 1500000,
+      "otherCharges": 500000,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Swimming Pool",
+        "24/7 Security",
+        "Solar Inverter",
+        "Fitted Kitchen"
+      ],
+      "availabilityStatus": "UNAVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791576798756_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:13:18.756Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791576798758",
+        "propertyId": "prop_1791576798758_aqkw",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791576798758_aqkw",
+      "createdAt": "2026-10-09T20:13:18.758Z",
+      "updatedAt": "2026-10-09T20:13:18.951Z",
+      "publishedAt": "2026-10-09T20:13:18.844Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Atlantic Oceanview Villa (Updated Draft)",
+      "propertyType": "House",
+      "listingType": "SALE",
+      "description": "Bespoke shoreline architecture awaiting document attachment.",
+      "state": "Lagos",
+      "city": "Lagos Island",
+      "area": "Oniru",
+      "address": "Plot 18 Ocean Drive, Oniru Waterfront",
+      "latitude": 6.4312,
+      "longitude": 3.4418,
+      "price": 330000000,
+      "priceUnit": "total",
+      "agreementFee": 16000000,
+      "cautionFee": 0,
+      "serviceCharge": 4000000,
+      "otherCharges": 2500000,
+      "bedrooms": 6,
+      "bathrooms": 6,
+      "sqft": 680,
+      "features": [
+        "Private Beach Access",
+        "Infinity Pool",
+        "24/7 Security"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "SUBMITTED",
+      "media": [
+        {
+          "id": "med_1791576785950_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:13:05.950Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791576786061_cbc38179",
+          "propertyId": "prop_1791576785953_0vjo",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+          "fileReference": "doc_1791576786060_cbc38179d40a41059d161a323bc668e7.pdf",
+          "status": "APPROVED",
+          "uploadedAt": "2026-10-09T20:13:06.061Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 71,
+          "reviewedAt": "2026-10-09T20:13:06.113Z",
+          "reviewedBy": "user_admin_1",
+          "reviewNotes": "Deed of Assignment signature and registry seal verified."
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791576785953",
+        "propertyId": "prop_1791576785953_0vjo",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791576785953_0vjo",
+      "createdAt": "2026-10-09T20:13:05.953Z",
+      "updatedAt": "2026-10-09T20:13:06.175Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791576761271_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:12:41.272Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791576761274",
+        "propertyId": "prop_1791576761274_x19z",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed.",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-09T20:12:41.427Z",
+        "lastVerifiedAt": "2026-10-09T20:12:41.427Z"
+      },
+      "id": "prop_1791576761274_x19z",
+      "createdAt": "2026-10-09T20:12:41.274Z",
+      "updatedAt": "2026-10-09T20:12:41.591Z",
+      "publishedAt": "2026-10-09T20:12:41.444Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "SUSPENDED",
+      "media": [
+        {
+          "id": "med_1791576647438_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:10:47.438Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791576647483_291fcb31",
+          "propertyId": "prop_1791576647440_htdi",
+          "uploadedBy": "user_owner_1",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "governors_consent_alexander.pdf",
+          "fileReference": "doc_1791576647481_291fcb31ae824239ba788ad6c3866db6.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T20:10:47.483Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 39
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791576647440",
+        "propertyId": "prop_1791576647440_htdi",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed.",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-09T20:10:47.586Z",
+        "lastVerifiedAt": "2026-10-09T20:10:47.586Z"
+      },
+      "id": "prop_1791576647440_htdi",
+      "createdAt": "2026-10-09T20:10:47.440Z",
+      "updatedAt": "2026-10-09T20:10:47.620Z",
+      "publishedAt": "2026-10-09T20:10:47.602Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791576270916_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T20:04:30.916Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791576270959_55d5da37",
+          "propertyId": "prop_1791576270919_ps1q",
+          "uploadedBy": "user_owner_1",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "governors_consent_alexander.pdf",
+          "fileReference": "doc_1791576270957_55d5da37fbe34c4ebdb328d176fb3eca.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T20:04:30.959Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 39
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791576270919",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791576270919_ps1q",
+      "createdAt": "2026-10-09T20:04:30.919Z",
+      "updatedAt": "2026-10-09T20:04:31.051Z",
+      "publishedAt": "2026-10-09T20:04:31.050Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "authorizedAgentId": "user_agent_1",
+      "title": "Crown Heights Luxury Smart Duplex",
+      "propertyType": "House",
+      "listingType": "RENT",
+      "description": "Ultra-contemporary duplex with automated access and clean title.",
+      "state": "Lagos",
+      "city": "Lekki",
+      "area": "Lekki Phase 1",
+      "address": "14 Admiralty Way, Lekki Phase 1",
+      "latitude": 6.4485,
+      "longitude": 3.4735,
+      "price": 25000000,
+      "priceUnit": "/year",
+      "agreementFee": 2500000,
+      "cautionFee": 2000000,
+      "serviceCharge": 1500000,
+      "otherCharges": 500000,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Swimming Pool",
+        "24/7 Security",
+        "Solar Inverter",
+        "Fitted Kitchen"
+      ],
+      "availabilityStatus": "UNAVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791575079360_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:44:39.361Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791575079363",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791575079363_qv0e",
+      "createdAt": "2026-10-09T19:44:39.363Z",
+      "updatedAt": "2026-10-09T19:44:39.601Z",
+      "publishedAt": "2026-10-09T19:44:39.461Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Atlantic Oceanview Villa (Updated Draft)",
+      "propertyType": "House",
+      "listingType": "SALE",
+      "description": "Bespoke shoreline architecture awaiting document attachment.",
+      "state": "Lagos",
+      "city": "Lagos Island",
+      "area": "Oniru",
+      "address": "Plot 18 Ocean Drive, Oniru Waterfront",
+      "latitude": 6.4312,
+      "longitude": 3.4418,
+      "price": 330000000,
+      "priceUnit": "total",
+      "agreementFee": 16000000,
+      "cautionFee": 0,
+      "serviceCharge": 4000000,
+      "otherCharges": 2500000,
+      "bedrooms": 6,
+      "bathrooms": 6,
+      "sqft": 680,
+      "features": [
+        "Private Beach Access",
+        "Infinity Pool",
+        "24/7 Security"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "SUBMITTED",
+      "media": [
+        {
+          "id": "med_1791575063587_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:44:23.587Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791575063684_33dc2a40",
+          "propertyId": "prop_1791575063589_6gac",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+          "fileReference": "doc_1791575063683_33dc2a4090d44070b71cb87f0cad0105.pdf",
+          "status": "APPROVED",
+          "uploadedAt": "2026-10-09T19:44:23.684Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 71,
+          "reviewedAt": "2026-10-09T19:44:23.709Z",
+          "reviewedBy": "user_admin_1",
+          "reviewNotes": "Deed of Assignment signature and registry seal verified."
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791575063589",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791575063589_6gac",
+      "createdAt": "2026-10-09T19:44:23.589Z",
+      "updatedAt": "2026-10-09T19:44:23.762Z"
+    },
+    {
+      "ownerId": "user_1791573524240_gexzq",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791573524262_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:18:44.262Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791573524278_gjq6",
+          "propertyId": "prop_1791573524262_9rpi",
+          "uploadedBy": "user_1791573524240_gexzq",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791573524262_9rpi/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T19:18:44.278Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791573524262",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791573524262_9rpi",
+      "createdAt": "2026-10-09T19:18:44.262Z",
+      "updatedAt": "2026-10-09T19:18:44.340Z",
+      "publishedAt": "2026-10-09T19:18:44.340Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "authorizedAgentId": "user_agent_1",
+      "title": "Crown Heights Luxury Smart Duplex",
+      "propertyType": "House",
+      "listingType": "RENT",
+      "description": "Ultra-contemporary duplex with automated access and clean title.",
+      "state": "Lagos",
+      "city": "Lekki",
+      "area": "Lekki Phase 1",
+      "address": "14 Admiralty Way, Lekki Phase 1",
+      "latitude": 6.4485,
+      "longitude": 3.4735,
+      "price": 25000000,
+      "priceUnit": "/year",
+      "agreementFee": 2500000,
+      "cautionFee": 2000000,
+      "serviceCharge": 1500000,
+      "otherCharges": 500000,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Swimming Pool",
+        "24/7 Security",
+        "Solar Inverter",
+        "Fitted Kitchen"
+      ],
+      "availabilityStatus": "UNAVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791573512787_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:18:32.787Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791573512789",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791573512790_nel2",
+      "createdAt": "2026-10-09T19:18:32.790Z",
+      "updatedAt": "2026-10-09T19:18:32.936Z",
+      "publishedAt": "2026-10-09T19:18:32.858Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Atlantic Oceanview Villa (Updated Draft)",
+      "propertyType": "House",
+      "listingType": "SALE",
+      "description": "Bespoke shoreline architecture awaiting document attachment.",
+      "state": "Lagos",
+      "city": "Lagos Island",
+      "area": "Oniru",
+      "address": "Plot 18 Ocean Drive, Oniru Waterfront",
+      "latitude": 6.4312,
+      "longitude": 3.4418,
+      "price": 330000000,
+      "priceUnit": "total",
+      "agreementFee": 16000000,
+      "cautionFee": 0,
+      "serviceCharge": 4000000,
+      "otherCharges": 2500000,
+      "bedrooms": 6,
+      "bathrooms": 6,
+      "sqft": 680,
+      "features": [
+        "Private Beach Access",
+        "Infinity Pool",
+        "24/7 Security"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "SUBMITTED",
+      "media": [
+        {
+          "id": "med_1791573501275_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:18:21.275Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791573501381_345581e5",
+          "propertyId": "prop_1791573501278_lphc",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+          "fileReference": "doc_1791573501380_345581e5ac694560ab73b351da31483d.pdf",
+          "status": "APPROVED",
+          "uploadedAt": "2026-10-09T19:18:21.381Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 71,
+          "reviewedAt": "2026-10-09T19:18:21.402Z",
+          "reviewedBy": "user_admin_1",
+          "reviewNotes": "Deed of Assignment signature and registry seal verified."
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791573501278",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791573501278_lphc",
+      "createdAt": "2026-10-09T19:18:21.278Z",
+      "updatedAt": "2026-10-09T19:18:21.443Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Atlantic Oceanview Villa (Updated Draft)",
+      "propertyType": "House",
+      "listingType": "SALE",
+      "description": "Bespoke shoreline architecture awaiting document attachment.",
+      "state": "Lagos",
+      "city": "Lagos Island",
+      "area": "Oniru",
+      "address": "Plot 18 Ocean Drive, Oniru Waterfront",
+      "latitude": 6.4312,
+      "longitude": 3.4418,
+      "price": 330000000,
+      "priceUnit": "total",
+      "agreementFee": 16000000,
+      "cautionFee": 0,
+      "serviceCharge": 4000000,
+      "otherCharges": 2500000,
+      "bedrooms": 6,
+      "bathrooms": 6,
+      "sqft": 680,
+      "features": [
+        "Private Beach Access",
+        "Infinity Pool",
+        "24/7 Security"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "SUBMITTED",
+      "media": [
+        {
+          "id": "med_1791573417904_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:16:57.904Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791573417988_bb47a11d",
+          "propertyId": "prop_1791573417907_kjfx",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+          "fileReference": "doc_1791573417987_bb47a11d6eed48d2b76178fae6823865.pdf",
+          "status": "APPROVED",
+          "uploadedAt": "2026-10-09T19:16:57.988Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 71,
+          "reviewedAt": "2026-10-09T19:16:58.007Z",
+          "reviewedBy": "user_admin_1",
+          "reviewNotes": "Deed of Assignment signature and registry seal verified."
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791573417907",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791573417907_kjfx",
+      "createdAt": "2026-10-09T19:16:57.907Z",
+      "updatedAt": "2026-10-09T19:16:58.042Z"
+    },
     {
       "ownerId": "user_1791572453006_wor52",
       "title": "Luxury 4-Bedroom Waterfront Penthouse",
@@ -1799,6 +2674,24 @@
   ],
   "inspections": [
     {
+      "propertyId": "prop_1791572453028_nppx",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791573524085_dnpna",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791573524078@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791572453006_wor52",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791573524174_0uk8",
+      "createdAt": "2026-10-09T19:18:44.174Z",
+      "updatedAt": "2026-10-09T19:18:44.174Z"
+    },
+    {
       "propertyId": "prop_1791571299188_d4gs",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "propertyAddress": "Plot 12, Waterfront Promenade",
@@ -2142,6 +3035,31 @@
     }
   ],
   "enquiries": [
+    {
+      "propertyId": "prop_1791572453028_nppx",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "/api/media/med_1791572467029_dad0eb89",
+      "seekerId": "user_1791573524085_dnpna",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791572453006_wor52",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T19:18:44.187Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791573524187",
+          "senderId": "user_1791573524085_dnpna",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T19:18:44.187Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791573524187_iy1m"
+    },
     {
       "propertyId": "prop_1791571299188_d4gs",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
@@ -2531,6 +3449,26 @@
   ],
   "applications": [
     {
+      "propertyId": "prop_1791572453028_nppx",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "/api/media/med_1791572467029_dad0eb89",
+      "seekerId": "user_1791573524085_dnpna",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791573524078@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791573524205_06hj",
+      "createdAt": "2026-10-09T19:18:44.205Z",
+      "updatedAt": "2026-10-09T19:18:44.205Z"
+    },
+    {
       "propertyId": "prop_1791571299188_d4gs",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "propertyPrice": 35000000,
@@ -2840,6 +3778,39 @@
   ],
   "reports": [
     {
+      "propertyId": "prop_1791576761274_x19z",
+      "propertyTitle": "The Verification Test Haven",
+      "reporterId": "user_seeker_1",
+      "reporterName": "Chidi Okonkwo",
+      "reason": "Incorrect Information",
+      "description": "Automated test suite verifying audit workflow.",
+      "id": "rep_1791576774187_s0i2",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T20:12:54.187Z"
+    },
+    {
+      "propertyId": "prop_1791573524262_9rpi",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_seeker_1",
+      "reporterName": "Chidi Okonkwo",
+      "reason": "Incorrect Information",
+      "description": "Automated test suite verifying audit workflow.",
+      "id": "rep_1791575040941_fhmr",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T19:44:00.941Z"
+    },
+    {
+      "propertyId": "prop_1791572453028_nppx",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791573524085_dnpna",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791573524217_hfj5",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T19:18:44.217Z"
+    },
+    {
       "propertyId": "prop_1791571299188_d4gs",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "reporterId": "user_1791572452807_ncoqa",
@@ -2962,6 +3933,2106 @@
     }
   ],
   "auditLogs": [
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576963737_606b8063",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576963686_4yuu",
+        "fileName": "governors_consent_alexander.pdf"
+      },
+      "id": "aud_1791576964025_zedc",
+      "timestamp": "2026-10-09T20:16:04.025Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_STATUS_UPDATED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "VERIFIED"
+      },
+      "id": "aud_1791576964006_wda8",
+      "timestamp": "2026-10-09T20:16:04.006Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_SUSPENDED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SUSPENDED"
+      },
+      "id": "aud_1791576963987_9qpk",
+      "timestamp": "2026-10-09T20:16:03.987Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576963737_606b8063",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576963686_4yuu",
+        "status": "APPROVED",
+        "reviewNotes": "Registry seal stamped and verified."
+      },
+      "id": "aud_1791576963944_dhcp",
+      "timestamp": "2026-10-09T20:16:03.944Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576963927_1cqd",
+      "timestamp": "2026-10-09T20:16:03.927Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Suspended for audit check"
+      },
+      "id": "aud_1791576963908_tyt7",
+      "timestamp": "2026-10-09T20:16:03.908Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      },
+      "id": "aud_1791576963889_l4xx",
+      "timestamp": "2026-10-09T20:16:03.889Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      },
+      "id": "aud_1791576963872_ercv",
+      "timestamp": "2026-10-09T20:16:03.872Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      },
+      "id": "aud_1791576963854_smi2",
+      "timestamp": "2026-10-09T20:16:03.854Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      },
+      "id": "aud_1791576963832_39zl",
+      "timestamp": "2026-10-09T20:16:03.832Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      },
+      "id": "aud_1791576963814_ohdc",
+      "timestamp": "2026-10-09T20:16:03.814Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      },
+      "id": "aud_1791576963787_8kvg",
+      "timestamp": "2026-10-09T20:16:03.787Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      },
+      "id": "aud_1791576963769_eqjk",
+      "timestamp": "2026-10-09T20:16:03.769Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576963737_606b8063",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576963686_4yuu",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      },
+      "id": "aud_1791576963751_zldv",
+      "timestamp": "2026-10-09T20:16:03.751Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      },
+      "id": "aud_1791576963722_7edz",
+      "timestamp": "2026-10-09T20:16:03.722Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576963686_4yuu",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576963705_6wzy",
+      "timestamp": "2026-10-09T20:16:03.705Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "REJECTED",
+        "reason": "Permanent rejection due to fraudulent survey"
+      },
+      "id": "aud_1791576798958_8zdr",
+      "timestamp": "2026-10-09T20:13:18.958Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SOLD",
+        "newStatus": "SUSPENDED",
+        "reason": "Title dispute reported"
+      },
+      "id": "aud_1791576798938_51r5",
+      "timestamp": "2026-10-09T20:13:18.938Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "OCCUPIED",
+        "newStatus": "SOLD",
+        "reason": "Transaction deed executed"
+      },
+      "id": "aud_1791576798923_hqh4",
+      "timestamp": "2026-10-09T20:13:18.923Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "RESERVED",
+        "newStatus": "OCCUPIED",
+        "reason": "Keys handed over to verified tenant"
+      },
+      "id": "aud_1791576798905_4r03",
+      "timestamp": "2026-10-09T20:13:18.905Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "ACTIVE",
+        "newStatus": "RESERVED",
+        "reason": "Holding deposit received"
+      },
+      "id": "aud_1791576798887_z1o3",
+      "timestamp": "2026-10-09T20:13:18.887Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "VERIFIED",
+        "newStatus": "ACTIVE"
+      },
+      "id": "aud_1791576798872_zhnd",
+      "timestamp": "2026-10-09T20:13:18.872Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "VERIFIED",
+        "reason": "All titles confirmed clean"
+      },
+      "id": "aud_1791576798852_c6q1",
+      "timestamp": "2026-10-09T20:13:18.852Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "CHANGES_REQUIRED",
+        "newStatus": "SUBMITTED",
+        "reason": "Survey plan attached"
+      },
+      "id": "aud_1791576798834_bhjt",
+      "timestamp": "2026-10-09T20:13:18.834Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_REVIEW",
+        "newStatus": "CHANGES_REQUIRED",
+        "reason": "Please upload signed Survey Plan"
+      },
+      "id": "aud_1791576798818_xxd8",
+      "timestamp": "2026-10-09T20:13:18.818Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "UNDER_REVIEW",
+        "reason": "Assigned to field verification team"
+      },
+      "id": "aud_1791576798804_etd9",
+      "timestamp": "2026-10-09T20:13:18.804Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Ready for compliance audit"
+      },
+      "id": "aud_1791576798787_6kmk",
+      "timestamp": "2026-10-09T20:13:18.787Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576798758_aqkw",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Crown Heights Luxury Smart Duplex"
+      },
+      "id": "aud_1791576798773_fu6y",
+      "timestamp": "2026-10-09T20:13:18.773Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576786154_16f92eab",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576785953_0vjo",
+        "fileName": "temp_survey.pdf"
+      },
+      "id": "aud_1791576786194_a3pz",
+      "timestamp": "2026-10-09T20:13:06.194Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576786154_16f92eab",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576785953_0vjo",
+        "documentType": "SURVEY_PLAN",
+        "fileName": "temp_survey.pdf",
+        "sizeBytes": 27
+      },
+      "id": "aud_1791576786162_gecp",
+      "timestamp": "2026-10-09T20:13:06.162Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576785953_0vjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791576786142_p8hg",
+      "timestamp": "2026-10-09T20:13:06.142Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576786061_cbc38179",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576785953_0vjo",
+        "status": "APPROVED",
+        "reviewNotes": "Deed of Assignment signature and registry seal verified."
+      },
+      "id": "aud_1791576786125_cnr8",
+      "timestamp": "2026-10-09T20:13:06.125Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576786061_cbc38179",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576785953_0vjo",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+        "sizeBytes": 71
+      },
+      "id": "aud_1791576786097_heln",
+      "timestamp": "2026-10-09T20:13:06.097Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576785953_0vjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791576785988_5v39",
+      "timestamp": "2026-10-09T20:13:05.988Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576785953_0vjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa Draft"
+      },
+      "id": "aud_1791576785968_xigr",
+      "timestamp": "2026-10-09T20:13:05.968Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791576774187_s0i2",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576761274_x19z",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791576774195_ei3h",
+      "timestamp": "2026-10-09T20:12:54.195Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576761324_8a00a0d0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576761274_x19z",
+        "fileName": "governors_consent_alexander.pdf"
+      },
+      "id": "aud_1791576761598_sj7o",
+      "timestamp": "2026-10-09T20:12:41.598Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_STATUS_UPDATED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "VERIFIED"
+      },
+      "id": "aud_1791576761579_k398",
+      "timestamp": "2026-10-09T20:12:41.579Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_SUSPENDED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SUSPENDED"
+      },
+      "id": "aud_1791576761563_xhe5",
+      "timestamp": "2026-10-09T20:12:41.563Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576761324_8a00a0d0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576761274_x19z",
+        "status": "APPROVED",
+        "reviewNotes": "Registry seal stamped and verified."
+      },
+      "id": "aud_1791576761507_0rdb",
+      "timestamp": "2026-10-09T20:12:41.507Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576761488_2q9d",
+      "timestamp": "2026-10-09T20:12:41.488Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Suspended for audit check"
+      },
+      "id": "aud_1791576761470_nh3e",
+      "timestamp": "2026-10-09T20:12:41.470Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      },
+      "id": "aud_1791576761451_5vg8",
+      "timestamp": "2026-10-09T20:12:41.451Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      },
+      "id": "aud_1791576761438_azxy",
+      "timestamp": "2026-10-09T20:12:41.439Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      },
+      "id": "aud_1791576761417_nb27",
+      "timestamp": "2026-10-09T20:12:41.417Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      },
+      "id": "aud_1791576761401_0j9f",
+      "timestamp": "2026-10-09T20:12:41.401Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      },
+      "id": "aud_1791576761383_allv",
+      "timestamp": "2026-10-09T20:12:41.383Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      },
+      "id": "aud_1791576761367_5ga3",
+      "timestamp": "2026-10-09T20:12:41.367Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      },
+      "id": "aud_1791576761350_jtd2",
+      "timestamp": "2026-10-09T20:12:41.350Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576761324_8a00a0d0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576761274_x19z",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      },
+      "id": "aud_1791576761333_v0sx",
+      "timestamp": "2026-10-09T20:12:41.333Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      },
+      "id": "aud_1791576761316_2eq2",
+      "timestamp": "2026-10-09T20:12:41.316Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576761274_x19z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576761298_am5j",
+      "timestamp": "2026-10-09T20:12:41.298Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Suspended for audit check"
+      },
+      "id": "aud_1791576647629_02tj",
+      "timestamp": "2026-10-09T20:10:47.629Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      },
+      "id": "aud_1791576647610_9j7o",
+      "timestamp": "2026-10-09T20:10:47.610Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      },
+      "id": "aud_1791576647594_6dhh",
+      "timestamp": "2026-10-09T20:10:47.594Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      },
+      "id": "aud_1791576647579_qjkt",
+      "timestamp": "2026-10-09T20:10:47.579Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      },
+      "id": "aud_1791576647563_4wo5",
+      "timestamp": "2026-10-09T20:10:47.563Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      },
+      "id": "aud_1791576647545_1did",
+      "timestamp": "2026-10-09T20:10:47.545Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      },
+      "id": "aud_1791576647531_cw36",
+      "timestamp": "2026-10-09T20:10:47.531Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      },
+      "id": "aud_1791576647513_nrv8",
+      "timestamp": "2026-10-09T20:10:47.513Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576647483_291fcb31",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576647440_htdi",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      },
+      "id": "aud_1791576647490_yqpm",
+      "timestamp": "2026-10-09T20:10:47.490Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      },
+      "id": "aud_1791576647472_rfui",
+      "timestamp": "2026-10-09T20:10:47.472Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576647440_htdi",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576647455_s5li",
+      "timestamp": "2026-10-09T20:10:47.455Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      },
+      "id": "aud_1791576271058_h6es",
+      "timestamp": "2026-10-09T20:04:31.058Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      },
+      "id": "aud_1791576271041_40tm",
+      "timestamp": "2026-10-09T20:04:31.041Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      },
+      "id": "aud_1791576271033_r84o",
+      "timestamp": "2026-10-09T20:04:31.033Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      },
+      "id": "aud_1791576271015_ddr4",
+      "timestamp": "2026-10-09T20:04:31.015Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      },
+      "id": "aud_1791576271006_dk9m",
+      "timestamp": "2026-10-09T20:04:31.006Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      },
+      "id": "aud_1791576270989_37wg",
+      "timestamp": "2026-10-09T20:04:30.989Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      },
+      "id": "aud_1791576270977_x08f",
+      "timestamp": "2026-10-09T20:04:30.977Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791576270959_55d5da37",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791576270919_ps1q",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      },
+      "id": "aud_1791576270966_qooi",
+      "timestamp": "2026-10-09T20:04:30.967Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      },
+      "id": "aud_1791576270945_kuy8",
+      "timestamp": "2026-10-09T20:04:30.945Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791576270919_ps1q",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      },
+      "id": "aud_1791576270931_n8vc",
+      "timestamp": "2026-10-09T20:04:30.931Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "REJECTED",
+        "reason": "Permanent rejection due to fraudulent survey"
+      },
+      "id": "aud_1791575079612_alcl",
+      "timestamp": "2026-10-09T19:44:39.612Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SOLD",
+        "newStatus": "SUSPENDED",
+        "reason": "Title dispute reported"
+      },
+      "id": "aud_1791575079593_2yes",
+      "timestamp": "2026-10-09T19:44:39.593Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "OCCUPIED",
+        "newStatus": "SOLD",
+        "reason": "Transaction deed executed"
+      },
+      "id": "aud_1791575079569_s3vx",
+      "timestamp": "2026-10-09T19:44:39.569Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "RESERVED",
+        "newStatus": "OCCUPIED",
+        "reason": "Keys handed over to verified tenant"
+      },
+      "id": "aud_1791575079538_p57m",
+      "timestamp": "2026-10-09T19:44:39.538Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "ACTIVE",
+        "newStatus": "RESERVED",
+        "reason": "Holding deposit received"
+      },
+      "id": "aud_1791575079502_zaaw",
+      "timestamp": "2026-10-09T19:44:39.502Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "VERIFIED",
+        "newStatus": "ACTIVE"
+      },
+      "id": "aud_1791575079487_13cs",
+      "timestamp": "2026-10-09T19:44:39.487Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "VERIFIED",
+        "reason": "All titles confirmed clean"
+      },
+      "id": "aud_1791575079468_lptr",
+      "timestamp": "2026-10-09T19:44:39.468Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "CHANGES_REQUIRED",
+        "newStatus": "SUBMITTED",
+        "reason": "Survey plan attached"
+      },
+      "id": "aud_1791575079451_gcvx",
+      "timestamp": "2026-10-09T19:44:39.451Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_REVIEW",
+        "newStatus": "CHANGES_REQUIRED",
+        "reason": "Please upload signed Survey Plan"
+      },
+      "id": "aud_1791575079435_6utv",
+      "timestamp": "2026-10-09T19:44:39.435Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "UNDER_REVIEW",
+        "reason": "Assigned to field verification team"
+      },
+      "id": "aud_1791575079417_cu76",
+      "timestamp": "2026-10-09T19:44:39.417Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Ready for compliance audit"
+      },
+      "id": "aud_1791575079389_zgbm",
+      "timestamp": "2026-10-09T19:44:39.389Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575079363_qv0e",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Crown Heights Luxury Smart Duplex"
+      },
+      "id": "aud_1791575079370_8jeo",
+      "timestamp": "2026-10-09T19:44:39.370Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791575063744_b4e28452",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791575063589_6gac",
+        "fileName": "temp_survey.pdf"
+      },
+      "id": "aud_1791575063768_7i7e",
+      "timestamp": "2026-10-09T19:44:23.768Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791575063744_b4e28452",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791575063589_6gac",
+        "documentType": "SURVEY_PLAN",
+        "fileName": "temp_survey.pdf",
+        "sizeBytes": 27
+      },
+      "id": "aud_1791575063754_vlrv",
+      "timestamp": "2026-10-09T19:44:23.754Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575063589_6gac",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791575063736_j58h",
+      "timestamp": "2026-10-09T19:44:23.736Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791575063684_33dc2a40",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791575063589_6gac",
+        "status": "APPROVED",
+        "reviewNotes": "Deed of Assignment signature and registry seal verified."
+      },
+      "id": "aud_1791575063718_tr8o",
+      "timestamp": "2026-10-09T19:44:23.718Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791575063684_33dc2a40",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791575063589_6gac",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+        "sizeBytes": 71
+      },
+      "id": "aud_1791575063690_0b7o",
+      "timestamp": "2026-10-09T19:44:23.690Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575063589_6gac",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791575063610_b65y",
+      "timestamp": "2026-10-09T19:44:23.610Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791575063589_6gac",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa Draft"
+      },
+      "id": "aud_1791575063594_fzg0",
+      "timestamp": "2026-10-09T19:44:23.594Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791575040941_fhmr",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573524262_9rpi",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791575040949_6tz5",
+      "timestamp": "2026-10-09T19:44:00.949Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573524262_9rpi",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791573524349_dqr8",
+      "timestamp": "2026-10-09T19:18:44.349Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573524262_9rpi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791573524333_cums",
+      "timestamp": "2026-10-09T19:18:44.333Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573524262_9rpi",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791573524327_tg2d",
+      "timestamp": "2026-10-09T19:18:44.327Z"
+    },
+    {
+      "actorId": "user_1791573524305_qwuxl",
+      "actorEmail": "agent_test_1791573524305@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791573524305_qwuxl",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791573524318_7dd7",
+      "timestamp": "2026-10-09T19:18:44.318Z"
+    },
+    {
+      "actorId": "user_1791573524240_gexzq",
+      "actorEmail": "owner_test_1791573524240@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573524262_9rpi",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791573524299_hggy",
+      "timestamp": "2026-10-09T19:18:44.299Z"
+    },
+    {
+      "actorId": "user_1791573524240_gexzq",
+      "actorEmail": "owner_test_1791573524240@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573524278_gjq6",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573524262_9rpi",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791573524285_60ch",
+      "timestamp": "2026-10-09T19:18:44.285Z"
+    },
+    {
+      "actorId": "user_1791573524240_gexzq",
+      "actorEmail": "owner_test_1791573524240@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573524262_9rpi",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791573524271_sr73",
+      "timestamp": "2026-10-09T19:18:44.271Z"
+    },
+    {
+      "actorId": "user_1791573524240_gexzq",
+      "actorEmail": "owner_test_1791573524240@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791573524240_gexzq",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791573524254_7g7f",
+      "timestamp": "2026-10-09T19:18:44.254Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791573524217_hfj5",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791573524224_kdzx",
+      "timestamp": "2026-10-09T19:18:44.224Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791573524205_06hj",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791573524211_uzyt",
+      "timestamp": "2026-10-09T19:18:44.211Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791573524187_iy1m",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx"
+      },
+      "id": "aud_1791573524195_m5a7",
+      "timestamp": "2026-10-09T19:18:44.195Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791573524174_0uk8",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791573524178_lhj6",
+      "timestamp": "2026-10-09T19:18:44.178Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791573524085_dnpna",
+      "result": "SUCCESS",
+      "id": "aud_1791573524114_m1ql",
+      "timestamp": "2026-10-09T19:18:44.114Z"
+    },
+    {
+      "actorId": "user_1791573524085_dnpna",
+      "actorEmail": "seeker_test_1791573524078@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791573524085_dnpna",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791573524101_5y53",
+      "timestamp": "2026-10-09T19:18:44.101Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "REJECTED",
+        "reason": "Permanent rejection due to fraudulent survey"
+      },
+      "id": "aud_1791573512945_nf7u",
+      "timestamp": "2026-10-09T19:18:32.945Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SOLD",
+        "newStatus": "SUSPENDED",
+        "reason": "Title dispute reported"
+      },
+      "id": "aud_1791573512932_ffvw",
+      "timestamp": "2026-10-09T19:18:32.932Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "OCCUPIED",
+        "newStatus": "SOLD",
+        "reason": "Transaction deed executed"
+      },
+      "id": "aud_1791573512917_yd9j",
+      "timestamp": "2026-10-09T19:18:32.918Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "RESERVED",
+        "newStatus": "OCCUPIED",
+        "reason": "Keys handed over to verified tenant"
+      },
+      "id": "aud_1791573512906_h61y",
+      "timestamp": "2026-10-09T19:18:32.906Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "ACTIVE",
+        "newStatus": "RESERVED",
+        "reason": "Holding deposit received"
+      },
+      "id": "aud_1791573512891_f9wz",
+      "timestamp": "2026-10-09T19:18:32.891Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "VERIFIED",
+        "newStatus": "ACTIVE"
+      },
+      "id": "aud_1791573512879_4exo",
+      "timestamp": "2026-10-09T19:18:32.879Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "VERIFIED",
+        "reason": "All titles confirmed clean"
+      },
+      "id": "aud_1791573512864_h68g",
+      "timestamp": "2026-10-09T19:18:32.864Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "CHANGES_REQUIRED",
+        "newStatus": "SUBMITTED",
+        "reason": "Survey plan attached"
+      },
+      "id": "aud_1791573512852_odu8",
+      "timestamp": "2026-10-09T19:18:32.852Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_REVIEW",
+        "newStatus": "CHANGES_REQUIRED",
+        "reason": "Please upload signed Survey Plan"
+      },
+      "id": "aud_1791573512839_33jq",
+      "timestamp": "2026-10-09T19:18:32.839Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "UNDER_REVIEW",
+        "reason": "Assigned to field verification team"
+      },
+      "id": "aud_1791573512827_jwjz",
+      "timestamp": "2026-10-09T19:18:32.827Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Ready for compliance audit"
+      },
+      "id": "aud_1791573512811_gnex",
+      "timestamp": "2026-10-09T19:18:32.811Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573512790_nel2",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Crown Heights Luxury Smart Duplex"
+      },
+      "id": "aud_1791573512798_gnu7",
+      "timestamp": "2026-10-09T19:18:32.798Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573501431_049a82d4",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573501278_lphc",
+        "fileName": "temp_survey.pdf"
+      },
+      "id": "aud_1791573501450_in3f",
+      "timestamp": "2026-10-09T19:18:21.450Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573501431_049a82d4",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573501278_lphc",
+        "documentType": "SURVEY_PLAN",
+        "fileName": "temp_survey.pdf",
+        "sizeBytes": 27
+      },
+      "id": "aud_1791573501436_sfk4",
+      "timestamp": "2026-10-09T19:18:21.436Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573501278_lphc",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791573501419_4q6e",
+      "timestamp": "2026-10-09T19:18:21.419Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573501381_345581e5",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573501278_lphc",
+        "status": "APPROVED",
+        "reviewNotes": "Deed of Assignment signature and registry seal verified."
+      },
+      "id": "aud_1791573501406_gqh4",
+      "timestamp": "2026-10-09T19:18:21.406Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573501381_345581e5",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573501278_lphc",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+        "sizeBytes": 71
+      },
+      "id": "aud_1791573501387_wm1e",
+      "timestamp": "2026-10-09T19:18:21.387Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573501278_lphc",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791573501300_cs5h",
+      "timestamp": "2026-10-09T19:18:21.300Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573501278_lphc",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa Draft"
+      },
+      "id": "aud_1791573501285_zr0u",
+      "timestamp": "2026-10-09T19:18:21.285Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573418032_30a9d60c",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573417907_kjfx",
+        "fileName": "temp_survey.pdf"
+      },
+      "id": "aud_1791573418048_lsvi",
+      "timestamp": "2026-10-09T19:16:58.048Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573418032_30a9d60c",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573417907_kjfx",
+        "documentType": "SURVEY_PLAN",
+        "fileName": "temp_survey.pdf",
+        "sizeBytes": 27
+      },
+      "id": "aud_1791573418036_kqkg",
+      "timestamp": "2026-10-09T19:16:58.036Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573417907_kjfx",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791573418025_77uh",
+      "timestamp": "2026-10-09T19:16:58.025Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573417988_bb47a11d",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573417907_kjfx",
+        "status": "APPROVED",
+        "reviewNotes": "Deed of Assignment signature and registry seal verified."
+      },
+      "id": "aud_1791573418013_aojn",
+      "timestamp": "2026-10-09T19:16:58.013Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791573417988_bb47a11d",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791573417907_kjfx",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "Deed_Of_Assignment_LND_2025.pdf",
+        "sizeBytes": 71
+      },
+      "id": "aud_1791573417993_dxuj",
+      "timestamp": "2026-10-09T19:16:57.993Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573417907_kjfx",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa (Updated Draft)"
+      },
+      "id": "aud_1791573417924_16iy",
+      "timestamp": "2026-10-09T19:16:57.924Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791573417907_kjfx",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Atlantic Oceanview Villa Draft"
+      },
+      "id": "aud_1791573417911_1yep",
+      "timestamp": "2026-10-09T19:16:57.911Z"
+    },
     {
       "actorId": "user_1791572453006_wor52",
       "actorEmail": "owner_test_1791572453006@prophunta.ai",

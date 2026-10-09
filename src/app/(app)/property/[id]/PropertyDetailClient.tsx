@@ -59,7 +59,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Property, ReportReason, VerificationSubStatus } from '@/types/prophunta';
+import { Property, ReportReason, VerificationSubStatus, User } from '@/types/prophunta';
 import { formatCurrency } from '@/lib/utils';
 import { useUserRole } from '@/context/UserRoleContext';
 import { useToast } from '@/hooks/use-toast';
@@ -72,9 +72,10 @@ import {
 
 interface PropertyDetailClientProps {
   initialProperty: Property;
+  authorizedParty?: User;
 }
 
-export default function PropertyDetailClient({ initialProperty }: PropertyDetailClientProps) {
+export default function PropertyDetailClient({ initialProperty, authorizedParty }: PropertyDetailClientProps) {
   const router = useRouter();
   const { userRole, currentUser } = useUserRole();
   const { toast } = useToast();
@@ -696,21 +697,115 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             </Button>
           </Card>
 
-          {/* Authorized Party Info */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
-              <BadgeCheck className="h-4 w-4 text-blue-600" />
-              <span>Authorized Listing Representative</span>
-            </div>
-            <p className="text-xs text-slate-600">
-              {property.authorizedAgentId ? 'Licensed Agent with validated power of representation.' : 'Direct verified title holder.'}
-            </p>
-            <div className="pt-1">
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Identity & Authority Documented
+          {/* Inspection Information Card (PRD Section 11 & 15) */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                <Calendar className="h-4 w-4 text-blue-600" />
+                <span>Inspection Information</span>
+              </div>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                Field-Agent Guided
               </span>
             </div>
+
+            <div className="space-y-2 text-xs text-slate-600">
+              <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Check className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-slate-800">Physical On-Site Walkthrough</p>
+                  <p className="text-[11px] text-slate-500">Accompanied by a verified PropHunta inspection officer</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Video className="h-3.5 w-3.5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-slate-800">Live Virtual Video Tour</p>
+                  <p className="text-[11px] text-slate-500">Real-time HD interactive inspection for diaspora & remote buyers</p>
+                </div>
+              </div>
+              <div className="text-[11px] text-slate-500 space-y-1 pt-1">
+                <p><strong>Available Days:</strong> Monday – Saturday (9:00 AM – 5:00 PM WAT)</p>
+                <p><strong>Notice Period:</strong> Minimum 4 hours advance notice required</p>
+                <p><strong>Escrow Guard:</strong> Never pay cash directly to any party at the inspection</p>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setIsTourDialogOpen(true)}
+              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+              variant="outline"
+              className="w-full h-9 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-semibold"
+            >
+              <Calendar className="h-3.5 w-3.5 mr-1.5" />
+              Book Inspection Slot
+            </Button>
           </Card>
+
+          {/* Authorized Party Info (PRD Section 11) */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                <BadgeCheck className="h-4 w-4 text-blue-600" />
+                <span>Authorized Party</span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                {authorizedParty?.verificationStatus === 'VERIFIED' ? 'Verified Partner' : 'Authority Documented'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm shrink-0 border border-blue-200">
+                {authorizedParty?.name ? authorizedParty.name.charAt(0).toUpperCase() : (property.authorizedAgentId ? 'A' : 'O')}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-slate-900 truncate">
+                  {authorizedParty?.name || (property.authorizedAgentId ? 'Authorized Licensed Broker' : 'Direct Property Title Holder')}
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  {authorizedParty?.role === 'AGENT' || property.authorizedAgentId
+                    ? `Licensed Agent${authorizedParty?.agencyName ? ` • ${authorizedParty.agencyName}` : ''}`
+                    : 'Registered Landlord / Owner'}
+                </p>
+                {authorizedParty?.licenseNumber && (
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    Lic: {authorizedParty.licenseNumber}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-500 leading-relaxed pt-1 border-t border-slate-100">
+              Identity documents and representation mandates have been audited by PropHunta trust compliance. Direct communications are secured.
+            </p>
+
+            <Button
+              onClick={() => setIsEnquiryDialogOpen(true)}
+              disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
+              variant="secondary"
+              className="w-full h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs"
+            >
+              <MessageSquare className="h-3 w-3 mr-1.5" />
+              Contact Representative
+            </Button>
+          </Card>
+
+          {/* Report Listing Trigger Card (PRD Section 11 & 18) */}
+          <div className="p-3.5 rounded-2xl border border-rose-100 bg-rose-50/50 flex items-center justify-between gap-3">
+            <div className="text-xs">
+              <p className="font-bold text-slate-800">Notice a discrepancy?</p>
+              <p className="text-[11px] text-slate-500">Report false claims or suspicious requests</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsReportDialogOpen(true)}
+              className="text-xs font-semibold text-rose-600 border-rose-200 hover:bg-rose-100 hover:text-rose-700 shrink-0 rounded-xl"
+            >
+              <Flag className="h-3.5 w-3.5 mr-1" />
+              Report Listing
+            </Button>
+          </div>
         </div>
       </div>
 
