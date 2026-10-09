@@ -28,6 +28,14 @@ import {
   FileText,
   Save,
   Send,
+  Image as ImageIcon,
+  Video,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  Star,
+  UploadCloud,
+  Plus,
 } from 'lucide-react';
 import { getGeneratedDescription } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -35,8 +43,22 @@ import {
   createPropertyDraftAction,
   submitPropertyAction,
   addPropertyDocumentAction,
+  uploadPropertyMediaAction,
+  addPropertyMediaRecordAction,
 } from '@/server/actions/prophunta-actions';
-import { PropertyType, ListingType, DocumentType } from '@/types/prophunta';
+import { PropertyType, ListingType, DocumentType, MediaType } from '@/types/prophunta';
+
+export interface MediaFormItem {
+  id: string;
+  url: string;
+  type: MediaType;
+  caption: string;
+  isPrimary: boolean;
+  order: number;
+  uploadStatus: 'COMPLETED' | 'UPLOADING' | 'FAILED';
+  file?: File;
+  fileName?: string;
+}
 
 const featuresList = [
   '24/7 Dedicated Power',
@@ -81,11 +103,107 @@ export default function AddPropertyPage() {
     'Gated Estate Security',
   ]);
 
-  // Media
-  const [imageUrl, setImageUrl] = useState('');
-  const [images, setImages] = useState<string[]>([
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+  // Media items (PRD Section 7)
+  const [mediaList, setMediaList] = useState<MediaFormItem[]>([
+    {
+      id: 'med_demo_1',
+      url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+      type: 'image',
+      caption: 'Main Entrance & Facade Elevation',
+      isPrimary: true,
+      order: 1,
+      uploadStatus: 'COMPLETED',
+      fileName: 'front_elevation.jpg',
+    },
   ]);
+  const [newMediaUrl, setNewMediaUrl] = useState('');
+  const [newMediaCaption, setNewMediaCaption] = useState('');
+  const [newMediaType, setNewMediaType] = useState<MediaType>('image');
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newItems: MediaFormItem[] = Array.from(files).map((file, idx) => {
+      const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name);
+      return {
+        id: `med_upload_${Date.now()}_${idx}`,
+        url: URL.createObjectURL(file),
+        type: isVid ? 'video' : 'image',
+        caption: file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' '),
+        isPrimary: mediaList.length === 0 && idx === 0,
+        order: mediaList.length + idx + 1,
+        uploadStatus: 'COMPLETED',
+        file,
+        fileName: file.name,
+      };
+    });
+
+    setMediaList((prev) => [...prev, ...newItems]);
+    toast({
+      title: 'Media Queued',
+      description: `${files.length} file(s) attached. Stored securely on submission.`,
+    });
+  };
+
+  const handleAddUrlMedia = () => {
+    if (!newMediaUrl.trim()) return;
+    const isVid = newMediaType === 'video' || /\.(mp4|webm|mov)$/i.test(newMediaUrl);
+    const item: MediaFormItem = {
+      id: `med_url_${Date.now()}`,
+      url: newMediaUrl.trim(),
+      type: isVid ? 'video' : 'image',
+      caption: newMediaCaption.trim() || (isVid ? 'Video Walkthrough' : 'Property Visual'),
+      isPrimary: mediaList.length === 0,
+      order: mediaList.length + 1,
+      uploadStatus: 'COMPLETED',
+      fileName: isVid ? 'walkthrough.mp4' : 'photo.jpg',
+    };
+    setMediaList((prev) => [...prev, item]);
+    setNewMediaUrl('');
+    setNewMediaCaption('');
+  };
+
+  const handleSetPrimary = (id: string) => {
+    setMediaList((prev) =>
+      prev.map((m) => ({
+        ...m,
+        isPrimary: m.id === id,
+      }))
+    );
+  };
+
+  const handleMoveMedia = (index: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= mediaList.length) return;
+
+    const updated = [...mediaList];
+    const temp = updated[index];
+    updated[index] = updated[targetIdx];
+    updated[targetIdx] = temp;
+
+    updated.forEach((m, idx) => {
+      m.order = idx + 1;
+    });
+
+    setMediaList(updated);
+  };
+
+  const handleDeleteMedia = (id: string) => {
+    setMediaList((prev) => {
+      const filtered = prev.filter((m) => m.id !== id);
+      if (filtered.length > 0 && !filtered.some((m) => m.isPrimary)) {
+        filtered[0].isPrimary = true;
+      }
+      return filtered.map((m, idx) => ({ ...m, order: idx + 1 }));
+    });
+  };
+
+  const handleCaptionChange = (id: string, caption: string) => {
+    setMediaList((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, caption } : m))
+    );
+  };
 
   // Documents
   const [docType, setDocType] = useState<DocumentType>('GOVERNORS_CONSENT');
@@ -97,13 +215,6 @@ export default function AddPropertyPage() {
       setSelectedFeatures((prev) => [...prev, feature]);
     } else {
       setSelectedFeatures((prev) => prev.filter((f) => f !== feature));
-    }
-  };
-
-  const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setImages((prev) => [...prev, imageUrl.trim()]);
-      setImageUrl('');
     }
   };
 
@@ -176,7 +287,7 @@ export default function AddPropertyPage() {
       bathrooms: Number(bathrooms) || 1,
       sqft: sqft ? Number(sqft) : undefined,
       features: selectedFeatures,
-      images: images.length > 0 ? images : [
+      images: mediaList.length > 0 ? mediaList.map((m) => m.url) : [
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
       ],
     });
@@ -192,6 +303,26 @@ export default function AddPropertyPage() {
     }
 
     const createdProp = res.property;
+
+    // Upload & persist real media files to secure storage
+    for (const m of mediaList) {
+      if (m.file) {
+        const formData = new FormData();
+        formData.append('propertyId', createdProp.id);
+        formData.append('file', m.file);
+        if (m.caption) formData.append('caption', m.caption);
+        formData.append('isPrimary', m.isPrimary ? 'true' : 'false');
+        await uploadPropertyMediaAction(formData);
+      } else if (m.type === 'video' || m.caption || m.isPrimary) {
+        await addPropertyMediaRecordAction(createdProp.id, {
+          url: m.url,
+          type: m.type,
+          caption: m.caption,
+          isPrimary: m.isPrimary,
+          fileName: m.fileName,
+        });
+      }
+    }
 
     // Attach any documents
     for (const d of uploadedDocs) {
@@ -508,36 +639,200 @@ export default function AddPropertyPage() {
             </div>
           </div>
 
-          {/* SECTION 5: Media & Photos */}
+          {/* SECTION 5: Media & Photos (PRD Section 7) */}
           <div className="space-y-4">
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">5</span>
-              Media & High-Res Walkthroughs
-            </h3>
-
-            <div className="flex gap-2">
-              <Input
-                placeholder="Paste high-res image URL (e.g. Unsplash or Cloud Storage URL)"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="h-10 rounded-xl text-xs"
-              />
-              <Button type="button" onClick={handleAddImage} className="bg-blue-600 hover:bg-blue-500 font-bold text-xs rounded-xl shrink-0">
-                Add Photo
-              </Button>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold">5</span>
+                Property Media & High-Res Walkthroughs
+              </h3>
+              <span className="text-xs font-semibold text-slate-500">
+                {mediaList.length} media item{mediaList.length === 1 ? '' : 's'} attached
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-              {images.map((img, idx) => (
-                <div key={idx} className="relative h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-                  <img src={img} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
-                  {idx === 0 && (
-                    <span className="absolute top-1 left-1 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
-                      Primary
-                    </span>
-                  )}
+            <p className="text-xs text-slate-500">
+              Upload high-resolution property photos or video walkthroughs. Reorder items, assign captions, and select the primary showcase visual.
+            </p>
+
+            {/* Upload Area & URL Input */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+              {/* Option A: Secure File Upload */}
+              <div className="flex flex-col justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                <div>
+                  <div className="flex items-center gap-2 font-bold text-xs text-slate-900 mb-1">
+                    <UploadCloud className="h-4 w-4 text-blue-600" />
+                    Upload Image or Video Walkthrough
+                  </div>
+                  <p className="text-[11px] text-slate-500 mb-3">
+                    Supported: JPG, PNG, WEBP, MP4, WEBM (Up to 100MB). Stored in secure local repository.
+                  </p>
                 </div>
-              ))}
+                <div>
+                  <label className="cursor-pointer inline-flex items-center justify-center w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 shadow-sm transition">
+                    <FileUp className="h-4 w-4 mr-2" />
+                    <span>Choose Media Files</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Option B: Verified URL / CDN Link */}
+              <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+                    <ImageIcon className="h-4 w-4 text-slate-600" />
+                    Or Link Verified Media URL
+                  </span>
+                  <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-[10px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setNewMediaType('image')}
+                      className={`px-2 py-0.5 rounded ${newMediaType === 'image' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-600'}`}
+                    >
+                      Image
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewMediaType('video')}
+                      className={`px-2 py-0.5 rounded ${newMediaType === 'video' ? 'bg-white text-blue-600 shadow-2xs' : 'text-slate-600'}`}
+                    >
+                      Video
+                    </button>
+                  </div>
+                </div>
+
+                <Input
+                  placeholder="https://... image or video URL"
+                  value={newMediaUrl}
+                  onChange={(e) => setNewMediaUrl(e.target.value)}
+                  className="h-9 rounded-lg text-xs"
+                />
+
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Caption (e.g. Master Bedroom, Kitchen Island)"
+                    value={newMediaCaption}
+                    onChange={(e) => setNewMediaCaption(e.target.value)}
+                    className="h-9 rounded-lg text-xs"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddUrlMedia}
+                    size="sm"
+                    className="h-9 rounded-lg text-xs shrink-0 bg-slate-900 hover:bg-slate-800 text-white font-semibold"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Media Items List with Ordering, Primary Flag, Captions, and Delete */}
+            <div className="space-y-3 pt-2">
+              <Label className="text-xs font-bold text-slate-700">Attached Media & Sequence ({mediaList.length})</Label>
+
+              {mediaList.length === 0 ? (
+                <div className="p-6 text-center border border-dashed rounded-xl text-slate-400 text-xs">
+                  No media added yet. Upload at least one high-res photo.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {mediaList.map((m, idx) => (
+                    <div
+                      key={m.id}
+                      className={`p-3 rounded-xl border transition shadow-2xs flex flex-col gap-2.5 ${
+                        m.isPrimary ? 'border-blue-500 bg-blue-50/20 ring-1 ring-blue-500/30' : 'border-slate-200 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Thumbnail */}
+                        <div className="relative h-20 w-24 rounded-lg overflow-hidden bg-slate-900 shrink-0 border border-slate-200">
+                          {m.type === 'video' ? (
+                            <div className="h-full w-full flex items-center justify-center bg-slate-900 text-white">
+                              <Video className="h-6 w-6 text-blue-400" />
+                            </div>
+                          ) : (
+                            <img src={m.url} alt={m.caption} className="h-full w-full object-cover" />
+                          )}
+                          <span className="absolute bottom-1 right-1 text-[9px] font-bold px-1 rounded bg-black/70 text-white uppercase">
+                            #{m.order}
+                          </span>
+                        </div>
+
+                        {/* Details & Status */}
+                        <div className="flex-1 min-w-0 space-y-1.5">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
+                              {m.type}
+                            </span>
+                            {m.isPrimary ? (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded bg-blue-600 text-white">
+                                <Star className="h-2.5 w-2.5 fill-white" /> Primary
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetPrimary(m.id)}
+                                className="text-[10px] font-semibold text-slate-500 hover:text-blue-600 transition"
+                              >
+                                Set Primary
+                              </button>
+                            )}
+                          </div>
+
+                          <Input
+                            value={m.caption}
+                            onChange={(e) => handleCaptionChange(m.id, e.target.value)}
+                            placeholder="Add photo caption..."
+                            className="h-7 text-xs px-2 rounded-md"
+                          />
+
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> Ready
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveMedia(idx, 'up')}
+                                className="p-1 rounded hover:bg-slate-100 disabled:opacity-30 text-slate-600"
+                                title="Move up"
+                              >
+                                <ArrowUp className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={idx === mediaList.length - 1}
+                                onClick={() => handleMoveMedia(idx, 'down')}
+                                className="p-1 rounded hover:bg-slate-100 disabled:opacity-30 text-slate-600"
+                                title="Move down"
+                              >
+                                <ArrowDown className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteMedia(m.id)}
+                                className="p-1 rounded hover:bg-red-50 text-red-600 ml-1"
+                                title="Delete"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

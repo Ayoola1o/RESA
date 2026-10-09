@@ -27,6 +27,7 @@ import {
   Award,
   Trash2,
   Sparkles,
+  ClipboardCheck,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,18 @@ import {
 } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/context/UserRoleContext';
 import {
@@ -54,9 +67,17 @@ import {
   getUserPropertiesAction,
   updateInspectionStatusAction,
   updateApplicationStatusAction,
+  completeInspectionAction,
   getPropertiesAction,
 } from '@/server/actions/prophunta-actions';
-import { Property, InspectionRequest, Application, InspectionStatus, ApplicationStatus } from '@/types/prophunta';
+import {
+  Property,
+  InspectionRequest,
+  Application,
+  InspectionStatus,
+  ApplicationStatus,
+  InspectionRecord,
+} from '@/types/prophunta';
 import PropertyCard from '@/components/property-card';
 
 export default function ProfilePage() {
@@ -157,6 +178,74 @@ function ProfileContent() {
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to confirm inspection.' });
     }
+  };
+
+  // Complete inspection modal state & handlers
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [targetInspection, setTargetInspection] = useState<InspectionRequest | null>(null);
+  const [inspectorName, setInspectorName] = useState(currentUser?.name || 'Authorized Field Inspector');
+  const [conditionRating, setConditionRating] = useState<'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR'>('GOOD');
+  const [utilitiesFunctional, setUtilitiesFunctional] = useState(true);
+  const [meterReadings, setMeterReadings] = useState('');
+  const [observations, setObservations] = useState('');
+  const [discrepancies, setDiscrepancies] = useState('');
+  const [isSubmittingRecord, setIsSubmittingRecord] = useState(false);
+
+  // View inspection record modal state
+  const [viewRecordDialogOpen, setViewRecordDialogOpen] = useState(false);
+  const [viewingRecord, setViewingRecord] = useState<InspectionRecord | null>(null);
+  const [viewingInspectionTitle, setViewingInspectionTitle] = useState('');
+
+  const openCompleteInspectionModal = (insp: InspectionRequest) => {
+    setTargetInspection(insp);
+    setInspectorName(currentUser?.name || 'Authorized Field Inspector');
+    setConditionRating('GOOD');
+    setUtilitiesFunctional(true);
+    setMeterReadings('');
+    setObservations('');
+    setDiscrepancies('');
+    setCompleteDialogOpen(true);
+  };
+
+  const handleSaveInspectionRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!targetInspection) return;
+    setIsSubmittingRecord(true);
+    const res = await completeInspectionAction(targetInspection.id, {
+      inspectorName,
+      conditionRating,
+      utilitiesFunctional,
+      meterReadings,
+      observations: observations || 'Verified on-site by inspector with seeker present.',
+      discrepancies,
+    });
+    setIsSubmittingRecord(false);
+    if (res.success) {
+      toast({ title: 'Inspection Completed', description: 'Official inspection record filed and status updated to COMPLETED.' });
+      setCompleteDialogOpen(false);
+      setInspections(prev => prev.map(i => i.id === targetInspection.id ? {
+        ...i,
+        status: 'COMPLETED' as InspectionStatus,
+        inspectionRecord: {
+          completedAt: new Date().toISOString(),
+          inspectorName,
+          conditionRating,
+          utilitiesFunctional,
+          meterReadings,
+          observations,
+          discrepancies,
+        }
+      } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to complete inspection.' });
+    }
+  };
+
+  const openViewInspectionRecord = (insp: InspectionRequest) => {
+    if (!insp.inspectionRecord) return;
+    setViewingRecord(insp.inspectionRecord);
+    setViewingInspectionTitle(insp.propertyTitle);
+    setViewRecordDialogOpen(true);
   };
 
   // Application status handlers
@@ -317,19 +406,30 @@ function ProfileContent() {
                     <PropertyCard property={prop} />
                     <div className="mt-2 flex items-center justify-between px-1">
                       <Badge
-                        variant={
-                          prop.listingStatus === 'ACTIVE'
-                            ? 'default'
+                        className={`text-xs font-bold ${
+                          prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
+                            ? 'bg-emerald-600 text-white'
                             : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
-                            ? 'secondary'
-                            : 'outline'
-                        }
-                        className="text-xs"
+                            ? 'bg-amber-500 text-white'
+                            : prop.listingStatus === 'CHANGES_REQUIRED'
+                            ? 'bg-orange-500 text-white'
+                            : prop.listingStatus === 'RESERVED'
+                            ? 'bg-purple-600 text-white'
+                            : prop.listingStatus === 'OCCUPIED'
+                            ? 'bg-blue-600 text-white'
+                            : prop.listingStatus === 'SOLD'
+                            ? 'bg-slate-800 text-white'
+                            : prop.listingStatus === 'SUSPENDED' || prop.listingStatus === 'REJECTED'
+                            ? 'bg-rose-600 text-white'
+                            : 'bg-slate-600 text-white'
+                        }`}
                       >
-                        {prop.listingStatus === 'ACTIVE'
-                          ? 'Verified Trust Badge'
+                        {prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
+                          ? '✓ Verified Active'
                           : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
-                          ? 'In Review by Verification Team'
+                          ? 'In Review'
+                          : prop.listingStatus === 'CHANGES_REQUIRED'
+                          ? 'Action Needed'
                           : prop.listingStatus}
                       </Badge>
                       <Button asChild variant="ghost" size="sm">
@@ -428,11 +528,31 @@ function ProfileContent() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 self-end md:self-center">
+                    <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
+                      {insp.status === 'COMPLETED' && insp.inspectionRecord && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-semibold gap-1"
+                          onClick={() => openViewInspectionRecord(insp)}
+                        >
+                          <ClipboardCheck className="h-3.5 w-3.5 text-emerald-600" />
+                          View Inspection Report
+                        </Button>
+                      )}
+                      {isHost && (insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED') && (
+                        <Button
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm"
+                          onClick={() => openCompleteInspectionModal(insp)}
+                        >
+                          Complete & Log Report
+                        </Button>
+                      )}
                       {isHost && insp.status === 'REQUESTED' && (
                         <Button
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
                           disabled={updatingId === insp.id}
                           onClick={() => handleConfirmInspection(insp.id)}
                         >
@@ -443,14 +563,14 @@ function ProfileContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 text-xs"
                           disabled={updatingId === insp.id}
                           onClick={() => handleCancelInspection(insp.id)}
                         >
                           Cancel
                         </Button>
                       )}
-                      <Button asChild size="sm" variant="ghost">
+                      <Button asChild size="sm" variant="ghost" className="text-xs">
                         <Link href={`/property/${insp.propertyId}`}>
                           View Listing <ChevronRight className="ml-1 h-3.5 w-3.5" />
                         </Link>
@@ -668,6 +788,198 @@ function ProfileContent() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog: Complete Inspection & File Official Record */}
+      <Dialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <form onSubmit={handleSaveInspectionRecord}>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-lg">
+                <ClipboardCheck className="h-5 w-5 text-blue-600" />
+                Complete Inspection & Log Findings
+              </DialogTitle>
+              <DialogDescription>
+                Record the on-site physical inspection findings for <strong>{targetInspection?.propertyTitle}</strong>.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4 text-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="inspectorName">Inspector / Host Name</Label>
+                  <Input
+                    id="inspectorName"
+                    value={inspectorName}
+                    onChange={(e) => setInspectorName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="conditionRating">Condition Rating</Label>
+                  <Select
+                    value={conditionRating}
+                    onValueChange={(val: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR') => setConditionRating(val)}
+                  >
+                    <SelectTrigger id="conditionRating">
+                      <SelectValue placeholder="Select rating" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="EXCELLENT">EXCELLENT (Pristine / Turnkey)</SelectItem>
+                      <SelectItem value="GOOD">GOOD (Well maintained)</SelectItem>
+                      <SelectItem value="FAIR">FAIR (Minor wear & tear)</SelectItem>
+                      <SelectItem value="POOR">POOR (Requires major maintenance)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 border rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-slate-800">Functional Utilities Verified</p>
+                  <p className="text-xs text-muted-foreground">Water, electrical wiring, switches & drainage checked</p>
+                </div>
+                <Button
+                  type="button"
+                  variant={utilitiesFunctional ? "default" : "outline"}
+                  size="sm"
+                  className={utilitiesFunctional ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "border-slate-300"}
+                  onClick={() => setUtilitiesFunctional(!utilitiesFunctional)}
+                >
+                  {utilitiesFunctional ? 'Verified Functional' : 'Not Functional'}
+                </Button>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="meterReadings">Meter Readings / Serial Identifiers</Label>
+                <Input
+                  id="meterReadings"
+                  placeholder="e.g. Prepaid meter #04291882103, Initial Units: 142.5 kWh"
+                  value={meterReadings}
+                  onChange={(e) => setMeterReadings(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="observations">Inspector Observations & Remarks</Label>
+                <Textarea
+                  id="observations"
+                  rows={3}
+                  placeholder="State condition of walls, ceilings, fixtures, compound access..."
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="discrepancies">Noted Discrepancies (if any)</Label>
+                <Textarea
+                  id="discrepancies"
+                  rows={2}
+                  placeholder="Note any discrepancies against the listing specifications (e.g. 1 AC unit needing repair)"
+                  value={discrepancies}
+                  onChange={(e) => setDiscrepancies(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setCompleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmittingRecord} className="bg-blue-600 hover:bg-blue-700 text-white">
+                {isSubmittingRecord ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                  </>
+                ) : (
+                  'File Official Report & Complete'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: View Inspection Record */}
+      <Dialog open={viewRecordDialogOpen} onOpenChange={setViewRecordDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg text-emerald-800">
+              <ClipboardCheck className="h-5 w-5 text-emerald-600" />
+              Verified Inspection Report
+            </DialogTitle>
+            <DialogDescription>
+              {viewingInspectionTitle}
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingRecord && (
+            <div className="space-y-4 py-3 text-sm">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border rounded-lg">
+                <div>
+                  <span className="text-xs text-muted-foreground block">Completed Date</span>
+                  <span className="font-semibold text-slate-800">
+                    {new Date(viewingRecord.completedAt).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground block">Attending Inspector</span>
+                  <span className="font-semibold text-slate-800">{viewingRecord.inspectorName}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground block">Condition Rating</span>
+                  <Badge className="bg-emerald-600 text-white text-xs mt-0.5">
+                    {viewingRecord.conditionRating}
+                  </Badge>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground block">Utilities Status</span>
+                  <span className="font-semibold text-slate-800">
+                    {viewingRecord.utilitiesFunctional ? 'Functional & Verified' : 'Issues Logged'}
+                  </span>
+                </div>
+              </div>
+
+              {viewingRecord.meterReadings && (
+                <div className="space-y-1">
+                  <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Meter Readings</span>
+                  <p className="p-2.5 bg-slate-100 rounded text-slate-800 font-mono text-xs">
+                    {viewingRecord.meterReadings}
+                  </p>
+                </div>
+              )}
+
+              {viewingRecord.observations && (
+                <div className="space-y-1">
+                  <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Observations</span>
+                  <p className="p-3 bg-slate-50 border rounded text-slate-700 text-xs leading-relaxed">
+                    {viewingRecord.observations}
+                  </p>
+                </div>
+              )}
+
+              {viewingRecord.discrepancies && (
+                <div className="space-y-1">
+                  <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Discrepancies Logged</span>
+                  <p className="p-3 bg-amber-50 border border-amber-200 rounded text-amber-900 text-xs leading-relaxed">
+                    {viewingRecord.discrepancies}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button onClick={() => setViewRecordDialogOpen(false)}>Close Report</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

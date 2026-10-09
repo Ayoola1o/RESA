@@ -49,14 +49,23 @@ export type ListingStatus =
 
 export type AvailabilityStatus = 'AVAILABLE' | 'UNDER_OFFER' | 'OCCUPIED' | 'UNAVAILABLE';
 
+export type MediaType = 'image' | 'video';
+export type MediaUploadStatus = 'UPLOADING' | 'COMPLETED' | 'FAILED';
+
 export interface PropertyMedia {
   id: string;
   propertyId: string;
   url: string;
-  type: 'image' | 'video';
+  type: MediaType;
   caption?: string;
   isPrimary: boolean;
   order: number;
+  uploadStatus?: MediaUploadStatus;
+  fileReference?: string;
+  fileName?: string;
+  mimeType?: string;
+  sizeBytes?: number;
+  createdAt?: string;
 }
 
 export type DocumentType =
@@ -321,7 +330,11 @@ export type AuditAction =
   | 'APPLICATION_STATUS_UPDATED'
   | 'REPORT_FILED'
   | 'REPORT_INVESTIGATED'
-  | 'REPORT_RESOLVED';
+  | 'REPORT_RESOLVED'
+  | 'MEDIA_UPLOADED'
+  | 'MEDIA_DELETED'
+  | 'MEDIA_ORDER_UPDATED'
+  | 'PROPERTY_STATUS_TRANSITIONED';
 
 export interface AuditLog {
   id: string;
@@ -329,7 +342,7 @@ export interface AuditLog {
   actorEmail: string;
   actorRole: UserRole;
   action: AuditAction;
-  objectType: 'PROPERTY' | 'USER' | 'DOCUMENT' | 'INSPECTION' | 'REPORT' | 'APPLICATION' | 'ENQUIRY';
+  objectType: 'PROPERTY' | 'USER' | 'DOCUMENT' | 'INSPECTION' | 'REPORT' | 'APPLICATION' | 'ENQUIRY' | 'MEDIA';
   objectId: string;
   timestamp: string;
   result: 'SUCCESS' | 'FAILURE';

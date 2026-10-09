@@ -223,6 +223,166 @@
       "id": "user_1791495476730_391su",
       "createdAt": "2026-10-08T21:37:56.730Z",
       "updatedAt": "2026-10-08T21:37:56.730Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791569020909@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791569020917_ycpwd",
+      "createdAt": "2026-10-09T18:03:40.917Z",
+      "updatedAt": "2026-10-09T18:03:40.917Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791569021040@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791569021040_9kp0r",
+      "createdAt": "2026-10-09T18:03:41.040Z",
+      "updatedAt": "2026-10-09T18:03:41.040Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791569021080@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791569021080_allmm",
+      "createdAt": "2026-10-09T18:03:41.080Z",
+      "updatedAt": "2026-10-09T18:03:41.080Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791569250768@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791569250778_m762r",
+      "createdAt": "2026-10-09T18:07:30.778Z",
+      "updatedAt": "2026-10-09T18:07:30.778Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791569250930@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791569250930_r7mj2",
+      "createdAt": "2026-10-09T18:07:30.930Z",
+      "updatedAt": "2026-10-09T18:07:30.930Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791569250980@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791569250980_fnxdr",
+      "createdAt": "2026-10-09T18:07:30.980Z",
+      "updatedAt": "2026-10-09T18:07:30.980Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791569543935@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791569543961_mx444",
+      "createdAt": "2026-10-09T18:12:23.961Z",
+      "updatedAt": "2026-10-09T18:12:23.961Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791569544519@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791569544519_a9l6i",
+      "createdAt": "2026-10-09T18:12:24.519Z",
+      "updatedAt": "2026-10-09T18:12:24.519Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791569544903@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791569544903_aso8m",
+      "createdAt": "2026-10-09T18:12:24.903Z",
+      "updatedAt": "2026-10-09T18:12:24.903Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791571298984@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791571298990_oipia",
+      "createdAt": "2026-10-09T18:41:38.990Z",
+      "updatedAt": "2026-10-09T18:41:38.990Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791571299173@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791571299173_cs997",
+      "createdAt": "2026-10-09T18:41:39.173Z",
+      "updatedAt": "2026-10-09T18:41:39.173Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791571299219@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791571299219_1dwzy",
+      "createdAt": "2026-10-09T18:41:39.219Z",
+      "updatedAt": "2026-10-09T18:41:39.219Z"
+    },
+    {
+      "name": "Ngozi Okonjo",
+      "email": "seeker_test_1791572452795@prophunta.ai",
+      "phone": "+234 803 111 2233",
+      "role": "SEEKER",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1791572452807_ncoqa",
+      "createdAt": "2026-10-09T19:00:52.807Z",
+      "updatedAt": "2026-10-09T19:00:52.807Z"
+    },
+    {
+      "name": "Chief Emeka Adeleke",
+      "email": "owner_test_1791572453006@prophunta.ai",
+      "phone": "+234 802 999 8877",
+      "role": "OWNER",
+      "verificationStatus": "PENDING",
+      "id": "user_1791572453006_wor52",
+      "createdAt": "2026-10-09T19:00:53.006Z",
+      "updatedAt": "2026-10-09T19:00:53.006Z"
+    },
+    {
+      "name": "Kemi Balogun, FNIVS",
+      "email": "agent_test_1791572453075@prophunta.ai",
+      "phone": "+234 809 333 4455",
+      "role": "AGENT",
+      "verificationStatus": "PENDING",
+      "agencyName": "Balogun & Partners Realty",
+      "licenseNumber": "LASRERA-AGT-2025-081",
+      "id": "user_1791572453076_0lxfl",
+      "createdAt": "2026-10-09T19:00:53.076Z",
+      "updatedAt": "2026-10-09T19:00:53.076Z"
     }
   ],
   "passwords": {
@@ -245,7 +405,22 @@
     "user_1791493165363_3pwly": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_1791495476517_swnxv": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_1791495476694_rb01f": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
-    "user_1791495476730_391su": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
+    "user_1791495476730_391su": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569020917_ycpwd": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569021040_9kp0r": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569021080_allmm": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569250778_m762r": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569250930_r7mj2": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569250980_fnxdr": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569543961_mx444": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569544519_a9l6i": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791569544903_aso8m": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791571298990_oipia": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791571299173_cs997": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791571299219_1dwzy": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791572452807_ncoqa": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791572453006_wor52": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791572453076_0lxfl": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
   },
   "sessions": {
     "sess_1791489503052_5oxus5ckcs": {
@@ -352,9 +527,605 @@
       "userId": "user_1791495476730_391su",
       "role": "AGENT",
       "expiresAt": "2026-10-22T21:37:56.733Z"
+    },
+    "sess_1791569020925_kyxsypejo": {
+      "userId": "user_1791569020917_ycpwd",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:03:40.925Z"
+    },
+    "sess_1791569020934_zot55iyz0v": {
+      "userId": "user_1791569020917_ycpwd",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:03:40.934Z"
+    },
+    "sess_1791569021043_0viwgcsmgp": {
+      "userId": "user_1791569021040_9kp0r",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T18:03:41.043Z"
+    },
+    "sess_1791569021083_hm011b6rku": {
+      "userId": "user_1791569021080_allmm",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T18:03:41.083Z"
+    },
+    "sess_1791569250785_jqx94ubncv": {
+      "userId": "user_1791569250778_m762r",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:07:30.785Z"
+    },
+    "sess_1791569250798_jmm8lsedqa": {
+      "userId": "user_1791569250778_m762r",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:07:30.798Z"
+    },
+    "sess_1791569250934_yqddjg1ywa": {
+      "userId": "user_1791569250930_r7mj2",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T18:07:30.934Z"
+    },
+    "sess_1791569250984_fk3dittb60": {
+      "userId": "user_1791569250980_fnxdr",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T18:07:30.984Z"
+    },
+    "sess_1791569543979_qtnr9q3hbj": {
+      "userId": "user_1791569543961_mx444",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:12:23.979Z"
+    },
+    "sess_1791569544079_0ayffatit0": {
+      "userId": "user_1791569543961_mx444",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:12:24.079Z"
+    },
+    "sess_1791569544527_z1ewpclp8v": {
+      "userId": "user_1791569544519_a9l6i",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T18:12:24.528Z"
+    },
+    "sess_1791569544907_f75znld3x5": {
+      "userId": "user_1791569544903_aso8m",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T18:12:24.907Z"
+    },
+    "sess_1791571299000_gest0x412k": {
+      "userId": "user_1791571298990_oipia",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:41:39.000Z"
+    },
+    "sess_1791571299011_r5u5sgkuu6": {
+      "userId": "user_1791571298990_oipia",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T18:41:39.011Z"
+    },
+    "sess_1791571299178_j6ztofki21": {
+      "userId": "user_1791571299173_cs997",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T18:41:39.178Z"
+    },
+    "sess_1791571299224_6mws76x7cd": {
+      "userId": "user_1791571299219_1dwzy",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T18:41:39.224Z"
+    },
+    "sess_1791572452816_ee2dshw5qe": {
+      "userId": "user_1791572452807_ncoqa",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T19:00:52.816Z"
+    },
+    "sess_1791572452835_gg0dmpntmq": {
+      "userId": "user_1791572452807_ncoqa",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-23T19:00:52.835Z"
+    },
+    "sess_1791572453012_xwygice5fc": {
+      "userId": "user_1791572453006_wor52",
+      "role": "OWNER",
+      "expiresAt": "2026-10-23T19:00:53.012Z"
+    },
+    "sess_1791572453086_wi7jmycolj": {
+      "userId": "user_1791572453076_0lxfl",
+      "role": "AGENT",
+      "expiresAt": "2026-10-23T19:00:53.086Z"
     }
   },
   "properties": [
+    {
+      "ownerId": "user_1791572453006_wor52",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791572467029_dad0eb89",
+          "propertyId": "prop_1791572453028_nppx",
+          "url": "/api/media/med_1791572467029_dad0eb89",
+          "type": "image",
+          "caption": "High-Ceiling Living Room with Italian Chandeliers",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "fileReference": "image_1791572467018_dad0eb8919d043228eb2f93bd880b1b5.png",
+          "fileName": "living_room_aerial_view.png",
+          "mimeType": "image/png",
+          "sizeBytes": 70,
+          "createdAt": "2026-10-09T19:01:07.029Z"
+        },
+        {
+          "id": "med_1791572453027_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": false,
+          "order": 2,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T19:00:53.028Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791572453041_j1g5",
+          "propertyId": "prop_1791572453028_nppx",
+          "uploadedBy": "user_1791572453006_wor52",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791572453028_nppx/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T19:00:53.041Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791572453028",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791572453028_nppx",
+      "createdAt": "2026-10-09T19:00:53.028Z",
+      "updatedAt": "2026-10-09T19:01:07.159Z",
+      "publishedAt": "2026-10-09T19:00:53.125Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "authorizedAgentId": "user_agent_1",
+      "title": "Crown Heights Luxury Smart Duplex",
+      "propertyType": "House",
+      "listingType": "RENT",
+      "description": "Ultra-contemporary duplex with automated access and clean title.",
+      "state": "Lagos",
+      "city": "Lekki",
+      "area": "Lekki Phase 1",
+      "address": "14 Admiralty Way, Lekki Phase 1",
+      "latitude": 6.4485,
+      "longitude": 3.4735,
+      "price": 25000000,
+      "priceUnit": "/year",
+      "agreementFee": 2500000,
+      "cautionFee": 2000000,
+      "serviceCharge": 1500000,
+      "otherCharges": 500000,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Swimming Pool",
+        "24/7 Security",
+        "Solar Inverter",
+        "Fitted Kitchen"
+      ],
+      "availabilityStatus": "UNAVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791572267818_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T18:57:47.818Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791572267821",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791572267821_bik5",
+      "createdAt": "2026-10-09T18:57:47.821Z",
+      "updatedAt": "2026-10-09T18:57:47.968Z",
+      "publishedAt": "2026-10-09T18:57:47.889Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "authorizedAgentId": "user_agent_1",
+      "title": "Crown Heights Luxury Smart Duplex",
+      "propertyType": "House",
+      "listingType": "RENT",
+      "description": "Ultra-contemporary duplex with automated access and clean title.",
+      "state": "Lagos",
+      "city": "Lekki",
+      "area": "Lekki Phase 1",
+      "address": "14 Admiralty Way, Lekki Phase 1",
+      "latitude": 6.4485,
+      "longitude": 3.4735,
+      "price": 25000000,
+      "priceUnit": "/year",
+      "agreementFee": 2500000,
+      "cautionFee": 2000000,
+      "serviceCharge": 1500000,
+      "otherCharges": 500000,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Swimming Pool",
+        "24/7 Security",
+        "Solar Inverter",
+        "Fitted Kitchen"
+      ],
+      "availabilityStatus": "UNAVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791571992722_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T18:53:12.722Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791571992725",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1791571992726_0otb",
+      "createdAt": "2026-10-09T18:53:12.726Z",
+      "updatedAt": "2026-10-09T18:53:12.856Z",
+      "publishedAt": "2026-10-09T18:53:12.782Z"
+    },
+    {
+      "ownerId": "user_1791571299173_cs997",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791571299188_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-09T18:41:39.188Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791571299199_wrrk",
+          "propertyId": "prop_1791571299188_d4gs",
+          "uploadedBy": "user_1791571299173_cs997",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791571299188_d4gs/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T18:41:39.199Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791571299188",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791571299188_d4gs",
+      "createdAt": "2026-10-09T18:41:39.188Z",
+      "updatedAt": "2026-10-09T18:41:39.248Z",
+      "publishedAt": "2026-10-09T18:41:39.248Z"
+    },
+    {
+      "ownerId": "user_1791569544519_a9l6i",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791571277915_ab406d50",
+          "propertyId": "prop_1791569544544_vfjo",
+          "url": "/api/media/med_1791571277915_ab406d50",
+          "type": "image",
+          "caption": "High-Ceiling Living Room with Italian Chandeliers",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "fileReference": "image_1791571277901_ab406d50954c4bfb8798d04f83919dba.png",
+          "fileName": "living_room_aerial_view.png",
+          "mimeType": "image/png",
+          "sizeBytes": 70,
+          "createdAt": "2026-10-09T18:41:17.915Z"
+        },
+        {
+          "id": "med_1791569544543_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "isPrimary": false,
+          "order": 2
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791569544565_vs0k",
+          "propertyId": "prop_1791569544544_vfjo",
+          "uploadedBy": "user_1791569544519_a9l6i",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791569544544_vfjo/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T18:12:24.565Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791569544544",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791569544544_vfjo",
+      "createdAt": "2026-10-09T18:12:24.544Z",
+      "updatedAt": "2026-10-09T18:41:17.976Z",
+      "publishedAt": "2026-10-09T18:12:24.940Z"
+    },
+    {
+      "ownerId": "user_1791569250930_r7mj2",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791569250945_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "isPrimary": true,
+          "order": 1
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791569250956_dbgd",
+          "propertyId": "prop_1791569250946_ejrj",
+          "uploadedBy": "user_1791569250930_r7mj2",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791569250946_ejrj/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T18:07:30.956Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791569250945",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791569250946_ejrj",
+      "createdAt": "2026-10-09T18:07:30.946Z",
+      "updatedAt": "2026-10-09T18:07:31.008Z",
+      "publishedAt": "2026-10-09T18:07:31.007Z"
+    },
+    {
+      "ownerId": "user_1791569021040_9kp0r",
+      "title": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Spectacular waterfront views in Banana Island with 24/7 power and security.",
+      "state": "Lagos",
+      "city": "Lagos",
+      "area": "Banana Island, Ikoyi",
+      "address": "Plot 12, Waterfront Promenade",
+      "price": 35000000,
+      "priceUnit": "/year",
+      "agreementFee": 3500000,
+      "cautionFee": 3500000,
+      "serviceCharge": 6000000,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 5,
+      "sqft": 450,
+      "features": [
+        "Waterfront View",
+        "Elevator",
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791569021051_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+          "type": "image",
+          "isPrimary": true,
+          "order": 1
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791569021060_0s14",
+          "propertyId": "prop_1791569021052_mh93",
+          "uploadedBy": "user_1791569021040_9kp0r",
+          "documentType": "GOVERNORS_CONSENT",
+          "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf",
+          "fileReference": "/secure-vault/prop_1791569021052_mh93/Governors_Consent_Ref_LND-2024-0012.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-09T18:03:41.060Z"
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791569021052",
+        "propertyId": "",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Submitted for administrator verification queue review."
+      },
+      "id": "prop_1791569021052_mh93",
+      "createdAt": "2026-10-09T18:03:41.052Z",
+      "updatedAt": "2026-10-09T18:03:41.098Z",
+      "publishedAt": "2026-10-09T18:03:41.098Z"
+    },
     {
       "ownerId": "user_1791495476694_rb01f",
       "title": "Luxury 4-Bedroom Waterfront Penthouse",
@@ -1028,6 +1799,222 @@
   ],
   "inspections": [
     {
+      "propertyId": "prop_1791571299188_d4gs",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791572452807_ncoqa",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791572452795@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791571299173_cs997",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791572452933_tvi7",
+      "createdAt": "2026-10-09T19:00:52.933Z",
+      "updatedAt": "2026-10-09T19:00:52.933Z"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791571298990_oipia",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791571298984@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791569544519_a9l6i",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791571299116_hgfo",
+      "createdAt": "2026-10-09T18:41:39.116Z",
+      "updatedAt": "2026-10-09T18:41:39.116Z"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_1791569544519_a9l6i",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed by host",
+      "id": "insp_1791571288250_a5mz",
+      "createdAt": "2026-10-09T18:41:28.250Z",
+      "updatedAt": "2026-10-09T18:41:28.277Z",
+      "inspectionRecord": {
+        "inspectorName": "Engr. Dapo Alabi (Certified Field Officer)",
+        "conditionRating": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "meterReadings": "Prepaid #8491029112 - 320.5 kWh",
+        "observations": "Property is in turnkey condition. Clean borehole water, functioning inverters, intact ceiling.",
+        "discrepancies": "None observed.",
+        "completedAt": "2026-10-09T18:41:28.277Z"
+      }
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791569543961_mx444",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791569543935@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791569250930_r7mj2",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791569544369_j6m0",
+      "createdAt": "2026-10-09T18:12:24.369Z",
+      "updatedAt": "2026-10-09T18:12:24.369Z"
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_1791569250930_r7mj2",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed by host",
+      "id": "insp_1791569514360_rskn",
+      "createdAt": "2026-10-09T18:11:54.360Z",
+      "updatedAt": "2026-10-09T18:11:54.387Z",
+      "inspectionRecord": {
+        "inspectorName": "Engr. Dapo Alabi (Certified Field Officer)",
+        "conditionRating": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "meterReadings": "Prepaid #8491029112 - 320.5 kWh",
+        "observations": "Property is in turnkey condition. Clean borehole water, functioning inverters, intact ceiling.",
+        "discrepancies": "None observed.",
+        "completedAt": "2026-10-09T18:11:54.387Z"
+      }
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791569250778_m762r",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791569250768@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791569021040_9kp0r",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791569250893_rlko",
+      "createdAt": "2026-10-09T18:07:30.893Z",
+      "updatedAt": "2026-10-09T18:07:30.893Z"
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_1791569021040_9kp0r",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed by host",
+      "id": "insp_1791569201707_skfw",
+      "createdAt": "2026-10-09T18:06:41.707Z",
+      "updatedAt": "2026-10-09T18:06:41.733Z",
+      "inspectionRecord": {
+        "inspectorName": "Engr. Dapo Alabi (Certified Field Officer)",
+        "conditionRating": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "meterReadings": "Prepaid #8491029112 - 320.5 kWh",
+        "observations": "Property is in turnkey condition. Clean borehole water, functioning inverters, intact ceiling.",
+        "discrepancies": "None observed.",
+        "completedAt": "2026-10-09T18:06:41.733Z"
+      }
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_1791569021040_9kp0r",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed by host",
+      "id": "insp_1791569168891_3023",
+      "createdAt": "2026-10-09T18:06:08.891Z",
+      "updatedAt": "2026-10-09T18:06:08.914Z",
+      "inspectionRecord": {
+        "inspectorName": "Engr. Dapo Alabi (Certified Field Officer)",
+        "conditionRating": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "meterReadings": "Prepaid #8491029112 - 320.5 kWh",
+        "observations": "Property is in turnkey condition. Clean borehole water, functioning inverters, intact ceiling.",
+        "discrepancies": "None observed.",
+        "completedAt": "2026-10-09T18:06:08.914Z"
+      }
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_1791569021040_9kp0r",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Please ensure compound gate access is cleared.",
+      "id": "insp_1791569095568_d2vp",
+      "createdAt": "2026-10-09T18:04:55.568Z",
+      "updatedAt": "2026-10-09T18:04:55.568Z"
+    },
+    {
+      "propertyId": "prop_1791495476706_wyk7",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyAddress": "Plot 12, Waterfront Promenade",
+      "seekerId": "user_1791569020917_ycpwd",
+      "seekerName": "Ngozi Okonjo",
+      "seekerEmail": "seeker_test_1791569020909@prophunta.ai",
+      "seekerPhone": "+234 803 111 2233",
+      "hostId": "user_1791495476694_rb01f",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "REQUESTED",
+      "notes": "Interested in structural layout and security features.",
+      "id": "insp_1791569021010_cjcx",
+      "createdAt": "2026-10-09T18:03:41.010Z",
+      "updatedAt": "2026-10-09T18:03:41.010Z"
+    },
+    {
       "propertyId": "prop_1791493165340_9qw1",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "propertyAddress": "Plot 12, Waterfront Promenade",
@@ -1155,6 +2142,233 @@
     }
   ],
   "enquiries": [
+    {
+      "propertyId": "prop_1791571299188_d4gs",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791572452807_ncoqa",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791571299173_cs997",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T19:00:52.947Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791572452947",
+          "senderId": "user_1791572452807_ncoqa",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T19:00:52.947Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791572452947_lph8"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "/api/media/med_1791571277915_ab406d50",
+      "seekerId": "user_1791571298990_oipia",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791569544519_a9l6i",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T18:41:39.137Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791571299137",
+          "senderId": "user_1791571298990_oipia",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T18:41:39.137Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791571299137_anci"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "/api/media/med_1791571277915_ab406d50",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "hostId": "user_1791569544519_a9l6i",
+      "hostName": "Property Owner",
+      "lastMessageText": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+      "lastMessageAt": "2026-10-09T18:41:28.331Z",
+      "unreadCountForSeeker": 1,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791571288320",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Hello, what are the service charge inclusions regarding generator diesel?",
+          "timestamp": "2026-10-09T18:41:28.320Z",
+          "read": false
+        },
+        {
+          "id": "msg_1791571288331_o6we",
+          "senderId": "user_1791569544519_a9l6i",
+          "senderName": "Chief Emeka Adeleke",
+          "senderRole": "OWNER",
+          "text": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+          "timestamp": "2026-10-09T18:41:28.331Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791571288321_mgsn"
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569543961_mx444",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791569250930_r7mj2",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T18:12:24.424Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791569544425",
+          "senderId": "user_1791569543961_mx444",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T18:12:24.424Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791569544426_8xn0"
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "hostId": "user_1791569250930_r7mj2",
+      "hostName": "Property Owner",
+      "lastMessageText": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+      "lastMessageAt": "2026-10-09T18:11:54.497Z",
+      "unreadCountForSeeker": 1,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791569514482",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Hello, what are the service charge inclusions regarding generator diesel?",
+          "timestamp": "2026-10-09T18:11:54.482Z",
+          "read": false
+        },
+        {
+          "id": "msg_1791569514497_5h7o",
+          "senderId": "user_1791569250930_r7mj2",
+          "senderName": "Chief Emeka Adeleke",
+          "senderRole": "OWNER",
+          "text": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+          "timestamp": "2026-10-09T18:11:54.497Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791569514482_0n2o"
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569250778_m762r",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791569021040_9kp0r",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T18:07:30.900Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791569250900",
+          "senderId": "user_1791569250778_m762r",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T18:07:30.900Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791569250900_sxtn"
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "hostId": "user_1791569021040_9kp0r",
+      "hostName": "Property Owner",
+      "lastMessageText": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+      "lastMessageAt": "2026-10-09T18:06:41.779Z",
+      "unreadCountForSeeker": 1,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791569201767",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Hello, what are the service charge inclusions regarding generator diesel?",
+          "timestamp": "2026-10-09T18:06:41.767Z",
+          "read": false
+        },
+        {
+          "id": "msg_1791569201779_u37w",
+          "senderId": "user_1791569021040_9kp0r",
+          "senderName": "Chief Emeka Adeleke",
+          "senderRole": "OWNER",
+          "text": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+          "timestamp": "2026-10-09T18:06:41.779Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791569201768_9eum"
+    },
+    {
+      "propertyId": "prop_1791495476706_wyk7",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569020917_ycpwd",
+      "seekerName": "Ngozi Okonjo",
+      "hostId": "user_1791495476694_rb01f",
+      "hostName": "Property Owner",
+      "lastMessageText": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+      "lastMessageAt": "2026-10-09T18:03:41.018Z",
+      "unreadCountForSeeker": 0,
+      "unreadCountForHost": 1,
+      "messages": [
+        {
+          "id": "msg_1791569021018",
+          "senderId": "user_1791569020917_ycpwd",
+          "senderName": "Ngozi Okonjo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is the Governor’s Consent title document verified and available for legal inspection?",
+          "timestamp": "2026-10-09T18:03:41.018Z",
+          "read": false
+        }
+      ],
+      "id": "enq_1791569021018_f803"
+    },
     {
       "propertyId": "prop_1791493165340_9qw1",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
@@ -1317,6 +2531,194 @@
   ],
   "applications": [
     {
+      "propertyId": "prop_1791571299188_d4gs",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791572452807_ncoqa",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791572452795@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791572452966_5me6",
+      "createdAt": "2026-10-09T19:00:52.966Z",
+      "updatedAt": "2026-10-09T19:00:52.966Z"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "/api/media/med_1791571277915_ab406d50",
+      "seekerId": "user_1791571298990_oipia",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791571298984@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791571299152_n0xh",
+      "createdAt": "2026-10-09T18:41:39.152Z",
+      "updatedAt": "2026-10-09T18:41:39.152Z"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "/api/media/med_1791571277915_ab406d50",
+      "seekerId": "user_seeker_1",
+      "applicantName": "Chidi Okonkwo",
+      "applicantEmail": "seeker@prophunta.ai",
+      "applicantPhone": "+234 803 123 4567",
+      "type": "RENTAL",
+      "occupation": "Senior Technology Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 18000000,
+      "financingStatus": "CASH",
+      "message": "We are prepared to pay 2 years upfront upon agreeable lease draft.",
+      "status": "APPROVED",
+      "id": "app_1791571288291_jpcq",
+      "createdAt": "2026-10-09T18:41:28.291Z",
+      "updatedAt": "2026-10-09T18:41:28.307Z",
+      "reviewNotes": "Terms accepted by owner."
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569543961_mx444",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791569543935@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791569544452_s5ss",
+      "createdAt": "2026-10-09T18:12:24.452Z",
+      "updatedAt": "2026-10-09T18:12:24.452Z"
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_seeker_1",
+      "applicantName": "Chidi Okonkwo",
+      "applicantEmail": "seeker@prophunta.ai",
+      "applicantPhone": "+234 803 123 4567",
+      "type": "RENTAL",
+      "occupation": "Senior Technology Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 18000000,
+      "financingStatus": "CASH",
+      "message": "We are prepared to pay 2 years upfront upon agreeable lease draft.",
+      "status": "APPROVED",
+      "id": "app_1791569514400_6ri0",
+      "createdAt": "2026-10-09T18:11:54.400Z",
+      "updatedAt": "2026-10-09T18:11:54.410Z",
+      "reviewNotes": "Terms accepted by owner."
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569250778_m762r",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791569250768@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791569250909_fdwg",
+      "createdAt": "2026-10-09T18:07:30.909Z",
+      "updatedAt": "2026-10-09T18:07:30.909Z"
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_seeker_1",
+      "applicantName": "Chidi Okonkwo",
+      "applicantEmail": "seeker@prophunta.ai",
+      "applicantPhone": "+234 803 123 4567",
+      "type": "RENTAL",
+      "occupation": "Senior Technology Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 18000000,
+      "financingStatus": "CASH",
+      "message": "We are prepared to pay 2 years upfront upon agreeable lease draft.",
+      "status": "APPROVED",
+      "id": "app_1791569201742_2x27",
+      "createdAt": "2026-10-09T18:06:41.742Z",
+      "updatedAt": "2026-10-09T18:06:41.756Z",
+      "reviewNotes": "Terms accepted by owner."
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_seeker_1",
+      "applicantName": "Chidi Okonkwo",
+      "applicantEmail": "seeker@prophunta.ai",
+      "applicantPhone": "+234 803 123 4567",
+      "type": "RENTAL",
+      "occupation": "Senior Technology Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 18000000,
+      "financingStatus": "CASH",
+      "message": "We are prepared to pay 2 years upfront upon agreeable lease draft.",
+      "status": "APPROVED",
+      "id": "app_1791569168925_snux",
+      "createdAt": "2026-10-09T18:06:08.925Z",
+      "updatedAt": "2026-10-09T18:06:08.935Z",
+      "reviewNotes": "Terms accepted by owner."
+    },
+    {
+      "propertyId": "prop_1791495476706_wyk7",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "propertyPrice": 35000000,
+      "propertyImage": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+      "seekerId": "user_1791569020917_ycpwd",
+      "applicantName": "Ngozi Okonjo",
+      "applicantEmail": "seeker_test_1791569020909@prophunta.ai",
+      "applicantPhone": "+234 803 111 2233",
+      "type": "RENTAL",
+      "occupation": "Lead Systems Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 35000000,
+      "message": "We are prepared to take immediate occupancy following verified inspection.",
+      "status": "SUBMITTED",
+      "id": "app_1791569021026_hgfs",
+      "createdAt": "2026-10-09T18:03:41.026Z",
+      "updatedAt": "2026-10-09T18:03:41.026Z"
+    },
+    {
       "propertyId": "prop_1791493165340_9qw1",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "propertyPrice": 35000000,
@@ -1438,6 +2840,61 @@
   ],
   "reports": [
     {
+      "propertyId": "prop_1791571299188_d4gs",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791572452807_ncoqa",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791572452991_5c1f",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T19:00:52.991Z"
+    },
+    {
+      "propertyId": "prop_1791569544544_vfjo",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791571298990_oipia",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791571299161_jfk3",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T18:41:39.161Z"
+    },
+    {
+      "propertyId": "prop_1791569250946_ejrj",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791569543961_mx444",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791569544508_xglv",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T18:12:24.508Z"
+    },
+    {
+      "propertyId": "prop_1791569021052_mh93",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791569250778_m762r",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791569250922_91kh",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T18:07:30.922Z"
+    },
+    {
+      "propertyId": "prop_1791495476706_wyk7",
+      "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
+      "reporterId": "user_1791569020917_ycpwd",
+      "reporterName": "Ngozi Okonjo",
+      "reason": "Incorrect Information",
+      "description": "Minor discrepancy in advertised floor level vs on-site layout.",
+      "id": "rep_1791569021033_9rnz",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-09T18:03:41.033Z"
+    },
+    {
       "propertyId": "prop_1791493165340_9qw1",
       "propertyTitle": "Luxury 4-Bedroom Waterfront Penthouse",
       "reporterId": "user_1791495476517_swnxv",
@@ -1505,6 +2962,1940 @@
     }
   ],
   "auditLogs": [
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_DELETED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791572467100_098553f7",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx"
+      },
+      "id": "aud_1791572467168_evae",
+      "timestamp": "2026-10-09T19:01:07.168Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_ORDER_UPDATED",
+      "objectType": "MEDIA",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "orderedIds": [
+          "med_1791572467100_098553f7",
+          "med_1791572467029_dad0eb89",
+          "med_1791572453027_0"
+        ]
+      },
+      "id": "aud_1791572467143_3jo6",
+      "timestamp": "2026-10-09T19:01:07.143Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_UPLOADED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791572467100_098553f7",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "fileName": "compound_drone_tour.mp4",
+        "type": "video",
+        "sizeBytes": 37
+      },
+      "id": "aud_1791572467113_b75t",
+      "timestamp": "2026-10-09T19:01:07.113Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_UPLOADED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791572467029_dad0eb89",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "fileName": "living_room_aerial_view.png",
+        "type": "image",
+        "sizeBytes": 70
+      },
+      "id": "aud_1791572467043_330u",
+      "timestamp": "2026-10-09T19:01:07.043Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791572453131_fut1",
+      "timestamp": "2026-10-09T19:00:53.131Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791572453113_nlw8",
+      "timestamp": "2026-10-09T19:00:53.113Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791572453107_jiy2",
+      "timestamp": "2026-10-09T19:00:53.107Z"
+    },
+    {
+      "actorId": "user_1791572453076_0lxfl",
+      "actorEmail": "agent_test_1791572453075@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791572453076_0lxfl",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791572453096_zdzz",
+      "timestamp": "2026-10-09T19:00:53.096Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791572453065_erk7",
+      "timestamp": "2026-10-09T19:00:53.065Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791572453041_j1g5",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791572453028_nppx",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791572453049_npov",
+      "timestamp": "2026-10-09T19:00:53.049Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572453028_nppx",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791572453035_brnp",
+      "timestamp": "2026-10-09T19:00:53.035Z"
+    },
+    {
+      "actorId": "user_1791572453006_wor52",
+      "actorEmail": "owner_test_1791572453006@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791572453006_wor52",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791572453020_s4td",
+      "timestamp": "2026-10-09T19:00:53.020Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791572452991_5c1f",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791571299188_d4gs",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791572453000_3t7k",
+      "timestamp": "2026-10-09T19:00:53.000Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791572452966_5me6",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791571299188_d4gs",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791572452980_mij9",
+      "timestamp": "2026-10-09T19:00:52.980Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791572452947_lph8",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791571299188_d4gs"
+      },
+      "id": "aud_1791572452954_em1s",
+      "timestamp": "2026-10-09T19:00:52.954Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791572452933_tvi7",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791571299188_d4gs",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791572452937_5vya",
+      "timestamp": "2026-10-09T19:00:52.938Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791572452807_ncoqa",
+      "result": "SUCCESS",
+      "id": "aud_1791572452841_jxcc",
+      "timestamp": "2026-10-09T19:00:52.841Z"
+    },
+    {
+      "actorId": "user_1791572452807_ncoqa",
+      "actorEmail": "seeker_test_1791572452795@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791572452807_ncoqa",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791572452829_azuk",
+      "timestamp": "2026-10-09T19:00:52.829Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "REJECTED",
+        "reason": "Permanent rejection due to fraudulent survey"
+      },
+      "id": "aud_1791572267974_a9wn",
+      "timestamp": "2026-10-09T18:57:47.974Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SOLD",
+        "newStatus": "SUSPENDED",
+        "reason": "Title dispute reported"
+      },
+      "id": "aud_1791572267963_pa91",
+      "timestamp": "2026-10-09T18:57:47.963Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "OCCUPIED",
+        "newStatus": "SOLD",
+        "reason": "Transaction deed executed"
+      },
+      "id": "aud_1791572267950_sw6m",
+      "timestamp": "2026-10-09T18:57:47.950Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "RESERVED",
+        "newStatus": "OCCUPIED",
+        "reason": "Keys handed over to verified tenant"
+      },
+      "id": "aud_1791572267939_t9zd",
+      "timestamp": "2026-10-09T18:57:47.939Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "ACTIVE",
+        "newStatus": "RESERVED",
+        "reason": "Holding deposit received"
+      },
+      "id": "aud_1791572267922_nvae",
+      "timestamp": "2026-10-09T18:57:47.922Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "VERIFIED",
+        "newStatus": "ACTIVE"
+      },
+      "id": "aud_1791572267908_vxqd",
+      "timestamp": "2026-10-09T18:57:47.908Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "VERIFIED",
+        "reason": "All titles confirmed clean"
+      },
+      "id": "aud_1791572267896_d2xl",
+      "timestamp": "2026-10-09T18:57:47.896Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "CHANGES_REQUIRED",
+        "newStatus": "SUBMITTED",
+        "reason": "Survey plan attached"
+      },
+      "id": "aud_1791572267880_9nqy",
+      "timestamp": "2026-10-09T18:57:47.880Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_REVIEW",
+        "newStatus": "CHANGES_REQUIRED",
+        "reason": "Please upload signed Survey Plan"
+      },
+      "id": "aud_1791572267869_rn4a",
+      "timestamp": "2026-10-09T18:57:47.869Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "UNDER_REVIEW",
+        "reason": "Assigned to field verification team"
+      },
+      "id": "aud_1791572267855_thqp",
+      "timestamp": "2026-10-09T18:57:47.855Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Ready for compliance audit"
+      },
+      "id": "aud_1791572267843_3seh",
+      "timestamp": "2026-10-09T18:57:47.843Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791572267821_bik5",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Crown Heights Luxury Smart Duplex"
+      },
+      "id": "aud_1791572267826_iyk6",
+      "timestamp": "2026-10-09T18:57:47.826Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "REJECTED",
+        "reason": "Permanent rejection due to fraudulent survey"
+      },
+      "id": "aud_1791571992862_rqay",
+      "timestamp": "2026-10-09T18:53:12.862Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SOLD",
+        "newStatus": "SUSPENDED",
+        "reason": "Title dispute reported"
+      },
+      "id": "aud_1791571992851_0ay9",
+      "timestamp": "2026-10-09T18:53:12.851Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "OCCUPIED",
+        "newStatus": "SOLD",
+        "reason": "Transaction deed executed"
+      },
+      "id": "aud_1791571992837_e1w8",
+      "timestamp": "2026-10-09T18:53:12.837Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "RESERVED",
+        "newStatus": "OCCUPIED",
+        "reason": "Keys handed over to verified tenant"
+      },
+      "id": "aud_1791571992826_3e33",
+      "timestamp": "2026-10-09T18:53:12.826Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "ACTIVE",
+        "newStatus": "RESERVED",
+        "reason": "Holding deposit received"
+      },
+      "id": "aud_1791571992808_7u51",
+      "timestamp": "2026-10-09T18:53:12.808Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "VERIFIED",
+        "newStatus": "ACTIVE"
+      },
+      "id": "aud_1791571992798_h0au",
+      "timestamp": "2026-10-09T18:53:12.798Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "VERIFIED",
+        "reason": "All titles confirmed clean"
+      },
+      "id": "aud_1791571992786_scpd",
+      "timestamp": "2026-10-09T18:53:12.786Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "CHANGES_REQUIRED",
+        "newStatus": "SUBMITTED",
+        "reason": "Survey plan attached"
+      },
+      "id": "aud_1791571992777_le58",
+      "timestamp": "2026-10-09T18:53:12.777Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_REVIEW",
+        "newStatus": "CHANGES_REQUIRED",
+        "reason": "Please upload signed Survey Plan"
+      },
+      "id": "aud_1791571992768_g903",
+      "timestamp": "2026-10-09T18:53:12.768Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUBMITTED",
+        "newStatus": "UNDER_REVIEW",
+        "reason": "Assigned to field verification team"
+      },
+      "id": "aud_1791571992755_u110",
+      "timestamp": "2026-10-09T18:53:12.755Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_STATUS_TRANSITIONED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Ready for compliance audit"
+      },
+      "id": "aud_1791571992745_vtmd",
+      "timestamp": "2026-10-09T18:53:12.745Z"
+    },
+    {
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571992726_0otb",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Crown Heights Luxury Smart Duplex"
+      },
+      "id": "aud_1791571992730_sjke",
+      "timestamp": "2026-10-09T18:53:12.730Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571299188_d4gs",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791571299253_m43p",
+      "timestamp": "2026-10-09T18:41:39.253Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571299188_d4gs",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791571299244_cppo",
+      "timestamp": "2026-10-09T18:41:39.244Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571299188_d4gs",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791571299238_iuvo",
+      "timestamp": "2026-10-09T18:41:39.238Z"
+    },
+    {
+      "actorId": "user_1791571299219_1dwzy",
+      "actorEmail": "agent_test_1791571299219@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791571299219_1dwzy",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791571299231_hqyb",
+      "timestamp": "2026-10-09T18:41:39.231Z"
+    },
+    {
+      "actorId": "user_1791571299173_cs997",
+      "actorEmail": "owner_test_1791571299173@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571299188_d4gs",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791571299214_rkr0",
+      "timestamp": "2026-10-09T18:41:39.214Z"
+    },
+    {
+      "actorId": "user_1791571299173_cs997",
+      "actorEmail": "owner_test_1791571299173@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791571299199_wrrk",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791571299188_d4gs",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791571299204_6s50",
+      "timestamp": "2026-10-09T18:41:39.204Z"
+    },
+    {
+      "actorId": "user_1791571299173_cs997",
+      "actorEmail": "owner_test_1791571299173@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791571299188_d4gs",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791571299195_kz7p",
+      "timestamp": "2026-10-09T18:41:39.195Z"
+    },
+    {
+      "actorId": "user_1791571299173_cs997",
+      "actorEmail": "owner_test_1791571299173@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791571299173_cs997",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791571299183_pamf",
+      "timestamp": "2026-10-09T18:41:39.183Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791571299161_jfk3",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791571299168_z9xp",
+      "timestamp": "2026-10-09T18:41:39.168Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791571299152_n0xh",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791571299156_nezy",
+      "timestamp": "2026-10-09T18:41:39.156Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791571299137_anci",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo"
+      },
+      "id": "aud_1791571299146_x0cq",
+      "timestamp": "2026-10-09T18:41:39.146Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791571299116_hgfo",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791571299130_otnw",
+      "timestamp": "2026-10-09T18:41:39.130Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791571298990_oipia",
+      "result": "SUCCESS",
+      "id": "aud_1791571299016_6r71",
+      "timestamp": "2026-10-09T18:41:39.016Z"
+    },
+    {
+      "actorId": "user_1791571298990_oipia",
+      "actorEmail": "seeker_test_1791571298984@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791571298990_oipia",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791571299006_zjjp",
+      "timestamp": "2026-10-09T18:41:39.006Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791571288321_mgsn",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo"
+      },
+      "id": "aud_1791571288326_pw51",
+      "timestamp": "2026-10-09T18:41:28.326Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "APPLICATION_STATUS_UPDATED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791571288291_jpcq",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "APPROVED",
+        "notes": "Terms accepted by owner."
+      },
+      "id": "aud_1791571288313_bisx",
+      "timestamp": "2026-10-09T18:41:28.313Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791571288291_jpcq",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791571288300_88i1",
+      "timestamp": "2026-10-09T18:41:28.300Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791571288250_a5mz",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT"
+      },
+      "id": "aud_1791571288283_zp6w",
+      "timestamp": "2026-10-09T18:41:28.283Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791571288250_a5mz",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED"
+      },
+      "id": "aud_1791571288272_749w",
+      "timestamp": "2026-10-09T18:41:28.272Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791571288250_a5mz",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791571288258_ot9m",
+      "timestamp": "2026-10-09T18:41:28.258Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_DELETED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791571277941_c71e41df",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo"
+      },
+      "id": "aud_1791571277981_fpnw",
+      "timestamp": "2026-10-09T18:41:17.981Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_ORDER_UPDATED",
+      "objectType": "MEDIA",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "orderedIds": [
+          "med_1791571277941_c71e41df",
+          "med_1791571277915_ab406d50",
+          "med_1791569544543_0"
+        ]
+      },
+      "id": "aud_1791571277969_6un2",
+      "timestamp": "2026-10-09T18:41:17.969Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_UPLOADED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791571277941_c71e41df",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "fileName": "compound_drone_tour.mp4",
+        "type": "video",
+        "sizeBytes": 37
+      },
+      "id": "aud_1791571277949_rqmm",
+      "timestamp": "2026-10-09T18:41:17.950Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "MEDIA_UPLOADED",
+      "objectType": "MEDIA",
+      "objectId": "med_1791571277915_ab406d50",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "fileName": "living_room_aerial_view.png",
+        "type": "image",
+        "sizeBytes": 70
+      },
+      "id": "aud_1791571277928_sqnf",
+      "timestamp": "2026-10-09T18:41:17.928Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791569544946_50c6",
+      "timestamp": "2026-10-09T18:12:24.946Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791569544936_wfrd",
+      "timestamp": "2026-10-09T18:12:24.936Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791569544918_6j49",
+      "timestamp": "2026-10-09T18:12:24.918Z"
+    },
+    {
+      "actorId": "user_1791569544903_aso8m",
+      "actorEmail": "agent_test_1791569544903@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569544903_aso8m",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791569544912_wbo9",
+      "timestamp": "2026-10-09T18:12:24.912Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569544897_3t7t",
+      "timestamp": "2026-10-09T18:12:24.897Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791569544565_vs0k",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569544544_vfjo",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791569544705_u2jm",
+      "timestamp": "2026-10-09T18:12:24.705Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569544544_vfjo",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569544551_rlau",
+      "timestamp": "2026-10-09T18:12:24.551Z"
+    },
+    {
+      "actorId": "user_1791569544519_a9l6i",
+      "actorEmail": "owner_test_1791569544519@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569544519_a9l6i",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791569544537_3x9a",
+      "timestamp": "2026-10-09T18:12:24.537Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791569544508_xglv",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791569544513_zf01",
+      "timestamp": "2026-10-09T18:12:24.513Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569544452_s5ss",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569544494_pxwh",
+      "timestamp": "2026-10-09T18:12:24.494Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791569544426_8xn0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj"
+      },
+      "id": "aud_1791569544437_ju1u",
+      "timestamp": "2026-10-09T18:12:24.437Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569544369_j6m0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569544383_m2q7",
+      "timestamp": "2026-10-09T18:12:24.383Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791569543961_mx444",
+      "result": "SUCCESS",
+      "id": "aud_1791569544092_m4mz",
+      "timestamp": "2026-10-09T18:12:24.092Z"
+    },
+    {
+      "actorId": "user_1791569543961_mx444",
+      "actorEmail": "seeker_test_1791569543935@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569543961_mx444",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791569544018_orik",
+      "timestamp": "2026-10-09T18:12:24.018Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791569514482_0n2o",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj"
+      },
+      "id": "aud_1791569514488_8veq",
+      "timestamp": "2026-10-09T18:11:54.488Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "APPLICATION_STATUS_UPDATED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569514400_6ri0",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "APPROVED",
+        "notes": "Terms accepted by owner."
+      },
+      "id": "aud_1791569514415_6qnn",
+      "timestamp": "2026-10-09T18:11:54.415Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569514400_6ri0",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569514406_6x4a",
+      "timestamp": "2026-10-09T18:11:54.406Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569514360_rskn",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT"
+      },
+      "id": "aud_1791569514394_t82b",
+      "timestamp": "2026-10-09T18:11:54.394Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569514360_rskn",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED"
+      },
+      "id": "aud_1791569514382_wifs",
+      "timestamp": "2026-10-09T18:11:54.382Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569514360_rskn",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569514373_dbht",
+      "timestamp": "2026-10-09T18:11:54.373Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569250946_ejrj",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791569251014_c05m",
+      "timestamp": "2026-10-09T18:07:31.014Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569250946_ejrj",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791569251003_81kc",
+      "timestamp": "2026-10-09T18:07:31.003Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569250946_ejrj",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791569250998_dlnf",
+      "timestamp": "2026-10-09T18:07:30.998Z"
+    },
+    {
+      "actorId": "user_1791569250980_fnxdr",
+      "actorEmail": "agent_test_1791569250980@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569250980_fnxdr",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791569250992_m60y",
+      "timestamp": "2026-10-09T18:07:30.992Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569250946_ejrj",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569250973_37iw",
+      "timestamp": "2026-10-09T18:07:30.973Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791569250956_dbgd",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569250946_ejrj",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791569250960_9c8h",
+      "timestamp": "2026-10-09T18:07:30.962Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569250946_ejrj",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569250952_x5z3",
+      "timestamp": "2026-10-09T18:07:30.952Z"
+    },
+    {
+      "actorId": "user_1791569250930_r7mj2",
+      "actorEmail": "owner_test_1791569250930@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569250930_r7mj2",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791569250941_98fg",
+      "timestamp": "2026-10-09T18:07:30.941Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791569250922_91kh",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791569250926_3m4v",
+      "timestamp": "2026-10-09T18:07:30.926Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569250909_fdwg",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569250917_0x1l",
+      "timestamp": "2026-10-09T18:07:30.917Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791569250900_sxtn",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93"
+      },
+      "id": "aud_1791569250904_n0sl",
+      "timestamp": "2026-10-09T18:07:30.904Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569250893_rlko",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569250896_0hr9",
+      "timestamp": "2026-10-09T18:07:30.896Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791569250778_m762r",
+      "result": "SUCCESS",
+      "id": "aud_1791569250802_tozy",
+      "timestamp": "2026-10-09T18:07:30.802Z"
+    },
+    {
+      "actorId": "user_1791569250778_m762r",
+      "actorEmail": "seeker_test_1791569250768@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569250778_m762r",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791569250794_lwyc",
+      "timestamp": "2026-10-09T18:07:30.794Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791569201768_9eum",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93"
+      },
+      "id": "aud_1791569201774_zxmz",
+      "timestamp": "2026-10-09T18:06:41.774Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "APPLICATION_STATUS_UPDATED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569201742_2x27",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "APPROVED",
+        "notes": "Terms accepted by owner."
+      },
+      "id": "aud_1791569201759_02zb",
+      "timestamp": "2026-10-09T18:06:41.759Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569201742_2x27",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569201752_5fs2",
+      "timestamp": "2026-10-09T18:06:41.752Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569201707_skfw",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT"
+      },
+      "id": "aud_1791569201737_i731",
+      "timestamp": "2026-10-09T18:06:41.737Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569201707_skfw",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED"
+      },
+      "id": "aud_1791569201729_anpu",
+      "timestamp": "2026-10-09T18:06:41.729Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569201707_skfw",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569201713_fzxg",
+      "timestamp": "2026-10-09T18:06:41.713Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "APPLICATION_STATUS_UPDATED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569168925_snux",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "APPROVED",
+        "notes": "Terms accepted by owner."
+      },
+      "id": "aud_1791569168939_2m4k",
+      "timestamp": "2026-10-09T18:06:08.939Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569168925_snux",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569168928_ceei",
+      "timestamp": "2026-10-09T18:06:08.928Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569168891_3023",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT"
+      },
+      "id": "aud_1791569168918_can3",
+      "timestamp": "2026-10-09T18:06:08.918Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569168891_3023",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED"
+      },
+      "id": "aud_1791569168910_gvj7",
+      "timestamp": "2026-10-09T18:06:08.910Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569168891_3023",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569168897_z03s",
+      "timestamp": "2026-10-09T18:06:08.897Z"
+    },
+    {
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569095568_d2vp",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569095574_pvei",
+      "timestamp": "2026-10-09T18:04:55.574Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569021052_mh93",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Official Verified Trust Badge approved."
+      },
+      "id": "aud_1791569021101_xfxc",
+      "timestamp": "2026-10-09T18:03:41.101Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569021052_mh93",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "Official Verified Trust Badge approved."
+        }
+      },
+      "id": "aud_1791569021094_trs4",
+      "timestamp": "2026-10-09T18:03:41.094Z"
+    },
+    {
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569021052_mh93",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "reviewNotes": "Governor Consent volume verified with Alausa Lands Registry. Coordinates matched."
+        }
+      },
+      "id": "aud_1791569021091_pl9u",
+      "timestamp": "2026-10-09T18:03:41.091Z"
+    },
+    {
+      "actorId": "user_1791569021080_allmm",
+      "actorEmail": "agent_test_1791569021080@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569021080_allmm",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "AGENT"
+      },
+      "id": "aud_1791569021086_yqu4",
+      "timestamp": "2026-10-09T18:03:41.086Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569021052_mh93",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569021073_a9z6",
+      "timestamp": "2026-10-09T18:03:41.073Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791569021060_0s14",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791569021052_mh93",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "Governors_Consent_Ref_LND-2024-0012.pdf"
+      },
+      "id": "aud_1791569021065_740y",
+      "timestamp": "2026-10-09T18:03:41.065Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791569021052_mh93",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Luxury 4-Bedroom Waterfront Penthouse"
+      },
+      "id": "aud_1791569021057_ihwi",
+      "timestamp": "2026-10-09T18:03:41.057Z"
+    },
+    {
+      "actorId": "user_1791569021040_9kp0r",
+      "actorEmail": "owner_test_1791569021040@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569021040_9kp0r",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "OWNER"
+      },
+      "id": "aud_1791569021047_7raq",
+      "timestamp": "2026-10-09T18:03:41.047Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791569021033_9rnz",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791495476706_wyk7",
+        "reason": "Incorrect Information"
+      },
+      "id": "aud_1791569021036_mhg9",
+      "timestamp": "2026-10-09T18:03:41.036Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791569021026_hgfs",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791495476706_wyk7",
+        "type": "RENTAL"
+      },
+      "id": "aud_1791569021029_am1h",
+      "timestamp": "2026-10-09T18:03:41.029Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791569021018_f803",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791495476706_wyk7"
+      },
+      "id": "aud_1791569021022_fxic",
+      "timestamp": "2026-10-09T18:03:41.022Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791569021010_cjcx",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791495476706_wyk7",
+        "preferredDate": "2026-10-15"
+      },
+      "id": "aud_1791569021014_mply",
+      "timestamp": "2026-10-09T18:03:41.014Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_1791569020917_ycpwd",
+      "result": "SUCCESS",
+      "id": "aud_1791569020938_8jmz",
+      "timestamp": "2026-10-09T18:03:40.938Z"
+    },
+    {
+      "actorId": "user_1791569020917_ycpwd",
+      "actorEmail": "seeker_test_1791569020909@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791569020917_ycpwd",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER"
+      },
+      "id": "aud_1791569020929_wgih",
+      "timestamp": "2026-10-09T18:03:40.929Z"
+    },
     {
       "actorId": "user_admin_1",
       "actorEmail": "admin@prophunta.ai",

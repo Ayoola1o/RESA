@@ -7,6 +7,7 @@ import {
   Property,
   PropertyType,
   ListingType,
+  ListingStatus,
   InspectionType,
   InspectionStatus,
   InspectionRecord,
@@ -18,9 +19,12 @@ import {
   VerificationOverallStatus,
   DocumentType,
   UserVerificationStatus,
+  PropertyMedia,
+  MediaType,
 } from '@/types/prophunta';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
+import { mediaService } from '../services/media-service';
 import { verificationService } from '../services/verification-service';
 import { inspectionService } from '../services/inspection-service';
 import { enquiryService } from '../services/enquiry-service';
@@ -513,4 +517,136 @@ export async function updateUserStatusAction(
     return { success: false, error: err.message || 'Failed to update user status.' };
   }
 }
+
+// --- PROPERTY MEDIA ACTIONS (PRD Section 7) ---
+
+export async function uploadPropertyMediaAction(
+  formData: FormData
+): Promise<{ success: boolean; media?: PropertyMedia; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const propertyId = (formData.get('propertyId') as string) || '';
+    const file = formData.get('file') as File | null;
+    const caption = (formData.get('caption') as string) || undefined;
+    const isPrimary = formData.get('isPrimary') === 'true';
+
+    if (!propertyId) {
+      return { success: false, error: 'Property ID is required.' };
+    }
+    if (!file) {
+      return { success: false, error: 'Media file is required.' };
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const media = await mediaService.uploadMedia(
+      user,
+      propertyId,
+      buffer,
+      file.name,
+      file.type,
+      caption,
+      isPrimary
+    );
+
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    revalidatePath('/marketplace');
+    return { success: true, media };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to upload property media.' };
+  }
+}
+
+export async function addPropertyMediaRecordAction(
+  propertyId: string,
+  data: {
+    url: string;
+    type?: MediaType;
+    caption?: string;
+    isPrimary?: boolean;
+    fileName?: string;
+  }
+): Promise<{ success: boolean; media?: PropertyMedia; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const media = await mediaService.addMediaRecord(user, propertyId, data);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true, media };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to add media record.' };
+  }
+}
+
+export async function updatePropertyMediaAction(
+  propertyId: string,
+  mediaId: string,
+  updates: {
+    caption?: string;
+    isPrimary?: boolean;
+    order?: number;
+  }
+): Promise<{ success: boolean; media?: PropertyMedia; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const media = await mediaService.updateMedia(user, propertyId, mediaId, updates);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true, media };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update media.' };
+  }
+}
+
+export async function deletePropertyMediaAction(
+  propertyId: string,
+  mediaId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await mediaService.deleteMedia(user, propertyId, mediaId);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to delete media.' };
+  }
+}
+
+export async function reorderPropertyMediaAction(
+  propertyId: string,
+  orderedIds: string[]
+): Promise<{ success: boolean; media?: PropertyMedia[]; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const media = await mediaService.reorderMedia(user, propertyId, orderedIds);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/landlord/add-property');
+    return { success: true, media };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to reorder media.' };
+  }
+}
+
+export async function transitionPropertyStatusAction(
+  propertyId: string,
+  newStatus: ListingStatus,
+  reason?: string
+): Promise<{ success: boolean; property?: Property; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const property = await propertyService.transitionListingStatus(user, propertyId, newStatus, reason);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/marketplace');
+    revalidatePath('/profile');
+    revalidatePath('/admin');
+    return { success: true, property };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update property status.' };
+  }
+}
+
+
 

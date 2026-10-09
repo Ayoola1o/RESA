@@ -72,8 +72,11 @@ export class InspectionService {
     const inspection = await inspectionRepository.findById(inspectionId);
     if (!inspection) throw new Error('Inspection request not found');
 
-    // Only host or admin can update status
-    if (inspection.hostId !== user.id && user.role !== 'ADMIN') {
+    // Host, Admin, or Seeker (if cancelling) can update status
+    const isHostOrAdmin = inspection.hostId === user.id || user.role === 'ADMIN';
+    const isSeekerCancelling = status === 'CANCELLED' && inspection.seekerId === user.id;
+
+    if (!isHostOrAdmin && !isSeekerCancelling) {
       throw new Error('Unauthorized to update this inspection');
     }
 

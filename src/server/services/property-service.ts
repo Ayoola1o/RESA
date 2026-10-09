@@ -1,4 +1,4 @@
-import { Property, ListingStatus, User, PropertyDocument, DocumentType } from '@/types/prophunta';
+import { Property, PropertyMedia, ListingStatus, User, PropertyDocument, DocumentType } from '@/types/prophunta';
 import { propertyRepository, PropertyFilterOptions } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
 
@@ -41,6 +41,10 @@ export class PropertyService {
       sqft?: number;
       features: string[];
       images: string[];
+      latitude?: number;
+      longitude?: number;
+      intendedUse?: 'Residential' | 'Commercial' | 'Mixed';
+      authorizedAgentId?: string;
     }
   ): Promise<Property> {
     // Role check: Only OWNER, AGENT, or ADMIN can create listings
@@ -48,20 +52,23 @@ export class PropertyService {
       throw new Error('Only Property Owners and Verified Agents can create property listings');
     }
 
-    const media = (data.images.length > 0 ? data.images : [
+    const media: PropertyMedia[] = (data.images.length > 0 ? data.images : [
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
     ]).map((url, idx) => ({
       id: `med_${Date.now()}_${idx}`,
       propertyId: '',
       url,
-      type: 'image' as const,
+      type: url.match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image',
+      caption: idx === 0 ? 'Main Facade & Front Entrance' : `Property View #${idx + 1}`,
       isPrimary: idx === 0,
       order: idx + 1,
+      uploadStatus: 'COMPLETED',
+      createdAt: new Date().toISOString(),
     }));
 
     const property = await propertyRepository.create({
       ownerId: user.role === 'OWNER' ? user.id : 'user_owner_1',
-      authorizedAgentId: user.role === 'AGENT' ? user.id : undefined,
+      authorizedAgentId: user.role === 'AGENT' ? user.id : data.authorizedAgentId,
       title: data.title,
       propertyType: data.propertyType,
       listingType: data.listingType,
@@ -70,6 +77,8 @@ export class PropertyService {
       city: data.city,
       area: data.area,
       address: data.address,
+      latitude: data.latitude,
+      longitude: data.longitude,
       price: data.price,
       priceUnit: data.priceUnit || (data.listingType === 'RENT' ? '/year' : 'total'),
       agreementFee: data.agreementFee || 0,
@@ -81,6 +90,7 @@ export class PropertyService {
       sqft: data.sqft,
       features: data.features,
       availabilityStatus: 'AVAILABLE',
+      intendedUse: data.intendedUse || 'Residential',
       listingStatus: 'DRAFT',
       media,
       documents: [],
@@ -239,6 +249,94 @@ export class PropertyService {
       objectId: propertyId,
       result: 'SUCCESS',
       metadata: { title: prop.title },
+    });
+
+    return updated!;
+  }
+
+  /**
+   * State Machine transition driver for all 11 listing statuses:
+   * DRAFT, SUBMITTED, UNDER_REVIEW, VERIFIED, CHANGES_REQUIRED, REJECTED, ACTIVE, RESERVED, OCCUPIED, SOLD, SUSPENDED
+   */
+  async transitionListingStatus(
+    user: User,
+    propertyId: string,
+    newStatus: ListingStatus,
+    reason?: string
+  ): Promise<Property> {
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) throw new Error('Property not found');
+
+    const isOwner = property.ownerId === user.id;
+    const isAgent = property.authorizedAgentId === user.id;
+    const isAdmin = user.role === 'ADMIN';
+
+    if (!isOwner && !isAgent && !isAdmin) {
+      throw new Error('Unauthorized: You do not have permission to change the status of this property');
+    }
+
+    // Role-specific transition rules
+    if (!isAdmin) {
+      // Owners / Agents can only perform operational transitions
+      const allowedOwnerTransitions: Record<ListingStatus, ListingStatus[]> = {
+        DRAFT: ['SUBMITTED'],
+        CHANGES_REQUIRED: ['SUBMITTED'],
+        SUBMITTED: [], // Waiting for review
+        UNDER_REVIEW: [], // Admin reviewing
+        VERIFIED: ['ACTIVE'], // Host can activate verified listing
+        ACTIVE: ['RESERVED', 'OCCUPIED', 'SOLD'],
+        RESERVED: ['ACTIVE', 'OCCUPIED', 'SOLD'],
+        OCCUPIED: ['ACTIVE'], // Re-listing
+        SOLD: [],
+        REJECTED: [],
+        SUSPENDED: [],
+      };
+
+      const allowed = allowedOwnerTransitions[property.listingStatus] || [];
+      if (!allowed.includes(newStatus)) {
+        throw new Error(
+          `Cannot transition listing from ${property.listingStatus} to ${newStatus}. Owners/agents cannot bypass verification or compliance actions.`
+        );
+      }
+    }
+
+    // Determine availabilityStatus sync
+    let availabilityStatus = property.availabilityStatus;
+    if (newStatus === 'ACTIVE' || newStatus === 'VERIFIED') {
+      availabilityStatus = 'AVAILABLE';
+    } else if (newStatus === 'RESERVED') {
+      availabilityStatus = 'UNDER_OFFER';
+    } else if (newStatus === 'OCCUPIED') {
+      availabilityStatus = 'OCCUPIED';
+    } else if (newStatus === 'SOLD' || newStatus === 'REJECTED' || newStatus === 'SUSPENDED') {
+      availabilityStatus = 'UNAVAILABLE';
+    }
+
+    const updates: Partial<Property> = {
+      listingStatus: newStatus,
+      availabilityStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if ((newStatus === 'ACTIVE' || newStatus === 'VERIFIED') && !property.publishedAt) {
+      updates.publishedAt = new Date().toISOString();
+    }
+
+    const updated = await propertyRepository.update(propertyId, updates);
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'PROPERTY_STATUS_TRANSITIONED',
+      objectType: 'PROPERTY',
+      objectId: propertyId,
+      result: 'SUCCESS',
+      metadata: {
+        previousStatus: property.listingStatus,
+        newStatus,
+        reason: reason || undefined,
+      },
     });
 
     return updated!;

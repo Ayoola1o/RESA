@@ -62,6 +62,17 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         const propAvailability = p.availabilityStatus || 'AVAILABLE';
         const availabilityMatch = availability === 'all' || propAvailability === availability;
 
+        // Exclude unverified drafts or compliance-restricted listings from public discovery
+        const isPublicListing =
+          p.listingStatus === 'ACTIVE' ||
+          p.listingStatus === 'VERIFIED' ||
+          p.listingStatus === 'RESERVED' ||
+          p.listingStatus === 'OCCUPIED' ||
+          p.listingStatus === 'SOLD';
+        if (!isPublicListing && p.listingStatus) {
+          return false;
+        }
+
         const isVerified = p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE' || p.isVerified === true;
         const verifiedOnlyMatch = !verifiedOnly || isVerified;
 

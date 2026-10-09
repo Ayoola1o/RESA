@@ -35,3 +35,7 @@ export function formatCurrency(amount: number, status?: string, priceUnit?: stri
   }
   return formatted;
 }
+
+export function formatNaira(amount: number): string {
+  return `₦ ${amount.toLocaleString()}`;
+}

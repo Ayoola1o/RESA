@@ -27,6 +27,7 @@ import {
   BadgeCheck,
   Check,
   Flag,
+  Video,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -300,49 +301,102 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column (2 Cols) */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Media Carousel */}
+          {/* Media Carousel (PRD Section 7: Persistent Media with ordering, captions, video, and primary display) */}
           <div className="relative rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-200/80">
             <Carousel className="w-full">
               <CarouselContent>
-                {property.media.map((med, index) => (
-                  <CarouselItem key={med.id || index}>
-                    <div className="relative h-[340px] sm:h-[460px] w-full">
-                      <Image
-                        src={med.url}
-                        alt={med.caption || property.title}
-                        fill
-                        className="object-cover"
-                        priority={index === 0}
-                      />
-                      {med.caption && (
-                        <div className="absolute bottom-3 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 font-medium">
-                          {med.caption}
+                {[...(property.media || [])]
+                  .sort((a, b) => (a.isPrimary ? -1 : b.isPrimary ? 1 : (a.order || 0) - (b.order || 0)))
+                  .map((med, index) => (
+                    <CarouselItem key={med.id || index}>
+                      <div className="relative h-[340px] sm:h-[460px] w-full bg-slate-950 flex items-center justify-center">
+                        {med.type === 'video' ? (
+                          <video
+                            src={med.url}
+                            controls
+                            className="w-full h-full object-contain"
+                            poster={property.media.find((m) => m.type === 'image')?.url}
+                          />
+                        ) : (
+                          <Image
+                            src={med.url}
+                            alt={med.caption || property.title}
+                            fill
+                            className="object-cover"
+                            priority={index === 0}
+                          />
+                        )}
+                        <div className="absolute bottom-3 left-4 flex items-center gap-2 z-10">
+                          {med.type === 'video' && (
+                            <span className="bg-blue-600/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-sm">
+                              <Video className="h-3 w-3" /> Video Walkthrough
+                            </span>
+                          )}
+                          {med.caption && (
+                            <div className="bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                              {med.caption}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </CarouselItem>
-                ))}
+                      </div>
+                    </CarouselItem>
+                  ))}
               </CarouselContent>
               <CarouselPrevious className="left-4" />
               <CarouselNext className="right-4" />
             </Carousel>
 
             {/* Badges Overlay */}
-            <div className="absolute top-4 left-4 flex gap-2">
+            <div className="absolute top-4 left-4 flex flex-wrap gap-2">
               <Badge
                 className={`text-xs font-bold px-3 py-1 ${
-                  property.listingStatus === 'VERIFIED'
+                  property.listingStatus === 'VERIFIED' || property.listingStatus === 'ACTIVE'
                     ? 'bg-emerald-600 text-white'
-                    : property.listingStatus === 'UNDER_REVIEW'
+                    : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
                     ? 'bg-amber-500 text-white'
+                    : property.listingStatus === 'CHANGES_REQUIRED'
+                    ? 'bg-orange-500 text-white'
+                    : property.listingStatus === 'RESERVED'
+                    ? 'bg-purple-600 text-white'
+                    : property.listingStatus === 'OCCUPIED'
+                    ? 'bg-blue-600 text-white'
+                    : property.listingStatus === 'SOLD'
+                    ? 'bg-slate-800 text-white'
+                    : property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'
+                    ? 'bg-rose-600 text-white'
                     : 'bg-slate-700 text-white'
                 }`}
               >
-                {property.listingStatus === 'VERIFIED' ? '✓ Verified Listing' : property.listingStatus}
+                {property.listingStatus === 'VERIFIED'
+                  ? '✓ Verified Listing'
+                  : property.listingStatus === 'ACTIVE'
+                  ? '✓ Verified Active'
+                  : property.listingStatus === 'UNDER_REVIEW'
+                  ? '⏳ Under Verification Review'
+                  : property.listingStatus === 'SUBMITTED'
+                  ? '📋 Submitted for Review'
+                  : property.listingStatus === 'CHANGES_REQUIRED'
+                  ? '⚠️ Changes Required'
+                  : property.listingStatus === 'RESERVED'
+                  ? '🔒 Reserved'
+                  : property.listingStatus === 'OCCUPIED'
+                  ? '🏠 Occupied'
+                  : property.listingStatus === 'SOLD'
+                  ? '🤝 Sold'
+                  : property.listingStatus === 'SUSPENDED'
+                  ? '⛔ Suspended'
+                  : property.listingStatus === 'REJECTED'
+                  ? '✕ Rejected'
+                  : '📝 Draft'}
               </Badge>
               <Badge variant="secondary" className="text-xs font-bold bg-white/90 text-slate-800 shadow-sm">
                 {property.listingType === 'RENT' ? 'For Rent' : 'For Sale'}
               </Badge>
+              {property.intendedUse && (
+                <Badge variant="secondary" className="text-xs font-bold bg-white/90 text-slate-800 shadow-sm">
+                  {property.intendedUse}
+                </Badge>
+              )}
             </div>
           </div>
 
@@ -577,10 +631,43 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
           <Card className="rounded-2xl border-slate-200/80 shadow-md bg-white p-5 space-y-3.5">
             <h3 className="text-sm font-bold text-slate-900">Property Next Steps</h3>
 
+            {/* Status-driven guidance banners */}
+            {property.listingStatus === 'RESERVED' && (
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 leading-relaxed">
+                <strong>🔒 Listing Reserved:</strong> A holding deposit or preliminary agreement has been recorded for this property. Booking new inspections and submitting offers is currently paused.
+              </div>
+            )}
+            {property.listingStatus === 'OCCUPIED' && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed">
+                <strong>🏠 Currently Occupied:</strong> This property is actively leased and unavailable for new tenancy applications.
+              </div>
+            )}
+            {property.listingStatus === 'SOLD' && (
+              <div className="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed">
+                <strong>🤝 Property Sold:</strong> This property transaction has been concluded.
+              </div>
+            )}
+            {property.listingStatus === 'SUSPENDED' && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 leading-relaxed">
+                <strong>⛔ Listing Suspended:</strong> This property has been suspended by compliance officers and cannot be transacted.
+              </div>
+            )}
+            {(property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED') && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
+                <strong>⏳ In Verification Review:</strong> Title and field checks are underway. Applications will open once approved.
+              </div>
+            )}
+            {(property.listingStatus === 'DRAFT' || property.listingStatus === 'CHANGES_REQUIRED' || property.listingStatus === 'REJECTED') && (
+              <div className="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed">
+                <strong>📝 Status: {property.listingStatus}</strong> — This listing is not publicly active.
+              </div>
+            )}
+
             {/* Request Inspection CTA */}
             <Button
               onClick={() => setIsTourDialogOpen(true)}
-              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-900/20"
+              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-blue-900/20"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Inspection (Physical / Video)
@@ -589,8 +676,9 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             {/* Submit Application / Make Offer CTA */}
             <Button
               onClick={() => setIsOfferDialogOpen(true)}
+              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
               variant="outline"
-              className="w-full h-11 rounded-xl border-blue-300 text-blue-700 hover:bg-blue-50 font-bold text-xs"
+              className="w-full h-11 rounded-xl border-blue-300 text-blue-700 hover:bg-blue-50 disabled:opacity-50 font-bold text-xs"
             >
               <Banknote className="h-4 w-4 mr-2" />
               {property.listingType === 'RENT' ? 'Submit Rental Expression of Interest' : 'Submit Purchase Offer'}
@@ -599,8 +687,9 @@ export default function PropertyDetailClient({ initialProperty }: PropertyDetail
             {/* Send Enquiry CTA */}
             <Button
               onClick={() => setIsEnquiryDialogOpen(true)}
+              disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
               variant="secondary"
-              className="w-full h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs"
+              className="w-full h-10 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-800 font-semibold text-xs"
             >
               <MessageSquare className="h-3.5 w-3.5 mr-2 text-slate-600" />
               Send Direct Enquiry to Authorized Host

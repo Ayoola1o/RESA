@@ -488,9 +488,19 @@ function AdminPortalContent() {
                         <h4 className="text-sm font-bold text-slate-900">{p.title}</h4>
                         <Badge
                           className={`text-[10px] font-bold ${
-                            p.listingStatus === 'VERIFIED'
+                            p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE'
                               ? 'bg-emerald-600'
-                              : p.listingStatus === 'SUSPENDED'
+                              : p.listingStatus === 'UNDER_REVIEW' || p.listingStatus === 'SUBMITTED'
+                              ? 'bg-amber-500'
+                              : p.listingStatus === 'CHANGES_REQUIRED'
+                              ? 'bg-orange-500'
+                              : p.listingStatus === 'RESERVED'
+                              ? 'bg-purple-600'
+                              : p.listingStatus === 'OCCUPIED'
+                              ? 'bg-blue-600'
+                              : p.listingStatus === 'SOLD'
+                              ? 'bg-slate-800'
+                              : p.listingStatus === 'SUSPENDED' || p.listingStatus === 'REJECTED'
                               ? 'bg-rose-600'
                               : 'bg-slate-600'
                           }`}

@@ -78,7 +78,28 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
               Verified Trust
             </span>
           )}
-          {availabilityStatus !== 'AVAILABLE' && (
+          {property.listingStatus && property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED' && (
+            <span
+              className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-sm ${
+                property.listingStatus === 'RESERVED'
+                  ? 'bg-purple-600'
+                  : property.listingStatus === 'OCCUPIED'
+                  ? 'bg-blue-600'
+                  : property.listingStatus === 'SOLD'
+                  ? 'bg-slate-800'
+                  : property.listingStatus === 'SUSPENDED'
+                  ? 'bg-rose-600'
+                  : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
+                  ? 'bg-amber-500'
+                  : property.listingStatus === 'CHANGES_REQUIRED'
+                  ? 'bg-orange-500'
+                  : 'bg-slate-600'
+              }`}
+            >
+              {property.listingStatus.replace('_', ' ')}
+            </span>
+          )}
+          {availabilityStatus !== 'AVAILABLE' && property.listingStatus === 'ACTIVE' && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500 text-white shadow-sm">
               {availabilityStatus.replace('_', ' ')}
             </span>

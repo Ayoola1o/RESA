@@ -1,4 +1,4 @@
-import { Property, ListingStatus, PropertyType, ListingType } from '@/types/prophunta';
+import { Property, PropertyMedia, ListingStatus, PropertyType, ListingType } from '@/types/prophunta';
 import { getDb, saveDb } from '../db/store';
 
 export interface PropertyFilterOptions {
@@ -121,6 +121,100 @@ export class PropertyRepository {
       saveDb(db);
     }
     return deleted;
+  }
+
+  async addMedia(propertyId: string, mediaItem: PropertyMedia): Promise<Property | null> {
+    const db = getDb();
+    const idx = db.properties.findIndex((p) => p.id === propertyId);
+    if (idx === -1) return null;
+
+    const property = db.properties[idx];
+    const currentMedia = property.media || [];
+
+    if (mediaItem.isPrimary || currentMedia.length === 0) {
+      currentMedia.forEach((m) => (m.isPrimary = false));
+      mediaItem.isPrimary = true;
+    }
+
+    currentMedia.push(mediaItem);
+    property.media = currentMedia;
+    property.updatedAt = new Date().toISOString();
+    saveDb(db);
+    return property;
+  }
+
+  async updateMedia(propertyId: string, mediaId: string, updates: Partial<PropertyMedia>): Promise<Property | null> {
+    const db = getDb();
+    const idx = db.properties.findIndex((p) => p.id === propertyId);
+    if (idx === -1) return null;
+
+    const property = db.properties[idx];
+    const mediaIdx = (property.media || []).findIndex((m) => m.id === mediaId);
+    if (mediaIdx === -1) return null;
+
+    if (updates.isPrimary) {
+      property.media.forEach((m) => (m.isPrimary = false));
+    }
+
+    property.media[mediaIdx] = {
+      ...property.media[mediaIdx],
+      ...updates,
+    };
+    property.updatedAt = new Date().toISOString();
+    saveDb(db);
+    return property;
+  }
+
+  async deleteMedia(propertyId: string, mediaId: string): Promise<Property | null> {
+    const db = getDb();
+    const idx = db.properties.findIndex((p) => p.id === propertyId);
+    if (idx === -1) return null;
+
+    const property = db.properties[idx];
+    const currentMedia = property.media || [];
+    const wasPrimary = currentMedia.find((m) => m.id === mediaId)?.isPrimary;
+
+    property.media = currentMedia.filter((m) => m.id !== mediaId);
+    if (wasPrimary && property.media.length > 0) {
+      property.media[0].isPrimary = true;
+    }
+
+    property.media.forEach((m, i) => {
+      m.order = i + 1;
+    });
+
+    property.updatedAt = new Date().toISOString();
+    saveDb(db);
+    return property;
+  }
+
+  async reorderMedia(propertyId: string, orderedIds: string[]): Promise<Property | null> {
+    const db = getDb();
+    const idx = db.properties.findIndex((p) => p.id === propertyId);
+    if (idx === -1) return null;
+
+    const property = db.properties[idx];
+    const mediaMap = new Map((property.media || []).map((m) => [m.id, m]));
+    const reordered: PropertyMedia[] = [];
+
+    orderedIds.forEach((id, index) => {
+      const item = mediaMap.get(id);
+      if (item) {
+        item.order = index + 1;
+        reordered.push(item);
+        mediaMap.delete(id);
+      }
+    });
+
+    mediaMap.forEach((item) => {
+      item.order = reordered.length + 1;
+      reordered.push(item);
+    });
+
+    property.media = reordered;
+    property.updatedAt = new Date().toISOString();
+    saveDb(db);
+    return property;
   }
 }
 
