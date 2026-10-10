@@ -35,6 +35,7 @@ import { enquiryService } from '../services/enquiry-service';
 import { applicationService } from '../services/application-service';
 import { reportService } from '../services/report-service';
 import { auditService } from '../services/audit-service';
+import { notificationService } from '../services/notification-service';
 
 // --- AUTHENTICATION ACTIONS ---
 
@@ -417,11 +418,12 @@ export async function getUserInspectionsAction() {
 export async function updateInspectionStatusAction(
   inspectionId: string,
   status: InspectionStatus,
-  notes?: string
+  notes?: string,
+  rescheduleData?: { preferredDate: string; preferredTimeSlot: string }
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await authService.requireUser();
-    await inspectionService.updateStatus(user, inspectionId, status, notes);
+    await inspectionService.updateStatus(user, inspectionId, status, notes, rescheduleData);
     revalidatePath('/profile');
     revalidatePath('/dashboard');
     return { success: true };
@@ -430,14 +432,35 @@ export async function updateInspectionStatusAction(
   }
 }
 
+export async function proposeInspectionScheduleAction(
+  inspectionId: string,
+  proposedDate: string,
+  proposedTimeSlot: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await inspectionService.updateStatus(user, inspectionId, 'RESCHEDULED', notes, {
+      preferredDate: proposedDate,
+      preferredTimeSlot: proposedTimeSlot,
+    });
+    revalidatePath('/profile');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to propose schedule.' };
+  }
+}
+
 export async function completeInspectionAction(
   inspectionId: string,
-  record: Omit<InspectionRecord, 'completedAt'>
+  record: Partial<InspectionRecord>
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const user = await authService.requireUser();
     await inspectionService.completeInspection(user, inspectionId, record);
     revalidatePath('/profile');
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to submit inspection record.' };
@@ -489,9 +512,15 @@ export async function getEnquiryAction(id: string) {
 export async function submitApplicationAction(data: {
   propertyId: string;
   type: ApplicationType;
+  name?: string;
+  contact?: string;
+  applicantName?: string;
+  applicantEmail?: string;
+  applicantPhone?: string;
   occupation?: string;
   moveInDate?: string;
   occupants?: number;
+  offer?: number;
   offerAmount?: number;
   financingStatus?: 'CASH' | 'MORTGAGE_PRE_APPROVED' | 'INSTALLMENT';
   message: string;
@@ -751,6 +780,29 @@ export async function transitionPropertyStatusAction(
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to update property status.' };
   }
+}
+
+// --- NOTIFICATION ACTIONS (PRD Section 16) ---
+
+export async function getUserNotificationsAction() {
+  const user = await authService.requireUser();
+  return notificationService.getUserNotifications(user);
+}
+
+export async function markNotificationAsReadAction(notificationId: string) {
+  const user = await authService.requireUser();
+  return notificationService.markAsRead(user, notificationId);
+}
+
+export async function markAllNotificationsAsReadAction() {
+  const user = await authService.requireUser();
+  await notificationService.markAllAsRead(user);
+  return { success: true };
+}
+
+export async function getUnreadNotificationCountAction() {
+  const user = await authService.requireUser();
+  return notificationService.getUnreadCount(user);
 }
 
 

@@ -185,13 +185,20 @@ export type InspectionType = 'IN_PERSON' | 'VIDEO';
 
 export interface InspectionRecord {
   completedAt: string;
+  date?: string;
   inspectorName: string;
+  inspector?: string;
   conditionRating: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
+  condition?: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
   utilitiesFunctional: boolean;
+  utilities?: boolean;
   meterReadings?: string;
+  meters?: string;
   observations: string;
   discrepancies?: string;
   photos?: string[];
+  video?: string;
+  videoUrl?: string;
 }
 
 export interface InspectionRequest {
@@ -238,6 +245,12 @@ export interface PropertyEnquiry {
   unreadCountForSeeker: number;
   unreadCountForHost: number;
   messages: EnquiryMessage[];
+
+  // Direct aliases matching PRD Section 16
+  user?: { id: string; name: string; role: UserRole };
+  property?: { id: string; title: string; image?: string };
+  timestamp?: string;
+  message?: string;
 }
 
 export type ApplicationType = 'RENTAL' | 'SALE_OFFER';
@@ -269,6 +282,22 @@ export interface Application {
   createdAt: string;
   updatedAt: string;
   reviewNotes?: string;
+
+  // Direct aliases matching PRD Section 17 specifications
+  name?: string;
+  contact?: string;
+  offer?: number;
+}
+
+export interface AppNotification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'ENQUIRY' | 'INSPECTION' | 'APPLICATION' | 'VERIFICATION' | 'REPORT' | 'SYSTEM';
+  link?: string;
+  read: boolean;
+  createdAt: string;
 }
 
 export type ReportReason =
@@ -328,19 +357,36 @@ export type AuditAction =
   | 'INSPECTION_ACCEPTED'
   | 'INSPECTION_SCHEDULED'
   | 'INSPECTION_COMPLETED'
+  | 'INSPECTION_STATUS_CHANGED'
+  | 'INSPECTION_CANCELLED'
+  | 'INSPECTION_RESCHEDULED'
   | 'ENQUIRY_SENT'
   | 'APPLICATION_SUBMITTED'
   | 'APPLICATION_STATUS_UPDATED'
   | 'REPORT_FILED'
   | 'REPORT_INVESTIGATED'
+  | 'REPORT_DOCUMENTATION_REQUESTED'
   | 'REPORT_RESOLVED'
+  | 'REPORT_DISMISSED'
+  | 'REPORT_SUSPENDED'
+  | 'REPORT_ESCALATED'
+  | 'REPORT_STATUS_CHANGED'
+  | 'NOTIFICATION_SENT'
   | 'MEDIA_UPLOADED'
   | 'MEDIA_DELETED'
   | 'MEDIA_ORDER_UPDATED'
   | 'PROPERTY_STATUS_TRANSITIONED';
 
+export interface AuditActor {
+  id: string;
+  email: string;
+  role: UserRole;
+  ipAddress?: string;
+}
+
 export interface AuditLog {
   id: string;
+  actor: AuditActor;
   actorId: string;
   actorEmail: string;
   actorRole: UserRole;

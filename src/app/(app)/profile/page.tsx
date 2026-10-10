@@ -28,6 +28,8 @@ import {
   Trash2,
   Sparkles,
   ClipboardCheck,
+  Camera,
+  Video,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -68,6 +70,7 @@ import {
   updateInspectionStatusAction,
   updateApplicationStatusAction,
   completeInspectionAction,
+  proposeInspectionScheduleAction,
   getPropertiesAction,
 } from '@/server/actions/prophunta-actions';
 import {
@@ -189,7 +192,46 @@ function ProfileContent() {
   const [meterReadings, setMeterReadings] = useState('');
   const [observations, setObservations] = useState('');
   const [discrepancies, setDiscrepancies] = useState('');
+  const [photoUrlsInput, setPhotoUrlsInput] = useState('');
+  const [videoUrlInput, setVideoUrlInput] = useState('');
   const [isSubmittingRecord, setIsSubmittingRecord] = useState(false);
+
+  // Propose Reschedule Modal state & handlers (PRD Section 15)
+  const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
+  const [rescheduleTarget, setRescheduleTarget] = useState<InspectionRequest | null>(null);
+  const [proposedDate, setProposedDate] = useState('');
+  const [proposedTimeSlot, setProposedTimeSlot] = useState('10:00 AM - 12:00 PM');
+  const [rescheduleNotes, setRescheduleNotes] = useState('');
+  const [isSubmittingReschedule, setIsSubmittingReschedule] = useState(false);
+
+  const openRescheduleModal = (insp: InspectionRequest) => {
+    setRescheduleTarget(insp);
+    setProposedDate(insp.preferredDate || new Date().toISOString().split('T')[0]);
+    setProposedTimeSlot(insp.preferredTimeSlot || '10:00 AM - 12:00 PM');
+    setRescheduleNotes('');
+    setRescheduleDialogOpen(true);
+  };
+
+  const handleProposeSchedule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rescheduleTarget) return;
+    setIsSubmittingReschedule(true);
+    const res = await proposeInspectionScheduleAction(rescheduleTarget.id, proposedDate, proposedTimeSlot, rescheduleNotes);
+    setIsSubmittingReschedule(false);
+    if (res.success) {
+      toast({ title: 'Schedule Proposed', description: 'New inspection schedule proposed and status updated to RESCHEDULED.' });
+      setRescheduleDialogOpen(false);
+      setInspections(prev => prev.map(i => i.id === rescheduleTarget.id ? {
+        ...i,
+        status: 'RESCHEDULED' as InspectionStatus,
+        preferredDate: proposedDate,
+        preferredTimeSlot: proposedTimeSlot,
+        notes: rescheduleNotes || i.notes,
+      } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to propose schedule.' });
+    }
+  };
 
   // View inspection record modal state
   const [viewRecordDialogOpen, setViewRecordDialogOpen] = useState(false);
@@ -204,6 +246,8 @@ function ProfileContent() {
     setMeterReadings('');
     setObservations('');
     setDiscrepancies('');
+    setPhotoUrlsInput('');
+    setVideoUrlInput('');
     setCompleteDialogOpen(true);
   };
 
@@ -211,6 +255,10 @@ function ProfileContent() {
     e.preventDefault();
     if (!targetInspection) return;
     setIsSubmittingRecord(true);
+    const parsedPhotos = photoUrlsInput
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
     const res = await completeInspectionAction(targetInspection.id, {
       inspectorName,
       conditionRating,
@@ -218,6 +266,8 @@ function ProfileContent() {
       meterReadings,
       observations: observations || 'Verified on-site by inspector with seeker present.',
       discrepancies,
+      photos: parsedPhotos,
+      video: videoUrlInput.trim() || undefined,
     });
     setIsSubmittingRecord(false);
     if (res.success) {
@@ -234,6 +284,8 @@ function ProfileContent() {
           meterReadings,
           observations,
           discrepancies,
+          photos: parsedPhotos,
+          video: videoUrlInput.trim() || undefined,
         }
       } : i));
     } else {
@@ -559,6 +611,16 @@ function ProfileContent() {
                           Confirm
                         </Button>
                       )}
+                      {isHost && insp.status !== 'COMPLETED' && insp.status !== 'CANCELLED' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-300 text-xs font-semibold"
+                          onClick={() => openRescheduleModal(insp)}
+                        >
+                          Propose Schedule
+                        </Button>
+                      )}
                       {insp.status !== 'CANCELLED' && insp.status !== 'COMPLETED' && (
                         <Button
                           size="sm"
@@ -880,6 +942,36 @@ function ProfileContent() {
                   onChange={(e) => setDiscrepancies(e.target.value)}
                 />
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t">
+                <div className="space-y-1.5">
+                  <Label htmlFor="photos" className="flex items-center gap-1.5">
+                    <Camera className="h-4 w-4 text-slate-500" />
+                    Inspection Photo URLs
+                  </Label>
+                  <Input
+                    id="photos"
+                    placeholder="https://... (comma-separated)"
+                    value={photoUrlsInput}
+                    onChange={(e) => setPhotoUrlsInput(e.target.value)}
+                  />
+                  <p className="text-[11px] text-muted-foreground">Attach on-site evidence photos.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="video" className="flex items-center gap-1.5">
+                    <Video className="h-4 w-4 text-slate-500" />
+                    Video Walkthrough URL
+                  </Label>
+                  <Input
+                    id="video"
+                    placeholder="https://... (walkthrough/stream link)"
+                    value={videoUrlInput}
+                    onChange={(e) => setVideoUrlInput(e.target.value)}
+                  />
+                  <p className="text-[11px] text-muted-foreground">Optional timestamped video walkthrough.</p>
+                </div>
+              </div>
             </div>
 
             <DialogFooter className="gap-2">
@@ -917,9 +1009,9 @@ function ProfileContent() {
             <div className="space-y-4 py-3 text-sm">
               <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border rounded-lg">
                 <div>
-                  <span className="text-xs text-muted-foreground block">Completed Date</span>
+                  <span className="text-xs text-muted-foreground block">Inspection Date</span>
                   <span className="font-semibold text-slate-800">
-                    {new Date(viewingRecord.completedAt).toLocaleDateString('en-GB', {
+                    {new Date(viewingRecord.date || viewingRecord.completedAt).toLocaleDateString('en-GB', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',
@@ -930,27 +1022,27 @@ function ProfileContent() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground block">Attending Inspector</span>
-                  <span className="font-semibold text-slate-800">{viewingRecord.inspectorName}</span>
+                  <span className="font-semibold text-slate-800">{viewingRecord.inspector || viewingRecord.inspectorName}</span>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground block">Condition Rating</span>
                   <Badge className="bg-emerald-600 text-white text-xs mt-0.5">
-                    {viewingRecord.conditionRating}
+                    {viewingRecord.condition || viewingRecord.conditionRating}
                   </Badge>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground block">Utilities Status</span>
                   <span className="font-semibold text-slate-800">
-                    {viewingRecord.utilitiesFunctional ? 'Functional & Verified' : 'Issues Logged'}
+                    {(viewingRecord.utilities ?? viewingRecord.utilitiesFunctional) ? 'Functional & Verified' : 'Issues Logged'}
                   </span>
                 </div>
               </div>
 
-              {viewingRecord.meterReadings && (
+              {(viewingRecord.meters || viewingRecord.meterReadings) && (
                 <div className="space-y-1">
                   <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Meter Readings</span>
                   <p className="p-2.5 bg-slate-100 rounded text-slate-800 font-mono text-xs">
-                    {viewingRecord.meterReadings}
+                    {viewingRecord.meters || viewingRecord.meterReadings}
                   </p>
                 </div>
               )}
@@ -972,12 +1064,124 @@ function ProfileContent() {
                   </p>
                 </div>
               )}
+
+              {viewingRecord.photos && viewingRecord.photos.length > 0 && (
+                <div className="space-y-1.5 pt-2 border-t">
+                  <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Camera className="h-3.5 w-3.5 text-blue-600" /> Inspection Photos ({viewingRecord.photos.length})
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {viewingRecord.photos.map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative h-20 rounded-md overflow-hidden border hover:opacity-80 transition bg-slate-100 block"
+                      >
+                        <Image
+                          src={url}
+                          alt={`Inspection photo ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {viewingRecord.video && (
+                <div className="space-y-1 pt-2 border-t">
+                  <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Video className="h-3.5 w-3.5 text-purple-600" /> Walkthrough Video
+                  </span>
+                  <a
+                    href={viewingRecord.video}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-3 py-1.5 rounded border border-blue-100"
+                  >
+                    <Video className="h-3.5 w-3.5" /> Watch Recorded Video Walkthrough <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              )}
             </div>
           )}
 
           <DialogFooter>
             <Button onClick={() => setViewRecordDialogOpen(false)}>Close Report</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Propose Reschedule Schedule (PRD Section 15) */}
+      <Dialog open={rescheduleDialogOpen} onOpenChange={setRescheduleDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg text-amber-800">
+              <Clock className="h-5 w-5 text-amber-600" />
+              Propose New Inspection Schedule
+            </DialogTitle>
+            <DialogDescription>
+              {rescheduleTarget?.propertyTitle || 'Property Inspection'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleProposeSchedule} className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="proposedDate">Proposed Inspection Date</Label>
+              <Input
+                id="proposedDate"
+                type="date"
+                required
+                value={proposedDate}
+                onChange={(e) => setProposedDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="proposedTimeSlot">Proposed Time Slot</Label>
+              <Select value={proposedTimeSlot} onValueChange={setProposedTimeSlot}>
+                <SelectTrigger id="proposedTimeSlot">
+                  <SelectValue placeholder="Select preferred window" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="09:00 AM - 11:00 AM">Morning (09:00 AM - 11:00 AM)</SelectItem>
+                  <SelectItem value="11:00 AM - 01:00 PM">Midday (11:00 AM - 01:00 PM)</SelectItem>
+                  <SelectItem value="01:00 PM - 03:00 PM">Afternoon (01:00 PM - 03:00 PM)</SelectItem>
+                  <SelectItem value="03:00 PM - 05:00 PM">Late Afternoon (03:00 PM - 05:00 PM)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="rescheduleNotes">Reason / Notes for Seeker</Label>
+              <Textarea
+                id="rescheduleNotes"
+                rows={3}
+                placeholder="Explain why the reschedule is proposed and coordinate availability..."
+                value={rescheduleNotes}
+                onChange={(e) => setRescheduleNotes(e.target.value)}
+              />
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={() => setRescheduleDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmittingReschedule} className="bg-amber-600 hover:bg-amber-700 text-white">
+                {isSubmittingReschedule ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Proposing...
+                  </>
+                ) : (
+                  'Confirm & Propose Schedule'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

@@ -2,17 +2,40 @@ import { User, PropertyEnquiry } from '@/types/prophunta';
 import { enquiryRepository } from '../repositories/enquiry-repository';
 import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { notificationService } from './notification-service';
 
 export class EnquiryService {
+  private attachAliases(enquiry: PropertyEnquiry): PropertyEnquiry {
+    return {
+      ...enquiry,
+      user: {
+        id: enquiry.seekerId,
+        name: enquiry.seekerName,
+        role: 'SEEKER',
+      },
+      property: {
+        id: enquiry.propertyId,
+        title: enquiry.propertyTitle,
+        image: enquiry.propertyImage,
+      },
+      timestamp: enquiry.lastMessageAt,
+      message: enquiry.lastMessageText,
+    };
+  }
+
   async getEnquiry(id: string): Promise<PropertyEnquiry | null> {
-    return enquiryRepository.findById(id);
+    const enquiry = await enquiryRepository.findById(id);
+    return enquiry ? this.attachAliases(enquiry) : null;
   }
 
   async getUserEnquiries(user: User): Promise<PropertyEnquiry[]> {
+    let list: PropertyEnquiry[];
     if (user.role === 'ADMIN') {
-      return enquiryRepository.listAll();
+      list = await enquiryRepository.listAll();
+    } else {
+      list = await enquiryRepository.findByUser(user.id);
     }
-    return enquiryRepository.findByUser(user.id);
+    return list.map((e) => this.attachAliases(e));
   }
 
   async sendEnquiry(user: User, propertyId: string, initialMessage: string): Promise<PropertyEnquiry> {
@@ -29,7 +52,17 @@ export class EnquiryService {
         senderRole: user.role,
         text: initialMessage,
       });
-      return (await enquiryRepository.findById(existing.id))!;
+
+      // Send notification to host
+      await notificationService.createNotification(hostId, {
+        title: 'New Property Message',
+        message: `${user.name} sent a message regarding "${property.title}": "${initialMessage.slice(0, 60)}..."`,
+        type: 'ENQUIRY',
+        link: `/messages/${existing.id}`,
+      });
+
+      const updated = await enquiryRepository.findById(existing.id);
+      return this.attachAliases(updated!);
     }
 
     const now = new Date().toISOString();
@@ -66,10 +99,18 @@ export class EnquiryService {
       objectType: 'ENQUIRY',
       objectId: newEnquiry.id,
       result: 'SUCCESS',
-      metadata: { propertyId: property.id },
+      metadata: { propertyId: property.id, hostId, preview: initialMessage.slice(0, 60) },
     });
 
-    return newEnquiry;
+    // Notify Host of initial enquiry
+    await notificationService.createNotification(hostId, {
+      title: 'New Property Enquiry',
+      message: `${user.name} enquired about "${property.title}": "${initialMessage.slice(0, 75)}"`,
+      type: 'ENQUIRY',
+      link: `/messages/${newEnquiry.id}`,
+    });
+
+    return this.attachAliases(newEnquiry);
   }
 
   async reply(user: User, enquiryId: string, text: string): Promise<PropertyEnquiry> {
@@ -81,7 +122,29 @@ export class EnquiryService {
     });
 
     if (!updated) throw new Error('Enquiry not found');
-    return updated;
+
+    const recipientId = user.id === updated.seekerId ? updated.hostId : updated.seekerId;
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'ENQUIRY_SENT',
+      objectType: 'ENQUIRY',
+      objectId: enquiryId,
+      result: 'SUCCESS',
+      metadata: { propertyId: updated.propertyId, recipientId, preview: text.slice(0, 60) },
+    });
+
+    // Send notification to recipient
+    await notificationService.createNotification(recipientId, {
+      title: `Message from ${user.name}`,
+      message: `Re: "${updated.propertyTitle}": "${text.slice(0, 75)}"`,
+      type: 'ENQUIRY',
+      link: `/messages/${updated.id}`,
+    });
+
+    return this.attachAliases(updated);
   }
 
   async markAsRead(user: User, enquiryId: string): Promise<void> {

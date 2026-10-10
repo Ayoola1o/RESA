@@ -158,6 +158,14 @@ export class VerificationService {
 
     return res;
   }
+
+  async approveProperty(adminUser: User, propertyId: string, notes: string): Promise<PropertyVerification> {
+    return this.approveVerification(adminUser, propertyId, notes);
+  }
+
+  async rejectProperty(adminUser: User, propertyId: string, notes: string): Promise<PropertyVerification> {
+    return this.rejectVerification(adminUser, propertyId, notes);
+  }
 }
 
 export const verificationService = new VerificationService();

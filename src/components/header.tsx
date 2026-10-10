@@ -29,17 +29,30 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useUserRole } from '@/context/UserRoleContext';
-import { UserRole } from '@/types/prophunta';
+import { UserRole, AppNotification } from '@/types/prophunta';
 import { getNavItemsForRole } from './app-sidebar';
 import AiRecommendations from './ai-recommendations';
 import Logo from './logo';
-import { logoutAction } from '@/server/actions/prophunta-actions';
+import {
+  logoutAction,
+  getUserNotificationsAction,
+  markNotificationAsReadAction,
+  markAllNotificationsAsReadAction,
+} from '@/server/actions/prophunta-actions';
 
 export default function Header() {
   const router = useRouter();
   const { userRole, setUserRole, currentUser } = useUserRole();
   const [searchQuery, setSearchQuery] = useState('');
-  const [hasUnread, setHasUnread] = useState(true);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+
+  useEffect(() => {
+    getUserNotificationsAction().then((items) => {
+      if (items) setNotifications(items);
+    }).catch(() => {});
+  }, [currentUser?.id]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const mainNavItems = getNavItemsForRole(userRole);
 
@@ -174,10 +187,12 @@ export default function Header() {
               className="relative h-10 w-10 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             >
               <Bell className="h-4.5 w-4.5" />
-              {hasUnread && (
-                <span className="absolute top-2 right-2 flex h-2 w-2">
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600 text-[9px] font-bold text-white items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
                 </span>
               )}
               <span className="sr-only">Notifications</span>
@@ -186,38 +201,75 @@ export default function Header() {
           <DropdownMenuContent align="end" className="w-80 rounded-2xl p-2 shadow-xl border-slate-200">
             <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Verification Alerts
+                Activity & Alerts ({notifications.length})
               </span>
-              <button
-                onClick={() => setHasUnread(false)}
-                className="text-[11px] text-blue-600 hover:underline font-medium"
-              >
-                Mark all read
-              </button>
+              {unreadCount > 0 && (
+                <button
+                  onClick={async () => {
+                    await markAllNotificationsAsReadAction();
+                    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+                  }}
+                  className="text-[11px] text-blue-600 hover:underline font-medium"
+                >
+                  Mark all read
+                </button>
+              )}
             </div>
-            <div className="py-1 divide-y divide-slate-100">
-              <div className="px-3 py-2.5 hover:bg-slate-50 rounded-lg cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <p className="text-xs font-semibold text-slate-800">
-                    Inspection Approved
-                  </p>
+            <div className="py-1 divide-y divide-slate-100 max-h-80 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <div className="py-6 text-center text-xs text-slate-400">
+                  No notifications yet.
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Your inspection for Admiralty Way Villa is scheduled for Oct 12.
-                </p>
-              </div>
-              <div className="px-3 py-2.5 hover:bg-slate-50 rounded-lg cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-blue-500" />
-                  <p className="text-xs font-semibold text-slate-800">
-                    Title Documents Verified
-                  </p>
-                </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Bourdillon Road 3-Bed flat documents have been verified by Lagos Land Registry.
-                </p>
-              </div>
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={async () => {
+                      if (!n.read) {
+                        await markNotificationAsReadAction(n.id);
+                        setNotifications((prev) =>
+                          prev.map((item) => (item.id === n.id ? { ...item, read: true } : item))
+                        );
+                      }
+                      if (n.link) router.push(n.link);
+                    }}
+                    className={cn(
+                      'px-3 py-2.5 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors',
+                      !n.read && 'bg-blue-50/50'
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'h-2 w-2 rounded-full shrink-0',
+                          n.type === 'INSPECTION'
+                            ? 'bg-emerald-500'
+                            : n.type === 'ENQUIRY'
+                            ? 'bg-blue-500'
+                            : n.type === 'REPORT'
+                            ? 'bg-rose-500'
+                            : 'bg-amber-500'
+                        )}
+                      />
+                      <p className="text-xs font-semibold text-slate-800 truncate">{n.title}</p>
+                      {!n.read && (
+                        <span className="ml-auto text-[9px] font-bold text-blue-600 bg-blue-100 px-1 rounded">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
+                    <span className="text-[10px] text-slate-400 mt-1 block">
+                      {new Date(n.createdAt).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
+                ))
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>

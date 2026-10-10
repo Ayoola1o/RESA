@@ -9,7 +9,8 @@ import {
   PropertyEnquiry,
   Application,
   ListingReport,
-  AuditLog
+  AuditLog,
+  AppNotification
 } from '@/types/prophunta';
 import {
   SEED_USERS,
@@ -31,6 +32,7 @@ export interface DatabaseSchema {
   applications: Application[];
   reports: ListingReport[];
   auditLogs: AuditLog[];
+  notifications: AppNotification[];
 }
 
 // In-memory cache representing the database state
@@ -58,7 +60,29 @@ function getDefaultDatabase(): DatabaseSchema {
     enquiries: [...SEED_ENQUIRIES],
     applications: [...SEED_APPLICATIONS],
     reports: [...SEED_REPORTS],
-    auditLogs: [...SEED_AUDIT_LOGS]
+    auditLogs: [...SEED_AUDIT_LOGS],
+    notifications: [
+      {
+        id: 'notif-1',
+        userId: 'user_seeker_1',
+        title: 'Inspection Scheduled',
+        message: 'Your inspection for Admiralty Way Villa is scheduled for Oct 12.',
+        type: 'INSPECTION',
+        link: '/profile?tab=inspections',
+        read: false,
+        createdAt: '2026-10-06T10:00:00Z',
+      },
+      {
+        id: 'notif-2',
+        userId: 'user_owner_1',
+        title: 'New Property Enquiry',
+        message: 'Chidi Okonkwo sent a verified enquiry for "The Admiralty Waterfront Villa".',
+        type: 'ENQUIRY',
+        link: '/messages',
+        read: false,
+        createdAt: '2026-10-06T12:00:00Z',
+      },
+    ],
   };
 }
 
@@ -72,6 +96,9 @@ export function getDb(): DatabaseSchema {
       const raw = fs.readFileSync(DATA_FILE, 'utf-8');
       dbCache = JSON.parse(raw);
       if (dbCache && dbCache.users && dbCache.properties) {
+        if (!dbCache.notifications) {
+          dbCache.notifications = [];
+        }
         return dbCache;
       }
     }

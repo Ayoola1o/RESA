@@ -94,6 +94,8 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
   const [tourType, setTourType] = useState<'IN_PERSON' | 'VIDEO'>('IN_PERSON');
   const [tourNotes, setTourNotes] = useState('');
 
+  const [applicantName, setApplicantName] = useState(currentUser?.name || '');
+  const [applicantContact, setApplicantContact] = useState(currentUser?.phone || currentUser?.email || '');
   const [offerAmount, setOfferAmount] = useState('');
   const [financingStatus, setFinancingStatus] = useState<'CASH' | 'MORTGAGE_PRE_APPROVED' | 'INSTALLMENT'>('CASH');
   const [occupation, setOccupation] = useState('');
@@ -152,10 +154,13 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
     const res = await submitApplicationAction({
       propertyId: property.id,
       type: isRental ? 'RENTAL' : 'SALE_OFFER',
+      name: applicantName.trim() || currentUser?.name || 'Verified Seeker',
+      contact: applicantContact.trim() || currentUser?.phone || currentUser?.email || 'N/A',
       occupation: isRental ? occupation : undefined,
       moveInDate: isRental ? moveInDate : undefined,
       occupants: isRental ? Number(occupants) : undefined,
       offerAmount: !isRental && offerAmount ? Number(offerAmount) : undefined,
+      offer: !isRental && offerAmount ? Number(offerAmount) : undefined,
       financingStatus: !isRental ? financingStatus : undefined,
       message: applicationMessage || (isRental ? 'Rental Application' : 'Formal Purchase Offer'),
     });
@@ -914,6 +919,32 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </DialogHeader>
 
           <form onSubmit={handleSubmitOfferOrApplication} className="space-y-3.5 pt-2">
+            {/* Applicant Identity & Contact (PRD Section 17) */}
+            <div className="grid grid-cols-2 gap-3 pb-2 border-b">
+              <div className="space-y-1.5">
+                <Label htmlFor="applicantName" className="text-xs font-bold">Applicant Name</Label>
+                <Input
+                  id="applicantName"
+                  placeholder="Your full legal name"
+                  value={applicantName}
+                  onChange={(e) => setApplicantName(e.target.value)}
+                  required
+                  className="rounded-xl h-10"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="applicantContact" className="text-xs font-bold">Contact (Phone / Email)</Label>
+                <Input
+                  id="applicantContact"
+                  placeholder="e.g. +234 800... or email"
+                  value={applicantContact}
+                  onChange={(e) => setApplicantContact(e.target.value)}
+                  required
+                  className="rounded-xl h-10"
+                />
+              </div>
+            </div>
+
             {property.listingType === 'RENT' ? (
               <>
                 <div className="space-y-1.5">
@@ -999,6 +1030,10 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                 className="rounded-xl resize-none text-xs"
               />
             </div>
+
+            <p className="text-[11px] text-muted-foreground bg-slate-50 p-2.5 rounded-lg border">
+              * Note: Expression of Interest logs your direct contact and proposed terms with the property representative. Final binding legal contracts and property conveyancing are executed offline.
+            </p>
 
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setIsOfferDialogOpen(false)}>

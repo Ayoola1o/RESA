@@ -523,6 +523,7 @@ export const SEED_REPORTS: ListingReport[] = [
 export const SEED_AUDIT_LOGS: AuditLog[] = [
   {
     id: 'aud-1',
+    actor: { id: 'user_admin_1', email: 'admin@prophunta.ai', role: 'ADMIN' },
     actorId: 'user_admin_1',
     actorEmail: 'admin@prophunta.ai',
     actorRole: 'ADMIN',
@@ -535,6 +536,7 @@ export const SEED_AUDIT_LOGS: AuditLog[] = [
   },
   {
     id: 'aud-2',
+    actor: { id: 'user_owner_1', email: 'owner@prophunta.ai', role: 'OWNER' },
     actorId: 'user_owner_1',
     actorEmail: 'owner@prophunta.ai',
     actorRole: 'OWNER',
@@ -546,6 +548,7 @@ export const SEED_AUDIT_LOGS: AuditLog[] = [
   },
   {
     id: 'aud-3',
+    actor: { id: 'user_seeker_1', email: 'seeker@prophunta.ai', role: 'SEEKER' },
     actorId: 'user_seeker_1',
     actorEmail: 'seeker@prophunta.ai',
     actorRole: 'SEEKER',

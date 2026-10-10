@@ -189,6 +189,41 @@ export class PropertyService {
     return updated!;
   }
 
+  async updateProperty(
+    user: User,
+    propertyId: string,
+    data: Partial<Property>
+  ): Promise<Property> {
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) throw new Error('Property not found');
+
+    const isOwner = property.ownerId === user.id;
+    const isAgent = property.authorizedAgentId === user.id;
+    const isAdmin = user.role === 'ADMIN';
+
+    if (!isOwner && !isAgent && !isAdmin) {
+      throw new Error('Unauthorized to edit this property');
+    }
+
+    const updated = await propertyRepository.update(propertyId, {
+      ...data,
+      updatedAt: new Date().toISOString(),
+    });
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'PROPERTY_EDITED',
+      objectType: 'PROPERTY',
+      objectId: propertyId,
+      result: 'SUCCESS',
+      metadata: { title: updated?.title, changes: Object.keys(data) },
+    });
+
+    return updated!;
+  }
+
   async addDocument(
     user: User,
     propertyId: string,
@@ -297,7 +332,7 @@ export class PropertyService {
     return updated!;
   }
 
-  async restoreProperty(adminUser: User, propertyId: string): Promise<Property> {
+  async restoreProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
     if (adminUser.role !== 'ADMIN') {
       throw new Error('Only Administrators can restore listings');
     }
@@ -317,10 +352,18 @@ export class PropertyService {
       objectType: 'PROPERTY',
       objectId: propertyId,
       result: 'SUCCESS',
-      metadata: { title: prop.title },
+      metadata: { title: prop.title, reason: reason || 'Restored by administrator.' },
     });
 
     return updated!;
+  }
+
+  async suspendListing(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
+    return this.suspendProperty(adminUser, propertyId, reason);
+  }
+
+  async restoreListing(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
+    return this.restoreProperty(adminUser, propertyId, reason);
   }
 
   /**
@@ -397,7 +440,7 @@ export class PropertyService {
       actorId: user.id,
       actorEmail: user.email,
       actorRole: user.role,
-      action: 'PROPERTY_STATUS_TRANSITIONED',
+      action: newStatus === 'SUBMITTED' ? 'PROPERTY_SUBMITTED' : 'PROPERTY_STATUS_TRANSITIONED',
       objectType: 'PROPERTY',
       objectId: propertyId,
       result: 'SUCCESS',
