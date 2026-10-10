@@ -7,6 +7,10 @@ export class PropertyService {
     return propertyRepository.findById(id);
   }
 
+  async getPropertyById(id: string): Promise<Property | null> {
+    return propertyRepository.findById(id);
+  }
+
   async getAllProperties(): Promise<Property[]> {
     return propertyRepository.listAll();
   }
@@ -45,11 +49,35 @@ export class PropertyService {
       longitude?: number;
       intendedUse?: 'Residential' | 'Commercial' | 'Mixed';
       authorizedAgentId?: string;
+      ownerId?: string;
+      relationshipId?: string;
+      isDirectListing?: boolean;
     }
   ): Promise<Property> {
     // Role check: Only OWNER, AGENT, or ADMIN can create listings
     if (!['OWNER', 'AGENT', 'ADMIN'].includes(user.role)) {
       throw new Error('Only Property Owners and Verified Agents can create property listings');
+    }
+
+    let ownerId = user.id;
+    let authorizedAgentId = data.authorizedAgentId;
+    let relationshipId = data.relationshipId;
+    const isDirectListing = data.isDirectListing ?? (user.role === 'OWNER' || !data.ownerId);
+
+    if (user.role === 'AGENT') {
+      authorizedAgentId = user.id;
+      if (!isDirectListing && data.ownerId && data.ownerId !== user.id) {
+        // Enforce active relationship
+        const { relationshipRepository } = await import('../repositories/relationship-repository');
+        const activeRel = await relationshipRepository.findActiveRelationship(data.ownerId, user.id);
+        if (!activeRel) {
+          throw new Error('Cannot create listing on behalf of owner without an active representation mandate.');
+        }
+        ownerId = data.ownerId;
+        relationshipId = activeRel?.id;
+      } else {
+        ownerId = user.id; // Direct agent listing
+      }
     }
 
     const media: PropertyMedia[] = (data.images.length > 0 ? data.images : [
@@ -67,8 +95,10 @@ export class PropertyService {
     }));
 
     const property = await propertyRepository.create({
-      ownerId: user.role === 'OWNER' ? user.id : 'user_owner_1',
-      authorizedAgentId: user.role === 'AGENT' ? user.id : data.authorizedAgentId,
+      ownerId,
+      authorizedAgentId,
+      relationshipId,
+      isDirectListing,
       title: data.title,
       propertyType: data.propertyType,
       listingType: data.listingType,
@@ -273,6 +303,11 @@ export class PropertyService {
       throw new Error('Unauthorized to submit this property');
     }
 
+    // Security: Require identity KYC verification before submitting listing for compliance audit
+    if (user.role !== 'ADMIN' && user.verificationStatus !== 'VERIFIED') {
+      throw new Error('Identity KYC verification required before submitting listings for compliance audit.');
+    }
+
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'SUBMITTED',
       verification: {
@@ -412,9 +447,16 @@ export class PropertyService {
       }
     }
 
+    // Security: VERIFIED status can ONLY be awarded through the formal audit approval workflow
+    if (newStatus === 'VERIFIED') {
+      throw new Error(
+        'Cannot transition to VERIFIED directly. Listings must pass the formal compliance checklist and document audit.'
+      );
+    }
+
     // Determine availabilityStatus sync
     let availabilityStatus = property.availabilityStatus;
-    if (newStatus === 'ACTIVE' || newStatus === 'VERIFIED') {
+    if (newStatus === 'ACTIVE') {
       availabilityStatus = 'AVAILABLE';
     } else if (newStatus === 'RESERVED') {
       availabilityStatus = 'UNDER_OFFER';
@@ -430,7 +472,7 @@ export class PropertyService {
       updatedAt: new Date().toISOString(),
     };
 
-    if ((newStatus === 'ACTIVE' || newStatus === 'VERIFIED') && !property.publishedAt) {
+    if (newStatus === 'ACTIVE' && !property.publishedAt) {
       updates.publishedAt = new Date().toISOString();
     }
 
@@ -452,6 +494,63 @@ export class PropertyService {
     });
 
     return updated!;
+  }
+
+  /**
+   * Reports a location or cadastral coordinates discrepancy for a property
+   */
+  async reportLocationDiscrepancy(
+    reporter: User,
+    propertyId: string,
+    data: {
+      reportedLatitude?: number;
+      reportedLongitude?: number;
+      discrepancyNotes: string;
+    }
+  ): Promise<{ property: Property; report: import('@/types/prophunta').ListingReport }> {
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) throw new Error('Property not found.');
+
+    const { reportRepository } = await import('../repositories/report-repository');
+    const { verificationRepository } = await import('../repositories/verification-repository');
+
+    // Create Trust & Safety incident report
+    const report = await reportRepository.create({
+      propertyId: property.id,
+      propertyTitle: property.title,
+      reporterId: reporter.id,
+      reporterName: reporter.name,
+      reason: 'Location Discrepancy',
+      description: `[Location Discrepancy Flag] Reported coordinates: [${data.reportedLatitude ?? 'N/A'}, ${data.reportedLongitude ?? 'N/A'}]. Existing: [${property.latitude ?? 'N/A'}, ${property.longitude ?? 'N/A'}]. Details: ${data.discrepancyNotes.trim()}`,
+    });
+
+    // Flag the property's verification location check for review
+    const currentVerification = await verificationRepository.findByPropertyId(property.id);
+    if (currentVerification) {
+      await verificationRepository.upsert({
+        ...currentVerification,
+        locationStatus: 'CHANGES_REQUIRED',
+        reviewNotes: `Location discrepancy flagged by ${reporter.name}: ${data.discrepancyNotes.trim()}`,
+      });
+    }
+
+    await auditRepository.create({
+      actorId: reporter.id,
+      actorEmail: reporter.email,
+      actorRole: reporter.role,
+      action: 'LOCATION_DISCREPANCY_REPORTED',
+      objectType: 'PROPERTY',
+      objectId: property.id,
+      result: 'SUCCESS',
+      metadata: {
+        reportedLatitude: data.reportedLatitude,
+        reportedLongitude: data.reportedLongitude,
+        discrepancyNotes: data.discrepancyNotes,
+        reportId: report.id,
+      },
+    });
+
+    return { property, report };
   }
 }
 

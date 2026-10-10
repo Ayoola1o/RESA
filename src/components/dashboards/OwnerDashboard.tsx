@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -28,6 +28,7 @@ import {
   Edit,
   ArrowRight,
   Filter,
+  History,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,6 +62,7 @@ import {
   updateInspectionStatusAction,
   updateApplicationStatusAction,
   transitionPropertyStatusAction,
+  getAgentActivityForOwnerAction,
 } from '@/server/actions/prophunta-actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -88,6 +90,21 @@ export default function OwnerDashboard({
 
   // Verification detail modal
   const [selectedVerificationProp, setSelectedVerificationProp] = useState<Property | null>(null);
+
+  // Agent activity history
+  const [agentActivities, setAgentActivities] = useState<any[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    getAgentActivityForOwnerAction().then((res) => {
+      if (mounted && res.success && res.activities) {
+        setAgentActivities(res.activities.activities || []);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Status transitions
   const handleTransitionStatus = async (propertyId: string, newStatus: ListingStatus) => {
@@ -655,6 +672,75 @@ export default function OwnerDashboard({
                     <span>{new Date(enq.lastMessageAt).toLocaleDateString()}</span>
                   </div>
                 </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 6. Authorized Agent Activity & Property-Management History */}
+      <Card className="border border-slate-200/90 shadow-xs">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <History className="h-4 w-4 text-emerald-600" />
+                Authorized Agent Activity & Property-Management History
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-500">
+                Audited timeline of actions performed by your authorized agents, mandate status, and property mutations.
+              </CardDescription>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {agentActivities.length} {agentActivities.length === 1 ? 'event' : 'events'} logged
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {agentActivities.length === 0 ? (
+            <div className="text-center py-8 text-xs text-slate-500">
+              <Users className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+              <p className="font-semibold text-slate-700">No agent actions recorded yet</p>
+              <p className="mt-1 max-w-sm mx-auto text-slate-400">
+                Mandates granted to verified agents, inspection schedules, and property mutations will appear here with full immutable audit timestamps.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {agentActivities.map((act) => (
+                <div
+                  key={act.id}
+                  className="flex items-start justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-900">{act.title}</span>
+                      <Badge
+                        variant="secondary"
+                        className={`text-[10px] py-0 px-1.5 h-4 ${
+                          act.type === 'RELATIONSHIP_UPDATE'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : act.type === 'INSPECTION'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : act.type === 'ENQUIRY'
+                            ? 'bg-purple-50 text-purple-700 border-purple-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}
+                      >
+                        {act.type}
+                      </Badge>
+                    </div>
+                    <p className="text-slate-600">{act.description}</p>
+                  </div>
+                  <span className="text-[11px] text-slate-400 whitespace-nowrap shrink-0">
+                    {new Date(act.timestamp).toLocaleString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
               ))}
             </div>
           )}

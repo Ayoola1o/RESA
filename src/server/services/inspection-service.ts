@@ -94,8 +94,9 @@ export class InspectionService {
     const inspection = await inspectionRepository.findById(inspectionId);
     if (!inspection) throw new Error('Inspection request not found');
 
-    // Host, Admin, or Seeker (if cancelling) can update status
-    const isHostOrAdmin = inspection.hostId === user.id || user.role === 'ADMIN';
+    const property = await propertyRepository.findById(inspection.propertyId);
+    const isOwnerOrAgent = property ? property.ownerId === user.id || property.authorizedAgentId === user.id : false;
+    const isHostOrAdmin = inspection.hostId === user.id || isOwnerOrAgent || user.role === 'ADMIN';
     const isSeekerCancelling = status === 'CANCELLED' && inspection.seekerId === user.id;
 
     if (!isHostOrAdmin && !isSeekerCancelling) {
@@ -163,37 +164,62 @@ export class InspectionService {
   async completeInspection(
     user: User,
     inspectionId: string,
-    record: Partial<InspectionRecord>
+    record: Partial<InspectionRecord> & {
+      method?: import('@/types/prophunta').InspectionMethod;
+      participants?: import('@/types/prophunta').InspectionParticipant[];
+    }
   ): Promise<InspectionRequest> {
     const inspection = await inspectionRepository.findById(inspectionId);
     if (!inspection) throw new Error('Inspection request not found');
 
-    if (inspection.hostId !== user.id && user.role !== 'ADMIN') {
+    const property = await propertyRepository.findById(inspection.propertyId);
+    const isOwnerOrAgent = property ? property.ownerId === user.id || property.authorizedAgentId === user.id : false;
+    if (inspection.hostId !== user.id && !isOwnerOrAgent && user.role !== 'ADMIN') {
       throw new Error('Unauthorized to complete this inspection');
     }
 
     const now = new Date().toISOString();
+    const method: import('@/types/prophunta').InspectionMethod =
+      record.method ||
+      (inspection.type === 'VIDEO' ? 'LIVE_VIDEO_WALKTHROUGH' : 'IN_PERSON_FIELD_OFFICER');
+
+    // Rule: Host-submitted video is NOT proof of an independently verified physical inspection
+    const isIndependentInspection =
+      user.role === 'ADMIN' && method === 'IN_PERSON_FIELD_OFFICER';
+
+    const participants: import('@/types/prophunta').InspectionParticipant[] = record.participants || [
+      { userId: user.id, name: user.name, role: user.role },
+      { userId: inspection.seekerId, name: inspection.seekerName, role: 'SEEKER' },
+    ];
+
     const fullRecord: InspectionRecord = {
       completedAt: now,
       date: record.date || now,
       inspectorName: record.inspectorName || record.inspector || user.name,
       inspector: record.inspector || record.inspectorName || user.name,
+      inspectorRole: user.role,
+      method,
+      isIndependentInspection,
       conditionRating: record.conditionRating || record.condition || 'GOOD',
       condition: record.condition || record.conditionRating || 'GOOD',
       utilitiesFunctional: record.utilitiesFunctional ?? record.utilities ?? true,
       utilities: record.utilities ?? record.utilitiesFunctional ?? true,
       meterReadings: record.meterReadings || record.meters || undefined,
       meters: record.meters || record.meterReadings || undefined,
-      observations: record.observations || 'Verified on-site by field inspection officer.',
+      observations: record.observations || 'Verified observations logged by inspector.',
       discrepancies: record.discrepancies || undefined,
       photos: record.photos || [],
       video: record.video || record.videoUrl || undefined,
       videoUrl: record.videoUrl || record.video || undefined,
+      escalationStatus: record.discrepancies ? 'DISCREPANCY_FLAGGED' : 'NONE',
     };
 
     const updated = await inspectionRepository.update(inspectionId, {
       status: 'COMPLETED',
+      method,
+      participants,
       inspectionRecord: fullRecord,
+      escalationStatus: fullRecord.escalationStatus,
     });
 
     await auditRepository.create({
@@ -204,10 +230,99 @@ export class InspectionService {
       objectType: 'INSPECTION',
       objectId: inspectionId,
       result: 'SUCCESS',
-      metadata: { rating: fullRecord.conditionRating, date: fullRecord.date },
+      metadata: {
+        rating: fullRecord.conditionRating,
+        method,
+        isIndependentInspection,
+        participantsCount: participants.length,
+        discrepancies: fullRecord.discrepancies,
+      },
     });
 
     return updated!;
+  }
+
+  /**
+   * Escalation path for suspicious or mismatched inspection evidence
+   */
+  async escalateInspection(
+    user: User,
+    inspectionId: string,
+    reason: string,
+    discrepancyDetails: string
+  ): Promise<{ inspection: InspectionRequest; report: import('@/types/prophunta').ListingReport }> {
+    const inspection = await inspectionRepository.findById(inspectionId);
+    if (!inspection) throw new Error('Inspection request not found');
+
+    // Only seeker of the inspection, host, or admin can escalate
+    if (inspection.seekerId !== user.id && inspection.hostId !== user.id && user.role !== 'ADMIN') {
+      throw new Error('Unauthorized to file an escalation for this inspection.');
+    }
+
+    const updated = await inspectionRepository.update(inspectionId, {
+      escalationStatus: 'ESCALATED_FRAUD_INVESTIGATION',
+      escalationNotes: `${reason}: ${discrepancyDetails}`,
+    });
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'INSPECTION_ESCALATED',
+      objectType: 'INSPECTION',
+      objectId: inspectionId,
+      result: 'SUCCESS',
+      metadata: {
+        propertyId: inspection.propertyId,
+        reason,
+        discrepancyDetails,
+      },
+    });
+
+    // Auto-create trust & safety report for admin investigation
+    const { reportRepository } = await import('../repositories/report-repository');
+    const report = await reportRepository.create({
+      propertyId: inspection.propertyId,
+      propertyTitle: inspection.propertyTitle,
+      reporterId: user.id,
+      reporterName: user.name,
+      reason: 'Misleading Price/Photos',
+      description: `[Inspection Escalation #${inspectionId}] Discrepancy reported during walkthrough: ${reason}. Details: ${discrepancyDetails}`,
+    });
+
+    return { inspection: updated!, report };
+  }
+
+  /**
+   * Resolve an escalated inspection after compliance investigation
+   */
+  async resolveEscalation(
+    adminUser: User,
+    inspectionId: string,
+    resolutionNotes: string
+  ): Promise<InspectionRequest> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only administrators can resolve inspection escalations.');
+    }
+
+    const updated = await inspectionRepository.update(inspectionId, {
+      escalationStatus: 'RESOLVED',
+      escalationNotes: resolutionNotes,
+    });
+    if (!updated) throw new Error('Inspection not found');
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: 'INSPECTION_ESCALATION_RESOLVED',
+      objectType: 'INSPECTION',
+      objectId: inspectionId,
+      result: 'SUCCESS',
+      metadata: { resolutionNotes },
+    });
+
+    return updated;
   }
 }
 

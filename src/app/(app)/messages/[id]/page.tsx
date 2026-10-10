@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
-import { Send, Check, CheckCheck, Sparkles, Loader2, ChevronLeft, Building2 } from 'lucide-react';
+import { Send, Check, CheckCheck, Sparkles, Loader2, ChevronLeft, Building2, AlertTriangle, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -189,10 +189,19 @@ export default function ChatRoomPage() {
                 <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4">
                   {otherPartyRole}
                 </Badge>
+                {enquiry.authorizedAgentId && (
+                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4 bg-emerald-50 text-emerald-800 border-emerald-200">
+                    <Users className="h-2.5 w-2.5 mr-1" /> Authorized Agent Shared Thread
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                 <Building2 className="h-3 w-3 text-slate-400" />
                 <span className="font-medium text-slate-700">{enquiry.propertyTitle}</span>
+                <span className="text-slate-300">•</span>
+                <span className="text-[11px] text-slate-500">
+                  Participants: Seeker ({enquiry.seekerName}), Owner/Host ({enquiry.hostName})
+                </span>
               </div>
             </div>
           </div>
@@ -228,7 +237,7 @@ export default function ChatRoomPage() {
                   className={cn(
                     'rounded-2xl px-4 py-2.5 max-w-sm md:max-w-md shadow-sm',
                     isMe
-                      ? 'bg-blue-600 text-white rounded-br-none'
+                      ? 'bg-emerald-600 text-white rounded-br-none'
                       : 'bg-white border text-slate-900 rounded-bl-none'
                   )}
                 >
@@ -236,6 +245,25 @@ export default function ChatRoomPage() {
                     {isMe ? 'You' : message.senderName}
                   </p>
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
+
+                  {/* Off-Platform Warning Notice (Non-punitive Trust & Safety) */}
+                  {message.hasOffPlatformWarning && (
+                    <div
+                      className={cn(
+                        'mt-2 p-2 rounded-lg text-xs flex items-start gap-1.5',
+                        isMe
+                          ? 'bg-amber-400/20 border border-amber-300/40 text-amber-100'
+                          : 'bg-amber-50 border border-amber-200 text-amber-900'
+                      )}
+                    >
+                      <AlertTriangle className={cn('h-3.5 w-3.5 shrink-0 mt-0.5', isMe ? 'text-amber-200' : 'text-amber-600')} />
+                      <span className="text-[11px] leading-tight font-normal">
+                        {message.warningNotice ||
+                          'Trust & Safety Reminder: Contact requests outside PropHunta waive transaction verification protections and audit logs.'}
+                      </span>
+                    </div>
+                  )}
+
                   <div
                     className={cn(
                       'text-[10px] mt-1.5 flex items-center gap-1 justify-end',
@@ -243,7 +271,7 @@ export default function ChatRoomPage() {
                     )}
                   >
                     <span>{formattedTime}</span>
-                    {isMe && <CheckCheck className="h-3.5 w-3.5 text-blue-200" />}
+                    {isMe && <CheckCheck className="h-3.5 w-3.5 text-emerald-200" />}
                   </div>
                 </div>
               </div>

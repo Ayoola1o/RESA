@@ -14,7 +14,13 @@ export class EnquiryRepository {
 
   async findByUser(userId: string): Promise<PropertyEnquiry[]> {
     const db = getDb();
-    return db.enquiries.filter((e) => e.seekerId === userId || e.hostId === userId);
+    return db.enquiries.filter(
+      (e) =>
+        e.seekerId === userId ||
+        e.hostId === userId ||
+        e.ownerId === userId ||
+        e.authorizedAgentId === userId
+    );
   }
 
   async findByPropertyAndSeeker(propertyId: string, seekerId: string): Promise<PropertyEnquiry | null> {
@@ -38,7 +44,14 @@ export class EnquiryRepository {
 
   async addMessage(
     enquiryId: string,
-    message: { senderId: string; senderName: string; senderRole: UserRole; text: string }
+    message: {
+      senderId: string;
+      senderName: string;
+      senderRole: UserRole;
+      text: string;
+      hasOffPlatformWarning?: boolean;
+      warningNotice?: string;
+    }
   ): Promise<PropertyEnquiry | null> {
     const db = getDb();
     const idx = db.enquiries.findIndex((e) => e.id === enquiryId);
@@ -54,11 +67,17 @@ export class EnquiryRepository {
       text: message.text,
       timestamp: now,
       read: false,
+      hasOffPlatformWarning: message.hasOffPlatformWarning,
+      warningNotice: message.warningNotice,
     };
 
     enquiry.messages.push(newMsg);
     enquiry.lastMessageText = message.text;
     enquiry.lastMessageAt = now;
+    if (message.hasOffPlatformWarning) {
+      enquiry.hasOffPlatformWarning = true;
+      enquiry.offPlatformWarningNotice = message.warningNotice;
+    }
 
     if (message.senderId === enquiry.seekerId) {
       enquiry.unreadCountForHost += 1;

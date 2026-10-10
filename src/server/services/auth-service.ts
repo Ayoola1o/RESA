@@ -11,32 +11,41 @@ export class AuthService {
   async register(data: {
     name: string;
     email: string;
-    password: string;
+    password?: string;
     phone: string;
     role: UserRole;
     agencyName?: string;
     licenseNumber?: string;
   }): Promise<{ user: User | null; error?: string }> {
+    // Security: Prevent public registration from granting the ADMIN role
+    if (data.role === 'ADMIN') {
+      return { user: null, error: 'Administrator role cannot be assigned through public registration.' };
+    }
+
     const existing = await userRepository.findByEmail(data.email);
     if (existing) {
       return { user: null, error: 'An account with this email already exists.' };
     }
 
-    if (data.password.length < 6) {
+    if (data.password && data.password.length < 6) {
       return { user: null, error: 'Password must be at least 6 characters long.' };
     }
 
+    const assignedRole: UserRole = ['SEEKER', 'OWNER', 'AGENT'].includes(data.role) ? data.role : 'SEEKER';
+
+    // Security: Do not automatically mark any user (including seekers) as KYC verified
     const user = await userRepository.create(
       {
         name: data.name.trim(),
         email: data.email.toLowerCase().trim(),
         phone: data.phone.trim(),
-        role: data.role,
-        verificationStatus: data.role === 'SEEKER' ? 'VERIFIED' : 'PENDING',
+        role: assignedRole,
+        verificationStatus: 'UNVERIFIED',
+        kycStatus: 'NOT_SUBMITTED',
         agencyName: data.agencyName?.trim(),
         licenseNumber: data.licenseNumber?.trim(),
       },
-      data.password
+      data.password || 'Password123!'
     );
 
     // Create session
@@ -51,7 +60,7 @@ export class AuthService {
       objectType: 'USER',
       objectId: user.id,
       result: 'SUCCESS',
-      metadata: { role: user.role },
+      metadata: { role: user.role, verificationStatus: 'UNVERIFIED' },
     });
 
     return { user };
@@ -161,6 +170,9 @@ export class AuthService {
     return token;
   }
 
+  /**
+   * Derive current user and role strictly from the authenticated session
+   */
   async getCurrentUser(): Promise<User | null> {
     let token: string | undefined;
     try {
@@ -171,15 +183,13 @@ export class AuthService {
     }
 
     if (!token) {
-      // Default fallback for preview / demo if no session yet: first seeker user
-      const db = getDb();
-      return db.users.find((u) => u.email === 'seeker@prophunta.ai') || db.users[0] || null;
+      return null;
     }
 
     const db = getDb();
     const session = db.sessions[token];
     if (!session) {
-      return db.users.find((u) => u.email === 'seeker@prophunta.ai') || db.users[0] || null;
+      return null;
     }
 
     // Check expiration
@@ -216,7 +226,7 @@ export class AuthService {
   async requireUser(): Promise<User> {
     const user = await this.getCurrentUser();
     if (!user) {
-      throw new Error('Authentication required');
+      throw new Error('Authentication required: Active session not found.');
     }
     return user;
   }
@@ -224,14 +234,107 @@ export class AuthService {
   async requireRole(allowedRoles: UserRole[]): Promise<User> {
     const user = await this.requireUser();
     if (!allowedRoles.includes(user.role)) {
-      throw new Error(`Forbidden: Access requires one of [${allowedRoles.join(', ')}] role`);
+      throw new Error(`Forbidden: Access requires one of [${allowedRoles.join(', ')}] role.`);
     }
     return user;
   }
 
+  /**
+   * Enforce identity KYC verification eligibility before protected operations
+   */
+  async requireKycVerified(user: User): Promise<User> {
+    if (user.role === 'ADMIN') {
+      return user; // Admins have platform governance bypass
+    }
+    if (user.verificationStatus !== 'VERIFIED' || user.kycStatus !== 'VERIFIED') {
+      throw new Error(
+        'Identity KYC verification required: Please complete identity verification before performing protected actions.'
+      );
+    }
+    return user;
+  }
+
+  /**
+   * Submit KYC identity documents for verification review
+   */
+  async submitKyc(
+    user: User,
+    data: {
+      documentType: 'NIN' | 'PASSPORT' | 'DRIVERS_LICENSE' | 'VOTERS_CARD';
+      documentNumber: string;
+      documentUrl?: string;
+    }
+  ): Promise<User> {
+    const now = new Date().toISOString();
+    const updated = await userRepository.update(user.id, {
+      kycStatus: 'PENDING',
+      verificationStatus: 'PENDING',
+      kycDocumentType: data.documentType,
+      kycDocumentNumber: data.documentNumber.trim(),
+      kycDocumentUrl: data.documentUrl || `/secure-vault/kyc/${user.id}/${data.documentType.toLowerCase()}.pdf`,
+      kycSubmittedAt: now,
+    });
+    if (!updated) throw new Error('User not found');
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'KYC_SUBMITTED',
+      objectType: 'USER',
+      objectId: user.id,
+      result: 'SUCCESS',
+      metadata: { documentType: data.documentType, documentNumber: data.documentNumber },
+    });
+
+    return updated;
+  }
+
+  /**
+   * Admin workflow for reviewing user KYC submissions
+   */
+  async reviewKyc(
+    adminUser: User,
+    targetUserId: string,
+    outcome: 'VERIFIED' | 'REJECTED' | 'CHANGES_REQUIRED',
+    notes?: string
+  ): Promise<User> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Only Administrators can review KYC identity submissions.');
+    }
+
+    const now = new Date().toISOString();
+    const targetUser = await userRepository.findById(targetUserId);
+    if (!targetUser) throw new Error('Target user not found');
+
+    const verificationStatus = outcome === 'VERIFIED' ? 'VERIFIED' : 'UNVERIFIED';
+
+    const updated = await userRepository.update(targetUserId, {
+      kycStatus: outcome,
+      verificationStatus,
+      kycReviewedAt: now,
+      kycReviewedBy: adminUser.id,
+      kycRejectionReason: outcome !== 'VERIFIED' ? notes : undefined,
+    });
+    if (!updated) throw new Error('Failed to update KYC status');
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: outcome === 'VERIFIED' ? 'KYC_APPROVED' : 'KYC_REJECTED',
+      objectType: 'USER',
+      objectId: targetUserId,
+      result: 'SUCCESS',
+      metadata: { outcome, notes },
+    });
+
+    return updated;
+  }
+
   async getAllUsers(adminUser: User): Promise<User[]> {
     if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can view all platform users');
+      throw new Error('Only Administrators can view all platform users.');
     }
     return userRepository.listAll();
   }
@@ -242,7 +345,7 @@ export class AuthService {
     status: import('@/types/prophunta').UserVerificationStatus
   ): Promise<User> {
     if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can modify user verification status');
+      throw new Error('Only Administrators can modify user verification status.');
     }
     const updated = await userRepository.update(targetUserId, { verificationStatus: status });
     if (!updated) throw new Error('User not found');
@@ -256,6 +359,27 @@ export class AuthService {
       objectId: targetUserId,
       result: 'SUCCESS',
       metadata: { newStatus: status },
+    });
+
+    return updated;
+  }
+
+  async updateUserRole(adminUser: User, targetUserId: string, newRole: UserRole): Promise<User> {
+    if (adminUser.role !== 'ADMIN') {
+      throw new Error('Unauthorized: Only Administrators can modify user roles.');
+    }
+    const updated = await userRepository.update(targetUserId, { role: newRole });
+    if (!updated) throw new Error('User not found');
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: 'USER_ROLE_CHANGED',
+      objectType: 'USER',
+      objectId: targetUserId,
+      result: 'SUCCESS',
+      metadata: { newRole },
     });
 
     return updated;

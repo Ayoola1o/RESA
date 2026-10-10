@@ -24,6 +24,10 @@ import {
   UserVerificationStatus,
   PropertyMedia,
   MediaType,
+  KycStatus,
+  AgentVerificationLevel,
+  AgentCredential,
+  OwnerAgentRelationship,
 } from '@/types/prophunta';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
@@ -36,6 +40,8 @@ import { applicationService } from '../services/application-service';
 import { reportService } from '../services/report-service';
 import { auditService } from '../services/audit-service';
 import { notificationService } from '../services/notification-service';
+import { relationshipService } from '../services/relationship-service';
+import { agentCredentialService } from '../services/agent-credential-service';
 
 // --- AUTHENTICATION ACTIONS ---
 
@@ -504,7 +510,7 @@ export async function getUserEnquiriesAction() {
 
 export async function getEnquiryAction(id: string) {
   const user = await authService.requireUser();
-  return enquiryService.getEnquiry(id);
+  return enquiryService.getEnquiry(user, id);
 }
 
 // --- APPLICATION / EXPRESSION OF INTEREST ACTIONS ---
@@ -805,5 +811,235 @@ export async function getUnreadNotificationCountAction() {
   return notificationService.getUnreadCount(user);
 }
 
+// --- PHASE 2: KYC & IDENTITY GOVERNANCE ACTIONS ---
 
+export async function submitKycAction(data: {
+  documentType: 'NIN' | 'PASSPORT' | 'DRIVERS_LICENSE' | 'VOTERS_CARD';
+  documentNumber: string;
+  documentUrl?: string;
+}) {
+  try {
+    const user = await authService.requireUser();
+    const updated = await authService.submitKyc(user, data);
+    revalidatePath('/profile');
+    revalidatePath('/landlord/dashboard');
+    revalidatePath('/agent/dashboard');
+    return { success: true, user: updated };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to submit KYC.' };
+  }
+}
 
+export async function reviewKycAction(
+  targetUserId: string,
+  outcome: 'VERIFIED' | 'REJECTED' | 'CHANGES_REQUIRED',
+  notes?: string
+) {
+  try {
+    const reviewer = await authService.requireUser();
+    const updated = await authService.reviewKyc(reviewer, targetUserId, outcome, notes);
+    revalidatePath('/admin');
+    return { success: true, user: updated };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to review KYC.' };
+  }
+}
+
+export async function updateUserRoleAction(targetUserId: string, newRole: UserRole) {
+  try {
+    const actor = await authService.requireUser();
+    const updated = await authService.updateUserRole(actor, targetUserId, newRole);
+    revalidatePath('/admin');
+    return { success: true, user: updated };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update user role.' };
+  }
+}
+
+// --- PHASE 2: OWNER-AGENT RELATIONSHIP ACTIONS ---
+
+export async function inviteAgentAction(data: {
+  agentEmail: string;
+  mandateType: 'EXCLUSIVE' | 'NON_EXCLUSIVE' | 'JOINT' | 'SUB_AGENT';
+  commissionRate?: string;
+  scope?: string;
+  propertyIds?: string[];
+  expiresAt?: string;
+  notes?: string;
+}) {
+  try {
+    const owner = await authService.requireUser();
+    const relationship = await relationshipService.inviteAgent(owner, data);
+    revalidatePath('/landlord/dashboard');
+    return { success: true, relationship };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to send agent invitation.' };
+  }
+}
+
+export async function respondToInvitationAction(
+  relationshipId: string,
+  action: 'ACCEPT' | 'REJECT',
+  notes?: string
+) {
+  try {
+    const agent = await authService.requireUser();
+    const relationship = await relationshipService.respondToInvitation(agent, relationshipId, action, notes);
+    revalidatePath('/agent/dashboard');
+    revalidatePath('/landlord/dashboard');
+    return { success: true, relationship };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to respond to invitation.' };
+  }
+}
+
+export async function revokeRelationshipAction(relationshipId: string, reason?: string) {
+  try {
+    const actor = await authService.requireUser();
+    const relationship = await relationshipService.revokeRelationship(actor, relationshipId, reason);
+    revalidatePath('/landlord/dashboard');
+    revalidatePath('/agent/dashboard');
+    return { success: true, relationship };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to revoke mandate.' };
+  }
+}
+
+export async function getOwnerRelationshipsAction() {
+  const owner = await authService.requireUser();
+  return relationshipService.getOwnerRelationships(owner.id);
+}
+
+export async function getAgentRelationshipsAction() {
+  const agent = await authService.requireUser();
+  return relationshipService.getAgentRelationships(agent.id);
+}
+
+// --- PHASE 2: AGENT CREDENTIAL & VERIFICATION LEVEL ACTIONS ---
+
+export async function submitAgentCredentialAction(data: {
+  level: AgentVerificationLevel;
+  credentialType: AgentCredential['credentialType'];
+  title: string;
+  issuingAuthority: string;
+  registrationNumber: string;
+  documentUrl?: string;
+  fileReference?: string;
+  issuedAt?: string;
+  expiresAt?: string;
+}) {
+  try {
+    const agent = await authService.requireUser();
+    const credential = await agentCredentialService.submitCredential(agent, data);
+    revalidatePath('/agent/dashboard');
+    return { success: true, credential };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to submit agent credential.' };
+  }
+}
+
+export async function reviewAgentCredentialAction(
+  credentialId: string,
+  status: 'VERIFIED' | 'REJECTED' | 'EXPIRED',
+  reviewNotes?: string
+) {
+  try {
+    const reviewer = await authService.requireUser();
+    const result = await agentCredentialService.reviewCredential(reviewer, credentialId, status, reviewNotes);
+    revalidatePath('/admin');
+    revalidatePath('/agent/dashboard');
+    return { success: true, ...result };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to review credential.' };
+  }
+}
+
+export async function getAgentCredentialsAction(agentId?: string) {
+  const user = await authService.requireUser();
+  const targetId = agentId || user.id;
+  return agentCredentialService.getAgentCredentials(targetId);
+}
+
+export async function getAgentLevelExplanationAction(level?: AgentVerificationLevel) {
+  const user = await authService.requireUser();
+  const targetLevel = level || user.agentVerificationLevel || 'LEVEL_0_UNVERIFIED';
+  return agentCredentialService.getVerificationLevelExplanation(targetLevel);
+}
+
+// --- PHASE 2: INSPECTION ESCALATION ACTIONS ---
+
+export async function escalateInspectionAction(
+  inspectionId: string,
+  reason: string,
+  discrepancyDetails: string
+) {
+  try {
+    const reporter = await authService.requireUser();
+    const result = await inspectionService.escalateInspection(reporter, inspectionId, reason, discrepancyDetails);
+    revalidatePath('/admin');
+    return { success: true, ...result };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to escalate inspection.' };
+  }
+}
+
+export async function resolveInspectionEscalationAction(
+  inspectionId: string,
+  resolutionNotes: string
+) {
+  try {
+    const reviewer = await authService.requireUser();
+    const updated = await inspectionService.resolveEscalation(reviewer, inspectionId, resolutionNotes);
+    revalidatePath('/admin');
+    return { success: true, inspection: updated };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to resolve inspection escalation.' };
+  }
+}
+
+// --- PHASE 3: AGENT ACTIVITY, LOCATION DISCREPANCY, & FEE BREAKDOWN ACTIONS ---
+
+export async function getAgentActivityForOwnerAction(propertyId?: string) {
+  try {
+    const owner = await authService.requireUser();
+    const activities = await relationshipService.getAgentActivityForOwner(owner, propertyId);
+    return { success: true, activities };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to fetch agent activities.' };
+  }
+}
+
+export async function reportLocationDiscrepancyAction(
+  propertyId: string,
+  data: {
+    reportedLatitude?: number;
+    reportedLongitude?: number;
+    discrepancyNotes: string;
+  }
+) {
+  try {
+    const reporter = await authService.requireUser();
+    const result = await propertyService.reportLocationDiscrepancy(reporter, propertyId, data);
+    revalidatePath(`/property/${propertyId}`);
+    revalidatePath('/admin');
+    return { success: true, ...result };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to report location discrepancy.' };
+  }
+}
+
+export async function calculateFeeBreakdownAction(
+  propertyId: string,
+  offerAmount?: number
+) {
+  try {
+    const property = await propertyService.getPropertyById(propertyId);
+    if (!property) {
+      return { success: false, error: 'Property not found.' };
+    }
+    const feeBreakdown = applicationService.calculateFeeBreakdown(property, offerAmount);
+    return { success: true, feeBreakdown };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to calculate fee breakdown.' };
+  }
+}

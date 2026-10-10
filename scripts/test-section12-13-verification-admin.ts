@@ -6,12 +6,15 @@ import { userRepository } from '../src/server/repositories/user-repository';
 import { propertyRepository } from '../src/server/repositories/property-repository';
 import { reportRepository } from '../src/server/repositories/report-repository';
 import { inspectionRepository } from '../src/server/repositories/inspection-repository';
+import { resetDatabase } from '../src/server/db/store';
 import { VerificationSubStatus, PropertyVerification } from '../src/types/prophunta';
 
 async function runSection12And13Tests() {
   console.log('================================================================');
   console.log('🧪 TESTING SECTION 12 (VERIFICATION SYSTEM) & 13 (ADMIN QUEUE)');
   console.log('================================================================\n');
+
+  resetDatabase();
 
   // 1. Fetch seed users
   const admin = await userRepository.findByEmail('admin@prophunta.ai');
@@ -154,6 +157,27 @@ async function runSection12And13Tests() {
 
   // Step 6: Admin Action: Approve Listing
   console.log('\n6. Testing Admin Action: Approve Listing as VERIFIED...');
+
+  // 6a. Negative check: Trying to approve when checks are not all PASSED must fail
+  try {
+    await verificationService.approveVerification(admin, submittedProp.id, 'Attempting early approval');
+    throw new Error('Approval should have been rejected for incomplete checklist');
+  } catch (err: any) {
+    console.log(`  ✓ Approval bypass rejected: "${err.message}"`);
+  }
+
+  // 6b. Complete all 6 checklist items to PASSED and review document to APPROVED
+  await verificationService.updateChecklist(admin, submittedProp.id, {
+    ownerIdentityStatus: 'PASSED',
+    locationStatus: 'PASSED',
+    authorityDocumentStatus: 'PASSED',
+    availabilityStatus: 'PASSED',
+    mediaStatus: 'PASSED',
+    inspectionStatus: 'PASSED',
+    reviewNotes: 'Survey verified, physical inspection cleared, documents verified.',
+  });
+  await documentService.reviewDocument(admin, submittedProp.id, uploadedDoc.id, 'APPROVED', 'Deed verified with land registry.');
+
   const approveRes = await verificationService.approveVerification(admin, submittedProp.id, 'All title deeds, survey, and physical walkthrough confirmed.');
   const propAfterApprove = await propertyRepository.findById(submittedProp.id);
   console.log(`  ✓ Listing approved: overallStatus=${approveRes.overallStatus}, listingStatus=${propAfterApprove?.listingStatus}`);

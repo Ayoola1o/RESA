@@ -286,6 +286,8 @@ function ProfileContent() {
           discrepancies,
           photos: parsedPhotos,
           video: videoUrlInput.trim() || undefined,
+          method: 'IN_PERSON_FIELD_OFFICER' as const,
+          isIndependentInspection: true,
         }
       } : i));
     } else {

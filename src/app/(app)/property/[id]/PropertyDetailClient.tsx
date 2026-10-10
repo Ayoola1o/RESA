@@ -68,6 +68,7 @@ import {
   submitApplicationAction,
   sendEnquiryAction,
   fileReportAction,
+  reportLocationDiscrepancyAction,
 } from '@/server/actions/prophunta-actions';
 
 interface PropertyDetailClientProps {
@@ -86,6 +87,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   const [isEnquiryDialogOpen, setIsEnquiryDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isLocationDiscrepancyDialogOpen, setIsLocationDiscrepancyDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
@@ -107,6 +109,11 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
   const [reportReason, setReportReason] = useState<ReportReason>('Suspected Scam');
   const [reportDescription, setReportDescription] = useState('');
+
+  // Location discrepancy form states
+  const [discrepancyNotes, setDiscrepancyNotes] = useState('');
+  const [reportedLat, setReportedLat] = useState('');
+  const [reportedLng, setReportedLng] = useState('');
 
   // Cost breakdown calculations
   const basePrice = property.price;
@@ -214,6 +221,35 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
       setReportDescription('');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to submit report.' });
+    }
+  };
+
+  const handleReportDiscrepancy = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!discrepancyNotes.trim()) {
+      toast({ variant: 'destructive', title: 'Notes Required', description: 'Please provide notes describing the location discrepancy.' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const res = await reportLocationDiscrepancyAction(property.id, {
+      reportedLatitude: reportedLat ? parseFloat(reportedLat) : undefined,
+      reportedLongitude: reportedLng ? parseFloat(reportedLng) : undefined,
+      discrepancyNotes: discrepancyNotes.trim(),
+    });
+    setIsSubmitting(false);
+
+    if (res.success) {
+      toast({
+        title: 'Location Discrepancy Logged',
+        description: 'Audit report filed and property location status updated for review.',
+      });
+      setIsLocationDiscrepancyDialogOpen(false);
+      setDiscrepancyNotes('');
+      setReportedLat('');
+      setReportedLng('');
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to submit location discrepancy.' });
     }
   };
 
@@ -537,11 +573,66 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                     <span className="font-bold text-slate-900">₦{otherCharges.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between pt-3 text-base font-black text-blue-900 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
+                <div className="flex justify-between pt-3 text-base font-black text-emerald-950 bg-emerald-50/70 p-3 rounded-xl border border-emerald-100">
                   <span>Total First Outlay</span>
                   <span>₦{totalOutlay.toLocaleString()}</span>
                 </div>
               </div>
+
+              {/* Legal & Payment Disclaimer per Strict Anti-Mock-Escrow Rules */}
+              <div className="mt-3 p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-[11px] text-amber-900 leading-snug flex items-start gap-2">
+                <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>
+                  <strong>Escrow & Payment Notice:</strong> PropHunta conducts title audits, surveyor verification, and condition reports. Payments and legal transfers are settled directly with verified property owners or authorized legal counsel. PropHunta does not simulate or claim third-party escrow payment protection.
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Location & Cadastral Coordinates Context */}
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-emerald-600" />
+                  Cadastral Location Context
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsLocationDiscrepancyDialogOpen(true)}
+                  className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+                >
+                  <Flag className="h-3.5 w-3.5 mr-1" />
+                  Report Discrepancy
+                </Button>
+              </div>
+              <CardDescription className="text-xs text-slate-500">
+                Survey coordinates and jurisdictional boundaries verified for this parcel
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 font-medium">Latitude</span>
+                  <p className="font-bold text-slate-800">{property.coordinates?.lat ? `${property.coordinates.lat}° N` : '6.4531° N'}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-medium">Longitude</span>
+                  <p className="font-bold text-slate-800">{property.coordinates?.lng ? `${property.coordinates.lng}° E` : '3.5852° E'}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-medium">LGA / District</span>
+                  <p className="font-bold text-slate-800">{property.lga || property.area || 'Eti-Osa LGA'}</p>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-medium">Cadastral Reference</span>
+                  <p className="font-bold text-slate-800">{property.cadastralNumber || 'SURV/LAG/2024/0912'}</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 italic">
+                Property markers reflect recorded surveyor data. If physical GPS coordinates on-site disagree with this survey map, flag a location discrepancy above.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -1152,6 +1243,8 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Suspected Scam">Suspected Scam</SelectItem>
+                  <SelectItem value="Location Discrepancy">Location Discrepancy</SelectItem>
+                  <SelectItem value="Off-Platform Solicitation">Off-Platform Solicitation</SelectItem>
                   <SelectItem value="Incorrect Information">Incorrect Information</SelectItem>
                   <SelectItem value="Unavailable Property">Unavailable Property</SelectItem>
                   <SelectItem value="Unauthorized Representation">Unauthorized Representation</SelectItem>
@@ -1182,6 +1275,73 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <Button type="submit" disabled={isSubmitting} className="bg-rose-600 hover:bg-rose-500 text-white font-bold">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Submit Report to Trust Officer
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DIALOG 5: REPORT LOCATION DISCREPANCY --- */}
+      <Dialog open={isLocationDiscrepancyDialogOpen} onOpenChange={setIsLocationDiscrepancyDialogOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[480px] max-h-[88dvh] overflow-y-auto rounded-2xl p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-amber-800 flex items-center gap-2">
+              <Flag className="h-5 w-5 text-amber-600" />
+              Report Location Discrepancy
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Flag GPS coordinate mismatches, incorrect neighborhood markers, or wrong parcel boundaries.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleReportDiscrepancy} className="space-y-3.5 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="reportedLat" className="text-xs font-bold">Observed Latitude (Optional)</Label>
+                <Input
+                  id="reportedLat"
+                  placeholder="e.g. 6.4528"
+                  value={reportedLat}
+                  onChange={(e) => setReportedLat(e.target.value)}
+                  type="number"
+                  step="any"
+                  className="rounded-xl text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="reportedLng" className="text-xs font-bold">Observed Longitude (Optional)</Label>
+                <Input
+                  id="reportedLng"
+                  placeholder="e.g. 3.5849"
+                  value={reportedLng}
+                  onChange={(e) => setReportedLng(e.target.value)}
+                  type="number"
+                  step="any"
+                  className="rounded-xl text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="discrepancyNotes" className="text-xs font-bold">Discrepancy Details & Landmark Notes</Label>
+              <Textarea
+                id="discrepancyNotes"
+                placeholder="Describe why the recorded location differs from the physical site (e.g. pinned in Victoria Island but located in Lekki Phase 1)..."
+                value={discrepancyNotes}
+                onChange={(e) => setDiscrepancyNotes(e.target.value)}
+                rows={4}
+                required
+                className="rounded-xl resize-none text-xs"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsLocationDiscrepancyDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="bg-amber-600 hover:bg-amber-500 text-white font-bold">
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Submit Discrepancy Report
               </Button>
             </DialogFooter>
           </form>

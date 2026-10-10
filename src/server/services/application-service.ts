@@ -1,4 +1,4 @@
-import { User, Application, ApplicationType, ApplicationStatus } from '@/types/prophunta';
+import { User, Application, ApplicationType, ApplicationStatus, Property, FeeBreakdown } from '@/types/prophunta';
 import { applicationRepository } from '../repositories/application-repository';
 import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
@@ -19,6 +19,54 @@ export class ApplicationService {
     return app ? this.attachAliases(app) : null;
   }
 
+  /**
+   * Calculates a transparent, granular fee breakdown for rentals or property acquisitions.
+   * Adheres strictly to the requirement that no simulated escrow or false payment protection is claimed.
+   */
+  calculateFeeBreakdown(property: Property, offerAmount?: number): FeeBreakdown {
+    const basePrice = offerAmount !== undefined && offerAmount > 0 ? offerAmount : property.price;
+    const isRental = property.listingType === 'RENT';
+
+    // In Nigeria:
+    // Tenancy Agreement & Legal Fee: typically 10% for rentals, 5-10% for sales
+    const agreementFee =
+      property.agreementFee !== undefined
+        ? property.agreementFee
+        : Math.round(basePrice * (isRental ? 0.1 : 0.05));
+
+    // Caution Deposit (Refundable security deposit for damages/utilities): 10% for rentals, 0 for sales
+    const cautionFee = isRental
+      ? property.cautionFee !== undefined
+        ? property.cautionFee
+        : Math.round(basePrice * 0.1)
+      : 0;
+
+    // Estate Service Charge / Facility dues / diesel levy
+    const serviceCharge = property.serviceCharge || 0;
+
+    // Agency Fee: Typically 10% for rentals, 5% for sales
+    const agencyFee = isRental ? Math.round(basePrice * 0.1) : Math.round(basePrice * 0.05);
+
+    // Other statutory / stamp duty charges
+    const otherCharges = property.otherCharges || 0;
+
+    const totalInitialOutlay =
+      basePrice + agreementFee + cautionFee + serviceCharge + agencyFee + otherCharges;
+
+    return {
+      basePrice,
+      agreementFee,
+      cautionFee,
+      serviceCharge,
+      agencyFee,
+      otherCharges,
+      totalInitialOutlay,
+      currency: 'NGN',
+      escrowNotice:
+        'Notice: PropHunta AI conducts title, cadastral, and physical inspection audits. In compliance with real estate governance, PropHunta AI does not simulate mock escrow or claim payment protection without a licensed escrow partner integration under the Land Use Act. Transactions must proceed through formal lease execution.',
+    };
+  }
+
   async getUserApplications(user: User): Promise<Application[]> {
     let list: Application[];
     if (user.role === 'ADMIN') {
@@ -26,9 +74,12 @@ export class ApplicationService {
     } else if (user.role === 'SEEKER') {
       list = await applicationRepository.findBySeeker(user.id);
     } else {
-      // For owner/agent, retrieve applications for their properties
-      const userProps = await propertyRepository.findByOwner(user.id);
-      const propIds = new Set(userProps.map((p) => p.id));
+      // For owner or authorized agent, retrieve applications for properties they own or manage
+      const allProps = await propertyRepository.listAll();
+      const relevantProps = allProps.filter(
+        (p) => p.ownerId === user.id || p.authorizedAgentId === user.id
+      );
+      const propIds = new Set(relevantProps.map((p) => p.id));
       const all = await applicationRepository.listAll();
       list = all.filter((a) => propIds.has(a.propertyId));
     }
@@ -59,9 +110,12 @@ export class ApplicationService {
 
     const applicantName = data.name || data.applicantName || user.name;
     const isEmailContact = data.contact && data.contact.includes('@');
-    const applicantEmail = isEmailContact ? data.contact! : (data.applicantEmail || user.email);
-    const applicantPhone = !isEmailContact && data.contact ? data.contact : (data.applicantPhone || user.phone);
+    const applicantEmail = isEmailContact ? data.contact! : data.applicantEmail || user.email;
+    const applicantPhone = !isEmailContact && data.contact ? data.contact : data.applicantPhone || user.phone;
     const finalOffer = data.offer !== undefined ? data.offer : data.offerAmount;
+
+    // Calculate transparent fee breakdown
+    const feeBreakdown = this.calculateFeeBreakdown(property, finalOffer);
 
     const app = await applicationRepository.create({
       propertyId: property.id,
@@ -78,6 +132,7 @@ export class ApplicationService {
       occupants: data.occupants,
       offerAmount: finalOffer,
       financingStatus: data.financingStatus,
+      feeBreakdown,
       message: data.message,
       status: 'SUBMITTED',
     });
@@ -95,17 +150,22 @@ export class ApplicationService {
         type: data.type,
         applicantName,
         offerAmount: finalOffer,
+        totalInitialOutlay: feeBreakdown.totalInitialOutlay,
       },
     });
 
-    // Notify Property Host (Owner / Agent)
-    const hostId = property.authorizedAgentId || property.ownerId;
-    await notificationService.createNotification(hostId, {
-      title: data.type === 'RENTAL' ? 'New Rental Application' : 'New Formal Purchase Offer',
-      message: `${applicantName} submitted a ${data.type === 'RENTAL' ? 'rental application' : 'formal offer'} for "${property.title}".`,
-      type: 'APPLICATION',
-      link: '/profile?tab=applications',
-    });
+    // Notify both Property Owner and Authorized Agent
+    const notifyRecipients = new Set<string>([property.ownerId]);
+    if (property.authorizedAgentId) notifyRecipients.add(property.authorizedAgentId);
+
+    for (const recId of notifyRecipients) {
+      await notificationService.createNotification(recId, {
+        title: data.type === 'RENTAL' ? 'New Rental Application' : 'New Formal Purchase Offer',
+        message: `${applicantName} submitted a ${data.type === 'RENTAL' ? 'rental application' : 'formal offer'} for "${property.title}" (Total initial outlay: ₦${feeBreakdown.totalInitialOutlay.toLocaleString()}).`,
+        type: 'APPLICATION',
+        link: '/profile?tab=applications',
+      });
+    }
 
     return this.attachAliases(app);
   }
@@ -116,6 +176,20 @@ export class ApplicationService {
     status: ApplicationStatus,
     notes?: string
   ): Promise<Application> {
+    const existing = await applicationRepository.findById(applicationId);
+    if (!existing) throw new Error('Application not found');
+
+    const property = await propertyRepository.findById(existing.propertyId);
+    const isOwnerOrAgent = property
+      ? property.ownerId === user.id || property.authorizedAgentId === user.id
+      : false;
+
+    if (!isOwnerOrAgent && user.role !== 'ADMIN') {
+      throw new Error(
+        'Unauthorized: Only the property owner, authorized agent, or administrator can update application status.'
+      );
+    }
+
     const updated = await applicationRepository.updateStatus(applicationId, status, notes);
     if (!updated) throw new Error('Application not found');
 
