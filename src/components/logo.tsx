@@ -11,8 +11,8 @@ export default function Logo({ className, ...props }: React.SVGProps<SVGSVGEleme
     >
       <defs>
         <linearGradient id="propHuntaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#1d4ed8" />
+          <stop offset="0%" stopColor="#84cc16" />
+          <stop offset="100%" stopColor="#4d7c0f" />
         </linearGradient>
       </defs>
 
@@ -20,7 +20,7 @@ export default function Logo({ className, ...props }: React.SVGProps<SVGSVGEleme
       <polygon
         points="70,12 122,38 122,96 70,128 18,96 18,38"
         fill="url(#propHuntaGrad)"
-        stroke="#60a5fa"
+        stroke="#a3e635"
         strokeWidth="3"
         strokeLinejoin="round"
       />

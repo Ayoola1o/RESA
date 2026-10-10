@@ -396,7 +396,7 @@ function AdminPortalContent() {
             {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
             Refresh Records
           </Button>
-          <Button size="sm" asChild className="bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold">
+          <Button size="sm" asChild className="bg-lime-600 hover:bg-lime-500 rounded-xl text-xs font-bold text-white">
             <Link href="/marketplace">View Public Marketplace</Link>
           </Button>
         </div>
@@ -421,7 +421,7 @@ function AdminPortalContent() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Properties</span>
-              <Home className="h-4 w-4 text-blue-600" />
+              <Home className="h-4 w-4 text-lime-700" />
             </div>
             <div className="text-2xl font-black text-slate-900 mt-1.5">{properties.length}</div>
             <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
@@ -552,7 +552,7 @@ function AdminPortalContent() {
                                 variant="outline"
                                 className={`text-[10px] font-bold uppercase ${
                                   p.listingStatus === 'SUBMITTED'
-                                    ? 'text-blue-700 bg-blue-50 border-blue-200'
+                                    ? 'text-lime-800 bg-lime-50 border-lime-200'
                                     : p.listingStatus === 'CHANGES_REQUIRED'
                                     ? 'text-orange-700 bg-orange-50 border-orange-200'
                                     : 'text-amber-700 bg-amber-50 border-amber-200'
@@ -602,7 +602,7 @@ function AdminPortalContent() {
                                     rel="noreferrer"
                                     className="inline-flex items-center gap-1 text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded border border-slate-200"
                                   >
-                                    <FileText className="h-2.5 w-2.5 text-blue-600" />
+                                    <FileText className="h-2.5 w-2.5 text-lime-700" />
                                     <span>{doc.documentType.replace(/_/g, ' ')}</span>
                                     <span
                                       className={`text-[9px] px-1 rounded ${
@@ -628,7 +628,7 @@ function AdminPortalContent() {
                           <Button
                             size="sm"
                             onClick={() => openReviewDialog(p)}
-                            className="h-9 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-xs"
+                            className="h-9 rounded-xl bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs shadow-xs"
                           >
                             <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
                             Review
@@ -714,7 +714,7 @@ function AdminPortalContent() {
                                 : p.listingStatus === 'RESERVED'
                                 ? 'bg-purple-600 text-white'
                                 : p.listingStatus === 'OCCUPIED'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-slate-700 text-white'
                                 : p.listingStatus === 'SOLD'
                                 ? 'bg-slate-800 text-white'
                                 : p.listingStatus === 'SUSPENDED' || p.listingStatus === 'REJECTED'
@@ -758,9 +758,9 @@ function AdminPortalContent() {
                             setInspectDocsProperty(p);
                             setIsDocsDialogOpen(true);
                           }}
-                          className="h-8 text-xs font-semibold rounded-xl text-blue-700 border-blue-200 hover:bg-blue-50"
+                          className="h-8 text-xs font-semibold rounded-xl text-lime-900 border-lime-200 hover:bg-lime-50"
                         >
-                          <FileText className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                          <FileText className="h-3.5 w-3.5 mr-1 text-lime-700" />
                           Review Documents ({p.documents?.length || 0})
                         </Button>
 
@@ -822,7 +822,7 @@ function AdminPortalContent() {
           <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
               <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-blue-600" />
+                <Users className="h-5 w-5 text-lime-700" />
                 User Management Directory
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
@@ -849,7 +849,7 @@ function AdminPortalContent() {
                               u.role === 'ADMIN'
                                 ? 'bg-purple-600'
                                 : u.role === 'AGENT'
-                                ? 'bg-blue-600'
+                                ? 'bg-lime-600 text-white font-bold'
                                 : u.role === 'OWNER'
                                 ? 'bg-amber-600'
                                 : 'bg-slate-600'
@@ -890,9 +890,9 @@ function AdminPortalContent() {
                             setInspectedUser(u);
                             setIsUserInspectOpen(true);
                           }}
-                          className="h-8 text-xs font-semibold rounded-xl text-blue-700 border-blue-200 hover:bg-blue-50"
+                          className="h-8 text-xs font-semibold rounded-xl text-lime-900 border-lime-200 hover:bg-lime-50"
                         >
-                          <Eye className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                          <Eye className="h-3.5 w-3.5 mr-1 text-lime-700" />
                           Inspect User
                         </Button>
 
@@ -1050,7 +1050,7 @@ function AdminPortalContent() {
                           i.status === 'COMPLETED'
                             ? 'bg-emerald-600'
                             : i.status === 'SCHEDULED' || i.status === 'ACCEPTED'
-                            ? 'bg-blue-600'
+                            ? 'bg-lime-600 text-white font-bold'
                             : i.status === 'CANCELLED'
                             ? 'bg-rose-600'
                             : 'bg-amber-500'
@@ -1083,7 +1083,7 @@ function AdminPortalContent() {
                   <div key={log.id} className="p-4 hover:bg-slate-50/80 flex items-start justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">
+                        <span className="font-bold text-lime-900 bg-lime-50 px-1.5 py-0.5 rounded text-[11px] border border-lime-200">
                           {log.action}
                         </span>
                         <span className="text-slate-700 font-sans font-semibold">
@@ -1110,7 +1110,7 @@ function AdminPortalContent() {
         <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[620px] rounded-2xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
+              <ShieldCheck className="h-5 w-5 text-lime-600 shrink-0" />
               <span>Granular Verification Checklist</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -1123,7 +1123,7 @@ function AdminPortalContent() {
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                  <FileText className="h-4 w-4 text-lime-700" />
                   Attached Title & Survey Documents ({reviewProperty?.documents?.length || 0})
                 </span>
                 <span className="text-[10px] text-slate-500">Access-Controlled Vault</span>
@@ -1376,7 +1376,7 @@ function AdminPortalContent() {
         <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[500px] rounded-2xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600 shrink-0" />
+              <Users className="h-5 w-5 text-lime-700" />
               <span>User Profile & Role Inspection</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -1387,7 +1387,7 @@ function AdminPortalContent() {
           {inspectedUser && (
             <div className="space-y-4 pt-2 text-xs">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-base shrink-0">
+                <div className="h-12 w-12 rounded-full bg-lime-100 text-lime-800 font-bold border border-lime-300 flex items-center justify-center text-base shrink-0">
                   {inspectedUser.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -1427,7 +1427,7 @@ function AdminPortalContent() {
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-slate-500 font-medium">Properties Owned / Represented</span>
-                  <span className="font-bold text-blue-700">
+                  <span className="font-bold text-lime-800">
                     {properties.filter((p) => p.ownerId === inspectedUser.id || p.authorizedAgentId === inspectedUser.id).length} Listings
                   </span>
                 </div>
@@ -1464,7 +1464,7 @@ function AdminPortalContent() {
         <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[550px] rounded-2xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
+              <FileText className="h-5 w-5 text-lime-700" />
               Confidential Documents Audit
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">

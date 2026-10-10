@@ -298,25 +298,25 @@ export default function AdminDashboard({
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-16">
+    <div className="flex flex-col gap-6 sm:gap-8 pb-16">
       {/* 1. Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 p-6 sm:p-8 text-white border border-slate-800 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0c140d] via-slate-900 to-[#142316] p-5 sm:p-7 text-white border border-lime-900/40 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold mb-3">
-              <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-500/20 text-lime-300 border border-lime-400/30 text-[11px] font-bold mb-2.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-lime-400" />
               Compliance Officer & Platform Trust Console
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
               Admin Governance Center, {userName}
             </h1>
-            <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
               Audit submitted titles, manage the 6-point verification queue, govern trust & safety incident reports, inspect field observations, and view the immutable audit ledger.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button asChild className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-lg shadow-blue-950/50 gap-2 h-10 px-4">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Button asChild className="bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs shadow-md shadow-lime-950/40 gap-1.5 h-9 px-3.5">
               <Link href="/admin">
                 <ShieldCheck className="h-4 w-4" />
                 Open Full Admin Portal
@@ -327,81 +327,81 @@ export default function AdminDashboard({
       </div>
 
       {/* 2. Platform Overview KPIs Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
         <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
               <Building className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-slate-400 uppercase">Listings</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Listings</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-slate-900">{properties.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-slate-900">{properties.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Total Properties</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
               <Clock className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-amber-600 uppercase">Queue</span>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Queue</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-amber-950">{pendingVerification.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-amber-950">{pendingVerification.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Pending Verification</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="h-9 w-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
               <ShieldAlert className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-red-600 uppercase">Review</span>
+            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">Review</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-red-950">{propertiesRequiringReview.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-red-950">{propertiesRequiringReview.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Require Review</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="h-9 w-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
               <AlertCircle className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-purple-600 uppercase">Reports</span>
+            <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider">Reports</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-purple-950">{openReports.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-purple-950">{openReports.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Active Safety Reports</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
               <Calendar className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-emerald-600 uppercase">Showings</span>
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Showings</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-slate-900">{inspections.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-slate-900">{inspections.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Field Inspections</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
               <History className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold text-indigo-600 uppercase">Audit</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Audit</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold text-slate-900">{auditLogs.length}</div>
+          <div className="mt-2.5">
+            <div className="text-2xl font-black text-slate-900">{auditLogs.length}</div>
             <span className="text-[11px] text-slate-500 font-medium">Audit Events</span>
           </div>
         </div>
@@ -413,7 +413,7 @@ export default function AdminDashboard({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-blue-600" />
+                <ShieldCheck className="h-4 w-4 text-lime-700" />
                 Pending Verification Queue ({pendingVerification.length})
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
@@ -635,8 +635,8 @@ export default function AdminDashboard({
                 <Badge
                   className={
                     insp.status === 'COMPLETED'
-                      ? 'bg-emerald-600 text-white text-[10px]'
-                      : 'bg-blue-600 text-white text-[10px]'
+                      ? 'bg-lime-600 text-white text-[10px] font-bold'
+                      : 'bg-lime-500 text-slate-950 text-[10px] font-bold'
                   }
                 >
                   {insp.status}
@@ -652,7 +652,7 @@ export default function AdminDashboard({
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-blue-600" />
+                  <Users className="h-4 w-4 text-lime-700" />
                   User Directory & Identity Verification ({users.length})
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-500">
@@ -745,7 +745,7 @@ export default function AdminDashboard({
           <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-blue-600" />
+                <ShieldCheck className="h-5 w-5 text-lime-600" />
                 6-Point Verification Audit & Compliance
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">

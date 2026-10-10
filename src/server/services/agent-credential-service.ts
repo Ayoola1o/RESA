@@ -152,7 +152,7 @@ export class AgentCredentialService {
           description:
             'Corporate Affairs Commission (CAC) business incorporation certificate validated against public registry records.',
           badgeLabel: 'CAC Registered Agency',
-          badgeColor: 'bg-blue-600 text-white',
+          badgeColor: 'bg-lime-600 text-white font-bold',
         };
       case 'LEVEL_1_IDENTITY_VERIFIED':
         return {

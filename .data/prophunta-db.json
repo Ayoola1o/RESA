@@ -491,10 +491,10 @@
       "hostName": "Tunde Adeleke (Agent)",
       "ownerId": "user_owner_1",
       "authorizedAgentId": "user_agent_1",
-      "lastMessageText": "The legal team has the Governor's Consent file ready for inspection.",
-      "lastMessageAt": "2026-10-07T11:45:00Z",
-      "unreadCountForSeeker": 1,
-      "unreadCountForHost": 0,
+      "lastMessageText": "Kindly send me a message on WhatsApp 08031234567 or direct email so we can pay outside the system.",
+      "lastMessageAt": "2026-10-10T18:42:10.111Z",
+      "unreadCountForSeeker": 2,
+      "unreadCountForHost": 2,
       "messages": [
         {
           "id": "msg-1",
@@ -513,8 +513,41 @@
           "text": "Hello Chidi, absolutely. The legal team has the certified true copy and Governor's Consent file ready for your surveyor's inspection.",
           "timestamp": "2026-10-07T11:45:00Z",
           "read": false
+        },
+        {
+          "id": "msg_1791657730052_8a6b",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Hello, is this duplex available for immediate move-in? What is the caution fee policy?",
+          "timestamp": "2026-10-10T18:42:10.050Z",
+          "read": false,
+          "hasOffPlatformWarning": false
+        },
+        {
+          "id": "msg_1791657730064_58dk",
+          "senderId": "user_agent_1",
+          "senderName": "Tunde Adeleke",
+          "senderRole": "AGENT",
+          "text": "Yes, the duplex is vacant. Caution fee is 10% refundable upon move-out audit.",
+          "timestamp": "2026-10-10T18:42:10.064Z",
+          "read": false,
+          "hasOffPlatformWarning": false
+        },
+        {
+          "id": "msg_1791657730111_afxy",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Kindly send me a message on WhatsApp 08031234567 or direct email so we can pay outside the system.",
+          "timestamp": "2026-10-10T18:42:10.111Z",
+          "read": false,
+          "hasOffPlatformWarning": true,
+          "warningNotice": "⚠️ Off-Platform Safety Notice: Moving transactions, communications, or payments outside PropHunta AI forfeits all independent verification protections, physical inspection dispute records, and title audit guarantees. Never transfer funds to personal bank accounts."
         }
-      ]
+      ],
+      "hasOffPlatformWarning": true,
+      "offPlatformWarningNotice": "⚠️ Off-Platform Safety Notice: Moving transactions, communications, or payments outside PropHunta AI forfeits all independent verification protections, physical inspection dispute records, and title audit guarantees. Never transfer funds to personal bank accounts."
     }
   ],
   "applications": [

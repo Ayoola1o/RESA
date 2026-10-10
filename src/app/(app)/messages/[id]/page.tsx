@@ -160,59 +160,55 @@ export default function ChatRoomPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)]">
-      <div className="mb-3">
+    <div className="flex flex-col h-[calc(100dvh-6rem)] md:h-[calc(100vh-120px)]">
+      <div className="mb-2 sm:mb-3">
         <Link
           href="/messages"
-          className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground"
+          className="flex items-center text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
           Back to all conversations
         </Link>
       </div>
 
-      <Card className="flex-1 flex flex-col shadow-sm border overflow-hidden">
+      <Card className="flex-1 flex flex-col shadow-xs border-slate-200/90 rounded-2xl overflow-hidden">
         {/* Chat Header */}
-        <div className="border-b p-4 flex items-center justify-between bg-card">
+        <div className="border-b border-slate-100 p-3 sm:p-4 flex items-center justify-between bg-card">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border">
+            <Avatar className="h-9 w-9 sm:h-10 sm:w-10 border border-slate-200">
               {enquiry.propertyImage && (
                 <AvatarImage src={enquiry.propertyImage} alt={otherPartyName} />
               )}
-              <AvatarFallback className="bg-blue-100 text-blue-800 font-semibold text-sm">
+              <AvatarFallback className="bg-lime-100 text-lime-900 font-bold text-xs sm:text-sm border border-lime-300">
                 {otherPartyName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-base text-slate-900">{otherPartyName}</p>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <p className="font-bold text-sm sm:text-base text-slate-900">{otherPartyName}</p>
                 <Badge variant="outline" className="text-[10px] py-0 px-1.5 h-4">
                   {otherPartyRole}
                 </Badge>
                 {enquiry.authorizedAgentId && (
-                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4 bg-emerald-50 text-emerald-800 border-emerald-200">
+                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4 bg-lime-50 text-lime-800 border-lime-200">
                     <Users className="h-2.5 w-2.5 mr-1" /> Authorized Agent Shared Thread
                   </Badge>
                 )}
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                 <Building2 className="h-3 w-3 text-slate-400" />
-                <span className="font-medium text-slate-700">{enquiry.propertyTitle}</span>
-                <span className="text-slate-300">•</span>
-                <span className="text-[11px] text-slate-500">
-                  Participants: Seeker ({enquiry.seekerName}), Owner/Host ({enquiry.hostName})
-                </span>
+                <span className="font-medium text-slate-700 truncate max-w-[200px] sm:max-w-none">{enquiry.propertyTitle}</span>
               </div>
             </div>
           </div>
 
-          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex rounded-xl h-8 text-xs font-semibold">
             <Link href={`/property/${enquiry.propertyId}`}>View Listing</Link>
           </Button>
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto bg-slate-50/50">
+        <div className="flex-1 p-3.5 sm:p-5 space-y-3.5 sm:space-y-4 overflow-y-auto bg-slate-50/50">
           {enquiry.messages.map((message) => {
             const isMe = message.senderId === currentUser?.id;
             const formattedTime = new Date(message.timestamp).toLocaleTimeString([], {
@@ -227,7 +223,7 @@ export default function ChatRoomPage() {
               >
                 {!isMe && (
                   <Avatar className="h-7 w-7 border shrink-0">
-                    <AvatarFallback className="text-[10px] bg-slate-200 text-slate-700">
+                    <AvatarFallback className="text-[10px] bg-slate-200 text-slate-700 font-bold">
                       {message.senderName.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -235,16 +231,16 @@ export default function ChatRoomPage() {
 
                 <div
                   className={cn(
-                    'rounded-2xl px-4 py-2.5 max-w-sm md:max-w-md shadow-sm',
+                    'rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 max-w-[85%] sm:max-w-md shadow-xs',
                     isMe
-                      ? 'bg-emerald-600 text-white rounded-br-none'
-                      : 'bg-white border text-slate-900 rounded-bl-none'
+                      ? 'bg-lime-600 text-white rounded-br-xs font-medium'
+                      : 'bg-white border border-slate-200 text-slate-900 rounded-bl-xs'
                   )}
                 >
-                  <p className="text-xs font-semibold mb-1 opacity-75">
+                  <p className="text-[11px] font-bold mb-0.5 opacity-80">
                     {isMe ? 'You' : message.senderName}
                   </p>
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
+                  <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
 
                   {/* Off-Platform Warning Notice (Non-punitive Trust & Safety) */}
                   {message.hasOffPlatformWarning && (
@@ -266,12 +262,12 @@ export default function ChatRoomPage() {
 
                   <div
                     className={cn(
-                      'text-[10px] mt-1.5 flex items-center gap-1 justify-end',
-                      isMe ? 'text-white/75' : 'text-muted-foreground'
+                      'text-[10px] mt-1 flex items-center gap-1 justify-end',
+                      isMe ? 'text-white/80' : 'text-muted-foreground'
                     )}
                   >
                     <span>{formattedTime}</span>
-                    {isMe && <CheckCheck className="h-3.5 w-3.5 text-emerald-200" />}
+                    {isMe && <CheckCheck className="h-3.5 w-3.5 text-lime-200" />}
                   </div>
                 </div>
               </div>
@@ -280,12 +276,12 @@ export default function ChatRoomPage() {
         </div>
 
         {/* Message Input */}
-        <div className="border-t p-3 bg-white">
+        <div className="border-t border-slate-100 p-2.5 sm:p-3 bg-white">
           <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
             <div className="relative flex-1">
               <Input
                 placeholder="Type a verified message or schedule query..."
-                className="pr-12"
+                className="pr-10 h-10 rounded-xl text-xs sm:text-sm"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 disabled={isSending}
@@ -294,7 +290,7 @@ export default function ChatRoomPage() {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-lime-700 hover:text-lime-800 hover:bg-lime-50 rounded-lg"
                 onClick={handleSuggestReply}
                 disabled={isSuggesting || isSending}
                 title="Use AI to suggest an appropriate reply"
@@ -309,7 +305,7 @@ export default function ChatRoomPage() {
 
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-lime-600 hover:bg-lime-500 text-white font-bold h-10 px-3.5 rounded-xl shrink-0"
               disabled={isSending || !newMessage.trim()}
             >
               {isSending ? (

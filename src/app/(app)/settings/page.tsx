@@ -151,7 +151,7 @@ export default function SettingsPage() {
           </TabsList>
 
           <TabsContent value="profile">
-            <Card>
+            <Card className="border-slate-200/90 shadow-xs rounded-2xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                       Details linked to your PropHunta trust profile and identity records.
                     </CardDescription>
                   </div>
-                  <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
+                  <Badge variant="outline" className="border-lime-400 text-lime-900 bg-lime-50 font-bold">
                     {roleLabel}
                   </Badge>
                 </div>
@@ -173,6 +173,7 @@ export default function SettingsPage() {
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -182,6 +183,7 @@ export default function SettingsPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
                 </div>
@@ -193,17 +195,18 @@ export default function SettingsPage() {
                       id="phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="role">Active Account Role</Label>
-                    <Input id="role" disabled value={roleLabel} />
+                    <Input id="role" disabled value={roleLabel} className="rounded-xl" />
                   </div>
                 </div>
 
                 {role === 'AGENT' && (
-                  <div className="p-4 rounded-xl border border-blue-100 bg-blue-50/50 space-y-3">
-                    <h4 className="font-semibold text-xs text-blue-900 uppercase tracking-wider">
+                  <div className="p-4 rounded-xl border border-lime-200 bg-lime-50/40 space-y-3">
+                    <h4 className="font-semibold text-xs text-lime-950 uppercase tracking-wider">
                       Agency Credentials
                     </h4>
                     <div className="grid md:grid-cols-2 gap-4 text-sm">
@@ -224,7 +227,7 @@ export default function SettingsPage() {
                 )}
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveProfile} disabled={savingProfile} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleSaveProfile} disabled={savingProfile} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   {savingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save Changes
                 </Button>
@@ -233,7 +236,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="security">
-            <Card>
+            <Card className="border-slate-200/90 shadow-xs rounded-2xl">
               <CardHeader>
                 <CardTitle className="font-headline">Security & Authentication</CardTitle>
                 <CardDescription>
@@ -243,7 +246,7 @@ export default function SettingsPage() {
               <CardContent className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" placeholder="••••••••••••" />
+                  <Input id="current-password" type="password" placeholder="••••••••••••" className="rounded-xl" />
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -254,6 +257,7 @@ export default function SettingsPage() {
                       placeholder="Enter new secure password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -264,10 +268,11 @@ export default function SettingsPage() {
                       placeholder="Re-enter new password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
                   <div>
                     <Label htmlFor="mfa" className="text-sm font-semibold">
                       Two-Factor Authentication (SMS / Authenticator)
@@ -280,7 +285,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveSecurity} disabled={savingSecurity} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleSaveSecurity} disabled={savingSecurity} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   {savingSecurity ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Update Security Settings
                 </Button>
@@ -289,7 +294,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="notifications">
-            <Card>
+            <Card className="border-slate-200/90 shadow-xs rounded-2xl">
               <CardHeader>
                 <CardTitle className="font-headline">Notification Preferences</CardTitle>
                 <CardDescription>
@@ -297,7 +302,7 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
                   <div>
                     <Label htmlFor="inspection-alerts" className="text-sm font-semibold">
                       Inspection Schedule Alerts
@@ -309,7 +314,7 @@ export default function SettingsPage() {
                   <Switch id="inspection-alerts" defaultChecked />
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
                   <div>
                     <Label htmlFor="application-alerts" className="text-sm font-semibold">
                       Application & Offer Status Updates
@@ -321,7 +326,7 @@ export default function SettingsPage() {
                   <Switch id="application-alerts" defaultChecked />
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
                   <div>
                     <Label htmlFor="message-alerts" className="text-sm font-semibold">
                       Enquiry & Chat Messages
@@ -333,7 +338,7 @@ export default function SettingsPage() {
                   <Switch id="message-alerts" defaultChecked />
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border p-4 bg-slate-50/50">
+                <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
                   <div>
                     <Label htmlFor="trust-alerts" className="text-sm font-semibold">
                       Verification Officer Audit Updates
@@ -346,7 +351,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveNotifications} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleSaveNotifications} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   Save Preferences
                 </Button>
               </CardFooter>

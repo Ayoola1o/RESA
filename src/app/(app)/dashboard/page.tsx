@@ -105,22 +105,12 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* 1. Interactive Role Selector Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
             Active Dashboard:
           </span>
-          <Badge
-            className={
-              activeRole === 'SEEKER'
-                ? 'bg-blue-600 text-white'
-                : activeRole === 'OWNER'
-                ? 'bg-indigo-600 text-white'
-                : activeRole === 'AGENT'
-                ? 'bg-sky-600 text-white'
-                : 'bg-slate-900 text-white'
-            }
-          >
+          <Badge className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-[11px]">
             {activeRole === 'SEEKER'
               ? 'Property Seeker'
               : activeRole === 'OWNER'
@@ -132,56 +122,56 @@ export default function DashboardPage() {
         </div>
 
         {/* Role Switcher Controls for demo & role navigation */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs overflow-x-auto">
+        <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl text-xs overflow-x-auto">
           <button
             type="button"
             onClick={() => setUserRole('SEEKER')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
               activeRole === 'SEEKER'
-                ? 'bg-white text-blue-700 shadow-2xs'
+                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <User className="h-3.5 w-3.5" />
+            <User className="h-3.5 w-3.5 text-lime-700" />
             Seeker
           </button>
 
           <button
             type="button"
             onClick={() => setUserRole('OWNER')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
               activeRole === 'OWNER'
-                ? 'bg-white text-indigo-700 shadow-2xs'
+                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Building className="h-3.5 w-3.5" />
+            <Building className="h-3.5 w-3.5 text-lime-700" />
             Owner
           </button>
 
           <button
             type="button"
             onClick={() => setUserRole('AGENT')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
               activeRole === 'AGENT'
-                ? 'bg-white text-sky-700 shadow-2xs'
+                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Briefcase className="h-3.5 w-3.5" />
+            <Briefcase className="h-3.5 w-3.5 text-lime-700" />
             Agent
           </button>
 
           <button
             type="button"
             onClick={() => setUserRole('ADMIN')}
-            className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
               activeRole === 'ADMIN'
-                ? 'bg-white text-slate-900 shadow-2xs'
+                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Shield className="h-3.5 w-3.5" />
+            <Shield className="h-3.5 w-3.5 text-lime-700" />
             Admin
           </button>
         </div>
@@ -189,9 +179,9 @@ export default function DashboardPage() {
 
       {/* 2. Loading State */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 text-slate-400 gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="text-xs font-semibold">Loading your verified dashboard...</span>
+        <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-lime-600" />
+          <span className="text-xs font-semibold text-slate-600">Loading your verified dashboard...</span>
         </div>
       ) : (
         /* 3. Strictly Differentiated Role Dashboards */

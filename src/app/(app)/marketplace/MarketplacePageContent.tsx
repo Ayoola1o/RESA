@@ -235,7 +235,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             onClick={() => setViewMode('map')}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
               viewMode === 'map'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-lime-600 text-white shadow-xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -250,7 +250,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         {/* Row 0: Search input & Mobile filter trigger */}
         <div className="flex items-center gap-2 mb-3">
           <div className="relative flex-1 min-w-0">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-600 shrink-0" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-lime-700 shrink-0" />
             <Input
               type="text"
               placeholder="Area, street, or city (e.g. Lekki, Ikoyi, Ikeja)..."
@@ -282,13 +282,13 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             size="sm"
             onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
             className={`md:hidden h-10 px-3 rounded-xl border text-xs font-bold shrink-0 gap-1.5 ${
-              activeFiltersCount > 0 ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-slate-200'
+              activeFiltersCount > 0 ? 'bg-lime-50 border-lime-300 text-lime-800' : 'border-slate-200'
             }`}
           >
             <ListFilter className="h-3.5 w-3.5" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="h-5 w-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="h-5 w-5 rounded-full bg-lime-600 text-white text-[10px] flex items-center justify-center font-bold">
                 {activeFiltersCount}
               </span>
             )}
@@ -319,7 +319,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             }}
             className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
               listingType === 'rent'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-lime-600 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -333,7 +333,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             }}
             className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
               listingType === 'sale'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-lime-600 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -512,7 +512,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline font-semibold ml-2"
+                    className="inline-flex items-center gap-1 text-xs text-lime-700 hover:underline font-semibold ml-2"
                   >
                     <RotateCcw className="h-3 w-3" />
                     Reset filters
@@ -520,7 +520,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                 )}
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
-                <Button onClick={handleApplyFilters} className="w-full sm:w-auto h-9 text-xs rounded-xl bg-blue-600 hover:bg-blue-500">
+                <Button onClick={handleApplyFilters} className="w-full sm:w-auto h-9 text-xs rounded-xl bg-lime-600 hover:bg-lime-500 text-white font-bold shadow-xs">
                     <ListFilter className="mr-1.5 h-3.5 w-3.5" />
                     Apply Filters
                 </Button>
@@ -544,8 +544,8 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                 <p className="text-xs text-slate-500">Click on pins to explore listings across prime Nigerian locations</p>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold">
-                <span className="flex items-center gap-1.5 text-blue-600">
-                  <span className="h-2.5 w-2.5 rounded-full bg-blue-600" /> For Rent
+                <span className="flex items-center gap-1.5 text-lime-700">
+                  <span className="h-2.5 w-2.5 rounded-full bg-lime-600" /> For Rent
                 </span>
                 <span className="flex items-center gap-1.5 text-emerald-600">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" /> For Sale / Land
@@ -553,11 +553,11 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
               </div>
             </div>
 
-            <div className="relative h-[480px] w-full rounded-2xl bg-gradient-to-br from-sky-50 via-slate-50 to-blue-100 border border-slate-200/80 overflow-hidden">
+            <div className="relative h-[480px] w-full rounded-2xl bg-gradient-to-br from-lime-50/50 via-slate-50 to-emerald-50/40 border border-slate-200/80 overflow-hidden">
               {/* Map vector topography */}
               <svg viewBox="0 0 800 480" className="absolute inset-0 h-full w-full object-cover" fill="none">
-                <path d="M0,280 C200,240 360,310 560,260 C680,230 760,280 800,290 L800,480 L0,480 Z" fill="#bfdbfe" opacity="0.4" />
-                <path d="M120,140 C240,110 360,180 500,140 C620,110 720,160 800,130" stroke="#93c5fd" strokeWidth="4" strokeDasharray="6 6" opacity="0.6" />
+                <path d="M0,280 C200,240 360,310 560,260 C680,230 760,280 800,290 L800,480 L0,480 Z" fill="#d9f99d" opacity="0.3" />
+                <path d="M120,140 C240,110 360,180 500,140 C620,110 720,160 800,130" stroke="#bef264" strokeWidth="4" strokeDasharray="6 6" opacity="0.6" />
                 <path d="M40,60 Q200,80 380,50 T760,70" stroke="#cbd5e1" strokeWidth="2" />
               </svg>
 
@@ -589,7 +589,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                     <div
                       className={`px-2.5 py-1 rounded-xl text-[11px] font-bold shadow-lg border transition-all ${
                         isSelected
-                          ? 'bg-blue-600 text-white border-blue-400 ring-4 ring-blue-300/60'
+                          ? 'bg-lime-600 text-white border-lime-400 ring-4 ring-lime-300/60'
                           : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -597,7 +597,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                     </div>
                     <div
                       className={`h-3 w-3 rounded-full mt-1 shadow-md transition-colors ${
-                        isSelected ? 'bg-blue-600 ring-4 ring-blue-200' : 'bg-slate-700 group-hover:bg-blue-500'
+                        isSelected ? 'bg-lime-600 ring-4 ring-lime-200' : 'bg-slate-700 group-hover:bg-lime-600'
                       }`}
                     />
                   </button>
@@ -609,12 +609,12 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
           {/* Map Selected Property Preview Panel */}
           <div className="lg:col-span-4 flex flex-col gap-4">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Selected Listing</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-lime-700">Selected Listing</span>
               {selectedProperty && (
                 <div className="mt-3">
                   <PropertyCard property={selectedProperty} />
                   <div className="mt-4 flex gap-2">
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold">
                       <Link href={`/property/${selectedProperty.id}`}>
                         <span>Full Details</span>
                         <ArrowRight className="ml-2 h-4 w-4" />

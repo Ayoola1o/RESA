@@ -85,21 +85,21 @@ export default function ApplicationFormPage() {
                 </Link>
             </div>
             <form onSubmit={handleSubmit}>
-                <Card>
+                <Card className="rounded-2xl border-slate-200/90 shadow-xs">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl">Rental Application</CardTitle>
                         <div className="flex items-center gap-4 pt-2">
-                            <Image src={property.images[0]} alt={property.title} width={80} height={60} className="rounded-md object-cover aspect-video" data-ai-hint="house exterior" />
+                            <Image src={property.images[0]} alt={property.title} width={80} height={60} className="rounded-xl object-cover aspect-video" data-ai-hint="house exterior" />
                             <div>
-                                 <p className="font-semibold">{property.title}</p>
+                                 <p className="font-semibold text-slate-900">{property.title}</p>
                                  <p className="text-sm text-muted-foreground">{property.address}, {property.city}</p>
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-8">
+                    <CardContent className="space-y-6 sm:space-y-8">
                         {/* Step 1: Personal Information */}
                         <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Step 1: Personal Information</h3>
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 1: Personal Information</h3>
                              <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="fullName">Full Name</Label>
@@ -108,6 +108,7 @@ export default function ApplicationFormPage() {
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         required
+                                        className="rounded-xl"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -118,6 +119,7 @@ export default function ApplicationFormPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
+                                        className="rounded-xl"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -128,6 +130,7 @@ export default function ApplicationFormPage() {
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                         required
+                                        className="rounded-xl"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -137,6 +140,7 @@ export default function ApplicationFormPage() {
                                         type="date"
                                         value={dob}
                                         onChange={(e) => setDob(e.target.value)}
+                                        className="rounded-xl"
                                     />
                                 </div>
                             </div>
@@ -144,7 +148,7 @@ export default function ApplicationFormPage() {
 
                         {/* Step 2: Rental & Employment History */}
                          <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Step 2: Rental &amp; Employment</h3>
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 2: Rental &amp; Employment</h3>
                              <div className="space-y-2">
                                 <Label htmlFor="currentAddress">Current Address</Label>
                                 <Input
@@ -152,6 +156,7 @@ export default function ApplicationFormPage() {
                                     value={currentAddress}
                                     onChange={(e) => setCurrentAddress(e.target.value)}
                                     required
+                                    className="rounded-xl"
                                 />
                              </div>
                              <div className="grid md:grid-cols-2 gap-4">
@@ -162,6 +167,7 @@ export default function ApplicationFormPage() {
                                         value={employer}
                                         onChange={(e) => setEmployer(e.target.value)}
                                         required
+                                        className="rounded-xl"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -171,6 +177,7 @@ export default function ApplicationFormPage() {
                                         value={jobTitle}
                                         onChange={(e) => setJobTitle(e.target.value)}
                                         required
+                                        className="rounded-xl"
                                     />
                                 </div>
                              </div>
@@ -178,8 +185,8 @@ export default function ApplicationFormPage() {
 
                         {/* Step 3: Document Upload */}
                         <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Step 3: Document Verification</h3>
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 3: Document Verification</h3>
+                            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="id-upload">National ID / Passport / Driver&apos;s License</Label>
                                     <div
@@ -187,15 +194,15 @@ export default function ApplicationFormPage() {
                                             setIdUploaded(true);
                                             toast({ title: "ID Attached", description: "Government ID document attached successfully." });
                                         }}
-                                        className="flex items-center justify-between p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 transition"
+                                        className="flex items-center justify-between p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"
                                     >
                                         <div className="flex items-center gap-2">
-                                            {idUploaded ? <CheckCircle2 className="h-5 w-5 text-emerald-600" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
+                                            {idUploaded ? <CheckCircle2 className="h-5 w-5 text-lime-700" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
                                             <span className="text-sm font-medium">
                                                 {idUploaded ? "NIN_Card_Verified.pdf" : "Upload Government ID"}
                                             </span>
                                         </div>
-                                        <Button type="button" variant="outline" size="sm">
+                                        <Button type="button" variant="outline" size="sm" className="rounded-lg text-xs">
                                             {idUploaded ? "Replace" : "Choose file"}
                                         </Button>
                                     </div>
@@ -207,15 +214,15 @@ export default function ApplicationFormPage() {
                                             setPaystubUploaded(true);
                                             toast({ title: "Document Attached", description: "Proof of income attached successfully." });
                                         }}
-                                        className="flex items-center justify-between p-3 border-2 border-dashed rounded-lg cursor-pointer hover:bg-slate-50 transition"
+                                        className="flex items-center justify-between p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"
                                     >
                                         <div className="flex items-center gap-2">
-                                            {paystubUploaded ? <CheckCircle2 className="h-5 w-5 text-emerald-600" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
+                                            {paystubUploaded ? <CheckCircle2 className="h-5 w-5 text-lime-700" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
                                             <span className="text-sm font-medium">
                                                 {paystubUploaded ? "Bank_Statement_3M.pdf" : "Upload Proof of Income"}
                                             </span>
                                         </div>
-                                        <Button type="button" variant="outline" size="sm">
+                                        <Button type="button" variant="outline" size="sm" className="rounded-lg text-xs">
                                             {paystubUploaded ? "Replace" : "Choose file"}
                                         </Button>
                                     </div>
@@ -225,7 +232,7 @@ export default function ApplicationFormPage() {
                         
                         {/* Step 4: Agreement & Signature */}
                         <div className="space-y-4">
-                            <h3 className="font-headline text-lg border-b pb-2">Step 4: Agreement &amp; Signature</h3>
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 4: Agreement &amp; Signature</h3>
                              <div className="flex items-start space-x-2">
                                 <Checkbox
                                     id="terms"
@@ -233,7 +240,7 @@ export default function ApplicationFormPage() {
                                     onCheckedChange={(val) => setAgreed(!!val)}
                                 />
                                 <div className="grid gap-1.5 leading-none">
-                                    <label htmlFor="terms" className="text-sm font-medium leading-none cursor-pointer">
+                                    <label htmlFor="terms" className="text-xs sm:text-sm font-medium leading-normal cursor-pointer text-slate-700">
                                     I certify that all information provided is accurate and authorize landlord screening, credit and tenancy background checks.
                                     </label>
                                 </div>
@@ -244,7 +251,7 @@ export default function ApplicationFormPage() {
                                     <Input
                                         id="signature"
                                         placeholder="Type your full name to sign"
-                                        className="pl-8 font-serif italic text-base"
+                                        className="pl-8 font-serif italic text-base rounded-xl"
                                         value={signature}
                                         onChange={(e) => setSignature(e.target.value)}
                                         required
@@ -255,7 +262,7 @@ export default function ApplicationFormPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                        <Button type="submit" size="lg" className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold h-11 rounded-xl shadow-xs text-xs sm:text-sm" disabled={isSubmitting}>
                             {isSubmitting ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

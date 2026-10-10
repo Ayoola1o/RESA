@@ -60,20 +60,20 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-[#0b132b] to-slate-950">
-      <div className="mb-6 flex flex-col items-center text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center p-3 sm:p-4 bg-gradient-to-br from-[#080d09] via-[#0c140d] to-slate-950">
+      <div className="mb-5 sm:mb-6 flex flex-col items-center text-center">
         <Link href="/" className="flex items-center gap-2 mb-2">
           <Logo />
         </Link>
-        <p className="text-xs text-blue-200/80 font-medium">
-          Verified Trust Infrastructure for Property
+        <p className="text-xs text-lime-400 font-medium">
+          Verified Trust Infrastructure for Nigerian Real Estate
         </p>
       </div>
 
       <Card className="w-full max-w-md shadow-2xl border-slate-800 bg-white rounded-2xl overflow-hidden">
-        <CardHeader className="text-center pb-4">
-          <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-2 border border-blue-200">
-            <KeyRound className="h-6 w-6" />
+        <CardHeader className="text-center pb-3 pt-5 sm:pt-6">
+          <div className="h-11 w-11 rounded-xl bg-lime-50 text-lime-700 flex items-center justify-center mx-auto mb-2 border border-lime-200">
+            <KeyRound className="h-5 w-5" />
           </div>
           <CardTitle className="text-xl font-black font-headline text-slate-900">
             Reset Account Password
@@ -83,11 +83,11 @@ export default function ForgotPasswordPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="px-4 sm:px-6 pb-5">
           {success ? (
-            <div className="text-center py-6 space-y-4">
-              <div className="h-14 w-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
-                <CheckCircle2 className="h-8 w-8" />
+            <div className="text-center py-5 space-y-4">
+              <div className="h-12 w-12 rounded-full bg-lime-50 text-lime-600 flex items-center justify-center mx-auto border border-lime-200">
+                <CheckCircle2 className="h-7 w-7" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-900">Password Updated</h3>
@@ -95,19 +95,19 @@ export default function ForgotPasswordPage() {
                   Your credentials have been securely updated in the database.
                 </p>
               </div>
-              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button asChild className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold h-10 rounded-xl">
                 <Link href="/login">Proceed to Sign In &rarr;</Link>
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               {error && (
                 <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-medium">
                   {error}
                 </div>
               )}
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="email" className="text-xs font-bold text-slate-700">Registered Email</Label>
                 <Input
                   id="email"
@@ -116,11 +116,11 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-10 rounded-xl"
+                  className="h-9 sm:h-10 rounded-xl"
                 />
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="newPassword" className="text-xs font-bold text-slate-700">New Password</Label>
                 <Input
                   id="newPassword"
@@ -129,26 +129,26 @@ export default function ForgotPasswordPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="h-10 rounded-xl"
+                  className="h-9 sm:h-10 rounded-xl"
                 />
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="confirmPassword" className="text-xs font-bold text-slate-700">Confirm New Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
                   placeholder="Re-enter new password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="h-10 rounded-xl"
+                  className="h-9 sm:h-10 rounded-xl"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25"
+                className="w-full h-10 sm:h-11 bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-md shadow-lime-950/10 transition-colors"
                 disabled={loading}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
@@ -158,12 +158,12 @@ export default function ForgotPasswordPage() {
           )}
         </CardContent>
 
-        <CardFooter className="border-t bg-slate-50/60 p-4 flex items-center justify-between text-xs text-slate-500">
-          <Link href="/login" className="text-blue-600 hover:underline font-semibold">
+        <CardFooter className="border-t bg-slate-50/70 p-3.5 sm:p-4 flex items-center justify-between text-xs text-slate-500">
+          <Link href="/login" className="text-lime-700 hover:underline font-bold">
             &larr; Back to Sign In
           </Link>
-          <span className="flex items-center gap-1 text-[11px] text-slate-400">
-            <ShieldCheck className="h-3 w-3 text-emerald-600" /> End-to-end verified
+          <span className="flex items-center gap-1 text-[11px] text-slate-500">
+            <ShieldCheck className="h-3.5 w-3.5 text-lime-600" /> End-to-end verified
           </span>
         </CardFooter>
       </Card>

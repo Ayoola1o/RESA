@@ -210,33 +210,33 @@ export default function OwnerDashboard({
   );
 
   return (
-    <div className="flex flex-col gap-8 pb-16">
+    <div className="flex flex-col gap-6 sm:gap-8 pb-16">
       {/* 1. Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-indigo-950 to-blue-950 p-6 sm:p-8 text-white border border-indigo-900/50 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0c140d] via-slate-900 to-[#142316] p-5 sm:p-7 text-white border border-lime-900/40 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-semibold mb-3">
-              <Building className="h-3.5 w-3.5 text-indigo-400" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-500/20 text-lime-300 border border-lime-400/30 text-[11px] font-bold mb-2.5">
+              <Building className="h-3.5 w-3.5 text-lime-400" />
               Property Owner & Asset Management
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
               Landlord Command Center, {userName}
             </h1>
-            <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
               Manage your property portfolio, track title verification status, approve inspection bookings, and review tenant expressions of interest with audit transparency.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button asChild className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-lg shadow-blue-950/50 gap-2 h-10 px-4">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Button asChild className="bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs shadow-md shadow-lime-950/40 gap-1.5 h-9 px-3.5">
               <Link href="/landlord/add-property">
                 <PlusCircle className="h-4 w-4" />
                 Add New Property
               </Link>
             </Button>
-            <Button asChild variant="outline" className="bg-white/10 text-white hover:bg-white/20 border-white/20 text-xs h-10 px-4">
+            <Button asChild variant="outline" className="bg-white/10 text-white hover:bg-white/20 border-white/20 text-xs h-9 px-3.5">
               <Link href="/profile?tab=properties">
-                <FileCheck className="h-4 w-4 mr-1.5" />
+                <FileCheck className="h-3.5 w-3.5 mr-1.5" />
                 Manage Documents
               </Link>
             </Button>
@@ -245,73 +245,73 @@ export default function OwnerDashboard({
       </div>
 
       {/* 2. Portfolio Occupancy & Availability KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Building className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+              <Building className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Portfolio</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Portfolio</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{totalUnits}</div>
-            <span className="text-xs text-slate-500 font-medium">Total Properties Listed</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalUnits}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Total Listed</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <Percent className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+              <Percent className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-emerald-600 uppercase">Occupancy</span>
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Occupancy</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{occupancyRate}%</div>
-            <span className="text-xs text-slate-500 font-medium">
-              {occupiedUnits} Occupied &bull; {availableUnits} Available
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{occupancyRate}%</div>
+            <span className="text-[11px] text-slate-500 font-medium">
+              {occupiedUnits} Occupied &bull; {availableUnits} Vacant
             </span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-              <Clock className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+              <Clock className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-amber-600 uppercase">Pending</span>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Pending</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{pendingInspections.length}</div>
-            <span className="text-xs text-slate-500 font-medium">Inspections to Confirm</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{pendingInspections.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Inspections to Confirm</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
-              <FileText className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+              <FileText className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-sky-600 uppercase">Offers</span>
+            <span className="text-[10px] font-bold text-lime-700 uppercase tracking-wider">Offers</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{pendingApplications.length}</div>
-            <span className="text-xs text-slate-500 font-medium">Pending Applications</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{pendingApplications.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Pending Applications</span>
           </div>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="col-span-2 lg:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-              <DollarSign className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+              <DollarSign className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-indigo-600 uppercase">Asset Value</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Asset Value</span>
           </div>
-          <div className="mt-3">
-            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 truncate">
+          <div className="mt-2.5">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
               {formatNaira(totalPortfolioValue)}
             </div>
-            <span className="text-xs text-slate-500 font-medium">Portfolio Valuation</span>
+            <span className="text-[11px] text-slate-500 font-medium">Portfolio Valuation</span>
           </div>
         </div>
       </div>
@@ -372,15 +372,15 @@ export default function OwnerDashboard({
           </Card>
 
           {/* Incoming Expressions of Interest / Applications */}
-          <Card className="border-blue-200 bg-blue-50/30 shadow-xs">
+          <Card className="border-lime-200 bg-lime-50/20 shadow-xs">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base font-bold text-blue-950 flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-blue-600" />
+                  <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-lime-700" />
                     Incoming Applications & Offers ({pendingApplications.length})
                   </CardTitle>
-                  <CardDescription className="text-xs text-blue-800">
+                  <CardDescription className="text-xs text-slate-600">
                     Expressions of interest from prospective tenants & buyers.
                   </CardDescription>
                 </div>
@@ -390,7 +390,7 @@ export default function OwnerDashboard({
               {pendingApplications.slice(0, 3).map((app) => (
                 <div
                   key={app.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-white border border-blue-200 shadow-2xs text-xs"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-white border border-lime-200 shadow-2xs text-xs"
                 >
                   <div>
                     <div className="flex items-center gap-2">
@@ -441,7 +441,7 @@ export default function OwnerDashboard({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Building className="h-4 w-4 text-blue-600" />
+                <Building className="h-4 w-4 text-lime-700" />
                 Portfolio Listings, Verification & Occupancy
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
@@ -457,7 +457,7 @@ export default function OwnerDashboard({
                   type="button"
                   onClick={() => setStatusFilter(st)}
                   className={`px-2.5 py-1 rounded-lg font-semibold transition ${
-                    statusFilter === st ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'
+                    statusFilter === st ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   {st}
@@ -475,7 +475,7 @@ export default function OwnerDashboard({
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                 Add a new property to get title verification and unlock verified tenants.
               </p>
-              <Button asChild size="sm" className="mt-4 bg-blue-600 text-white text-xs">
+              <Button asChild size="sm" className="mt-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs">
                 <Link href="/landlord/add-property">Add New Listing</Link>
               </Button>
             </div>
@@ -510,7 +510,7 @@ export default function OwnerDashboard({
                         <div className="flex flex-wrap items-center gap-2">
                           <Link
                             href={`/property/${prop.id}`}
-                            className="font-bold text-sm text-slate-900 hover:text-blue-600 transition"
+                            className="font-bold text-sm text-slate-900 hover:text-lime-700 transition"
                           >
                             {prop.title}
                           </Link>
@@ -518,13 +518,13 @@ export default function OwnerDashboard({
                           <Badge
                             className={
                               prop.listingStatus === 'ACTIVE'
-                                ? 'bg-emerald-600 text-white text-[10px]'
+                                ? 'bg-lime-700 text-white text-[10px]'
                                 : prop.listingStatus === 'VERIFIED'
-                                ? 'bg-blue-600 text-white text-[10px]'
+                                ? 'bg-slate-900 text-white text-[10px]'
                                 : prop.listingStatus === 'SUBMITTED' || prop.listingStatus === 'UNDER_REVIEW'
                                 ? 'bg-sky-600 text-white text-[10px]'
                                 : prop.listingStatus === 'CHANGES_REQUIRED'
-                                ? 'bg-amber-500 text-white text-[10px]'
+                                ? 'bg-amber-600 text-white text-[10px]'
                                 : prop.listingStatus === 'OCCUPIED'
                                 ? 'bg-purple-600 text-white text-[10px]'
                                 : 'bg-slate-500 text-white text-[10px]'
@@ -552,9 +552,9 @@ export default function OwnerDashboard({
                           <button
                             type="button"
                             onClick={() => setSelectedVerificationProp(prop)}
-                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-medium transition text-[11px] border border-slate-200"
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 hover:bg-lime-50 text-slate-700 hover:text-lime-800 font-medium transition text-[11px] border border-slate-200"
                           >
-                            <ShieldCheck className="h-3 w-3 text-blue-600" />
+                            <ShieldCheck className="h-3 w-3 text-lime-700" />
                             <span>Verification: <strong>{ver?.overallStatus || 'PENDING'}</strong></span>
                             <Eye className="h-3 w-3 ml-0.5 text-slate-400" />
                           </button>
@@ -719,7 +719,7 @@ export default function OwnerDashboard({
                         variant="secondary"
                         className={`text-[10px] py-0 px-1.5 h-4 ${
                           act.type === 'RELATIONSHIP_UPDATE'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            ? 'bg-lime-50 text-lime-800 border-lime-200'
                             : act.type === 'INSPECTION'
                             ? 'bg-amber-50 text-amber-700 border-amber-200'
                             : act.type === 'ENQUIRY'
@@ -753,7 +753,7 @@ export default function OwnerDashboard({
           <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-slate-900">
-                <ShieldCheck className="h-5 w-5 text-blue-600" />
+                <ShieldCheck className="h-5 w-5 text-lime-600" />
                 6-Point Verification Audit Status
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
@@ -802,7 +802,7 @@ export default function OwnerDashboard({
               </div>
 
               {selectedVerificationProp.verification?.reviewNotes && (
-                <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 text-blue-950">
+                <div className="p-3 rounded-xl bg-lime-50/80 border border-lime-200 text-lime-950">
                   <p className="font-bold mb-1">Compliance Officer Notes:</p>
                   <p>{selectedVerificationProp.verification.reviewNotes}</p>
                 </div>
@@ -810,7 +810,7 @@ export default function OwnerDashboard({
             </div>
 
             <DialogFooter>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+              <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs">
                 <Link href={`/property/${selectedVerificationProp.id}`}>Open Property Page</Link>
               </Button>
             </DialogFooter>

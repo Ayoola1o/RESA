@@ -53,11 +53,11 @@ export default function MessagesPage() {
         </p>
       </div>
 
-      <Card className="h-full flex flex-col shadow-sm">
-        <CardHeader className="pb-3 border-b">
+      <Card className="h-full flex flex-col shadow-xs border-slate-200/90 rounded-2xl">
+        <CardHeader className="pb-3 border-b border-slate-100">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-headline flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-blue-600" /> Active Conversations
+            <CardTitle className="text-base sm:text-lg font-headline flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-lime-700" /> Active Conversations
             </CardTitle>
             <span className="text-xs text-muted-foreground">
               {filteredEnquiries.length} {filteredEnquiries.length === 1 ? 'thread' : 'threads'}
@@ -67,7 +67,7 @@ export default function MessagesPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by property, participant name, or message content..."
-              className="pl-8"
+              className="pl-8 text-xs sm:text-sm rounded-xl"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -91,7 +91,7 @@ export default function MessagesPage() {
               {!searchQuery && (
                 <Link
                   href="/marketplace"
-                  className="inline-block mt-4 text-sm font-semibold text-blue-600 hover:underline"
+                  className="inline-block mt-4 text-sm font-semibold text-lime-700 hover:underline"
                 >
                   Browse Marketplace &rarr;
                 </Link>
@@ -120,15 +120,15 @@ export default function MessagesPage() {
                   <Link href={`/messages/${conv.id}`} key={conv.id} className="block">
                     <div
                       className={cn(
-                        'flex items-center gap-4 p-4 cursor-pointer hover:bg-slate-50 transition-colors',
-                        unread && 'bg-blue-50/40'
+                        'flex items-center gap-3.5 sm:gap-4 p-3.5 sm:p-4 cursor-pointer hover:bg-slate-50 transition-colors',
+                        unread && 'bg-lime-50/40'
                       )}
                     >
-                      <Avatar className="h-12 w-12 border border-slate-200">
+                      <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border border-slate-200">
                         {conv.propertyImage ? (
                           <AvatarImage src={conv.propertyImage} alt={conv.propertyTitle} />
                         ) : null}
-                        <AvatarFallback className="bg-blue-100 text-blue-800 font-semibold">
+                        <AvatarFallback className="bg-lime-100 text-lime-900 font-bold border border-lime-300">
                           {otherPartyName.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -161,7 +161,7 @@ export default function MessagesPage() {
                       </div>
 
                       {unread && (
-                        <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0 ring-4 ring-blue-100" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-lime-600 shrink-0 ring-4 ring-lime-100" />
                       )}
                     </div>
                   </Link>

@@ -51,15 +51,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto py-8 px-4">
-      <Card className="rounded-2xl shadow-xl border-slate-200/80 bg-white">
-        <CardHeader className="space-y-1 text-center pb-4">
+    <div className="w-full max-w-xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
+      <Card className="rounded-2xl shadow-xl border-slate-200/90 bg-white overflow-hidden">
+        <CardHeader className="space-y-1 text-center pb-3 pt-5 sm:pt-6">
           <div className="flex justify-center mb-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-lg p-2">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0c140d] border border-lime-500/30 text-lime-400 shadow-md p-2">
               <Logo className="h-8 w-8" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-black text-slate-900">
+          <CardTitle className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Create your PropHunta AI Account
           </CardTitle>
           <CardDescription className="text-xs text-slate-500">
@@ -67,14 +67,14 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="px-4 sm:px-6 pb-6">
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-medium">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             {/* Step 1: Role Selection */}
             <div>
               <Label className="text-xs font-bold text-slate-700 block mb-2">
@@ -84,85 +84,85 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedRole('SEEKER')}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 sm:p-3 rounded-xl border text-center transition-all ${
                     selectedRole === 'SEEKER'
-                      ? 'border-blue-600 bg-blue-50/80 text-blue-900 font-bold ring-2 ring-blue-600/20'
+                      ? 'border-lime-600 bg-lime-50/90 text-lime-950 font-bold ring-2 ring-lime-600/20'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  <UserCheck className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs leading-tight">Property Seeker</span>
+                  <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-lime-700" />
+                  <span className="text-xs font-bold leading-tight">Seeker</span>
                   <span className="text-[10px] text-slate-400 font-normal">Buyer / Tenant</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSelectedRole('OWNER')}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 sm:p-3 rounded-xl border text-center transition-all ${
                     selectedRole === 'OWNER'
-                      ? 'border-blue-600 bg-blue-50/80 text-blue-900 font-bold ring-2 ring-blue-600/20'
+                      ? 'border-lime-600 bg-lime-50/90 text-lime-950 font-bold ring-2 ring-lime-600/20'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  <Building2 className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs leading-tight">Property Owner</span>
+                  <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-lime-700" />
+                  <span className="text-xs font-bold leading-tight">Owner</span>
                   <span className="text-[10px] text-slate-400 font-normal">Title Holder</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSelectedRole('AGENT')}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all ${
+                  className={`flex flex-col items-center gap-1.5 p-2.5 sm:p-3 rounded-xl border text-center transition-all ${
                     selectedRole === 'AGENT'
-                      ? 'border-blue-600 bg-blue-50/80 text-blue-900 font-bold ring-2 ring-blue-600/20'
+                      ? 'border-lime-600 bg-lime-50/90 text-lime-950 font-bold ring-2 ring-lime-600/20'
                       : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}
                 >
-                  <Briefcase className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs leading-tight">Verified Agent</span>
+                  <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 text-lime-700" />
+                  <span className="text-xs font-bold leading-tight">Agent</span>
                   <span className="text-[10px] text-slate-400 font-normal">Manager / Broker</span>
                 </button>
               </div>
             </div>
 
             {/* Profile Inputs */}
-            <div className="space-y-3.5">
-              <div className="space-y-1.5">
+            <div className="space-y-3">
+              <div className="space-y-1">
                 <Label htmlFor="name" className="text-xs font-bold text-slate-700">Full Name</Label>
-                <Input id="name" name="name" placeholder="e.g. Babatunde Williams" required className="h-10 rounded-xl" />
+                <Input id="name" name="name" placeholder="e.g. Babatunde Williams" required className="h-9 sm:h-10 rounded-xl" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="space-y-1">
                   <Label htmlFor="email" className="text-xs font-bold text-slate-700">Email Address</Label>
-                  <Input id="email" name="email" type="email" placeholder="babatunde@example.com" required className="h-10 rounded-xl" />
+                  <Input id="email" name="email" type="email" placeholder="babatunde@example.com" required className="h-9 sm:h-10 rounded-xl" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label htmlFor="phone" className="text-xs font-bold text-slate-700">Phone Number</Label>
-                  <Input id="phone" name="phone" placeholder="+234 803 000 0000" required className="h-10 rounded-xl" />
+                  <Input id="phone" name="phone" placeholder="+234 803 000 0000" required className="h-9 sm:h-10 rounded-xl" />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="password" className="text-xs font-bold text-slate-700">Password</Label>
-                <Input id="password" name="password" type="password" placeholder="Min. 6 characters" required className="h-10 rounded-xl" />
+                <Input id="password" name="password" type="password" placeholder="Min. 6 characters" required className="h-9 sm:h-10 rounded-xl" />
               </div>
 
               {/* Agent / Professional details */}
               {selectedRole === 'AGENT' && (
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-800">
-                    <ShieldCheck className="h-4 w-4 text-blue-600" />
+                <div className="p-3 rounded-xl bg-lime-50/60 border border-lime-200/80 space-y-2.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-lime-900">
+                    <ShieldCheck className="h-4 w-4 text-lime-700" />
                     <span>Agent Professional Credentials</span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div className="space-y-1">
                       <Label htmlFor="agencyName" className="text-[11px] font-semibold text-slate-600">Agency / Brokerage Name</Label>
-                      <Input id="agencyName" name="agencyName" placeholder="e.g. Lagos Prime Properties" className="h-9 rounded-lg" />
+                      <Input id="agencyName" name="agencyName" placeholder="e.g. Lagos Prime Properties" className="h-8 sm:h-9 rounded-lg bg-white" />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="licenseNumber" className="text-[11px] font-semibold text-slate-600">LASRERA / License No.</Label>
-                      <Input id="licenseNumber" name="licenseNumber" placeholder="e.g. LASRERA-2026-0412" className="h-9 rounded-lg" />
+                      <Input id="licenseNumber" name="licenseNumber" placeholder="e.g. LASRERA-2026-0412" className="h-8 sm:h-9 rounded-lg bg-white" />
                     </div>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export default function SignupPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-md shadow-blue-900/20"
+              className="w-full h-10 sm:h-11 rounded-xl bg-lime-600 hover:bg-lime-500 text-white font-bold text-sm shadow-md shadow-lime-950/10 transition-colors"
             >
               {loading ? (
                 <>
@@ -185,9 +185,9 @@ export default function SignupPage() {
             </Button>
           </form>
 
-          <div className="mt-5 text-center text-xs text-slate-500">
+          <div className="mt-4 text-center text-xs text-slate-500">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 font-bold hover:underline">
+            <Link href="/login" className="text-lime-700 font-bold hover:underline">
               Log in
             </Link>
           </div>

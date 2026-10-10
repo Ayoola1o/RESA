@@ -154,34 +154,34 @@ export default function SeekerDashboard({
   const recentlyViewedList = properties.slice(0, 4);
 
   return (
-    <div className="flex flex-col gap-8 pb-16">
+    <div className="flex flex-col gap-6 sm:gap-8 pb-16">
       {/* 1. Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 p-6 sm:p-8 text-white border border-blue-900/60 shadow-xl">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0c140d] via-slate-900 to-[#142316] p-5 sm:p-7 text-white border border-lime-900/40 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold mb-3">
-              <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-500/20 text-lime-300 border border-lime-400/30 text-[11px] font-bold mb-2.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-lime-400" />
               Verified Seeker Workspace
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
               Welcome to your Seeker Portal, {userName}
             </h1>
-            <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
               Track your saved properties, monitor active inspection requests, review rental applications, and discover AI-matched verified properties across Lagos and Abuja.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button
               onClick={() => setIsAiModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-lg shadow-blue-950/50 gap-2 h-10 px-4"
+              className="bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs shadow-md shadow-lime-950/40 gap-1.5 h-9 px-3.5"
             >
               <Sparkles className="h-4 w-4" />
               Ask AI Matchmaker
             </Button>
-            <Button asChild variant="outline" className="bg-white/10 text-white hover:bg-white/20 border-white/20 text-xs h-10 px-4">
+            <Button asChild variant="outline" className="bg-white/10 text-white hover:bg-white/20 border-white/20 text-xs h-9 px-3.5">
               <Link href="/marketplace">
-                <Search className="h-4 w-4 mr-1.5" />
+                <Search className="h-3.5 w-3.5 mr-1.5" />
                 Browse Marketplace
               </Link>
             </Button>
@@ -189,62 +189,62 @@ export default function SeekerDashboard({
         </div>
 
         {/* Decorative background glow */}
-        <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-lime-600/15 blur-3xl pointer-events-none" />
       </div>
 
       {/* 2. Key Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Bookmark className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+              <Bookmark className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Saved</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Saved</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{savedPropertiesList.length}</div>
-            <span className="text-xs text-slate-500 font-medium">Bookmarked Listings</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{savedPropertiesList.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Bookmarked Listings</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <Calendar className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+              <Calendar className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Inspections</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inspections</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">
               {inspections.filter((i) => i.status !== 'CANCELLED').length}
             </div>
-            <span className="text-xs text-slate-500 font-medium">Scheduled & Requested</span>
+            <span className="text-[11px] text-slate-500 font-medium">Scheduled & Requested</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
-              <FileText className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+              <FileText className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Applications</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Applications</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{applications.length}</div>
-            <span className="text-xs text-slate-500 font-medium">Offers & Expressions</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{applications.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Offers & Expressions</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-              <MessageSquare className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+              <MessageSquare className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[11px] font-semibold text-slate-400 uppercase">Enquiries</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Enquiries</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">{enquiries.length}</div>
-            <span className="text-xs text-slate-500 font-medium">Host Conversations</span>
+          <div className="mt-2.5">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{enquiries.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium">Host Conversations</span>
           </div>
         </div>
       </div>
@@ -255,7 +255,7 @@ export default function SeekerDashboard({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Search className="h-4 w-4 text-blue-600" />
+                <Search className="h-4 w-4 text-lime-700" />
                 Recent Searches & Discovery Hotspots
               </CardTitle>
               <CardDescription className="text-xs text-slate-500">
@@ -280,11 +280,11 @@ export default function SeekerDashboard({
               <Link
                 key={idx}
                 href={`/marketplace?search=${encodeURIComponent(query)}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-xs font-semibold text-slate-700 hover:text-blue-700 transition group shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-lime-50 border border-slate-200 hover:border-lime-300 text-xs font-semibold text-slate-700 hover:text-lime-800 transition group shadow-2xs"
               >
-                <Search className="h-3 w-3 text-slate-400 group-hover:text-blue-600" />
+                <Search className="h-3 w-3 text-slate-400 group-hover:text-lime-600" />
                 <span>{query}</span>
-                <ArrowRight className="h-3 w-3 text-slate-400 group-hover:text-blue-600 ml-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="h-3 w-3 text-slate-400 group-hover:text-lime-600 ml-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             ))}
           </div>
@@ -295,7 +295,7 @@ export default function SeekerDashboard({
               placeholder="Save a new search term (e.g. 4 Bed in Ikoyi)..."
               value={newSearchQuery}
               onChange={(e) => setNewSearchQuery(e.target.value)}
-              className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 bg-slate-50"
+              className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-lime-500 bg-slate-50"
             />
             <Button type="submit" size="sm" className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8">
               Save
@@ -309,7 +309,7 @@ export default function SeekerDashboard({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
+              <FileText className="h-5 w-5 text-lime-700" />
               Your Applications & Expressions of Interest ({applications.length})
             </h2>
             <p className="text-xs text-slate-500">
@@ -328,14 +328,14 @@ export default function SeekerDashboard({
             <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
               When you find a verified home on the marketplace, submit an Expression of Interest to begin landlord review.
             </p>
-            <Button asChild size="sm" className="mt-4 bg-blue-600 text-white text-xs">
+            <Button asChild size="sm" className="mt-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs">
               <Link href="/marketplace">Find Properties to Apply</Link>
             </Button>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {applications.map((app) => (
-              <Card key={app.id} className="border border-slate-200/90 shadow-2xs hover:border-blue-300 transition">
+              <Card key={app.id} className="border border-slate-200/90 shadow-2xs hover:border-lime-400 transition">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -347,7 +347,7 @@ export default function SeekerDashboard({
                             : app.status === 'REJECTED'
                             ? 'bg-red-50 text-red-700 border-red-300'
                             : app.status === 'UNDER_REVIEW'
-                            ? 'bg-blue-50 text-blue-700 border-blue-300'
+                            ? 'bg-lime-50 text-lime-800 border-lime-300'
                             : 'bg-amber-50 text-amber-700 border-amber-300'
                         }
                       >
@@ -388,7 +388,7 @@ export default function SeekerDashboard({
                     <span className="text-[10px] text-slate-400">
                       Submitted: {new Date(app.createdAt).toLocaleDateString()}
                     </span>
-                    <Button asChild size="sm" variant="ghost" className="h-7 text-xs text-blue-600 px-2">
+                    <Button asChild size="sm" variant="ghost" className="h-7 text-xs text-lime-700 hover:text-lime-800 px-2 font-bold">
                       <Link href={`/property/${app.propertyId}`}>View Listing &rarr;</Link>
                     </Button>
                   </div>
@@ -434,7 +434,7 @@ export default function SeekerDashboard({
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/property/${insp.propertyId}`}
-                        className="font-bold text-slate-900 hover:text-blue-600 line-clamp-1"
+                        className="font-bold text-slate-900 hover:text-lime-700 line-clamp-1"
                       >
                         {insp.propertyTitle}
                       </Link>
@@ -443,7 +443,7 @@ export default function SeekerDashboard({
                           insp.status === 'COMPLETED'
                             ? 'bg-emerald-600 text-white text-[10px]'
                             : insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED'
-                            ? 'bg-blue-600 text-white text-[10px]'
+                            ? 'bg-lime-700 text-white text-[10px]'
                             : insp.status === 'CANCELLED'
                             ? 'bg-slate-400 text-white text-[10px]'
                             : 'bg-amber-500 text-white text-[10px]'
@@ -500,7 +500,7 @@ export default function SeekerDashboard({
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-indigo-600" />
+                  <MessageSquare className="h-4 w-4 text-lime-700" />
                   Property Enquiries ({enquiries.length})
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-500">
@@ -522,14 +522,14 @@ export default function SeekerDashboard({
                 <Link
                   key={enq.id}
                   href={`/messages/${enq.id}`}
-                  className="block p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-blue-300 hover:bg-blue-50/40 transition group text-xs"
+                  className="block p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-lime-400 hover:bg-lime-50/30 transition group text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-slate-900 group-hover:text-blue-600 line-clamp-1">
+                    <p className="font-bold text-slate-900 group-hover:text-lime-700 line-clamp-1">
                       {enq.propertyTitle}
                     </p>
                     {enq.unreadCountForSeeker > 0 && (
-                      <Badge className="bg-blue-600 text-white text-[10px]">
+                      <Badge className="bg-lime-600 text-white text-[10px]">
                         {enq.unreadCountForSeeker} new
                       </Badge>
                     )}
@@ -551,7 +551,7 @@ export default function SeekerDashboard({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Bookmark className="h-5 w-5 text-blue-600" />
+              <Bookmark className="h-5 w-5 text-lime-700" />
               Saved Properties ({savedPropertiesList.length})
             </h2>
             <p className="text-xs text-slate-500">
@@ -570,7 +570,7 @@ export default function SeekerDashboard({
             <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
               Save your favorite apartments, duplexes, or commercial listings to revisit them anytime.
             </p>
-            <Button asChild size="sm" className="mt-4 bg-blue-600 text-white text-xs">
+            <Button asChild size="sm" className="mt-4 bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold text-xs">
               <Link href="/marketplace">Browse Verified Marketplace</Link>
             </Button>
           </Card>
@@ -598,7 +598,7 @@ export default function SeekerDashboard({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
+              <Sparkles className="h-5 w-5 text-lime-700" />
               Recommended Verified Properties
             </h2>
             <p className="text-xs text-slate-500">
@@ -607,7 +607,7 @@ export default function SeekerDashboard({
           </div>
           <Link
             href="/marketplace?verifiedOnly=true"
-            className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 group"
+            className="text-xs font-bold text-lime-700 hover:text-lime-800 flex items-center gap-1 group"
           >
             <span>View All Verified</span>
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />

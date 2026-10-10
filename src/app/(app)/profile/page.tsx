@@ -333,32 +333,32 @@ function ProfileContent() {
   return (
     <div className="space-y-8">
       {/* Profile Header */}
-      <Card className="border shadow-sm">
-        <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
+      <Card className="border border-slate-200/90 shadow-xs rounded-2xl">
+        <CardContent className="p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
             <div className="relative">
-              <div className="h-20 w-20 rounded-full bg-blue-100 border-2 border-blue-600 flex items-center justify-center text-blue-900 font-bold text-2xl shadow-sm">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-lime-100 border-2 border-lime-600 flex items-center justify-center text-lime-950 font-bold text-xl sm:text-2xl shadow-xs">
                 {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : 'PH'}
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-emerald-600 text-white rounded-full p-1" title="Trust Verified Account">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="absolute -bottom-1 -right-1 bg-lime-600 text-white rounded-full p-1" title="Trust Verified Account">
+                <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl md:text-3xl font-bold font-headline text-slate-900">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-headline text-slate-900">
                   {currentUser?.name || 'PropHunta Member'}
                 </h1>
-                <Badge className="bg-blue-600 hover:bg-blue-700 text-white font-medium">
+                <Badge className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs">
                   {getRoleLabel()}
                 </Badge>
-                <Badge variant="outline" className="border-emerald-500 text-emerald-700 bg-emerald-50 gap-1">
+                <Badge variant="outline" className="border-lime-500 text-lime-800 bg-lime-50 gap-1 text-xs">
                   <ShieldCheck className="h-3 w-3" /> Identity Verified
                 </Badge>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-muted-foreground pt-1">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs md:text-sm text-muted-foreground pt-1">
                 <span className="flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-slate-400" /> {currentUser?.email}
                 </span>
@@ -367,7 +367,7 @@ function ProfileContent() {
                 </span>
                 {currentUser?.agencyName && (
                   <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                    <Briefcase className="h-3.5 w-3.5 text-blue-600" /> {currentUser.agencyName}
+                    <Briefcase className="h-3.5 w-3.5 text-lime-700" /> {currentUser.agencyName}
                   </span>
                 )}
                 {currentUser?.licenseNumber && (
@@ -379,22 +379,22 @@ function ProfileContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2.5 sm:gap-3 w-full md:w-auto">
             {role === 'ADMIN' && (
-              <Button asChild className="bg-slate-900 hover:bg-black text-white">
+              <Button asChild className="bg-slate-900 hover:bg-black text-white text-xs sm:text-sm rounded-xl">
                 <Link href="/admin">
                   <ShieldCheck className="mr-2 h-4 w-4" /> Go to Verification Portal
                 </Link>
               </Button>
             )}
             {(role === 'OWNER' || role === 'AGENT') && (
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
                 <Link href="/landlord/add-property">
                   <Plus className="mr-2 h-4 w-4" /> Add Listing
                 </Link>
               </Button>
             )}
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="text-xs sm:text-sm rounded-xl">
               <Link href="/settings">Account Settings</Link>
             </Button>
           </div>
@@ -405,22 +405,22 @@ function ProfileContent() {
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-auto lg:inline-flex mb-4">
           {(role === 'OWNER' || role === 'AGENT') && (
-            <TabsTrigger value="properties" className="gap-2">
+            <TabsTrigger value="properties" className="gap-2 text-xs sm:text-sm">
               <Building2 className="h-4 w-4" /> My Listings ({userProperties.length})
             </TabsTrigger>
           )}
-          <TabsTrigger value="inspections" className="gap-2">
+          <TabsTrigger value="inspections" className="gap-2 text-xs sm:text-sm">
             <Calendar className="h-4 w-4" /> Inspections ({inspections.length})
           </TabsTrigger>
-          <TabsTrigger value="applications" className="gap-2">
+          <TabsTrigger value="applications" className="gap-2 text-xs sm:text-sm">
             <FileText className="h-4 w-4" /> Applications ({applications.length})
           </TabsTrigger>
           {role === 'SEEKER' && (
-            <TabsTrigger value="saved" className="gap-2">
+            <TabsTrigger value="saved" className="gap-2 text-xs sm:text-sm">
               <Heart className="h-4 w-4" /> Saved Listings ({savedProperties.length})
             </TabsTrigger>
           )}
-          <TabsTrigger value="identity" className="gap-2">
+          <TabsTrigger value="identity" className="gap-2 text-xs sm:text-sm">
             <ShieldCheck className="h-4 w-4" /> Trust & Verification
           </TabsTrigger>
         </TabsList>
@@ -433,7 +433,7 @@ function ProfileContent() {
                 <h2 className="text-xl font-bold font-headline text-slate-900">Your Managed Properties</h2>
                 <p className="text-sm text-muted-foreground">Properties currently assigned to your ownership or agency account.</p>
               </div>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
                 <Link href="/landlord/add-property">
                   <Plus className="mr-2 h-4 w-4" /> New Property Draft
                 </Link>
@@ -443,13 +443,13 @@ function ProfileContent() {
             {loading ? (
               <div className="p-12 text-center text-sm text-muted-foreground">Loading your listings...</div>
             ) : userProperties.length === 0 ? (
-              <Card className="p-12 text-center">
+              <Card className="p-12 text-center rounded-2xl border-slate-200">
                 <Building2 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
                 <h3 className="font-semibold text-slate-900">No properties listed yet</h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
                   Create your first property listing, attach proof of title documents, and submit for verification.
                 </p>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl">
                   <Link href="/landlord/add-property">Create Listing</Link>
                 </Button>
               </Card>
@@ -462,7 +462,7 @@ function ProfileContent() {
                       <Badge
                         className={`text-xs font-bold ${
                           prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
-                            ? 'bg-emerald-600 text-white'
+                            ? 'bg-lime-600 text-white'
                             : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
                             ? 'bg-amber-500 text-white'
                             : prop.listingStatus === 'CHANGES_REQUIRED'
@@ -470,7 +470,7 @@ function ProfileContent() {
                             : prop.listingStatus === 'RESERVED'
                             ? 'bg-purple-600 text-white'
                             : prop.listingStatus === 'OCCUPIED'
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-slate-700 text-white'
                             : prop.listingStatus === 'SOLD'
                             ? 'bg-slate-800 text-white'
                             : prop.listingStatus === 'SUSPENDED' || prop.listingStatus === 'REJECTED'
@@ -520,7 +520,7 @@ function ProfileContent() {
                   : 'You have no pending or completed inspections for your listings.'}
               </p>
               {role === 'SEEKER' && (
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   <Link href="/marketplace">Find Properties</Link>
                 </Button>
               )}
@@ -537,14 +537,14 @@ function ProfileContent() {
                 });
 
                 return (
-                  <Card key={insp.id} className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border shadow-sm">
+                  <Card key={insp.id} className="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200/90 shadow-xs rounded-2xl">
                     <div className="flex items-start gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
-                        <Calendar className="h-6 w-6 text-blue-600" />
+                      <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-lime-50 border border-lime-200 flex items-center justify-center shrink-0">
+                        <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-lime-700" />
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/property/${insp.propertyId}`} className="font-semibold text-slate-900 hover:text-blue-600 text-base">
+                          <Link href={`/property/${insp.propertyId}`} className="font-semibold text-slate-900 hover:text-lime-700 text-base">
                             {insp.propertyTitle}
                           </Link>
                           <Badge
@@ -554,7 +554,7 @@ function ProfileContent() {
                                 : insp.status === 'REQUESTED'
                                 ? 'bg-amber-500 text-white'
                                 : insp.status === 'COMPLETED'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-lime-700 text-white'
                                 : 'bg-slate-200 text-slate-700'
                             }
                           >
@@ -587,7 +587,7 @@ function ProfileContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-semibold gap-1"
+                          className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-semibold gap-1 rounded-xl"
                           onClick={() => openViewInspectionRecord(insp)}
                         >
                           <ClipboardCheck className="h-3.5 w-3.5 text-emerald-600" />
@@ -597,7 +597,7 @@ function ProfileContent() {
                       {isHost && (insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED') && (
                         <Button
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm"
+                          className="bg-lime-600 hover:bg-lime-500 text-white text-xs font-bold shadow-xs rounded-xl"
                           onClick={() => openCompleteInspectionModal(insp)}
                         >
                           Complete & Log Report
@@ -606,7 +606,7 @@ function ProfileContent() {
                       {isHost && insp.status === 'REQUESTED' && (
                         <Button
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl"
                           disabled={updatingId === insp.id}
                           onClick={() => handleConfirmInspection(insp.id)}
                         >
@@ -617,7 +617,7 @@ function ProfileContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-300 text-xs font-semibold"
+                          className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-300 text-xs font-semibold rounded-xl"
                           onClick={() => openRescheduleModal(insp)}
                         >
                           Propose Schedule
@@ -627,7 +627,7 @@ function ProfileContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 text-xs"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 text-xs rounded-xl"
                           disabled={updatingId === insp.id}
                           onClick={() => handleCancelInspection(insp.id)}
                         >
@@ -661,7 +661,7 @@ function ProfileContent() {
           {loading ? (
             <div className="p-12 text-center text-sm text-muted-foreground">Loading applications...</div>
           ) : applications.length === 0 ? (
-            <Card className="p-12 text-center">
+            <Card className="p-12 text-center rounded-2xl border-slate-200">
               <FileText className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
               <h3 className="font-semibold text-slate-900">No applications on file</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
@@ -670,7 +670,7 @@ function ProfileContent() {
                   : 'No seekers have submitted applications for your listings yet.'}
               </p>
               {role === 'SEEKER' && (
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   <Link href="/marketplace">Browse Verified Listings</Link>
                 </Button>
               )}
@@ -686,11 +686,11 @@ function ProfileContent() {
                 });
 
                 return (
-                  <Card key={app.id} className="p-5 border shadow-sm">
+                  <Card key={app.id} className="p-4 sm:p-5 border border-slate-200/90 shadow-xs rounded-2xl">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/property/${app.propertyId}`} className="font-semibold text-slate-900 hover:text-blue-600 text-base">
+                          <Link href={`/property/${app.propertyId}`} className="font-semibold text-slate-900 hover:text-lime-700 text-base">
                             {app.propertyTitle}
                           </Link>
                           <Badge
@@ -700,7 +700,7 @@ function ProfileContent() {
                                 : app.status === 'SUBMITTED'
                                 ? 'bg-amber-500 text-white'
                                 : app.status === 'UNDER_REVIEW'
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-lime-700 text-white'
                                 : 'bg-slate-200 text-slate-700'
                             }
                           >
@@ -735,7 +735,7 @@ function ProfileContent() {
                         <div className="flex items-center gap-2 shrink-0">
                           <Button
                             size="sm"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
                             disabled={updatingId === app.id}
                             onClick={() => handleApplicationStatus(app.id, 'APPROVED')}
                           >
@@ -744,7 +744,7 @@ function ProfileContent() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 rounded-xl"
                             disabled={updatingId === app.id}
                             onClick={() => handleApplicationStatus(app.id, 'REJECTED')}
                           >
@@ -769,13 +769,13 @@ function ProfileContent() {
             </div>
 
             {savedProperties.length === 0 ? (
-              <Card className="p-12 text-center">
+              <Card className="p-12 text-center rounded-2xl border-slate-200">
                 <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
                 <h3 className="font-semibold text-slate-900">No saved properties</h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
                   Save listings you are interested in while exploring the marketplace.
                 </p>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   <Link href="/marketplace">Explore Marketplace</Link>
                 </Button>
               </Card>
@@ -787,7 +787,7 @@ function ProfileContent() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      className="absolute top-3 right-3 opacity-90 hover:opacity-100 shadow-md"
+                      className="absolute top-3 right-3 opacity-90 hover:opacity-100 shadow-md rounded-xl"
                       onClick={() => handleRemoveSaved(prop.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-1" /> Remove
@@ -801,10 +801,10 @@ function ProfileContent() {
 
         {/* Tab: Trust & Verification Info */}
         <TabsContent value="identity" className="space-y-6">
-          <Card>
+          <Card className="rounded-2xl border-slate-200/90 shadow-xs">
             <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                <ShieldCheck className="h-5 w-5 text-lime-700" />
                 PropHunta Trust Infrastructure Status
               </CardTitle>
               <CardDescription>
@@ -824,7 +824,7 @@ function ProfileContent() {
                 <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Identity Verification</span>
-                    <Badge className="bg-emerald-600 text-white text-[10px]">VERIFIED</Badge>
+                    <Badge className="bg-lime-600 text-white text-[10px] font-bold">VERIFIED</Badge>
                   </div>
                   <p className="font-semibold text-slate-900">National ID / BVN Matched</p>
                 </div>
@@ -832,7 +832,7 @@ function ProfileContent() {
                 <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Trust Score</span>
-                    <Badge className="bg-blue-600 text-white text-[10px]">98 / 100</Badge>
+                    <Badge className="bg-lime-700 text-white text-[10px] font-bold">98 / 100</Badge>
                   </div>
                   <p className="font-semibold text-slate-900">Zero Unresolved Reports</p>
                 </div>
@@ -859,7 +859,7 @@ function ProfileContent() {
           <form onSubmit={handleSaveInspectionRecord}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-lg">
-                <ClipboardCheck className="h-5 w-5 text-blue-600" />
+                <ClipboardCheck className="h-5 w-5 text-lime-600" />
                 Complete Inspection & Log Findings
               </DialogTitle>
               <DialogDescription>
@@ -980,7 +980,7 @@ function ProfileContent() {
               <Button type="button" variant="outline" onClick={() => setCompleteDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmittingRecord} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={isSubmittingRecord} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
                 {isSubmittingRecord ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
@@ -1070,7 +1070,7 @@ function ProfileContent() {
               {viewingRecord.photos && viewingRecord.photos.length > 0 && (
                 <div className="space-y-1.5 pt-2 border-t">
                   <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Camera className="h-3.5 w-3.5 text-blue-600" /> Inspection Photos ({viewingRecord.photos.length})
+                    <Camera className="h-3.5 w-3.5 text-lime-700" /> Inspection Photos ({viewingRecord.photos.length})
                   </span>
                   <div className="grid grid-cols-3 gap-2">
                     {viewingRecord.photos.map((url, idx) => (
@@ -1102,7 +1102,7 @@ function ProfileContent() {
                     href={viewingRecord.video}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-3 py-1.5 rounded border border-blue-100"
+                    className="inline-flex items-center gap-2 text-xs text-lime-800 hover:text-lime-900 font-bold bg-lime-50 px-3 py-1.5 rounded-lg border border-lime-200"
                   >
                     <Video className="h-3.5 w-3.5" /> Watch Recorded Video Walkthrough <ExternalLink className="h-3 w-3" />
                   </a>

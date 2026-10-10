@@ -102,60 +102,61 @@ export default function MaintenanceDetailPage() {
                     Back to All Requests
                 </Link>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-                <div className="md:col-span-2 space-y-8">
-                    <Card>
+            <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+                <div className="md:col-span-2 space-y-6 sm:space-y-8">
+                    <Card className="rounded-2xl border-slate-200/90 shadow-xs">
                         <CardHeader>
                              <div className="flex justify-between items-start">
                                 <div>
-                                    <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                                        <Wrench className="h-6 w-6 text-primary"/>Maintenance Request
+                                    <CardTitle className="font-headline text-xl sm:text-2xl flex items-center gap-2">
+                                        <Wrench className="h-5 w-5 sm:h-6 sm:w-6 text-lime-700"/>Maintenance Request
                                     </CardTitle>
                                     <CardDescription>Submitted on {new Date(request.dateSubmitted).toLocaleDateString()}</CardDescription>
                                 </div>
-                                <Badge variant={getStatusVariant(currentStatus)} className="text-base">{currentStatus}</Badge>
+                                <Badge variant={getStatusVariant(currentStatus)} className="text-sm font-bold">{currentStatus}</Badge>
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 font-headline flex items-center gap-2"><FileText /> Tenant&apos;s Request</h3>
-                                <p className="text-muted-foreground bg-muted/30 p-4 rounded-lg border">{request.description}</p>
+                                <h3 className="text-base sm:text-lg font-bold mb-2 font-headline flex items-center gap-2 text-slate-900"><FileText className="h-4 w-4 text-slate-500" /> Tenant&apos;s Request</h3>
+                                <p className="text-muted-foreground bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs sm:text-sm leading-relaxed">{request.description}</p>
                             </div>
                             <Separator />
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 font-headline flex items-center gap-2"><Sparkles className="text-primary"/> AI Analysis</h3>
-                                <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg">
+                                <h3 className="text-base sm:text-lg font-bold mb-2 font-headline flex items-center gap-2 text-slate-900"><Sparkles className="text-lime-700 h-4 w-4"/> AI Diagnostic Summary</h3>
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4 border border-slate-200/80 p-3.5 sm:p-4 rounded-xl bg-slate-50/50">
                                     <div className="space-y-1">
-                                        <p className="text-sm font-medium text-muted-foreground">Category</p>
-                                        <Badge>{request.category}</Badge>
+                                        <p className="text-xs font-medium text-muted-foreground">Category</p>
+                                        <Badge className="bg-lime-50 text-lime-800 border-lime-300 font-bold text-xs">{request.category}</Badge>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-sm font-medium text-muted-foreground">Priority</p>
-                                        <Badge variant={request.priority === 'Emergency' || request.priority === 'High' ? 'destructive' : 'secondary'}>{request.priority}</Badge>
+                                        <p className="text-xs font-medium text-muted-foreground">Priority</p>
+                                        <Badge variant={request.priority === 'Emergency' || request.priority === 'High' ? 'destructive' : 'secondary'} className="text-xs font-bold">{request.priority}</Badge>
                                     </div>
-                                    <div className="space-y-1 col-span-2">
-                                        <p className="text-sm font-medium text-muted-foreground">Suggested Action</p>
-                                        <p className="text-card-foreground">Contact a licensed professional for assessment and repair.</p>
+                                    <div className="space-y-1 col-span-2 pt-1 border-t border-slate-100">
+                                        <p className="text-xs font-medium text-muted-foreground">Suggested Action</p>
+                                        <p className="text-xs sm:text-sm text-slate-800 font-medium">Contact a licensed professional contractor for on-site assessment and repair.</p>
                                     </div>
                                 </div>
                             </div>
                              <Separator />
                             <div>
-                                <h3 className="text-lg font-semibold mb-2 font-headline">Internal Notes & History</h3>
+                                <h3 className="text-base sm:text-lg font-bold mb-2 font-headline text-slate-900">Internal Notes & History</h3>
                                 <div className="space-y-2">
                                     <Textarea
                                         placeholder="Add notes for your property management team..."
                                         rows={3}
                                         value={notes}
                                         onChange={(e) => setNotes(e.target.value)}
+                                        className="rounded-xl resize-none text-xs"
                                     />
-                                    <Button onClick={handleAddNote} size="sm" variant="outline">
-                                        <Send className="mr-2 h-3.5 w-3.5" /> Save Note
+                                    <Button onClick={handleAddNote} size="sm" variant="outline" className="rounded-xl text-xs font-bold">
+                                        <Send className="mr-1.5 h-3.5 w-3.5" /> Save Note
                                     </Button>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-4 space-y-2">
+                                <div className="text-xs text-muted-foreground mt-3 space-y-1.5">
                                     {noteList.map((entry, idx) => (
-                                        <p key={idx}>{entry}</p>
+                                        <p key={idx} className="bg-slate-50 p-2 rounded-lg border border-slate-100">{entry}</p>
                                     ))}
                                 </div>
                             </div>
@@ -163,45 +164,45 @@ export default function MaintenanceDetailPage() {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="space-y-8">
-                    <Card>
+                <div className="space-y-6 sm:space-y-8">
+                    <Card className="rounded-2xl border-slate-200/90 shadow-xs">
                         <CardHeader>
-                            <CardTitle className="font-headline">Property & Tenant</CardTitle>
+                            <CardTitle className="font-headline text-base sm:text-lg font-bold text-slate-900">Property & Tenant</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                              <div className="flex items-center gap-3">
-                                <Image src={property.images[0]} alt={property.title} width={64} height={48} className="rounded-md object-cover aspect-video" data-ai-hint="house exterior"/>
+                                <Image src={property.images[0]} alt={property.title} width={64} height={48} className="rounded-xl object-cover aspect-video" data-ai-hint="house exterior"/>
                                 <div>
-                                     <p className="font-semibold">{property.title}</p>
-                                     <Button asChild variant="link" className="p-0 h-auto">
+                                     <p className="font-semibold text-xs sm:text-sm text-slate-900">{property.title}</p>
+                                     <Button asChild variant="link" className="p-0 h-auto text-lime-700 hover:text-lime-800 text-xs">
                                         <Link href={`/property/${property.id}`}>View Property</Link>
                                      </Button>
                                 </div>
                             </div>
                             <Separator/>
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-full bg-muted">
-                                    <User className="h-5 w-5 text-muted-foreground"/>
+                                <div className="p-2.5 rounded-full bg-slate-100 border border-slate-200">
+                                    <User className="h-4 w-4 text-slate-600"/>
                                 </div>
                                 <div>
-                                     <p className="font-semibold">{request.tenantName}</p>
-                                     <p className="text-sm text-muted-foreground">Tenant</p>
+                                     <p className="font-bold text-xs sm:text-sm text-slate-900">{request.tenantName}</p>
+                                     <p className="text-xs text-muted-foreground">Verified Tenant</p>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
-                     <Card>
+                     <Card className="rounded-2xl border-slate-200/90 shadow-xs">
                         <CardHeader>
-                            <CardTitle className="font-headline">Actions</CardTitle>
+                            <CardTitle className="font-headline text-base sm:text-lg font-bold text-slate-900">Actions</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-3">
                              <div className="grid gap-1.5">
-                                <Label htmlFor="status">Update Status</Label>
+                                <Label htmlFor="status" className="text-xs font-bold">Update Status</Label>
                                 <Select
                                     value={currentStatus.toLowerCase().replace(' ', '-')}
                                     onValueChange={handleStatusChange}
                                 >
-                                    <SelectTrigger id="status">
+                                    <SelectTrigger id="status" className="rounded-xl h-10 text-xs font-semibold">
                                         <SelectValue placeholder="Select status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -213,7 +214,7 @@ export default function MaintenanceDetailPage() {
                             </div>
                             <Button
                                 onClick={handleMarkComplete}
-                                className="w-full"
+                                className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl h-10 shadow-xs text-xs"
                                 disabled={currentStatus === 'Completed'}
                             >
                                 <CheckCircle className="mr-2 h-4 w-4"/>
@@ -222,12 +223,12 @@ export default function MaintenanceDetailPage() {
                             <Button
                                 onClick={() => setIsScheduleOpen(true)}
                                 variant="outline"
-                                className="w-full"
+                                className="w-full rounded-xl h-10 font-bold text-xs border-slate-300"
                             >
                                 <Calendar className="mr-2 h-4 w-4"/> Schedule Service
                             </Button>
-                            <Button asChild variant="outline" className="w-full">
-                                <Link href="/messages/2">
+                            <Button asChild variant="outline" className="w-full rounded-xl h-10 font-bold text-xs border-slate-300">
+                                <Link href="/messages">
                                     <MessageSquare className="mr-2 h-4 w-4"/> Message Tenant
                                 </Link>
                             </Button>

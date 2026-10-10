@@ -370,7 +370,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                         )}
                         <div className="absolute bottom-3 left-4 flex items-center gap-2 z-10">
                           {med.type === 'video' && (
-                            <span className="bg-blue-600/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-sm">
+                            <span className="bg-lime-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-sm">
                               <Video className="h-3 w-3" /> Video Walkthrough
                             </span>
                           )}
@@ -393,7 +393,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <Badge
                 className={`text-xs font-bold px-3 py-1 ${
                   property.listingStatus === 'VERIFIED' || property.listingStatus === 'ACTIVE'
-                    ? 'bg-emerald-600 text-white'
+                    ? 'bg-lime-600 text-white'
                     : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
                     ? 'bg-amber-500 text-white'
                     : property.listingStatus === 'CHANGES_REQUIRED'
@@ -401,7 +401,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                     : property.listingStatus === 'RESERVED'
                     ? 'bg-purple-600 text-white'
                     : property.listingStatus === 'OCCUPIED'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-slate-700 text-white'
                     : property.listingStatus === 'SOLD'
                     ? 'bg-slate-800 text-white'
                     : property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'
@@ -450,12 +450,12 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   {property.title}
                 </h1>
                 <p className="flex items-center text-sm font-medium text-slate-500 mt-1.5">
-                  <MapPin className="h-4 w-4 mr-1 text-blue-600 shrink-0" />
+                  <MapPin className="h-4 w-4 mr-1 text-lime-700 shrink-0" />
                   {property.address}, {property.area}, {property.city}, {property.state}
                 </p>
               </div>
               <div className="text-left sm:text-right shrink-0">
-                <div className="text-2xl sm:text-3xl font-black text-blue-700">
+                <div className="text-2xl sm:text-3xl font-black text-lime-800">
                   {formatCurrency(property.price, property.listingType === 'RENT' ? 'For Rent' : 'For Sale', property.priceUnit)}
                 </div>
                 <p className="text-xs font-semibold text-slate-400">
@@ -467,21 +467,21 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             {/* Metric Pills */}
             <div className="grid grid-cols-2 min-[440px]:grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 pt-2">
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <BedDouble className="h-5 w-5 text-blue-600" />
+                <BedDouble className="h-5 w-5 text-lime-700" />
                 <div>
                   <div className="text-xs font-bold text-slate-900">{property.bedrooms} Beds</div>
                   <div className="text-[10px] text-slate-400">Bedrooms</div>
                 </div>
               </div>
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <Bath className="h-5 w-5 text-blue-600" />
+                <Bath className="h-5 w-5 text-lime-700" />
                 <div>
                   <div className="text-xs font-bold text-slate-900">{property.bathrooms} Baths</div>
                   <div className="text-[10px] text-slate-400">Bathrooms</div>
                 </div>
               </div>
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <Building className="h-5 w-5 text-blue-600" />
+                <Building className="h-5 w-5 text-lime-700" />
                 <div>
                   <div className="text-xs font-bold text-slate-900">{property.propertyType}</div>
                   <div className="text-[10px] text-slate-400">Building Type</div>
@@ -489,7 +489,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               </div>
               {property.sqft && (
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                  <FileText className="h-5 w-5 text-lime-700" />
                   <div>
                     <div className="text-xs font-bold text-slate-900">{property.sqft} sqm</div>
                     <div className="text-[10px] text-slate-400">Floor Area</div>
@@ -520,7 +520,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {property.features.map((feat) => (
                   <div key={feat} className="flex items-center gap-2 text-xs font-medium text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                    <CheckCircle className="h-3.5 w-3.5 text-lime-700 shrink-0" />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -535,7 +535,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                 <CardTitle className="text-base font-bold text-slate-900">
                   Transparent Cost Breakdown
                 </CardTitle>
-                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                <span className="text-[11px] font-bold text-lime-800 bg-lime-50 border border-lime-200 px-2 py-0.5 rounded-md">
                   No Hidden Agency Fees
                 </span>
               </div>
@@ -573,7 +573,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                     <span className="font-bold text-slate-900">₦{otherCharges.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between pt-3 text-base font-black text-emerald-950 bg-emerald-50/70 p-3 rounded-xl border border-emerald-100">
+                <div className="flex justify-between pt-3 text-base font-black text-slate-950 bg-lime-50/80 p-3 rounded-xl border border-lime-200">
                   <span>Total First Outlay</span>
                   <span>₦{totalOutlay.toLocaleString()}</span>
                 </div>
@@ -594,7 +594,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-emerald-600" />
+                  <MapPin className="h-4 w-4 text-lime-700" />
                   Cadastral Location Context
                 </CardTitle>
                 <Button
@@ -640,14 +640,14 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
         {/* Right Column: Verification Panel & CTAs (PRD Section 11 & 12) */}
         <div className="space-y-6">
           {/* Granular Verification Panel */}
-          <Card className="rounded-2xl border-blue-900/20 bg-white shadow-lg overflow-hidden">
-            <div className="bg-[#0b132b] p-4 text-white">
+          <Card className="rounded-2xl border-slate-200/90 bg-white shadow-lg overflow-hidden">
+            <div className="bg-[#0c140d] p-4 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                  <ShieldCheck className="h-5 w-5 text-lime-400" />
                   <span className="font-black text-sm tracking-wide">Verification Audit</span>
                 </div>
-                <span className="text-[10px] font-bold bg-blue-600/80 px-2 py-0.5 rounded text-white uppercase">
+                <span className="text-[10px] font-bold bg-lime-600 px-2 py-0.5 rounded text-white uppercase">
                   {v?.overallStatus || 'IN_REVIEW'}
                 </span>
               </div>
@@ -710,7 +710,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
               {/* Disclaimer per PRD Section 11 */}
               <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 leading-snug flex items-start gap-2">
-                <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                <Info className="h-4 w-4 text-lime-700 shrink-0 mt-0.5" />
                 <span>
                   <strong>Legal Notice:</strong> PropHunta audits public records and documentation reviewed. This constitutes verified due diligence, not an insurance guarantee.
                 </span>
@@ -735,7 +735,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               </div>
             )}
             {property.listingStatus === 'OCCUPIED' && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed">
+              <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-800 leading-relaxed">
                 <strong>🏠 Currently Occupied:</strong> This property is actively leased and unavailable for new tenancy applications.
               </div>
             )}
@@ -764,7 +764,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             <Button
               onClick={() => setIsTourDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-blue-900/20"
+              className="w-full h-11 rounded-xl bg-lime-600 hover:bg-lime-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-lime-950/10"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Inspection (Physical / Video)
@@ -775,7 +775,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               onClick={() => setIsOfferDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
               variant="outline"
-              className="w-full h-11 rounded-xl border-blue-300 text-blue-700 hover:bg-blue-50 disabled:opacity-50 font-bold text-xs"
+              className="w-full h-11 rounded-xl border-lime-300 text-lime-800 hover:bg-lime-50 disabled:opacity-50 font-bold text-xs"
             >
               <Banknote className="h-4 w-4 mr-2" />
               {property.listingType === 'RENT' ? 'Submit Rental Expression of Interest' : 'Submit Purchase Offer'}
@@ -797,24 +797,24 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <Calendar className="h-4 w-4 text-blue-600" />
+                <Calendar className="h-4 w-4 text-lime-700" />
                 <span>Inspection Information</span>
               </div>
-              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+              <span className="text-[10px] font-bold text-lime-800 bg-lime-50 px-2 py-0.5 rounded border border-lime-200">
                 Field-Agent Guided
               </span>
             </div>
 
             <div className="space-y-2 text-xs text-slate-600">
               <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <Check className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="h-3.5 w-3.5 text-lime-700 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-slate-800">Physical On-Site Walkthrough</p>
                   <p className="text-[11px] text-slate-500">Accompanied by a verified PropHunta inspection officer</p>
                 </div>
               </div>
               <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <Video className="h-3.5 w-3.5 text-blue-600 shrink-0 mt-0.5" />
+                <Video className="h-3.5 w-3.5 text-lime-700 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-slate-800">Live Virtual Video Tour</p>
                   <p className="text-[11px] text-slate-500">Real-time HD interactive inspection for diaspora & remote buyers</p>
@@ -831,7 +831,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               onClick={() => setIsTourDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
               variant="outline"
-              className="w-full h-9 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-semibold"
+              className="w-full h-9 rounded-xl border-lime-300 text-lime-800 hover:bg-lime-50 text-xs font-semibold"
             >
               <Calendar className="h-3.5 w-3.5 mr-1.5" />
               Book Inspection Slot
@@ -842,16 +842,16 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <BadgeCheck className="h-4 w-4 text-blue-600" />
+                <BadgeCheck className="h-4 w-4 text-lime-700" />
                 <span>Authorized Party</span>
               </div>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <span className="text-[10px] font-bold text-lime-800 bg-lime-50 px-2 py-0.5 rounded border border-lime-200">
                 {authorizedParty?.verificationStatus === 'VERIFIED' ? 'Verified Partner' : 'Authority Documented'}
               </span>
             </div>
 
             <div className="flex items-center gap-3 pt-1">
-              <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm shrink-0 border border-blue-200">
+              <div className="h-10 w-10 rounded-full bg-lime-100 text-lime-900 font-bold flex items-center justify-center text-sm shrink-0 border border-lime-300">
                 {authorizedParty?.name ? authorizedParty.name.charAt(0).toUpperCase() : (property.authorizedAgentId ? 'A' : 'O')}
               </div>
               <div className="min-w-0 flex-1">
@@ -932,7 +932,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               size="sm"
               onClick={() => setIsTourDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="h-10 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/30"
+              className="h-10 px-3 rounded-xl bg-lime-600 hover:bg-lime-500 text-white text-xs font-bold shadow-md shadow-lime-950/20"
             >
               <Calendar className="h-3.5 w-3.5 mr-1" />
               <span>Inspection</span>
@@ -942,7 +942,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               size="sm"
               onClick={() => setIsOfferDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="h-10 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+              className="h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold"
             >
               <span>Apply</span>
             </Button>
@@ -997,7 +997,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   onClick={() => setTourType('IN_PERSON')}
                   className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
                     tourType === 'IN_PERSON'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold'
+                      ? 'border-lime-600 bg-lime-50 text-lime-950 font-bold'
                       : 'border-slate-200 text-slate-600'
                   }`}
                 >
@@ -1008,7 +1008,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   onClick={() => setTourType('VIDEO')}
                   className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
                     tourType === 'VIDEO'
-                      ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold'
+                      ? 'border-lime-600 bg-lime-50 text-lime-950 font-bold'
                       : 'border-slate-200 text-slate-600'
                   }`}
                 >
@@ -1033,7 +1033,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <Button type="button" variant="outline" onClick={() => setIsTourDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Confirm Inspection Request
               </Button>
@@ -1175,7 +1175,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <Button type="button" variant="outline" onClick={() => setIsOfferDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Submit Application
               </Button>
@@ -1212,7 +1212,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <Button type="button" variant="outline" onClick={() => setIsEnquiryDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-500 font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Send Message
               </Button>
