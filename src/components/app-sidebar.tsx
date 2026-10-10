@@ -190,19 +190,11 @@ export const moreNavItems: NavItem[] = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const { userRole, setUserRole, currentUser } = useUserRole();
+  const { userRole, currentUser } = useUserRole();
 
-  const mainNavItems = getNavItemsForRole(userRole);
-
-  const handleRoleChange = async (nextRole: UserRole) => {
-    await setUserRole(nextRole);
-    if (nextRole === 'ADMIN') {
-      router.push('/admin');
-    } else {
-      router.push('/dashboard');
-    }
-  };
+  // Determine role strictly from the authenticated account
+  const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
+  const mainNavItems = getNavItemsForRole(activeRole);
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-[#0c140d] text-slate-300 lg:flex shadow-2xl border-r border-slate-800/80">
@@ -222,32 +214,27 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Role Indicator & Quick Role Switcher */}
+      {/* Read-Only Authenticated Role Indicator */}
       <div className="px-3.5 py-2.5 bg-slate-950/60 border-b border-slate-800/50">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-slate-400">Active Role</span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-lime-950/80 text-lime-400 border border-lime-800/60 flex items-center gap-1">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col min-w-0 pr-2">
+            <span className="text-[10px] font-semibold tracking-wider uppercase text-slate-400 truncate">
+              {currentUser?.name || 'Verified Member'}
+            </span>
+            <span className="text-xs font-bold text-slate-200 truncate">
+              {activeRole === 'SEEKER'
+                ? 'Property Seeker'
+                : activeRole === 'OWNER'
+                ? 'Property Owner'
+                : activeRole === 'AGENT'
+                ? 'Licensed Agent'
+                : 'Compliance Admin'}
+            </span>
+          </div>
+          <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-lime-950/80 text-lime-400 border border-lime-800/60 flex items-center gap-1.5 shadow-2xs">
             <span className="h-1.5 w-1.5 rounded-full bg-lime-400 animate-pulse" />
-            {userRole}
+            {activeRole}
           </span>
-        </div>
-
-        {/* 4-Role Selector Pills */}
-        <div className="grid grid-cols-4 gap-1 bg-slate-950/80 p-0.5 rounded-lg border border-slate-800/60">
-          {(['SEEKER', 'OWNER', 'AGENT', 'ADMIN'] as UserRole[]).map((r) => (
-            <button
-              key={r}
-              onClick={() => handleRoleChange(r)}
-              className={`py-1 text-[10px] font-bold rounded transition-all text-center ${
-                userRole === r
-                  ? 'bg-lime-500 text-slate-950 shadow-xs font-black'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-              title={`Switch to ${r} role`}
-            >
-              {r === 'SEEKER' ? 'Seeker' : r === 'OWNER' ? 'Owner' : r === 'AGENT' ? 'Agent' : 'Admin'}
-            </button>
-          ))}
         </div>
       </div>
 

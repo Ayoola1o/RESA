@@ -88,6 +88,28 @@
       "createdAt": "2026-07-01T08:00:00Z",
       "updatedAt": "2026-10-05T09:00:00Z",
       "bio": "Lead Property Verification Officer & Platform Trust Administrator."
+    },
+    {
+      "name": "Verified New Seeker",
+      "email": "newseeker_1791661675896@example.com",
+      "phone": "+234 801 234 5678",
+      "role": "SEEKER",
+      "verificationStatus": "UNVERIFIED",
+      "kycStatus": "NOT_SUBMITTED",
+      "id": "user_1791661675896_uvm6u",
+      "createdAt": "2026-10-10T19:47:55.896Z",
+      "updatedAt": "2026-10-10T19:47:55.896Z"
+    },
+    {
+      "name": "Verified New Seeker",
+      "email": "newseeker_1791661856792@example.com",
+      "phone": "+234 801 234 5678",
+      "role": "SEEKER",
+      "verificationStatus": "UNVERIFIED",
+      "kycStatus": "NOT_SUBMITTED",
+      "id": "user_1791661856792_a5vgx",
+      "createdAt": "2026-10-10T19:50:56.792Z",
+      "updatedAt": "2026-10-10T19:50:56.792Z"
     }
   ],
   "passwords": {
@@ -95,9 +117,62 @@
     "user_seeker_unverified": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_owner_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_agent_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
-    "user_admin_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
+    "user_admin_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791661675896_uvm6u": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1791661856792_a5vgx": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
   },
-  "sessions": {},
+  "sessions": {
+    "sess_1791661675867_x0ys8i60nw": {
+      "userId": "user_seeker_1",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-24T19:47:55.867Z"
+    },
+    "sess_1791661675876_deowj1w2tr": {
+      "userId": "user_owner_1",
+      "role": "OWNER",
+      "expiresAt": "2026-10-24T19:47:55.876Z"
+    },
+    "sess_1791661675882_zmydoje62y": {
+      "userId": "user_agent_1",
+      "role": "AGENT",
+      "expiresAt": "2026-10-24T19:47:55.882Z"
+    },
+    "sess_1791661675887_41nez056k1": {
+      "userId": "user_admin_1",
+      "role": "ADMIN",
+      "expiresAt": "2026-10-24T19:47:55.887Z"
+    },
+    "sess_1791661675899_1mndqsm4tk": {
+      "userId": "user_1791661675896_uvm6u",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-24T19:47:55.899Z"
+    },
+    "sess_1791661856761_u0413dr26j": {
+      "userId": "user_seeker_1",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-24T19:50:56.761Z"
+    },
+    "sess_1791661856772_4u82vb39py": {
+      "userId": "user_owner_1",
+      "role": "OWNER",
+      "expiresAt": "2026-10-24T19:50:56.772Z"
+    },
+    "sess_1791661856777_gramc5ytkh": {
+      "userId": "user_agent_1",
+      "role": "AGENT",
+      "expiresAt": "2026-10-24T19:50:56.777Z"
+    },
+    "sess_1791661856783_chgmf5y5s2": {
+      "userId": "user_admin_1",
+      "role": "ADMIN",
+      "expiresAt": "2026-10-24T19:50:56.783Z"
+    },
+    "sess_1791661856795_xvvizh2833": {
+      "userId": "user_1791661856792_a5vgx",
+      "role": "SEEKER",
+      "expiresAt": "2026-10-24T19:50:56.795Z"
+    }
+  },
   "properties": [
     {
       "ownerId": "user_owner_1",
@@ -779,6 +854,212 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "aud_1791661856797_202p",
+      "actor": {
+        "id": "user_1791661856792_a5vgx",
+        "email": "newseeker_1791661856792@example.com",
+        "role": "SEEKER"
+      },
+      "actorId": "user_1791661856792_a5vgx",
+      "actorEmail": "newseeker_1791661856792@example.com",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791661856792_a5vgx",
+      "timestamp": "2026-10-10T19:50:56.797Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER",
+        "verificationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "aud_1791661856789_y175",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:50:56.789Z",
+      "result": "FAILURE",
+      "metadata": {
+        "reason": "Incorrect password"
+      }
+    },
+    {
+      "id": "aud_1791661856785_6da0",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_admin_1",
+      "timestamp": "2026-10-10T19:50:56.785Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661856779_1bg7",
+      "actor": {
+        "id": "user_agent_1",
+        "email": "agent@prophunta.ai",
+        "role": "AGENT"
+      },
+      "actorId": "user_agent_1",
+      "actorEmail": "agent@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_agent_1",
+      "timestamp": "2026-10-10T19:50:56.779Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661856774_82kd",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T19:50:56.774Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661856769_ym7e",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:50:56.769Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661675902_nwkq",
+      "actor": {
+        "id": "user_1791661675896_uvm6u",
+        "email": "newseeker_1791661675896@example.com",
+        "role": "SEEKER"
+      },
+      "actorId": "user_1791661675896_uvm6u",
+      "actorEmail": "newseeker_1791661675896@example.com",
+      "actorRole": "SEEKER",
+      "action": "USER_REGISTERED",
+      "objectType": "USER",
+      "objectId": "user_1791661675896_uvm6u",
+      "timestamp": "2026-10-10T19:47:55.902Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "role": "SEEKER",
+        "verificationStatus": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "aud_1791661675892_re1u",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:47:55.892Z",
+      "result": "FAILURE",
+      "metadata": {
+        "reason": "Incorrect password"
+      }
+    },
+    {
+      "id": "aud_1791661675889_reff",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_admin_1",
+      "timestamp": "2026-10-10T19:47:55.889Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661675884_qcpt",
+      "actor": {
+        "id": "user_agent_1",
+        "email": "agent@prophunta.ai",
+        "role": "AGENT"
+      },
+      "actorId": "user_agent_1",
+      "actorEmail": "agent@prophunta.ai",
+      "actorRole": "AGENT",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_agent_1",
+      "timestamp": "2026-10-10T19:47:55.884Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661675879_47b9",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T19:47:55.879Z",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791661675873_efp7",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "USER_LOGIN",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:47:55.873Z",
+      "result": "SUCCESS"
+    },
     {
       "id": "aud_1791660418398_xshi",
       "actor": {

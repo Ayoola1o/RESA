@@ -14,14 +14,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
-import { loginAction, switchDemoRoleAction } from '@/server/actions/prophunta-actions';
-import { UserRole } from '@/types/prophunta';
+import { loginAction } from '@/server/actions/prophunta-actions';
 import { ShieldCheck, ArrowRight, Loader2, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUserRole } from '@/context/UserRoleContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { refreshUser } = useUserRole();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,41 +34,23 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const res = await loginAction(formData);
 
-    if (!res.success) {
-      setError(res.error || 'Invalid credentials');
+    if (!res.success || !res.user) {
+      setError(res.error || 'Invalid email or password.');
       setLoading(false);
       return;
     }
 
+    await refreshUser();
+
     toast({
       title: 'Welcome to PropHunta AI',
-      description: `Signed in as ${res.user?.name} (${res.user?.role})`,
+      description: `Signed in as ${res.user.name} (${res.user.role})`,
     });
 
-    if (res.user?.role === 'ADMIN') {
+    if (res.user.role === 'ADMIN') {
       router.push('/admin');
     } else {
       router.push('/dashboard');
-    }
-  };
-
-  const handleQuickDemoLogin = async (role: UserRole) => {
-    setLoading(true);
-    setError(null);
-    const res = await switchDemoRoleAction(role);
-    if (res.success && res.user) {
-      toast({
-        title: `Switched to ${role}`,
-        description: `Logged in as ${res.user.name}`,
-      });
-      if (role === 'ADMIN') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
-    } else {
-      setError('Could not switch demo session.');
-      setLoading(false);
     }
   };
 
@@ -99,7 +82,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* 3 Value Pillars */}
+        {/* 2 Value Pillars */}
         <div className="space-y-3 pt-2">
           <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
             <ShieldCheck className="h-5 w-5 text-lime-700 mt-0.5 shrink-0" />
@@ -129,7 +112,7 @@ export default function LoginPage() {
             Sign In to PropHunta AI
           </CardTitle>
           <CardDescription className="text-center text-xs text-slate-500">
-            Enter your credentials to access your verified account
+            Enter your email and password to access your verified account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,8 +129,7 @@ export default function LoginPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="seeker@prophunta.ai"
-                defaultValue="seeker@prophunta.ai"
+                placeholder="name@example.com"
                 required
                 className="h-10 rounded-xl"
               />
@@ -164,7 +146,7 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
-                defaultValue="Password123!"
+                placeholder="••••••••"
                 required
                 className="h-10 rounded-xl"
               />
@@ -178,58 +160,13 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Verifying session...
+                  Verifying credentials...
                 </>
               ) : (
                 'Sign In'
               )}
             </Button>
           </form>
-
-          {/* 1-Click Role Demonstrator Buttons */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-2.5">
-              Instant 1-Click Role Login (MVP Demo)
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickDemoLogin('SEEKER')}
-                disabled={loading}
-                className="text-xs font-semibold rounded-xl border-slate-200 hover:bg-lime-50 hover:text-lime-800 hover:border-lime-300"
-              >
-                Seeker (Buyer/Tenant)
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickDemoLogin('OWNER')}
-                disabled={loading}
-                className="text-xs font-semibold rounded-xl border-slate-200 hover:bg-lime-50 hover:text-lime-800 hover:border-lime-300"
-              >
-                Property Owner
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickDemoLogin('AGENT')}
-                disabled={loading}
-                className="text-xs font-semibold rounded-xl border-slate-200 hover:bg-lime-50 hover:text-lime-800 hover:border-lime-300"
-              >
-                Verified Agent
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickDemoLogin('ADMIN')}
-                disabled={loading}
-                className="text-xs font-semibold rounded-xl border-lime-300 bg-lime-50/70 hover:bg-lime-100/70 text-lime-900"
-              >
-                Admin (Verification Officer)
-              </Button>
-            </div>
-          </div>
 
           <div className="mt-5 text-center text-xs text-slate-500">
             Don&apos;t have an account?{' '}

@@ -97,7 +97,7 @@ const VERIFICATION_STATUS_OPTIONS: { value: VerificationSubStatus; label: string
 ];
 
 function AdminPortalContent() {
-  const { userRole, currentUser } = useUserRole();
+  const { userRole, currentUser, isLoading } = useUserRole();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'verification';
@@ -366,6 +366,25 @@ function AdminPortalContent() {
   const getReportsForProperty = (propertyId: string) => {
     return reports.filter((r) => r.propertyId === propertyId);
   };
+
+  if (!isLoading && (currentUser?.role !== 'ADMIN' && userRole !== 'ADMIN')) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4">
+        <Card className="max-w-md w-full p-8 text-center rounded-2xl border-slate-200/90 shadow-lg bg-white">
+          <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+            <ShieldAlert className="h-8 w-8" />
+          </div>
+          <h2 className="text-xl font-black text-slate-900 tracking-tight font-headline">Access Restricted</h2>
+          <p className="text-xs text-slate-500 mt-2 mb-6">
+            The Trust &amp; Verification Portal is strictly reserved for authorized platform administrators and verification officers.
+          </p>
+          <Button asChild className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+            <Link href="/dashboard">Return to Dashboard</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-16">

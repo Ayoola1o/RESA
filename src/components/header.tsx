@@ -55,20 +55,13 @@ export default function Header() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const mainNavItems = getNavItemsForRole(userRole);
-
-  const handleRoleToggle = async (nextRole: UserRole) => {
-    await setUserRole(nextRole);
-    if (nextRole === 'ADMIN') {
-      router.push('/admin');
-    } else {
-      router.push('/dashboard');
-    }
-  };
+  const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
+  const mainNavItems = getNavItemsForRole(activeRole);
 
   const handleLogout = async () => {
     await logoutAction();
     router.push('/login');
+    router.refresh();
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -307,31 +300,9 @@ export default function Header() {
               <p className="text-[11px] text-slate-500">{currentUser?.email || 'seeker@prophunta.ai'}</p>
               <div className="mt-1 flex items-center gap-1 text-[10px] text-lime-700 font-bold">
                 <ShieldCheck className="h-3 w-3" />
-                <span>Verified {userRole} Account</span>
+                <span>Verified {activeRole} Account</span>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            {/* Role switch in dropdown */}
-            <div className="px-3 py-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Switch Active Role</span>
-              <div className="grid grid-cols-2 gap-1 mt-1.5">
-                {(['SEEKER', 'OWNER', 'AGENT', 'ADMIN'] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => handleRoleToggle(r)}
-                    className={`py-1 px-2 text-[11px] font-bold rounded-lg border text-left transition-all ${
-                      userRole === r
-                        ? 'bg-lime-600 text-white border-lime-600 shadow-xs'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild className="rounded-xl cursor-pointer">

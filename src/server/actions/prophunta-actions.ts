@@ -104,6 +104,11 @@ export async function logoutAction(): Promise<{ success: boolean }> {
 }
 
 export async function switchDemoRoleAction(role: UserRole): Promise<{ success: boolean; user?: User; error?: string }> {
+  // Security: Disallow arbitrary privilege escalation to ADMIN
+  const current = await authService.getCurrentUser();
+  if (role === 'ADMIN' && current?.role !== 'ADMIN') {
+    return { success: false, error: 'Access denied: Cannot switch to Administrator role without authorization.' };
+  }
   const user = await authService.switchDemoRole(role);
   if (!user) {
     return { success: false, error: `Could not switch to role ${role}` };

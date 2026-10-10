@@ -21,14 +21,20 @@ export function UserRoleProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
+    setIsLoading(true);
     try {
       const user = await getCurrentUserAction();
       if (user) {
         setCurrentUser(user);
         setUserRoleState(user.role);
+      } else {
+        setCurrentUser(null);
+        setUserRoleState('SEEKER');
       }
     } catch (err) {
       console.warn('Could not fetch active user session:', err);
+      setCurrentUser(null);
+      setUserRoleState('SEEKER');
     } finally {
       setIsLoading(false);
     }
@@ -38,16 +44,10 @@ export function UserRoleProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, [refreshUser]);
 
-  const setUserRole = async (role: UserRole) => {
-    setUserRoleState(role);
-    try {
-      const res = await switchDemoRoleAction(role);
-      if (res.success && res.user) {
-        setCurrentUser(res.user);
-      }
-    } catch (err) {
-      console.warn('Could not switch server role:', err);
-    }
+  const setUserRole = async (_role: UserRole) => {
+    // Roles are determined strictly from the authenticated backend account session.
+    // Client-side role spoofing is prevented.
+    await refreshUser();
   };
 
   return (
@@ -69,7 +69,14 @@ export function UserRoleProvider({ children }: { children: ReactNode }) {
 export function useUserRole() {
   const context = useContext(UserRoleContext);
   if (context === undefined) {
-    throw new Error('useUserRole must be used within a UserRoleProvider');
+    return {
+      userRole: 'SEEKER' as UserRole,
+      role: 'SEEKER' as UserRole,
+      currentUser: null,
+      setUserRole: async () => {},
+      refreshUser: async () => {},
+      isLoading: false,
+    };
   }
   return context;
 }

@@ -87,6 +87,7 @@ import {
   InspectionStatus,
   ApplicationStatus,
   InspectionRecord,
+  UserRole,
 } from '@/types/prophunta';
 import PropertyCard from '@/components/property-card';
 
@@ -127,12 +128,13 @@ function formatNaira(amount: number) {
 
 function ProfileContent() {
   const { currentUser, role } = useUserRole();
+  const activeRole: UserRole = currentUser?.role || role || 'SEEKER';
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<string>(() => normalizeProfileTab(tabFromUrl, role));
+  const [activeTab, setActiveTab] = useState<string>(() => normalizeProfileTab(tabFromUrl, activeRole));
 
   // Data states
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
@@ -143,12 +145,12 @@ function ProfileContent() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const canonical = normalizeProfileTab(tabFromUrl, role);
+    const canonical = normalizeProfileTab(tabFromUrl, activeRole);
     setActiveTab(canonical);
-  }, [tabFromUrl, role]);
+  }, [tabFromUrl, activeRole]);
 
   const handleTabChange = (val: string) => {
-    const canonical = normalizeProfileTab(val, role);
+    const canonical = normalizeProfileTab(val, activeRole);
     setActiveTab(canonical);
     router.replace(`/profile?tab=${canonical}`, { scroll: false });
   };
@@ -347,7 +349,7 @@ function ProfileContent() {
   };
 
   const getRoleLabel = () => {
-    switch (role) {
+    switch (activeRole) {
       case 'SEEKER': return 'Property Seeker';
       case 'OWNER': return 'Property Owner / Landlord';
       case 'AGENT': return 'Licensed Agent / Manager';
@@ -406,14 +408,14 @@ function ProfileContent() {
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3 w-full md:w-auto">
-            {role === 'ADMIN' && (
+            {activeRole === 'ADMIN' && (
               <Button asChild className="bg-slate-900 hover:bg-black text-white text-xs sm:text-sm rounded-xl">
                 <Link href="/admin">
                   <ShieldCheck className="mr-2 h-4 w-4" /> Go to Verification Portal
                 </Link>
               </Button>
             )}
-            {(role === 'OWNER' || role === 'AGENT') && (
+            {(activeRole === 'OWNER' || activeRole === 'AGENT') && (
               <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
                 <Link href="/landlord/add-property">
                   <Plus className="mr-2 h-4 w-4" /> Add Listing
@@ -432,7 +434,7 @@ function ProfileContent() {
         <div className="w-full overflow-x-auto pb-1 mb-4 no-scrollbar">
           <TabsList className="inline-flex h-auto p-1 bg-slate-100/90 border border-slate-200/80 rounded-xl gap-1 text-slate-700 min-w-max">
             <TabsTrigger value="properties" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
-              <Building2 className="h-4 w-4" /> {role === 'SEEKER' ? 'My Properties' : 'My Listings'} ({userProperties.length})
+              <Building2 className="h-4 w-4" /> {activeRole === 'SEEKER' ? 'My Properties' : 'My Listings'} ({userProperties.length})
             </TabsTrigger>
             <TabsTrigger value="inspections" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
               <Calendar className="h-4 w-4" /> Inspections ({inspections.length})
@@ -447,7 +449,7 @@ function ProfileContent() {
               <ShieldCheck className="h-4 w-4" /> Trust & Verification
             </TabsTrigger>
             <TabsTrigger value="financials" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
-              <BarChart3 className="h-4 w-4" /> {role === 'SEEKER' ? 'Market Intelligence' : 'Financial Records'}
+              <BarChart3 className="h-4 w-4" /> {activeRole === 'SEEKER' ? 'Market Intelligence' : 'Financial Records'}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -926,7 +928,7 @@ function ProfileContent() {
                 </ul>
               </div>
 
-              {role === 'ADMIN' && (
+              {activeRole === 'ADMIN' && (
                 <div className="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
                     <h4 className="font-bold text-sm">Administrative Verification Authority</h4>
@@ -947,16 +949,16 @@ function ProfileContent() {
             <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-lime-700" />
-                {role === 'SEEKER' ? 'Market Intelligence & Statutory Fee Transparency' : 'Financial Records & Escrow Disbursement'}
+                {activeRole === 'SEEKER' ? 'Market Intelligence & Statutory Fee Transparency' : 'Financial Records & Escrow Disbursement'}
               </CardTitle>
               <CardDescription>
-                {role === 'SEEKER'
+                {activeRole === 'SEEKER'
                   ? 'Transparent fee guidelines, statutory legal fee caps, and escrow protection details.'
                   : 'Portfolio rent flow, escrow security holdings, and verified payout schedule.'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {role === 'SEEKER' ? (
+              {activeRole === 'SEEKER' ? (
                 <>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">

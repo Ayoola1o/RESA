@@ -104,76 +104,39 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 1. Interactive Role Selector Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Active Dashboard:
-          </span>
-          <Badge className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-[11px]">
+      {/* Read-Only Authenticated Dashboard Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-headline">
+              Welcome back, {userName}
+            </h1>
+            <Badge className="bg-lime-600 text-white font-bold text-xs shadow-2xs">
+              {activeRole === 'SEEKER'
+                ? 'Property Seeker'
+                : activeRole === 'OWNER'
+                ? 'Property Owner'
+                : activeRole === 'AGENT'
+                ? 'Licensed Agent'
+                : 'Compliance Administrator'}
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-500">
             {activeRole === 'SEEKER'
-              ? 'Property Seeker'
+              ? 'Track verified property searches, active inspections, and expressions of interest.'
               : activeRole === 'OWNER'
-              ? 'Property Owner / Landlord'
+              ? 'Manage verified property portfolio, incoming inspection requests, and tenant applications.'
               : activeRole === 'AGENT'
-              ? 'Real Estate Agent'
-              : 'Compliance Administrator'}
-          </Badge>
+              ? 'Oversee authorized listings, client inspection appointments, and verified leads.'
+              : 'Platform governance, title audits, and property verification queue.'}
+          </p>
         </div>
 
-        {/* Role Switcher Controls for demo & role navigation */}
-        <div className="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl text-xs overflow-x-auto">
-          <button
-            type="button"
-            onClick={() => setUserRole('SEEKER')}
-            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-              activeRole === 'SEEKER'
-                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <User className="h-3.5 w-3.5 text-lime-700" />
-            Seeker
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setUserRole('OWNER')}
-            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-              activeRole === 'OWNER'
-                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Building className="h-3.5 w-3.5 text-lime-700" />
-            Owner
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setUserRole('AGENT')}
-            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-              activeRole === 'AGENT'
-                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Briefcase className="h-3.5 w-3.5 text-lime-700" />
-            Agent
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setUserRole('ADMIN')}
-            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-              activeRole === 'ADMIN'
-                ? 'bg-white text-lime-950 shadow-xs ring-1 ring-lime-500/30'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Shield className="h-3.5 w-3.5 text-lime-700" />
-            Admin
-          </button>
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <Badge variant="outline" className="border-lime-500 text-lime-800 bg-lime-50 gap-1.5 py-1 px-2.5 text-xs font-semibold">
+            <ShieldCheck className="h-3.5 w-3.5 text-lime-600" />
+            Verified Account
+          </Badge>
         </div>
       </div>
 
