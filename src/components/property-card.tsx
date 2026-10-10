@@ -160,17 +160,17 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         </div>
 
         {/* Specs */}
-        <div className="mt-2.5 flex items-center justify-between text-xs text-slate-600 border-t border-slate-100 pt-2.5">
-          <div className="flex items-center gap-1">
-            <BedDouble className="h-3.5 w-3.5 text-slate-400" />
+        <div className="mt-2.5 flex items-center justify-between text-[11px] sm:text-xs text-slate-600 border-t border-slate-100 pt-2.5 gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            <BedDouble className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>{property.bedrooms} Beds</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Bath className="h-3.5 w-3.5 text-slate-400" />
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            <Bath className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>{property.bathrooms} Baths</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Maximize2 className="h-3.5 w-3.5 text-slate-400" />
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            <Maximize2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>{areaDisplay}</span>
           </div>
         </div>

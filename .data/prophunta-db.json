@@ -10,7 +10,7 @@
       "location": "Lekki Phase 1, Lagos",
       "verificationStatus": "VERIFIED",
       "createdAt": "2026-09-01T10:00:00Z",
-      "updatedAt": "2026-10-09T20:41:19.875Z",
+      "updatedAt": "2026-10-10T12:35:33.694Z",
       "bio": "Tech entrepreneur searching for high-security residences and investment properties in Lagos and Abuja."
     },
     {
@@ -685,6 +685,199 @@
     }
   },
   "properties": [
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791635733413_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-10T12:35:33.413Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791635733417",
+        "propertyId": "prop_1791635733417_uske",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed.",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-10T12:35:33.580Z",
+        "lastVerifiedAt": "2026-10-10T12:35:33.580Z"
+      },
+      "id": "prop_1791635733417_uske",
+      "createdAt": "2026-10-10T12:35:33.417Z",
+      "updatedAt": "2026-10-10T12:35:33.716Z",
+      "publishedAt": "2026-10-10T12:35:33.597Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "The Verification Test Haven",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "A test apartment for auditing verification checklist rules.",
+      "state": "Lagos",
+      "city": "Eti-Osa",
+      "area": "Ikoyi",
+      "address": "42 Alexander Road, Ikoyi",
+      "price": 18000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "features": [
+        "24/7 Power",
+        "Swimming Pool",
+        "Security Guard"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791634305315_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-10T12:11:45.316Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1791634305320",
+        "propertyId": "prop_1791634305321_52uo",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed.",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-10T12:11:45.605Z",
+        "lastVerifiedAt": "2026-10-10T12:11:45.605Z"
+      },
+      "id": "prop_1791634305321_52uo",
+      "createdAt": "2026-10-10T12:11:45.321Z",
+      "updatedAt": "2026-10-10T12:11:45.783Z",
+      "publishedAt": "2026-10-10T12:11:45.626Z"
+    },
+    {
+      "ownerId": "user_owner_1",
+      "title": "Audit & Inspection Penthouse Suite",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Updated penthouse suite description with amended terms.",
+      "state": "Lagos",
+      "city": "Lekki Phase 1",
+      "area": "Admiralty Way",
+      "address": "15 Admiralty Way, Lekki Phase 1",
+      "price": 26000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "features": [
+        "Elevator",
+        "Private Terrace",
+        "Smart Home"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1791634295256_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-10T12:11:35.256Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791634295349_11460611",
+          "propertyId": "prop_1791634295258_10bm",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "deed_of_assignment.pdf",
+          "fileReference": "doc_1791634295348_114606118da047789f12ac719f163827.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-10T12:11:35.349Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 32
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791634295257",
+        "propertyId": "prop_1791634295258_10bm",
+        "ownerIdentityStatus": "PASSED",
+        "locationStatus": "PASSED",
+        "authorityDocumentStatus": "PASSED",
+        "availabilityStatus": "PASSED",
+        "mediaStatus": "PASSED",
+        "inspectionStatus": "PASSED",
+        "overallStatus": "PASSED",
+        "reviewNotes": "All title deeds and on-site coordinates validated",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-10T12:11:35.530Z",
+        "lastVerifiedAt": "2026-10-10T12:11:35.530Z"
+      },
+      "id": "prop_1791634295258_10bm",
+      "createdAt": "2026-10-10T12:11:35.258Z",
+      "updatedAt": "2026-10-10T12:11:35.601Z",
+      "publishedAt": "2026-10-10T12:11:35.552Z"
+    },
     {
       "ownerId": "user_owner_1",
       "title": "Audit & Inspection Penthouse Suite",
@@ -3650,6 +3843,62 @@
   ],
   "inspections": [
     {
+      "propertyId": "prop_1791634295258_10bm",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "propertyAddress": "15 Admiralty Way, Lekki Phase 1",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_owner_1",
+      "preferredDate": "2026-10-12",
+      "preferredTimeSlot": "11:00 AM - 01:00 PM",
+      "type": "IN_PERSON",
+      "status": "CANCELLED",
+      "notes": "Cancelled by seeker",
+      "id": "insp_1791634296069_4kiu",
+      "createdAt": "2026-10-10T12:11:36.069Z",
+      "updatedAt": "2026-10-10T12:11:36.150Z"
+    },
+    {
+      "propertyId": "prop_1791634295258_10bm",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "propertyAddress": "15 Admiralty Way, Lekki Phase 1",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_owner_1",
+      "preferredDate": "2026-10-16",
+      "preferredTimeSlot": "02:00 PM - 04:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed for Oct 16th 2:00 PM",
+      "id": "insp_1791634295844_dfno",
+      "createdAt": "2026-10-10T12:11:35.844Z",
+      "updatedAt": "2026-10-10T12:11:36.188Z",
+      "inspectionRecord": {
+        "completedAt": "2026-10-10T12:11:36.188Z",
+        "date": "2026-10-10T12:11:36.187Z",
+        "inspectorName": "Officer Adekunle Gold",
+        "inspector": "Officer Adekunle Gold (Certified Field Inspector)",
+        "conditionRating": "EXCELLENT",
+        "condition": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "utilities": true,
+        "meterReadings": "EKEDC Smart Meter #042918820 - Reading: 14,892 kWh; Water Meter: 310 m³",
+        "meters": "EKEDC Smart Meter #042918820 - Reading: 14,892 kWh; Water Meter: 310 m³",
+        "observations": "All bedrooms, rooftop terrace, and backup diesel generator are fully operational. Structural finishes in pristine condition.",
+        "discrepancies": "Minor scuff on the south terrace railing, repaired before occupancy.",
+        "photos": [
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
+        ],
+        "video": "https://storage.prophunta.ai/inspections/video_walkthrough_prop_42.mp4",
+        "videoUrl": "https://storage.prophunta.ai/inspections/video_walkthrough_prop_42.mp4"
+      }
+    },
+    {
       "propertyId": "prop_1791578746151_13g6",
       "propertyTitle": "Audit & Inspection Penthouse Suite",
       "propertyAddress": "15 Admiralty Way, Lekki Phase 1",
@@ -4901,6 +5150,31 @@
   ],
   "reports": [
     {
+      "propertyId": "prop_1791634305321_52uo",
+      "propertyTitle": "The Verification Test Haven",
+      "reporterId": "user_seeker_1",
+      "reporterName": "Chidi Okonkwo",
+      "reason": "Incorrect Information",
+      "description": "Automated test suite verifying audit workflow.",
+      "id": "rep_1791635706661_3gfc",
+      "status": "REPORTED",
+      "reportedAt": "2026-10-10T12:35:06.661Z"
+    },
+    {
+      "propertyId": "prop_1791634295258_10bm",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "reporterId": "user_seeker_1",
+      "reporterName": "Chidi Okonkwo",
+      "reason": "Suspected Scam",
+      "description": "Suspicious title discrepancy observed during inquiry",
+      "id": "rep_1791634295624_9m9c",
+      "status": "RESOLVED",
+      "reportedAt": "2026-10-10T12:11:35.624Z",
+      "resolvedBy": "user_admin_1",
+      "resolvedAt": "2026-10-10T12:11:35.752Z",
+      "resolutionNotes": "Investigated and cleared against land registry records"
+    },
+    {
       "propertyId": "prop_1791578746151_13g6",
       "propertyTitle": "Audit & Inspection Penthouse Suite",
       "reporterId": "user_seeker_1",
@@ -5147,6 +5421,1334 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "aud_1791635733729_w7yr",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791635733468_35f90b4a",
+      "timestamp": "2026-10-10T12:35:33.729Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791635733417_uske",
+        "fileName": "governors_consent_alexander.pdf"
+      }
+    },
+    {
+      "id": "aud_1791635733704_ggca",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_STATUS_UPDATED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:35:33.704Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "VERIFIED"
+      }
+    },
+    {
+      "id": "aud_1791635733683_2mpx",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_SUSPENDED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:35:33.683Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SUSPENDED"
+      }
+    },
+    {
+      "id": "aud_1791635733662_7593",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791635733468_35f90b4a",
+      "timestamp": "2026-10-10T12:35:33.662Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791635733417_uske",
+        "status": "APPROVED",
+        "reviewNotes": "Registry seal stamped and verified."
+      }
+    },
+    {
+      "id": "aud_1791635733643_jyl0",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.643Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven",
+        "reason": "Restored by administrator."
+      }
+    },
+    {
+      "id": "aud_1791635733626_ayk9",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.626Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Suspended for audit check"
+      }
+    },
+    {
+      "id": "aud_1791635733604_6gyt",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.604Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      }
+    },
+    {
+      "id": "aud_1791635733590_0wyv",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.590Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      }
+    },
+    {
+      "id": "aud_1791635733572_j1ax",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.572Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      }
+    },
+    {
+      "id": "aud_1791635733553_5pju",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.553Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      }
+    },
+    {
+      "id": "aud_1791635733533_x6h5",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.533Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      }
+    },
+    {
+      "id": "aud_1791635733518_9vkm",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.518Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      }
+    },
+    {
+      "id": "aud_1791635733494_vqrn",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.494Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      }
+    },
+    {
+      "id": "aud_1791635733477_7fid",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791635733468_35f90b4a",
+      "timestamp": "2026-10-10T12:35:33.477Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791635733417_uske",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      }
+    },
+    {
+      "id": "aud_1791635733451_3g6p",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.451Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      }
+    },
+    {
+      "id": "aud_1791635733432_wxdo",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791635733417_uske",
+      "timestamp": "2026-10-10T12:35:33.432Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      }
+    },
+    {
+      "id": "aud_1791635706689_uubw",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:35:06.689Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791635706683_tlet",
+        "type": "REPORT",
+        "title": "Report Received"
+      }
+    },
+    {
+      "id": "aud_1791635706673_dlfw",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791635706661_3gfc",
+      "timestamp": "2026-10-10T12:35:06.673Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634305321_52uo",
+        "propertyTitle": "The Verification Test Haven",
+        "reason": "Incorrect Information",
+        "description": "Automated test suite verifying audit workflow."
+      }
+    },
+    {
+      "id": "aud_1791634305799_0pj8",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_DELETED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791634305402_fd6d4efc",
+      "timestamp": "2026-10-10T12:11:45.799Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634305321_52uo",
+        "fileName": "governors_consent_alexander.pdf"
+      }
+    },
+    {
+      "id": "aud_1791634305769_tl4f",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_STATUS_UPDATED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:45.769Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "VERIFIED"
+      }
+    },
+    {
+      "id": "aud_1791634305745_cd87",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "USER_SUSPENDED",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:45.745Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SUSPENDED"
+      }
+    },
+    {
+      "id": "aud_1791634305724_nkix",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "DOCUMENT_REVIEWED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791634305402_fd6d4efc",
+      "timestamp": "2026-10-10T12:11:45.724Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634305321_52uo",
+        "status": "APPROVED",
+        "reviewNotes": "Registry seal stamped and verified."
+      }
+    },
+    {
+      "id": "aud_1791634305700_np1l",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.700Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven",
+        "reason": "Restored by administrator."
+      }
+    },
+    {
+      "id": "aud_1791634305673_c7xc",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.673Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Suspended for audit check"
+      }
+    },
+    {
+      "id": "aud_1791634305647_5bz9",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.647Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds, survey, and physical walkthrough confirmed."
+      }
+    },
+    {
+      "id": "aud_1791634305614_c4fu",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.614Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds, survey, and physical walkthrough confirmed."
+        }
+      }
+    },
+    {
+      "id": "aud_1791634305585_rmlx",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.585Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Fraudulent boundary survey detected."
+      }
+    },
+    {
+      "id": "aud_1791634305541_9thh",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.541Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Fraudulent boundary survey detected."
+        }
+      }
+    },
+    {
+      "id": "aud_1791634305515_uucw",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_CHANGES_REQUESTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.515Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Need clearer scan of Deed of Assignment seal."
+      }
+    },
+    {
+      "id": "aud_1791634305491_m4hy",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.491Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "CHANGES_REQUIRED",
+          "reviewNotes": "Need clearer scan of Deed of Assignment seal."
+        }
+      }
+    },
+    {
+      "id": "aud_1791634305459_ysdc",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.459Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "IN_REVIEW",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "NOT_REVIEWED",
+          "reviewNotes": "Alausa survey beacons match cadaster coordinates. Title deed awaiting stamp confirmation."
+        }
+      }
+    },
+    {
+      "id": "aud_1791634305412_456w",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791634305402_fd6d4efc",
+      "timestamp": "2026-10-10T12:11:45.412Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634305321_52uo",
+        "documentType": "GOVERNORS_CONSENT",
+        "fileName": "governors_consent_alexander.pdf",
+        "sizeBytes": 39
+      }
+    },
+    {
+      "id": "aud_1791634305383_8hoh",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.383Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance audit"
+      }
+    },
+    {
+      "id": "aud_1791634305352_hrap",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634305321_52uo",
+      "timestamp": "2026-10-10T12:11:45.352Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "The Verification Test Haven"
+      }
+    },
+    {
+      "id": "aud_1791634296201_25xi",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634295844_dfno",
+      "timestamp": "2026-10-10T12:11:36.201Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT",
+        "date": "2026-10-10T12:11:36.187Z"
+      }
+    },
+    {
+      "id": "aud_1791634296180_tnfx",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T12:11:36.180Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634296171_ga6r",
+        "type": "INSPECTION",
+        "title": "Inspection CANCELLED"
+      }
+    },
+    {
+      "id": "aud_1791634296159_5b5p",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_CANCELLED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634296069_4kiu",
+      "timestamp": "2026-10-10T12:11:36.159Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "CANCELLED",
+        "previousStatus": "NO_SHOW"
+      }
+    },
+    {
+      "id": "aud_1791634296142_areq",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:36.142Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634296132_6xtj",
+        "type": "INSPECTION",
+        "title": "Inspection NO_SHOW"
+      }
+    },
+    {
+      "id": "aud_1791634296122_hbum",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_STATUS_CHANGED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634296069_4kiu",
+      "timestamp": "2026-10-10T12:11:36.123Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "NO_SHOW",
+        "previousStatus": "REQUESTED"
+      }
+    },
+    {
+      "id": "aud_1791634296103_esgx",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T12:11:36.103Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634296093_vx8v",
+        "type": "INSPECTION",
+        "title": "New Inspection Request"
+      }
+    },
+    {
+      "id": "aud_1791634296081_vef7",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634296069_4kiu",
+      "timestamp": "2026-10-10T12:11:36.081Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634295258_10bm",
+        "preferredDate": "2026-10-12"
+      }
+    },
+    {
+      "id": "aud_1791634296052_5004",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:36.052Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634296042_kmpz",
+        "type": "INSPECTION",
+        "title": "Inspection SCHEDULED"
+      }
+    },
+    {
+      "id": "aud_1791634296033_8zma",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634295844_dfno",
+      "timestamp": "2026-10-10T12:11:36.033Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED",
+        "previousStatus": "RESCHEDULED"
+      }
+    },
+    {
+      "id": "aud_1791634296008_yjgo",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:36.009Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634295998_w60g",
+        "type": "INSPECTION",
+        "title": "Inspection RESCHEDULED"
+      }
+    },
+    {
+      "id": "aud_1791634295987_cizu",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_RESCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634295844_dfno",
+      "timestamp": "2026-10-10T12:11:35.987Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "RESCHEDULED",
+        "previousStatus": "ACCEPTED",
+        "rescheduleData": {
+          "preferredDate": "2026-10-16",
+          "preferredTimeSlot": "02:00 PM - 04:00 PM"
+        }
+      }
+    },
+    {
+      "id": "aud_1791634295959_gyxo",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:35.959Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634295949_c4tv",
+        "type": "INSPECTION",
+        "title": "Inspection ACCEPTED"
+      }
+    },
+    {
+      "id": "aud_1791634295937_yywr",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_ACCEPTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634295844_dfno",
+      "timestamp": "2026-10-10T12:11:35.937Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "ACCEPTED",
+        "previousStatus": "REQUESTED"
+      }
+    },
+    {
+      "id": "aud_1791634295895_f29y",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T12:11:35.895Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634295879_jssi",
+        "type": "INSPECTION",
+        "title": "New Inspection Request"
+      }
+    },
+    {
+      "id": "aud_1791634295868_2nni",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791634295844_dfno",
+      "timestamp": "2026-10-10T12:11:35.868Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634295258_10bm",
+        "preferredDate": "2026-10-15"
+      }
+    },
+    {
+      "id": "aud_1791634295831_wjpf",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:35.831Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634295818_9hys",
+        "type": "REPORT",
+        "title": "Report Status: RESOLVED"
+      }
+    },
+    {
+      "id": "aud_1791634295805_2coq",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "REPORT_RESOLVED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791634295624_9m9c",
+      "timestamp": "2026-10-10T12:11:35.805Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "REPORTED",
+        "newStatus": "RESOLVED",
+        "propertyId": "prop_1791634295258_10bm",
+        "propertyTitle": "Audit & Inspection Penthouse Suite",
+        "reporterId": "user_seeker_1",
+        "reason": "Suspected Scam",
+        "resolutionNotes": "Investigated and cleared against land registry records",
+        "resolvedAt": "2026-10-10T12:11:35.804Z"
+      }
+    },
+    {
+      "id": "aud_1791634295735_sg6s",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T12:11:35.735Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791634295724_k7mg",
+        "type": "REPORT",
+        "title": "Report Received"
+      }
+    },
+    {
+      "id": "aud_1791634295677_halq",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1791634295624_9m9c",
+      "timestamp": "2026-10-10T12:11:35.677Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634295258_10bm",
+        "propertyTitle": "Audit & Inspection Penthouse Suite",
+        "reason": "Suspected Scam",
+        "description": "Suspicious title discrepancy observed during inquiry"
+      }
+    },
+    {
+      "id": "aud_1791634295610_o8kh",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.610Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Audit & Inspection Penthouse Suite",
+        "reason": "Compliance restored, cleared by admin"
+      }
+    },
+    {
+      "id": "aud_1791634295586_ak62",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.586Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "reason": "Temporary administrative review hold"
+      }
+    },
+    {
+      "id": "aud_1791634295561_f18k",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_APPROVED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.561Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "All title deeds and on-site coordinates validated"
+      }
+    },
+    {
+      "id": "aud_1791634295543_914z",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.543Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "ownerIdentityStatus": "PASSED",
+          "locationStatus": "PASSED",
+          "authorityDocumentStatus": "PASSED",
+          "availabilityStatus": "PASSED",
+          "mediaStatus": "PASSED",
+          "inspectionStatus": "PASSED",
+          "overallStatus": "PASSED",
+          "reviewNotes": "All title deeds and on-site coordinates validated"
+        }
+      }
+    },
+    {
+      "id": "aud_1791634295521_cbti",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.521Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Preliminary review failed, please update paperwork"
+      }
+    },
+    {
+      "id": "aud_1791634295450_ah1o",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.450Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Preliminary review failed, please update paperwork"
+        }
+      }
+    },
+    {
+      "id": "aud_1791634295370_irft",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791634295349_11460611",
+      "timestamp": "2026-10-10T12:11:35.370Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791634295258_10bm",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "deed_of_assignment.pdf",
+        "sizeBytes": 32
+      }
+    },
+    {
+      "id": "aud_1791634295327_5r7e",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.327Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Audit & Inspection Penthouse Suite",
+        "changes": [
+          "price",
+          "description"
+        ]
+      }
+    },
+    {
+      "id": "aud_1791634295299_4ivl",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.299Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance inspection"
+      }
+    },
+    {
+      "id": "aud_1791634295278_cdsb",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791634295258_10bm",
+      "timestamp": "2026-10-10T12:11:35.278Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Audit & Inspection Penthouse Suite"
+      }
+    },
     {
       "id": "aud_1791578746556_na66",
       "actor": {
@@ -13144,6 +14746,108 @@
       "objectId": "insp-1",
       "timestamp": "2026-10-05T09:00:00Z",
       "result": "SUCCESS"
+    }
+  ],
+  "notifications": [
+    {
+      "userId": "user_seeker_1",
+      "title": "Report Received",
+      "message": "Your report regarding \"The Verification Test Haven\" has been logged and assigned to a compliance officer.",
+      "type": "REPORT",
+      "link": "/property/prop_1791634305321_52uo",
+      "read": false,
+      "id": "notif_1791635706683_tlet",
+      "createdAt": "2026-10-10T12:35:06.683Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "Inspection CANCELLED",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to CANCELLED. Notes: \"Cancelled by seeker\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634296171_ga6r",
+      "createdAt": "2026-10-10T12:11:36.171Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Inspection NO_SHOW",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to NO_SHOW. Notes: \"Party did not arrive for scheduled slot\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634296132_6xtj",
+      "createdAt": "2026-10-10T12:11:36.132Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "New Inspection Request",
+      "message": "Chidi Okonkwo requested an inspection for \"Audit & Inspection Penthouse Suite\" on 2026-10-12 (11:00 AM - 01:00 PM).",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634296093_vx8v",
+      "createdAt": "2026-10-10T12:11:36.093Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Inspection SCHEDULED",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to SCHEDULED. Notes: \"Confirmed for Oct 16th 2:00 PM\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634296042_kmpz",
+      "createdAt": "2026-10-10T12:11:36.042Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Inspection RESCHEDULED",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to RESCHEDULED. Notes: \"Rescheduling due to road maintenance on Admiralty Way\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634295998_w60g",
+      "createdAt": "2026-10-10T12:11:35.998Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Inspection ACCEPTED",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to ACCEPTED. Notes: \"Accepted request, aligning with field inspector\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634295949_c4tv",
+      "createdAt": "2026-10-10T12:11:35.949Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "New Inspection Request",
+      "message": "Chidi Okonkwo requested an inspection for \"Audit & Inspection Penthouse Suite\" on 2026-10-15 (10:00 AM - 12:00 PM).",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791634295879_jssi",
+      "createdAt": "2026-10-10T12:11:35.879Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Report Status: RESOLVED",
+      "message": "Your report for \"Audit & Inspection Penthouse Suite\" was reviewed: RESOLVED. Resolution notes: \"Investigated and cleared against land registry records\"",
+      "type": "REPORT",
+      "link": "/property/prop_1791634295258_10bm",
+      "read": false,
+      "id": "notif_1791634295818_9hys",
+      "createdAt": "2026-10-10T12:11:35.818Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Report Received",
+      "message": "Your report regarding \"Audit & Inspection Penthouse Suite\" has been logged and assigned to a compliance officer.",
+      "type": "REPORT",
+      "link": "/property/prop_1791634295258_10bm",
+      "read": false,
+      "id": "notif_1791634295724_k7mg",
+      "createdAt": "2026-10-10T12:11:35.724Z"
     }
   ]
 }

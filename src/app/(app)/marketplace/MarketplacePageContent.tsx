@@ -186,13 +186,33 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
 
   const hasActiveFilters = listingType !== 'all' || propertyType !== 'all' || bedrooms !== 'any' || bathrooms !== 'any' || minPrice !== '' || maxPrice !== '' || availability !== 'all' || verifiedOnly;
 
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (listingType !== 'all') count++;
+    if (propertyType !== 'all') count++;
+    if (bedrooms !== 'any') count++;
+    if (bathrooms !== 'any') count++;
+    if (minPrice !== '') count++;
+    if (maxPrice !== '') count++;
+    if (availability !== 'all') count++;
+    if (verifiedOnly) count++;
+    return count;
+  }, [listingType, propertyType, bedrooms, bathrooms, minPrice, maxPrice, availability, verifiedOnly]);
+
+  const QUICK_LOCATION_PILLS = ['All', 'Lekki', 'Ikoyi', 'Victoria Island', 'Ikeja', 'Abuja'];
+
   return (
-    <div className="container mx-auto">
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="container mx-auto px-1 sm:px-4">
+      {/* Page Header */}
+      <div className="mb-4 sm:mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold font-headline md:text-4xl">Find Verified Properties</h1>
-          <p className="text-muted-foreground mt-2">
-              {searchQuery ? `Showing results for "${searchQuery}"` : "Explore audited and verified listings with zero fake deposits."}
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black font-headline text-slate-900 tracking-tight">
+            Find Verified Properties
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            {searchQuery ? `Showing results for "${searchQuery}"` : "Audited listings with 6-point verification & zero advance fraud."}
           </p>
         </div>
 
@@ -201,44 +221,45 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
           <button
             type="button"
             onClick={() => setViewMode('grid')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
               viewMode === 'grid'
-                ? 'bg-white text-slate-900 shadow-sm'
+                ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <LayoutGrid className="h-4 w-4" />
-            <span>Grid View</span>
+            <LayoutGrid className="h-3.5 w-3.5" />
+            <span>Grid</span>
           </button>
           <button
             type="button"
             onClick={() => setViewMode('map')}
-            className={`flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
               viewMode === 'map'
-                ? 'bg-blue-600 text-white shadow-sm'
+                ? 'bg-blue-600 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <MapIcon className="h-4 w-4" />
+            <MapIcon className="h-3.5 w-3.5" />
             <span>Map View</span>
           </button>
         </div>
       </div>
 
-      <Card className="mb-8 p-5 shadow-sm border-slate-200/90 rounded-2xl bg-white">
-        {/* Row 0: Location Search Bar */}
-        <div className="mb-4">
-          <div className="relative">
-            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-600" />
+      {/* Mobile & Desktop Search & Filter Container */}
+      <Card className="mb-6 p-3 sm:p-5 shadow-xs border-slate-200/90 rounded-2xl bg-white">
+        {/* Row 0: Search input & Mobile filter trigger */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="relative flex-1 min-w-0">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-600 shrink-0" />
             <Input
               type="text"
-              placeholder="Search by area, neighborhood, street, or city (e.g. Lekki, Ikoyi, Victoria Island, Ikeja)..."
+              placeholder="Area, street, or city (e.g. Lekki, Ikoyi, Ikeja)..."
               value={locationSearch}
               onChange={(e) => {
                 setLocationSearch(e.target.value);
                 setCurrentPage(1);
               }}
-              className="h-10 pl-10 pr-16 rounded-xl text-xs sm:text-sm font-medium border-slate-200 bg-slate-50/70 focus:bg-white transition-colors"
+              className="h-10 pl-9 pr-14 rounded-xl text-xs sm:text-sm font-medium border-slate-200 bg-slate-50/70 focus:bg-white transition-colors"
             />
             {locationSearch && (
               <button
@@ -253,20 +274,119 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
               </button>
             )}
           </div>
+
+          {/* Mobile Filter Toggle Button (visible below md) */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
+            className={`md:hidden h-10 px-3 rounded-xl border text-xs font-bold shrink-0 gap-1.5 ${
+              activeFiltersCount > 0 ? 'bg-blue-50 border-blue-300 text-blue-700' : 'border-slate-200'
+            }`}
+          >
+            <ListFilter className="h-3.5 w-3.5" />
+            <span>Filters</span>
+            {activeFiltersCount > 0 && (
+              <span className="h-5 w-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                {activeFiltersCount}
+              </span>
+            )}
+          </Button>
         </div>
 
-        {/* Row 1: Primary Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 items-end">
-             <div className="grid gap-1.5">
-              <label className="text-xs font-bold text-slate-700">Listing Type</label>
-               <Select value={listingType} onValueChange={handleFilterChange(setListingType)}>
+        {/* Swipeable Quick-Filter Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              setListingType('all');
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
+              listingType === 'all'
+                ? 'bg-slate-900 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setListingType(listingType === 'rent' ? 'all' : 'rent');
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
+              listingType === 'rent'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            For Rent
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setListingType(listingType === 'sale' ? 'all' : 'sale');
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
+              listingType === 'sale'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            For Sale
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setVerifiedOnly(!verifiedOnly);
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 flex items-center gap-1 ${
+              verifiedOnly
+                ? 'bg-emerald-600 text-white'
+                : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+            }`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Verified Only
+          </button>
+          {QUICK_LOCATION_PILLS.slice(1).map((loc) => (
+            <button
+              key={loc}
+              type="button"
+              onClick={() => {
+                setLocationSearch(locationSearch === loc ? '' : loc);
+                setCurrentPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
+                locationSearch === loc
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {loc}
+            </button>
+          ))}
+        </div>
+
+        {/* Full Filter Controls: Collapsible on Mobile, Expanded on Desktop */}
+        <div className={`${isMobileFiltersOpen ? 'block' : 'hidden md:block'} pt-3 border-t border-slate-100 mt-2`}>
+          {/* Row 1: Primary Filters */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
+            <div className="grid gap-1">
+              <label className="text-[11px] font-bold text-slate-700">Listing Type</label>
+              <Select value={listingType} onValueChange={handleFilterChange(setListingType)}>
                 <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all">All Listings</SelectItem>
-                    <SelectItem value="sale">For Sale</SelectItem>
-                    <SelectItem value="rent">For Rent</SelectItem>
+                  <SelectItem value="all">All Listings</SelectItem>
+                  <SelectItem value="sale">For Sale</SelectItem>
+                  <SelectItem value="rent">For Rent</SelectItem>
                 </SelectContent>
-                </Select>
+              </Select>
             </div>
             <div className="grid gap-1.5">
               <label className="text-xs font-bold text-slate-700">Property Type</label>
@@ -410,6 +530,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                 </Button>
             </div>
         </div>
+        </div>
       </Card>
 
       {/* VIEW SWITCHER: Map View vs Grid View */}
@@ -514,7 +635,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         </div>
       ) : (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-6">
             {currentProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
@@ -527,8 +648,8 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
           </div>
 
           {currentProperties.length > 0 && (
-            <div className="flex justify-center items-center space-x-2 mt-8">
-                <Button variant="outline" size="icon" onClick={handlePreviousPage} disabled={currentPage === 1}>
+            <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 mt-8">
+                <Button variant="outline" size="icon" onClick={handlePreviousPage} disabled={currentPage === 1} className="h-9 w-9">
                 <ChevronLeft className="h-4 w-4" />
                 </Button>
 

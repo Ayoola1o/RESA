@@ -268,45 +268,45 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
   };
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-6 sm:space-y-8 pb-32 lg:pb-16">
       {/* Top Navigation Row */}
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" asChild className="gap-2 text-slate-600 hover:text-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button variant="ghost" size="sm" asChild className="gap-1.5 text-slate-600 hover:text-slate-900 px-2 h-9">
           <Link href="/marketplace">
             <ChevronLeft className="h-4 w-4" />
-            Back to Marketplace
+            <span className="text-xs font-semibold">Back to Marketplace</span>
           </Link>
         </Button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsReportDialogOpen(true)}
-            className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+            className="text-[11px] sm:text-xs text-rose-600 border-rose-200 hover:bg-rose-50 h-8 sm:h-9 px-2 sm:px-3"
           >
-            <Flag className="h-3.5 w-3.5 mr-1.5" />
-            Report Listing
+            <Flag className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden xs:inline">Report</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share className="h-4 w-4 mr-2" />
-            Share
+          <Button variant="outline" size="sm" onClick={handleShare} className="h-8 sm:h-9 px-2 sm:px-3 text-xs">
+            <Share className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden xs:inline">Share</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsLiked(!isLiked)}
-            className={isLiked ? 'text-red-500 border-red-200' : ''}
+            className={`h-8 sm:h-9 px-2 sm:px-3 text-xs ${isLiked ? 'text-red-500 border-red-200' : ''}`}
           >
-            <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-red-500' : ''}`} />
-            {isLiked ? 'Saved' : 'Save'}
+            <Heart className={`h-3.5 w-3.5 sm:mr-1.5 ${isLiked ? 'fill-red-500' : ''}`} />
+            <span>{isLiked ? 'Saved' : 'Save'}</span>
           </Button>
         </div>
       </div>
 
       {/* Main Grid: Left Details & Right Action / Verification Column */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left Column (2 Cols) */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8 min-w-0">
           {/* Media Carousel (PRD Section 7: Persistent Media with ordering, captions, video, and primary display) */}
           <div className="relative rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-200/80">
             <Carousel className="w-full">
@@ -315,7 +315,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   .sort((a, b) => (a.isPrimary ? -1 : b.isPrimary ? 1 : (a.order || 0) - (b.order || 0)))
                   .map((med, index) => (
                     <CarouselItem key={med.id || index}>
-                      <div className="relative h-[340px] sm:h-[460px] w-full bg-slate-950 flex items-center justify-center">
+                      <div className="relative h-[250px] xs:h-[300px] sm:h-[460px] w-full bg-slate-950 flex items-center justify-center">
                         {med.type === 'video' ? (
                           <video
                             src={med.url}
@@ -429,7 +429,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             </div>
 
             {/* Metric Pills */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 pt-2">
+            <div className="grid grid-cols-2 min-[440px]:grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 pt-2">
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
                 <BedDouble className="h-5 w-5 text-blue-600" />
                 <div>
@@ -814,9 +814,54 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
         </div>
       </div>
 
+      {/* Sticky Mobile Action Bar (Mobile-First CTA for 320px - 768px) */}
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-3.5 py-2.5 shadow-2xl lg:hidden safe-bottom">
+        <div className="flex items-center justify-between gap-2 max-w-lg mx-auto">
+          <div className="min-w-0 pr-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider leading-none">
+              {property.listingType === 'RENT' ? 'Rent' : 'Price'}
+            </span>
+            <div className="text-sm sm:text-base font-black text-slate-900 truncate mt-0.5">
+              {formatCurrency(property.price, property.listingType === 'RENT' ? 'For Rent' : 'For Sale', property.priceUnit)}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsEnquiryDialogOpen(true)}
+              className="h-10 px-2.5 rounded-xl border-slate-300 text-xs font-bold text-slate-700"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden min-[380px]:inline ml-1">Enquire</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={() => setIsTourDialogOpen(true)}
+              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+              className="h-10 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/30"
+            >
+              <Calendar className="h-3.5 w-3.5 mr-1" />
+              <span>Inspection</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={() => setIsOfferDialogOpen(true)}
+              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+              className="h-10 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
+            >
+              <span>Apply</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* --- DIALOG 1: SCHEDULE INSPECTION (PRD Section 15) --- */}
       <Dialog open={isTourDialogOpen} onOpenChange={setIsTourDialogOpen}>
-        <DialogContent className="sm:max-w-[450px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[480px] max-h-[88dvh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Schedule Property Inspection</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -908,7 +953,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
       {/* --- DIALOG 2: SUBMIT APPLICATION / MAKE OFFER (PRD Section 17) --- */}
       <Dialog open={isOfferDialogOpen} onOpenChange={setIsOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[480px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[480px] max-h-[88dvh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">
               {property.listingType === 'RENT' ? 'Rental Expression of Interest' : 'Submit Purchase Offer'}
@@ -1050,7 +1095,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
       {/* --- DIALOG 3: DIRECT ENQUIRY (PRD Section 16) --- */}
       <Dialog open={isEnquiryDialogOpen} onOpenChange={setIsEnquiryDialogOpen}>
-        <DialogContent className="sm:max-w-[420px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[420px] max-h-[88dvh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Send Property Enquiry</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
@@ -1087,7 +1132,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
       {/* --- DIALOG 4: REPORT LISTING (PRD Section 18) --- */}
       <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
-        <DialogContent className="sm:max-w-[450px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[450px] max-h-[88dvh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-rose-700 flex items-center gap-2">
               <Flag className="h-5 w-5" />

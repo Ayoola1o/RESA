@@ -469,28 +469,28 @@ function AdminPortalContent() {
 
       {/* Main Tabs Console */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-slate-100 p-1 rounded-2xl flex flex-wrap gap-1 w-full max-w-4xl">
-          <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5">
+        <TabsList className="bg-slate-100/90 p-1.5 rounded-2xl flex overflow-x-auto no-scrollbar whitespace-nowrap gap-1 w-full max-w-full">
+          <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <ShieldCheck className="h-3.5 w-3.5" />
             Verification Queue ({pendingVerificationList.length})
           </TabsTrigger>
-          <TabsTrigger value="properties" className="rounded-xl text-xs font-bold gap-1.5">
+          <TabsTrigger value="properties" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <Home className="h-3.5 w-3.5" />
             Property Moderation ({properties.length})
           </TabsTrigger>
-          <TabsTrigger value="users" className="rounded-xl text-xs font-bold gap-1.5">
+          <TabsTrigger value="users" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <Users className="h-3.5 w-3.5" />
             User Management ({users.length})
           </TabsTrigger>
-          <TabsTrigger value="reports" className="rounded-xl text-xs font-bold gap-1.5">
+          <TabsTrigger value="reports" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <BadgeAlert className="h-3.5 w-3.5" />
             Trust & Safety ({reports.length})
           </TabsTrigger>
-          <TabsTrigger value="inspections" className="rounded-xl text-xs font-bold gap-1.5">
+          <TabsTrigger value="inspections" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <CalendarCheck2 className="h-3.5 w-3.5" />
             Inspections ({inspections.length})
           </TabsTrigger>
-          <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5">
+          <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <History className="h-3.5 w-3.5" />
             System Audit Trail ({auditLogs.length})
           </TabsTrigger>
@@ -1107,11 +1107,11 @@ function AdminPortalContent() {
 
       {/* --- MODAL 1: GRANULAR VERIFICATION CHECKLIST (PRD Section 12) --- */}
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-        <DialogContent className="sm:max-w-[620px] rounded-2xl max-h-[92vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[620px] rounded-2xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-blue-600" />
-              Granular Verification Checklist
+              <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0" />
+              <span>Granular Verification Checklist</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
               Auditing listing: <strong>{reviewProperty?.title}</strong> ({reviewProperty?.id})
@@ -1194,13 +1194,13 @@ function AdminPortalContent() {
             {/* Checklist Parameter Toggles (Supporting all 6 states) */}
             <div className="space-y-3 divide-y divide-slate-100 text-xs">
               {/* 1. Owner Identity */}
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-1">
                 <div>
                   <p className="font-bold text-slate-900">1. Owner / Authority Identity</p>
                   <p className="text-[11px] text-slate-400">KYC check & NIN / Passport verification</p>
                 </div>
                 <Select value={ownerIdStatus} onValueChange={(v: any) => setOwnerIdStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1214,13 +1214,13 @@ function AdminPortalContent() {
               </div>
 
               {/* 2. Location Status */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-2">
                 <div>
                   <p className="font-bold text-slate-900">2. Location & Cadaster</p>
                   <p className="text-[11px] text-slate-400">Coordinates confirmed against Land Survey</p>
                 </div>
                 <Select value={locStatus} onValueChange={(v: any) => setLocStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1234,13 +1234,13 @@ function AdminPortalContent() {
               </div>
 
               {/* 3. Authority Document Status */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-2">
                 <div>
                   <p className="font-bold text-slate-900">3. Title Documents Reviewed</p>
                   <p className="text-[11px] text-slate-400">Governor&apos;s Consent / C of O / Deed of Assignment</p>
                 </div>
                 <Select value={docStatus} onValueChange={(v: any) => setDocStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1254,13 +1254,13 @@ function AdminPortalContent() {
               </div>
 
               {/* 4. Availability Status */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-2">
                 <div>
                   <p className="font-bold text-slate-900">4. Availability & Vacancy</p>
                   <p className="text-[11px] text-slate-400">Confirmed vacant and not double-let or disputed</p>
                 </div>
                 <Select value={availStatus} onValueChange={(v: any) => setAvailStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1274,13 +1274,13 @@ function AdminPortalContent() {
               </div>
 
               {/* 5. Media Status */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-2">
                 <div>
                   <p className="font-bold text-slate-900">5. Media Authenticity</p>
                   <p className="text-[11px] text-slate-400">Confirmed non-misleading photos & timestamped video</p>
                 </div>
                 <Select value={mediaStatus} onValueChange={(v: any) => setMediaStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1294,13 +1294,13 @@ function AdminPortalContent() {
               </div>
 
               {/* 6. Inspection Status */}
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 pt-2">
                 <div>
                   <p className="font-bold text-slate-900">6. Physical Inspection Record</p>
                   <p className="text-[11px] text-slate-400">Field agent verified condition log on-site</p>
                 </div>
                 <Select value={inspStatus} onValueChange={(v: any) => setInspStatus(v)}>
-                  <SelectTrigger className="w-36 h-8 text-xs rounded-lg">
+                  <SelectTrigger className="w-full xs:w-36 h-9 xs:h-8 text-xs rounded-lg shrink-0">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1373,11 +1373,11 @@ function AdminPortalContent() {
 
       {/* --- MODAL 2: INSPECT USER DETAILS (PRD Section 13) --- */}
       <Dialog open={isUserInspectOpen} onOpenChange={setIsUserInspectOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[500px] rounded-2xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
-              User Profile & Role Inspection
+              <Users className="h-5 w-5 text-blue-600 shrink-0" />
+              <span>User Profile & Role Inspection</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
               Platform identity details for {inspectedUser?.name}
@@ -1387,12 +1387,12 @@ function AdminPortalContent() {
           {inspectedUser && (
             <div className="space-y-4 pt-2 text-xs">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-base">
+                <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-base shrink-0">
                   {inspectedUser.name.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900">{inspectedUser.name}</p>
-                  <p className="text-slate-500">{inspectedUser.email}</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-slate-900 truncate">{inspectedUser.name}</p>
+                  <p className="text-slate-500 truncate">{inspectedUser.email}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge className="text-[10px]">{inspectedUser.role}</Badge>
                     <Badge variant="outline" className="text-[10px]">{inspectedUser.verificationStatus}</Badge>
@@ -1461,7 +1461,7 @@ function AdminPortalContent() {
 
       {/* --- MODAL 3: REVIEW DOCUMENTS FOR PROPERTY (PRD Section 13) --- */}
       <Dialog open={isDocsDialogOpen} onOpenChange={setIsDocsDialogOpen}>
-        <DialogContent className="sm:max-w-[550px] rounded-2xl">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[550px] rounded-2xl max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" />

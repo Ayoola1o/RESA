@@ -648,8 +648,8 @@ function AddPropertyWizard() {
           <Progress value={progressPercent} className="h-2 rounded-full bg-slate-100" />
         </div>
 
-        {/* 8-Step Navigation Pill Strip */}
-        <div className="grid grid-cols-4 sm:grid-cols-8 divide-x divide-y sm:divide-y-0 divide-slate-100 bg-slate-50/60 text-center">
+        {/* 8-Step Navigation Pill Strip (Mobile horizontal touch scroll + Desktop grid) */}
+        <div className="flex sm:grid sm:grid-cols-8 overflow-x-auto no-scrollbar divide-x divide-slate-100 bg-slate-50/60 text-center">
           {WIZARD_STEPS.map((s) => {
             const isDone = s.id < currentStep;
             const isCurrent = s.id === currentStep;
@@ -662,15 +662,15 @@ function AddPropertyWizard() {
                     setCurrentStep(s.id);
                   }
                 }}
-                className={`py-2 px-1 text-[11px] font-bold transition-colors ${
+                className={`py-2.5 px-3 sm:px-1 text-[11px] font-bold transition-colors whitespace-nowrap shrink-0 sm:shrink ${
                   isCurrent
                     ? 'bg-blue-600 text-white'
                     : isDone
                     ? 'text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100/70'
-                    : 'text-slate-400 hover:text-slate-700'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
-                <div className="truncate">{s.id}. {s.title.split(' ')[0]}</div>
+                <div>{s.id}. {s.title}</div>
               </button>
             );
           })}
@@ -1441,36 +1441,36 @@ function AddPropertyWizard() {
       )}
 
       {/* Bottom Step Navigation Controls */}
-      <div className="flex items-center justify-between pt-4">
+      <div className="flex items-center justify-between gap-2 pt-4">
         <Button
           type="button"
           variant="outline"
           onClick={goToPrevStep}
           disabled={currentStep === 1 || isSubmitting}
-          className="rounded-xl px-5 h-11 text-xs font-bold border-slate-300"
+          className="rounded-xl px-3 sm:px-5 h-11 text-xs font-bold border-slate-300 min-w-0"
         >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Previous Step
+          <ChevronLeft className="h-4 w-4 mr-0.5 sm:mr-1 shrink-0" />
+          <span className="truncate">Previous<span className="hidden xs:inline"> Step</span></span>
         </Button>
 
         {currentStep < 8 ? (
           <Button
             type="button"
             onClick={goToNextStep}
-            className="rounded-xl px-6 h-11 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm"
+            className="rounded-xl px-4 sm:px-6 h-11 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm min-w-0"
           >
-            Next Step
-            <ChevronRight className="h-4 w-4 ml-1" />
+            <span className="truncate">Next<span className="hidden xs:inline"> Step</span></span>
+            <ChevronRight className="h-4 w-4 ml-0.5 sm:ml-1 shrink-0" />
           </Button>
         ) : (
           <Button
             type="button"
             onClick={() => handleSaveOrSubmit(true)}
             disabled={isSubmitting}
-            className="rounded-xl px-6 h-11 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-900/20"
+            className="rounded-xl px-4 sm:px-6 h-11 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-900/20 min-w-0"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Send className="h-4 w-4 mr-1" />}
-            Submit Listing for Review
+            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-1 shrink-0" /> : <Send className="h-4 w-4 mr-1 shrink-0" />}
+            <span className="truncate">Submit<span className="hidden xs:inline"> for Review</span></span>
           </Button>
         )}
       </div>
