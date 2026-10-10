@@ -100,6 +100,78 @@
   "sessions": {},
   "properties": [
     {
+      "ownerId": "user_owner_1",
+      "isDirectListing": true,
+      "title": "Audit & Inspection Penthouse Suite",
+      "propertyType": "Apartment",
+      "listingType": "RENT",
+      "description": "Updated penthouse suite description with amended terms.",
+      "state": "Lagos",
+      "city": "Lekki Phase 1",
+      "area": "Admiralty Way",
+      "address": "15 Admiralty Way, Lekki Phase 1",
+      "price": 26000000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "features": [
+        "Elevator",
+        "Private Terrace",
+        "Smart Home"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "REJECTED",
+      "media": [
+        {
+          "id": "med_1791660406742_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-10T19:26:46.743Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": "doc_1791660406764_76863bac",
+          "propertyId": "prop_1791660406744_9mp8",
+          "uploadedBy": "user_owner_1",
+          "documentType": "DEED_OF_ASSIGNMENT",
+          "fileName": "deed_of_assignment.pdf",
+          "fileReference": "doc_1791660406763_76863bac8fd1475fbeb3fa1faa3aa9ec.pdf",
+          "status": "PENDING",
+          "uploadedAt": "2026-10-10T19:26:46.764Z",
+          "mimeType": "application/pdf",
+          "sizeBytes": 32
+        }
+      ],
+      "verification": {
+        "verificationId": "ver_1791660406744",
+        "propertyId": "prop_1791660406744_9mp8",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "FAILED",
+        "reviewNotes": "Preliminary review failed, please update paperwork",
+        "reviewerId": "user_admin_1",
+        "reviewedAt": "2026-10-10T19:26:46.769Z"
+      },
+      "id": "prop_1791660406744_9mp8",
+      "createdAt": "2026-10-10T19:26:46.744Z",
+      "updatedAt": "2026-10-10T19:26:46.775Z"
+    },
+    {
       "id": "prop-1",
       "ownerId": "user_owner_1",
       "authorizedAgentId": "user_agent_1",
@@ -443,6 +515,57 @@
   ],
   "inspections": [
     {
+      "propertyId": "prop_1791660406744_9mp8",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "propertyAddress": "15 Admiralty Way, Lekki Phase 1",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "seekerEmail": "seeker@prophunta.ai",
+      "seekerPhone": "+234 803 123 4567",
+      "hostId": "user_owner_1",
+      "preferredDate": "2026-10-15",
+      "preferredTimeSlot": "11:00 AM - 1:00 PM",
+      "type": "IN_PERSON",
+      "status": "COMPLETED",
+      "notes": "Confirmed by host",
+      "id": "insp_1791660418235_pn8p",
+      "createdAt": "2026-10-10T19:26:58.235Z",
+      "updatedAt": "2026-10-10T19:26:58.260Z",
+      "method": "IN_PERSON_FIELD_OFFICER",
+      "participants": [
+        {
+          "userId": "user_owner_1",
+          "name": "Alhaji Ibrahim Danjuma",
+          "role": "OWNER"
+        },
+        {
+          "userId": "user_seeker_1",
+          "name": "Chidi Okonkwo",
+          "role": "SEEKER"
+        }
+      ],
+      "inspectionRecord": {
+        "completedAt": "2026-10-10T19:26:58.260Z",
+        "date": "2026-10-10T19:26:58.260Z",
+        "inspectorName": "Engr. Dapo Alabi (Certified Field Officer)",
+        "inspector": "Engr. Dapo Alabi (Certified Field Officer)",
+        "inspectorRole": "OWNER",
+        "method": "IN_PERSON_FIELD_OFFICER",
+        "isIndependentInspection": false,
+        "conditionRating": "EXCELLENT",
+        "condition": "EXCELLENT",
+        "utilitiesFunctional": true,
+        "utilities": true,
+        "meterReadings": "Prepaid #8491029112 - 320.5 kWh",
+        "meters": "Prepaid #8491029112 - 320.5 kWh",
+        "observations": "Property is in turnkey condition. Clean borehole water, functioning inverters, intact ceiling.",
+        "discrepancies": "None observed.",
+        "photos": [],
+        "escalationStatus": "DISCREPANCY_FLAGGED"
+      },
+      "escalationStatus": "DISCREPANCY_FLAGGED"
+    },
+    {
       "id": "insp-1",
       "propertyId": "prop-1",
       "propertyTitle": "5 Bedroom Waterfront Detached Villa with Private Jetty",
@@ -481,6 +604,44 @@
   ],
   "enquiries": [
     {
+      "propertyId": "prop_1791660406744_9mp8",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "propertyImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+      "seekerId": "user_seeker_1",
+      "seekerName": "Chidi Okonkwo",
+      "hostId": "user_owner_1",
+      "hostName": "Property Owner",
+      "ownerId": "user_owner_1",
+      "lastMessageText": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+      "lastMessageAt": "2026-10-10T19:26:58.389Z",
+      "unreadCountForSeeker": 1,
+      "unreadCountForHost": 1,
+      "hasOffPlatformWarning": false,
+      "messages": [
+        {
+          "id": "msg_1791660418377",
+          "senderId": "user_seeker_1",
+          "senderName": "Chidi Okonkwo",
+          "senderRole": "SEEKER",
+          "text": "Hello, what are the service charge inclusions regarding generator diesel?",
+          "timestamp": "2026-10-10T19:26:58.377Z",
+          "read": false,
+          "hasOffPlatformWarning": false
+        },
+        {
+          "id": "msg_1791660418389_bnqz",
+          "senderId": "user_owner_1",
+          "senderName": "Alhaji Ibrahim Danjuma",
+          "senderRole": "OWNER",
+          "text": "Service charge covers 24/7 central generator diesel, estate security, and waste management.",
+          "timestamp": "2026-10-10T19:26:58.389Z",
+          "read": false,
+          "hasOffPlatformWarning": false
+        }
+      ],
+      "id": "enq_1791660418377_ar5t"
+    },
+    {
       "id": "enq-1",
       "propertyId": "prop-1",
       "propertyTitle": "5 Bedroom Waterfront Detached Villa with Private Jetty",
@@ -492,7 +653,7 @@
       "ownerId": "user_owner_1",
       "authorizedAgentId": "user_agent_1",
       "lastMessageText": "Kindly send me a message on WhatsApp 08031234567 or direct email so we can pay outside the system.",
-      "lastMessageAt": "2026-10-10T18:42:10.111Z",
+      "lastMessageAt": "2026-10-10T19:26:36.223Z",
       "unreadCountForSeeker": 2,
       "unreadCountForHost": 2,
       "messages": [
@@ -515,32 +676,32 @@
           "read": false
         },
         {
-          "id": "msg_1791657730052_8a6b",
+          "id": "msg_1791660396154_nd3y",
           "senderId": "user_seeker_1",
           "senderName": "Chidi Okonkwo",
           "senderRole": "SEEKER",
           "text": "Hello, is this duplex available for immediate move-in? What is the caution fee policy?",
-          "timestamp": "2026-10-10T18:42:10.050Z",
+          "timestamp": "2026-10-10T19:26:36.152Z",
           "read": false,
           "hasOffPlatformWarning": false
         },
         {
-          "id": "msg_1791657730064_58dk",
+          "id": "msg_1791660396171_9diy",
           "senderId": "user_agent_1",
           "senderName": "Tunde Adeleke",
           "senderRole": "AGENT",
           "text": "Yes, the duplex is vacant. Caution fee is 10% refundable upon move-out audit.",
-          "timestamp": "2026-10-10T18:42:10.064Z",
+          "timestamp": "2026-10-10T19:26:36.171Z",
           "read": false,
           "hasOffPlatformWarning": false
         },
         {
-          "id": "msg_1791657730111_afxy",
+          "id": "msg_1791660396223_cvr2",
           "senderId": "user_seeker_1",
           "senderName": "Chidi Okonkwo",
           "senderRole": "SEEKER",
           "text": "Kindly send me a message on WhatsApp 08031234567 or direct email so we can pay outside the system.",
-          "timestamp": "2026-10-10T18:42:10.111Z",
+          "timestamp": "2026-10-10T19:26:36.223Z",
           "read": false,
           "hasOffPlatformWarning": true,
           "warningNotice": "⚠️ Off-Platform Safety Notice: Moving transactions, communications, or payments outside PropHunta AI forfeits all independent verification protections, physical inspection dispute records, and title audit guarantees. Never transfer funds to personal bank accounts."
@@ -551,6 +712,39 @@
     }
   ],
   "applications": [
+    {
+      "propertyId": "prop_1791660406744_9mp8",
+      "propertyTitle": "Audit & Inspection Penthouse Suite",
+      "propertyPrice": 26000000,
+      "propertyImage": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+      "seekerId": "user_seeker_1",
+      "applicantName": "Chidi Okonkwo",
+      "applicantEmail": "seeker@prophunta.ai",
+      "applicantPhone": "+234 803 123 4567",
+      "type": "RENTAL",
+      "occupation": "Senior Technology Architect",
+      "moveInDate": "2026-11-01",
+      "occupants": 2,
+      "offerAmount": 18000000,
+      "financingStatus": "CASH",
+      "feeBreakdown": {
+        "basePrice": 18000000,
+        "agreementFee": 0,
+        "cautionFee": 0,
+        "serviceCharge": 0,
+        "agencyFee": 1800000,
+        "otherCharges": 0,
+        "totalInitialOutlay": 19800000,
+        "currency": "NGN",
+        "escrowNotice": "Notice: PropHunta AI conducts title, cadastral, and physical inspection audits. In compliance with real estate governance, PropHunta AI does not simulate mock escrow or claim payment protection without a licensed escrow partner integration under the Land Use Act. Transactions must proceed through formal lease execution."
+      },
+      "message": "We are prepared to pay 2 years upfront upon agreeable lease draft.",
+      "status": "APPROVED",
+      "id": "app_1791660418266_kdie",
+      "createdAt": "2026-10-10T19:26:58.267Z",
+      "updatedAt": "2026-10-10T19:26:58.363Z",
+      "reviewNotes": "Terms accepted by owner."
+    },
     {
       "id": "app-1",
       "propertyId": "prop-2",
@@ -585,6 +779,408 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "aud_1791660418398_xshi",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:26:58.398Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418395_gnj1",
+        "type": "ENQUIRY",
+        "title": "Message from Alhaji Ibrahim Danjuma"
+      }
+    },
+    {
+      "id": "aud_1791660418391_hscc",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791660418377_ar5t",
+      "timestamp": "2026-10-10T19:26:58.391Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791660406744_9mp8",
+        "preview": "Service charge covers 24/7 central generator diesel, estate ",
+        "hasOffPlatformWarning": false
+      }
+    },
+    {
+      "id": "aud_1791660418384_f35v",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T19:26:58.384Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418382_abnc",
+        "type": "ENQUIRY",
+        "title": "New Property Enquiry"
+      }
+    },
+    {
+      "id": "aud_1791660418380_juio",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "ENQUIRY_SENT",
+      "objectType": "ENQUIRY",
+      "objectId": "enq_1791660418377_ar5t",
+      "timestamp": "2026-10-10T19:26:58.380Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791660406744_9mp8",
+        "ownerId": "user_owner_1",
+        "hostId": "user_owner_1",
+        "preview": "Hello, what are the service charge inclusions regarding gene",
+        "hasOffPlatformWarning": false
+      }
+    },
+    {
+      "id": "aud_1791660418372_187n",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:26:58.372Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418369_z8r8",
+        "type": "APPLICATION",
+        "title": "Application APPROVED"
+      }
+    },
+    {
+      "id": "aud_1791660418365_plar",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "APPLICATION_STATUS_UPDATED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791660418266_kdie",
+      "timestamp": "2026-10-10T19:26:58.365Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "APPROVED",
+        "notes": "Terms accepted by owner."
+      }
+    },
+    {
+      "id": "aud_1791660418359_74kz",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T19:26:58.359Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418356_f7te",
+        "type": "APPLICATION",
+        "title": "New Rental Application"
+      }
+    },
+    {
+      "id": "aud_1791660418269_07k8",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "APPLICATION_SUBMITTED",
+      "objectType": "APPLICATION",
+      "objectId": "app_1791660418266_kdie",
+      "timestamp": "2026-10-10T19:26:58.269Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791660406744_9mp8",
+        "type": "RENTAL",
+        "applicantName": "Chidi Okonkwo",
+        "offerAmount": 18000000,
+        "totalInitialOutlay": 19800000
+      }
+    },
+    {
+      "id": "aud_1791660418262_3d48",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_COMPLETED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791660418235_pn8p",
+      "timestamp": "2026-10-10T19:26:58.262Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "rating": "EXCELLENT",
+        "method": "IN_PERSON_FIELD_OFFICER",
+        "isIndependentInspection": false,
+        "participantsCount": 2,
+        "discrepancies": "None observed."
+      }
+    },
+    {
+      "id": "aud_1791660418257_2xme",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_seeker_1",
+      "timestamp": "2026-10-10T19:26:58.257Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418255_4n5p",
+        "type": "INSPECTION",
+        "title": "Inspection SCHEDULED"
+      }
+    },
+    {
+      "id": "aud_1791660418253_p72l",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "INSPECTION_SCHEDULED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791660418235_pn8p",
+      "timestamp": "2026-10-10T19:26:58.253Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "newStatus": "SCHEDULED",
+        "previousStatus": "REQUESTED"
+      }
+    },
+    {
+      "id": "aud_1791660418247_m8z2",
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "system",
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_owner_1",
+      "timestamp": "2026-10-10T19:26:58.247Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1791660418243_hjxp",
+        "type": "INSPECTION",
+        "title": "New Inspection Request"
+      }
+    },
+    {
+      "id": "aud_1791660418240_kyak",
+      "actor": {
+        "id": "user_seeker_1",
+        "email": "seeker@prophunta.ai",
+        "role": "SEEKER"
+      },
+      "actorId": "user_seeker_1",
+      "actorEmail": "seeker@prophunta.ai",
+      "actorRole": "SEEKER",
+      "action": "INSPECTION_REQUESTED",
+      "objectType": "INSPECTION",
+      "objectId": "insp_1791660418235_pn8p",
+      "timestamp": "2026-10-10T19:26:58.240Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791660406744_9mp8",
+        "preferredDate": "2026-10-15"
+      }
+    },
+    {
+      "id": "aud_1791660406779_v2hi",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_REJECTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791660406744_9mp8",
+      "timestamp": "2026-10-10T19:26:46.779Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "notes": "Preliminary review failed, please update paperwork"
+      }
+    },
+    {
+      "id": "aud_1791660406771_y850",
+      "actor": {
+        "id": "user_admin_1",
+        "email": "admin@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorId": "user_admin_1",
+      "actorEmail": "admin@prophunta.ai",
+      "actorRole": "ADMIN",
+      "action": "VERIFICATION_UPDATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791660406744_9mp8",
+      "timestamp": "2026-10-10T19:26:46.771Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "updates": {
+          "overallStatus": "FAILED",
+          "reviewNotes": "Preliminary review failed, please update paperwork"
+        }
+      }
+    },
+    {
+      "id": "aud_1791660406766_38mf",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "DOCUMENT_UPLOADED",
+      "objectType": "DOCUMENT",
+      "objectId": "doc_1791660406764_76863bac",
+      "timestamp": "2026-10-10T19:26:46.766Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1791660406744_9mp8",
+        "documentType": "DEED_OF_ASSIGNMENT",
+        "fileName": "deed_of_assignment.pdf",
+        "sizeBytes": 32
+      }
+    },
+    {
+      "id": "aud_1791660406759_n0wa",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_EDITED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791660406744_9mp8",
+      "timestamp": "2026-10-10T19:26:46.759Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Audit & Inspection Penthouse Suite",
+        "changes": [
+          "price",
+          "description"
+        ]
+      }
+    },
+    {
+      "id": "aud_1791660406755_fcqc",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_SUBMITTED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791660406744_9mp8",
+      "timestamp": "2026-10-10T19:26:46.755Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DRAFT",
+        "newStatus": "SUBMITTED",
+        "reason": "Submitted for compliance inspection"
+      }
+    },
+    {
+      "id": "aud_1791660406750_1m20",
+      "actor": {
+        "id": "user_owner_1",
+        "email": "owner@prophunta.ai",
+        "role": "OWNER"
+      },
+      "actorId": "user_owner_1",
+      "actorEmail": "owner@prophunta.ai",
+      "actorRole": "OWNER",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1791660406744_9mp8",
+      "timestamp": "2026-10-10T19:26:46.750Z",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Audit & Inspection Penthouse Suite"
+      }
+    },
     {
       "id": "aud-1",
       "actor": {
@@ -638,6 +1234,66 @@
     }
   ],
   "notifications": [
+    {
+      "userId": "user_seeker_1",
+      "title": "Message from Alhaji Ibrahim Danjuma",
+      "message": "Re: \"Audit & Inspection Penthouse Suite\": \"Service charge covers 24/7 central generator diesel, estate security, and w\"",
+      "type": "ENQUIRY",
+      "link": "/messages/enq_1791660418377_ar5t",
+      "read": false,
+      "id": "notif_1791660418395_gnj1",
+      "createdAt": "2026-10-10T19:26:58.395Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "New Property Enquiry",
+      "message": "Chidi Okonkwo enquired about \"Audit & Inspection Penthouse Suite\": \"Hello, what are the service charge inclusions regarding generator diesel?\"",
+      "type": "ENQUIRY",
+      "link": "/messages/enq_1791660418377_ar5t",
+      "read": false,
+      "id": "notif_1791660418382_abnc",
+      "createdAt": "2026-10-10T19:26:58.382Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Application APPROVED",
+      "message": "Your expression of interest for \"Audit & Inspection Penthouse Suite\" has been marked APPROVED. Notes: \"Terms accepted by owner.\"",
+      "type": "APPLICATION",
+      "link": "/profile?tab=applications",
+      "read": false,
+      "id": "notif_1791660418369_z8r8",
+      "createdAt": "2026-10-10T19:26:58.370Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "New Rental Application",
+      "message": "Chidi Okonkwo submitted a rental application for \"Audit & Inspection Penthouse Suite\" (Total initial outlay: ₦19,800,000).",
+      "type": "APPLICATION",
+      "link": "/profile?tab=applications",
+      "read": false,
+      "id": "notif_1791660418356_f7te",
+      "createdAt": "2026-10-10T19:26:58.356Z"
+    },
+    {
+      "userId": "user_seeker_1",
+      "title": "Inspection SCHEDULED",
+      "message": "Inspection for \"Audit & Inspection Penthouse Suite\" has been updated to SCHEDULED. Notes: \"Confirmed by host\"",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791660418255_4n5p",
+      "createdAt": "2026-10-10T19:26:58.255Z"
+    },
+    {
+      "userId": "user_owner_1",
+      "title": "New Inspection Request",
+      "message": "Chidi Okonkwo requested an inspection for \"Audit & Inspection Penthouse Suite\" on 2026-10-15 (11:00 AM - 1:00 PM).",
+      "type": "INSPECTION",
+      "link": "/profile?tab=inspections",
+      "read": false,
+      "id": "notif_1791660418243_hjxp",
+      "createdAt": "2026-10-10T19:26:58.243Z"
+    },
     {
       "id": "notif-1",
       "userId": "user_seeker_1",

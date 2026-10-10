@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard,
   Store,
@@ -32,6 +32,101 @@ export interface NavItem {
   href: string;
   icon: any;
   badge?: number | string;
+}
+
+export function normalizeTabName(tab: string | null | undefined): string {
+  if (!tab) return '';
+  const t = tab.toLowerCase().trim();
+  if (t === 'inspections' || t === 'inspection') return 'inspections';
+  if (t === 'applications' || t === 'application' || t === 'offers' || t === 'offer' || t === 'eoi') return 'applications';
+  if (t === 'saved' || t === 'saved-listings' || t === 'favorites' || t === 'favorite') return 'saved';
+  if (t === 'verification' || t === 'trust' || t === 'identity' || t === 'credentials' || t === 'kyc') return 'verification';
+  if (t === 'properties' || t === 'listings' || t === 'my-properties') return 'properties';
+  if (t === 'financials' || t === 'payments' || t === 'finance' || t === 'leases' || t === 'intelligence' || t === 'market-intelligence') return 'financials';
+  return t;
+}
+
+export function isNavigationItemActive(
+  href: string,
+  pathname: string,
+  searchParams: { get: (key: string) => string | null }
+): boolean {
+  const [targetPath, targetQueryString] = href.split('?');
+  const targetParams = new URLSearchParams(targetQueryString || '');
+
+  // 1. Pathname Matching
+  if (targetPath === '/messages') {
+    if (pathname !== '/messages' && !pathname.startsWith('/messages/')) {
+      return false;
+    }
+  } else if (targetPath === '/marketplace') {
+    if (pathname !== '/marketplace' && !pathname.startsWith('/property/')) {
+      return false;
+    }
+  } else if (targetPath === '/admin') {
+    if (pathname !== '/admin' && !pathname.startsWith('/admin/')) {
+      return false;
+    }
+  } else if (targetPath === '/dashboard') {
+    if (pathname !== '/dashboard') {
+      return false;
+    }
+  } else {
+    if (pathname !== targetPath) {
+      return false;
+    }
+  }
+
+  // 2. Query Parameter Specificity
+  const targetEntries = Array.from(targetParams.entries());
+
+  if (targetEntries.length > 0) {
+    for (const [key, value] of targetEntries) {
+      const currentVal = searchParams.get(key);
+      if (key === 'tab') {
+        const normTarget = normalizeTabName(value);
+        const normCurrent = normalizeTabName(currentVal);
+        if (normTarget !== normCurrent) {
+          return false;
+        }
+      } else {
+        if (currentVal !== value) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  // 3. Parent / Parameter-less targets: ensure they are not active if a parameterized sibling is active
+  if (targetPath === '/profile') {
+    const currentTab = searchParams.get('tab');
+    if (currentTab) {
+      const norm = normalizeTabName(currentTab);
+      // If a specific subtab is present, base /profile should NOT be active!
+      if (['inspections', 'applications', 'saved', 'properties', 'financials', 'verification'].includes(norm)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (targetPath === '/marketplace') {
+    if (searchParams.get('view') === 'map') {
+      return false;
+    }
+    return true;
+  }
+
+  if (targetPath === '/admin') {
+    const currentTab = searchParams.get('tab');
+    if (currentTab && currentTab !== 'overview') {
+      return false;
+    }
+    return true;
+  }
+
+  return true;
 }
 
 export function getNavItemsForRole(role: UserRole): NavItem[] {
@@ -88,11 +183,13 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
 
 export const moreNavItems: NavItem[] = [
   { label: 'Profile & Credentials', href: '/profile', icon: User },
+  { label: 'Trust & Verification', href: '/profile?tab=verification', icon: ShieldCheck },
   { label: 'Account Settings', href: '/settings', icon: Settings },
 ];
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { userRole, setUserRole, currentUser } = useUserRole();
 
@@ -159,11 +256,7 @@ export default function AppSidebar() {
         {/* Main Navigation Items */}
         <nav className="space-y-1">
           {mainNavItems.map((item) => {
-            const isActive =
-              item.href === '/dashboard' || item.href === '/admin'
-                ? pathname === item.href
-                : pathname.startsWith(item.href.split('?')[0]);
-
+            const isActive = isNavigationItemActive(item.href, pathname, searchParams);
             const Icon = item.icon;
 
             return (
@@ -207,7 +300,7 @@ export default function AppSidebar() {
           </span>
           <nav className="mt-1.5 space-y-1">
             {moreNavItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
+              const isActive = isNavigationItemActive(item.href, pathname, searchParams);
               const Icon = item.icon;
 
               return (
@@ -216,11 +309,15 @@ export default function AppSidebar() {
                   href={item.href}
                   className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
                     isActive
-                      ? 'bg-slate-800 text-white font-semibold'
+                      ? 'bg-lime-500 text-slate-950 shadow-md shadow-lime-950/40 font-bold'
                       : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
                   }`}
                 >
-                  <Icon className="h-4 w-4 text-slate-400 group-hover:text-lime-400" />
+                  <Icon
+                    className={`h-4 w-4 transition-colors ${
+                      isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-lime-400'
+                    }`}
+                  />
                   <span>{item.label}</span>
                 </Link>
               );

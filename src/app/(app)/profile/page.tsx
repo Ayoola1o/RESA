@@ -30,6 +30,13 @@ import {
   ClipboardCheck,
   Camera,
   Video,
+  BarChart3,
+  CheckCircle,
+  FileCheck,
+  Shield,
+  Banknote,
+  Lock,
+  ArrowUpRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -83,6 +90,25 @@ import {
 } from '@/types/prophunta';
 import PropertyCard from '@/components/property-card';
 
+function normalizeProfileTab(tab: string | null | undefined, role?: string): string {
+  if (!tab) {
+    if (role === 'ADMIN') return 'verification';
+    if (role === 'SEEKER') return 'inspections';
+    return 'properties';
+  }
+  const t = tab.toLowerCase().trim();
+  if (t === 'inspections' || t === 'inspection') return 'inspections';
+  if (t === 'applications' || t === 'application' || t === 'offers' || t === 'offer' || t === 'eoi') return 'applications';
+  if (t === 'saved' || t === 'saved-listings' || t === 'favorites' || t === 'favorite' || t === 'shortlist') return 'saved';
+  if (t === 'verification' || t === 'trust' || t === 'identity' || t === 'credentials' || t === 'kyc') return 'verification';
+  if (t === 'properties' || t === 'listings' || t === 'my-properties' || t === 'managed-properties') return 'properties';
+  if (t === 'financials' || t === 'payments' || t === 'finance' || t === 'leases' || t === 'intelligence' || t === 'market-intelligence') return 'financials';
+
+  if (role === 'ADMIN') return 'verification';
+  if (role === 'SEEKER') return 'inspections';
+  return 'properties';
+}
+
 export default function ProfilePage() {
   return (
     <Suspense fallback={<div className="p-12 text-center text-muted-foreground">Loading verified profile...</div>}>
@@ -106,7 +132,7 @@ function ProfileContent() {
   const router = useRouter();
 
   const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabFromUrl || (role === 'SEEKER' ? 'inspections' : 'properties'));
+  const [activeTab, setActiveTab] = useState<string>(() => normalizeProfileTab(tabFromUrl, role));
 
   // Data states
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
@@ -117,14 +143,14 @@ function ProfileContent() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (tabFromUrl) {
-      setActiveTab(tabFromUrl);
-    }
-  }, [tabFromUrl]);
+    const canonical = normalizeProfileTab(tabFromUrl, role);
+    setActiveTab(canonical);
+  }, [tabFromUrl, role]);
 
   const handleTabChange = (val: string) => {
-    setActiveTab(val);
-    router.replace(`/profile?tab=${val}`, { scroll: false });
+    const canonical = normalizeProfileTab(val, role);
+    setActiveTab(canonical);
+    router.replace(`/profile?tab=${canonical}`, { scroll: false });
   };
 
   // Load user data
@@ -133,10 +159,10 @@ function ProfileContent() {
     async function loadData() {
       try {
         const [inspData, appData, propData, allProps] = await Promise.all([
-          getUserInspectionsAction(),
-          getUserApplicationsAction(),
-          getUserPropertiesAction(),
-          getPropertiesAction(),
+          getUserInspectionsAction().catch(() => []),
+          getUserApplicationsAction().catch(() => []),
+          getUserPropertiesAction().catch(() => []),
+          getPropertiesAction().catch(() => []),
         ]);
 
         if (!mounted) return;
@@ -403,99 +429,115 @@ function ProfileContent() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:w-auto lg:inline-flex mb-4">
-          {(role === 'OWNER' || role === 'AGENT') && (
-            <TabsTrigger value="properties" className="gap-2 text-xs sm:text-sm">
-              <Building2 className="h-4 w-4" /> My Listings ({userProperties.length})
+        <div className="w-full overflow-x-auto pb-1 mb-4 no-scrollbar">
+          <TabsList className="inline-flex h-auto p-1 bg-slate-100/90 border border-slate-200/80 rounded-xl gap-1 text-slate-700 min-w-max">
+            <TabsTrigger value="properties" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
+              <Building2 className="h-4 w-4" /> {role === 'SEEKER' ? 'My Properties' : 'My Listings'} ({userProperties.length})
             </TabsTrigger>
-          )}
-          <TabsTrigger value="inspections" className="gap-2 text-xs sm:text-sm">
-            <Calendar className="h-4 w-4" /> Inspections ({inspections.length})
-          </TabsTrigger>
-          <TabsTrigger value="applications" className="gap-2 text-xs sm:text-sm">
-            <FileText className="h-4 w-4" /> Applications ({applications.length})
-          </TabsTrigger>
-          {role === 'SEEKER' && (
-            <TabsTrigger value="saved" className="gap-2 text-xs sm:text-sm">
+            <TabsTrigger value="inspections" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
+              <Calendar className="h-4 w-4" /> Inspections ({inspections.length})
+            </TabsTrigger>
+            <TabsTrigger value="applications" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
+              <FileText className="h-4 w-4" /> Applications & Offers ({applications.length})
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
               <Heart className="h-4 w-4" /> Saved Listings ({savedProperties.length})
             </TabsTrigger>
-          )}
-          <TabsTrigger value="identity" className="gap-2 text-xs sm:text-sm">
-            <ShieldCheck className="h-4 w-4" /> Trust & Verification
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger value="verification" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
+              <ShieldCheck className="h-4 w-4" /> Trust & Verification
+            </TabsTrigger>
+            <TabsTrigger value="financials" className="gap-2 text-xs sm:text-sm data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-xs rounded-lg py-2 px-3">
+              <BarChart3 className="h-4 w-4" /> {role === 'SEEKER' ? 'Market Intelligence' : 'Financial Records'}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        {/* Tab: My Listings (Owner / Agent) */}
-        {(role === 'OWNER' || role === 'AGENT') && (
-          <TabsContent value="properties" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold font-headline text-slate-900">Your Managed Properties</h2>
-                <p className="text-sm text-muted-foreground">Properties currently assigned to your ownership or agency account.</p>
-              </div>
-              <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
-                <Link href="/landlord/add-property">
-                  <Plus className="mr-2 h-4 w-4" /> New Property Draft
-                </Link>
-              </Button>
+        {/* Tab: My Listings / Managed Properties */}
+        <TabsContent value="properties" className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold font-headline text-slate-900">
+                {role === 'SEEKER' ? 'Your Listed Properties' : 'Your Managed Properties'}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {role === 'SEEKER'
+                  ? 'Properties you have submitted or managed on PropHunta.'
+                  : 'Properties currently assigned to your ownership or agency account.'}
+              </p>
             </div>
+            <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
+              <Link href="/landlord/add-property">
+                <Plus className="mr-2 h-4 w-4" /> New Property Draft
+              </Link>
+            </Button>
+          </div>
 
-            {loading ? (
-              <div className="p-12 text-center text-sm text-muted-foreground">Loading your listings...</div>
-            ) : userProperties.length === 0 ? (
-              <Card className="p-12 text-center rounded-2xl border-slate-200">
-                <Building2 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                <h3 className="font-semibold text-slate-900">No properties listed yet</h3>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
-                  Create your first property listing, attach proof of title documents, and submit for verification.
-                </p>
+          {loading ? (
+            <div className="p-12 text-center text-sm text-muted-foreground">Loading your listings...</div>
+          ) : userProperties.length === 0 ? (
+            <Card className="p-12 text-center rounded-2xl border-slate-200">
+              <Building2 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+              <h3 className="font-semibold text-slate-900">
+                {role === 'SEEKER' ? 'No managed properties on record' : 'No properties listed yet'}
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                {role === 'SEEKER'
+                  ? 'You are active as a property seeker. If you have a residential or commercial property to lease or sell, create a listing draft.'
+                  : 'Create your first property listing, attach proof of title documents, and submit for verification.'}
+              </p>
+              <div className="flex items-center justify-center gap-3">
                 <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl">
                   <Link href="/landlord/add-property">Create Listing</Link>
                 </Button>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userProperties.map((prop) => (
-                  <div key={prop.id} className="relative group">
-                    <PropertyCard property={prop} />
-                    <div className="mt-2 flex items-center justify-between px-1">
-                      <Badge
-                        className={`text-xs font-bold ${
-                          prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
-                            ? 'bg-lime-600 text-white'
-                            : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
-                            ? 'bg-amber-500 text-white'
-                            : prop.listingStatus === 'CHANGES_REQUIRED'
-                            ? 'bg-orange-500 text-white'
-                            : prop.listingStatus === 'RESERVED'
-                            ? 'bg-purple-600 text-white'
-                            : prop.listingStatus === 'OCCUPIED'
-                            ? 'bg-slate-700 text-white'
-                            : prop.listingStatus === 'SOLD'
-                            ? 'bg-slate-800 text-white'
-                            : prop.listingStatus === 'SUSPENDED' || prop.listingStatus === 'REJECTED'
-                            ? 'bg-rose-600 text-white'
-                            : 'bg-slate-600 text-white'
-                        }`}
-                      >
-                        {prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
-                          ? '✓ Verified Active'
-                          : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
-                          ? 'In Review'
-                          : prop.listingStatus === 'CHANGES_REQUIRED'
-                          ? 'Action Needed'
-                          : prop.listingStatus}
-                      </Badge>
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`/property/${prop.id}`}>View &rarr;</Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                {role === 'SEEKER' && (
+                  <Button asChild variant="outline" className="rounded-xl">
+                    <Link href="/marketplace">Explore Marketplace</Link>
+                  </Button>
+                )}
               </div>
-            )}
-          </TabsContent>
-        )}
+            </Card>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userProperties.map((prop) => (
+                <div key={prop.id} className="relative group">
+                  <PropertyCard property={prop} />
+                  <div className="mt-2 flex items-center justify-between px-1">
+                    <Badge
+                      className={`text-xs font-bold ${
+                        prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
+                          ? 'bg-lime-600 text-white'
+                          : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
+                          ? 'bg-amber-500 text-white'
+                          : prop.listingStatus === 'CHANGES_REQUIRED'
+                          ? 'bg-orange-500 text-white'
+                          : prop.listingStatus === 'RESERVED'
+                          ? 'bg-purple-600 text-white'
+                          : prop.listingStatus === 'OCCUPIED'
+                          ? 'bg-slate-700 text-white'
+                          : prop.listingStatus === 'SOLD'
+                          ? 'bg-slate-800 text-white'
+                          : prop.listingStatus === 'SUSPENDED' || prop.listingStatus === 'REJECTED'
+                          ? 'bg-rose-600 text-white'
+                          : 'bg-slate-600 text-white'
+                      }`}
+                    >
+                      {prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
+                        ? '✓ Verified Active'
+                        : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
+                        ? 'In Review'
+                        : prop.listingStatus === 'CHANGES_REQUIRED'
+                        ? 'Action Needed'
+                        : prop.listingStatus}
+                    </Badge>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href={`/property/${prop.id}`}>View &rarr;</Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
         {/* Tab: Inspections */}
         <TabsContent value="inspections" className="space-y-6">
@@ -760,47 +802,45 @@ function ProfileContent() {
           )}
         </TabsContent>
 
-        {/* Tab: Saved Listings (Seeker) */}
-        {role === 'SEEKER' && (
-          <TabsContent value="saved" className="space-y-6">
-            <div>
-              <h2 className="text-xl font-bold font-headline text-slate-900">Saved Properties</h2>
-              <p className="text-sm text-muted-foreground">Shortlisted verified listings you are tracking.</p>
+        {/* Tab: Saved Listings */}
+        <TabsContent value="saved" className="space-y-6">
+          <div>
+            <h2 className="text-xl font-bold font-headline text-slate-900">Saved Properties</h2>
+            <p className="text-sm text-muted-foreground">Shortlisted verified listings you are tracking.</p>
+          </div>
+
+          {savedProperties.length === 0 ? (
+            <Card className="p-12 text-center rounded-2xl border-slate-200">
+              <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+              <h3 className="font-semibold text-slate-900">No saved properties</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
+                Save listings you are interested in while exploring the marketplace.
+              </p>
+              <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+                <Link href="/marketplace">Explore Marketplace</Link>
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {savedProperties.map((prop) => (
+                <div key={prop.id} className="relative group">
+                  <PropertyCard property={prop} />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-3 right-3 opacity-90 hover:opacity-100 shadow-md rounded-xl"
+                    onClick={() => handleRemoveSaved(prop.id)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" /> Remove
+                  </Button>
+                </div>
+              ))}
             </div>
+          )}
+        </TabsContent>
 
-            {savedProperties.length === 0 ? (
-              <Card className="p-12 text-center rounded-2xl border-slate-200">
-                <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                <h3 className="font-semibold text-slate-900">No saved properties</h3>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
-                  Save listings you are interested in while exploring the marketplace.
-                </p>
-                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
-                  <Link href="/marketplace">Explore Marketplace</Link>
-                </Button>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {savedProperties.map((prop) => (
-                  <div key={prop.id} className="relative group">
-                    <PropertyCard property={prop} />
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-3 right-3 opacity-90 hover:opacity-100 shadow-md rounded-xl"
-                      onClick={() => handleRemoveSaved(prop.id)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" /> Remove
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        )}
-
-        {/* Tab: Trust & Verification Info */}
-        <TabsContent value="identity" className="space-y-6">
+        {/* Tab: Trust & Verification */}
+        <TabsContent value="verification" className="space-y-6">
           <Card className="rounded-2xl border-slate-200/90 shadow-xs">
             <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center gap-2">
@@ -840,6 +880,43 @@ function ProfileContent() {
 
               <Separator />
 
+              {/* Trust Verification Checklist */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-sm text-slate-900">Verified Credentials & Security Compliance</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-lime-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-xs text-slate-900">National Identity & Biometric Verification</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">NIN/BVN database check cleared with zero duplicate claims.</p>
+                    </div>
+                  </div>
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-lime-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-xs text-slate-900">LASRERA / Regulatory Standing</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Lagos State Real Estate Regulatory Authority compliance standard applied.</p>
+                    </div>
+                  </div>
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-lime-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-xs text-slate-900">Title Documentation Audit</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Governor&apos;s Consent, C of O, and Survey Plans verified by authorized officers.</p>
+                    </div>
+                  </div>
+                  <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-lime-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-xs text-slate-900">Field Inspection Guarantee</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">On-site independent field officer reports required prior to deal closure.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
               <div className="space-y-3">
                 <h3 className="font-semibold text-sm text-slate-900">Audit & Accountability Guarantees</h3>
                 <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside">
@@ -848,6 +925,114 @@ function ProfileContent() {
                   <li>Pricing transparency enforces explicit itemization of legal fees, caution deposits, and service charges.</li>
                 </ul>
               </div>
+
+              {role === 'ADMIN' && (
+                <div className="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="font-bold text-sm">Administrative Verification Authority</h4>
+                    <p className="text-xs text-slate-300">You hold Verification Officer privileges to audit titles and approve listings.</p>
+                  </div>
+                  <Button asChild size="sm" className="bg-lime-500 hover:bg-lime-400 text-slate-950 font-bold shrink-0">
+                    <Link href="/admin?tab=verification">Open Verification Queue</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab: Financial Records / Market Intelligence */}
+        <TabsContent value="financials" className="space-y-6">
+          <Card className="rounded-2xl border-slate-200/90 shadow-xs">
+            <CardHeader>
+              <CardTitle className="font-headline text-lg flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-lime-700" />
+                {role === 'SEEKER' ? 'Market Intelligence & Statutory Fee Transparency' : 'Financial Records & Escrow Disbursement'}
+              </CardTitle>
+              <CardDescription>
+                {role === 'SEEKER'
+                  ? 'Transparent fee guidelines, statutory legal fee caps, and escrow protection details.'
+                  : 'Portfolio rent flow, escrow security holdings, and verified payout schedule.'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {role === 'SEEKER' ? (
+                <>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Statutory Legal Cap</span>
+                      <p className="text-xl font-bold text-slate-900">Max 10%</p>
+                      <p className="text-xs text-lime-700 font-medium">Lagos Tenancy Law compliant</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Caution Escrow</span>
+                      <p className="text-xl font-bold text-slate-900">100% Protected</p>
+                      <p className="text-xs text-lime-700 font-medium">Held until verified move-out</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Agency Extortion</span>
+                      <p className="text-xl font-bold text-slate-900">₦0 Markup</p>
+                      <p className="text-xs text-lime-700 font-medium">Zero undocumented charges</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Dispute SLA</span>
+                      <p className="text-xl font-bold text-slate-900">48 Hours</p>
+                      <p className="text-xs text-lime-700 font-medium">Dedicated arbitration panel</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-sm text-slate-900">Fee Itemization Breakdown Guidelines</h3>
+                    <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 text-sm text-slate-600">
+                      <p>
+                        Under PropHunta AI guidelines and the Lagos State Tenancy Law, every transaction must explicitly itemize:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-xs text-slate-700">
+                        <li><strong>Annual Rent:</strong> Paid directly to verified landlord escrow account.</li>
+                        <li><strong>Legal & Agreement Fee:</strong> Capped at not more than 10% of total annual rent.</li>
+                        <li><strong>Refundable Caution Deposit:</strong> Safeguarded in independent escrow; refunded upon inspection sign-off.</li>
+                        <li><strong>Service Charges:</strong> Fully documented utility, security, and maintenance schedule.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Managed Listings</span>
+                      <p className="text-xl font-bold text-slate-900">{userProperties.length}</p>
+                      <p className="text-xs text-lime-700 font-medium">Active in marketplace</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Total Applications</span>
+                      <p className="text-xl font-bold text-slate-900">{applications.length}</p>
+                      <p className="text-xs text-lime-700 font-medium">EOIs & verified offers</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Completed Inspections</span>
+                      <p className="text-xl font-bold text-slate-900">
+                        {inspections.filter(i => i.status === 'COMPLETED').length}
+                      </p>
+                      <p className="text-xs text-lime-700 font-medium">Signed inspection reports</p>
+                    </div>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Payout Account</span>
+                      <p className="text-xl font-bold text-slate-900">Active</p>
+                      <p className="text-xs text-lime-700 font-medium">Direct clearing enabled</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-sm text-slate-900">Rent Disbursement & Tenancy Security</h3>
+                    <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 text-sm text-slate-600">
+                      <p>
+                        All incoming rent and offer deposits are escrow-verified before disbursement. Automated e-receipts and digital tenancy agreements are generated upon completion of mutual sign-off.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

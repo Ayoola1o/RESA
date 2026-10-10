@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   Home,
   Search,
@@ -14,9 +14,11 @@ import {
   FileText,
 } from 'lucide-react';
 import { useUserRole } from '@/context/UserRoleContext';
+import { isNavigationItemActive } from '@/components/app-sidebar';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { role, userRole } = useUserRole();
   const activeRole = role || userRole || 'SEEKER';
 
@@ -69,10 +71,7 @@ export default function MobileBottomNav() {
       <div className="grid grid-cols-5 h-15 items-center max-w-lg mx-auto px-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive =
-            pathname === tab.href ||
-            (tab.href === '/marketplace' && pathname.startsWith('/property/')) ||
-            (tab.href === '/messages' && pathname.startsWith('/messages/'));
+          const isActive = isNavigationItemActive(tab.href, pathname, searchParams);
 
           if (tab.isPrimaryAction) {
             return (
