@@ -57,12 +57,18 @@ assert(agentDashContent.includes('grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4
 console.log('\n4. Checking Admin Dashboard 6-KPI row:');
 assert(adminDashContent.includes('grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-3.5'), 'Admin 6-KPI row reflows at sm and xl');
 
-// 5. Profile Page Tabs & Lists
-console.log('\n5. Checking Profile Page grids and cards:');
-assert(profileContent.includes('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'), 'Profile properties grid reflows at sm and lg');
-assert(profileContent.includes('min-w-0 w-full flex flex-col'), 'Profile property items wrapped in min-w-0 w-full');
-assert(profileContent.includes('truncate max-w-full inline-block'), 'Inspection and application property links have inline-block truncate');
-assert(profileContent.includes('break-words'), 'Inspection notes and application messages have break-words');
+const propertiesPath = path.join(__dirname, '../src/app/(app)/properties/page.tsx');
+const inspectionsPath = path.join(__dirname, '../src/app/(app)/inspections/page.tsx');
+const propertiesContent = fs.readFileSync(propertiesPath, 'utf8');
+const inspectionsContent = fs.readFileSync(inspectionsPath, 'utf8');
+
+// 5. Dedicated Pages & Profile Layouts
+console.log('\n5. Checking Standalone Pages and Profile grids and cards:');
+assert(propertiesContent.includes('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'), 'Properties grid reflows at sm and lg');
+assert(propertiesContent.includes('min-w-0 w-full flex flex-col'), 'Property items wrapped in min-w-0 w-full');
+assert(inspectionsContent.includes('truncate max-w-full inline-block'), 'Inspection property links have inline-block truncate');
+assert(inspectionsContent.includes('break-words'), 'Inspection notes have break-words');
+assert(profileContent.includes('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'), 'Profile workspace grid reflows at sm and lg');
 
 // 6. Marketplace & AI Recommendations Grids
 console.log('\n6. Checking Marketplace and AI Recommendations:');

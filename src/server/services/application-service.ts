@@ -163,7 +163,7 @@ export class ApplicationService {
         title: data.type === 'RENTAL' ? 'New Rental Application' : 'New Formal Purchase Offer',
         message: `${applicantName} submitted a ${data.type === 'RENTAL' ? 'rental application' : 'formal offer'} for "${property.title}" (Total initial outlay: ₦${feeBreakdown.totalInitialOutlay.toLocaleString()}).`,
         type: 'APPLICATION',
-        link: '/profile?tab=applications',
+        link: '/applications',
       });
     }
 
@@ -209,7 +209,7 @@ export class ApplicationService {
       title: `Application ${status}`,
       message: `Your expression of interest for "${updated.propertyTitle}" has been marked ${status}.${notes ? ` Notes: "${notes}"` : ''}`,
       type: 'APPLICATION',
-      link: '/profile?tab=applications',
+      link: '/applications',
     });
 
     return this.attachAliases(updated);

@@ -70,7 +70,7 @@ export default function LeaseDetailPage() {
     return (
         <div className="max-w-4xl mx-auto">
              <div className="mb-4">
-                <Link href="/profile?tab=leases" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/financials" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Back to All Leases
                 </Link>

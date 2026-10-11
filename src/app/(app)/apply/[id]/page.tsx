@@ -72,7 +72,7 @@ export default function ApplicationFormPage() {
                 title: "Application Submitted Successfully! 🎉",
                 description: `Your rental application for ${property.title} has been submitted for review.`,
             });
-            router.push('/profile?tab=applications');
+            router.push('/applications');
         }, 800);
     };
 

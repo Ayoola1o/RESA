@@ -235,7 +235,7 @@ export default function OwnerDashboard({
               </Link>
             </Button>
             <Button asChild variant="outline" className="bg-white/10 text-white hover:bg-white/20 border-white/20 text-xs h-9 px-3.5">
-              <Link href="/profile?tab=properties">
+              <Link href="/properties">
                 <FileCheck className="h-3.5 w-3.5 mr-1.5" />
                 Manage Documents
               </Link>

@@ -1,6 +1,6 @@
 import { isNavigationItemActive, normalizeTabName, getNavItemsForRole, moreNavItems } from '../src/components/app-sidebar';
 
-function createSearchParams(query: Record<string, string>) {
+function createSearchParams(query: Record<string, string> = {}) {
   return {
     get: (key: string) => query[key] || null,
   };
@@ -16,117 +16,129 @@ function assert(condition: boolean, message: string) {
 }
 
 console.log('====================================================');
-console.log('🧪 TESTING NAVIGATION ACTIVE STATES & TAB NORMALIZATION');
+console.log('🧪 TESTING DEDICATED STANDALONE PAGES & ACTIVE STATES');
 console.log('====================================================\n');
 
-// 1. Tab Normalization Tests
+// 1. Tab Normalization Tests (for legacy URL compatibility)
 console.log('1. Testing normalizeTabName helper:');
 assert(normalizeTabName('inspections') === 'inspections', 'inspections -> inspections');
 assert(normalizeTabName('inspection') === 'inspections', 'inspection -> inspections');
 assert(normalizeTabName('applications') === 'applications', 'applications -> applications');
 assert(normalizeTabName('offers') === 'applications', 'offers -> applications');
-assert(normalizeTabName('eoi') === 'applications', 'eoi -> applications');
 assert(normalizeTabName('saved') === 'saved', 'saved -> saved');
 assert(normalizeTabName('favorites') === 'saved', 'favorites -> saved');
 assert(normalizeTabName('verification') === 'verification', 'verification -> verification');
-assert(normalizeTabName('trust') === 'verification', 'trust -> verification');
-assert(normalizeTabName('identity') === 'verification', 'identity -> verification');
-assert(normalizeTabName('kyc') === 'verification', 'kyc -> verification');
-assert(normalizeTabName('financials') === 'financials', 'financials -> financials');
-assert(normalizeTabName('market-intelligence') === 'financials', 'market-intelligence -> financials');
 assert(normalizeTabName('properties') === 'properties', 'properties -> properties');
-assert(normalizeTabName('my-properties') === 'properties', 'my-properties -> properties');
+assert(normalizeTabName('financials') === 'financials', 'financials -> financials');
 
-// 2. Active State Matching: /profile?tab=inspections
-console.log('\n2. Testing active matching for /profile?tab=inspections:');
-const paramsInspections = createSearchParams({ tab: 'inspections' });
+// 2. Active State Matching: Dedicated /inspections Page
+console.log('\n2. Testing active matching for dedicated /inspections:');
+const emptyParams = createSearchParams({});
 assert(
-  isNavigationItemActive('/profile?tab=inspections', '/profile', paramsInspections) === true,
-  'Inspections item IS active'
+  isNavigationItemActive('/inspections', '/inspections', emptyParams) === true,
+  '/inspections item IS active on /inspections'
 );
 assert(
-  isNavigationItemActive('/profile?tab=applications', '/profile', paramsInspections) === false,
-  'Applications item is NOT active'
+  isNavigationItemActive('/applications', '/inspections', emptyParams) === false,
+  '/applications item is NOT active on /inspections'
 );
 assert(
-  isNavigationItemActive('/profile?tab=saved', '/profile', paramsInspections) === false,
-  'Saved item is NOT active'
+  isNavigationItemActive('/saved', '/inspections', emptyParams) === false,
+  '/saved item is NOT active on /inspections'
 );
 assert(
-  isNavigationItemActive('/profile?tab=verification', '/profile', paramsInspections) === false,
-  'Verification item is NOT active'
-);
-assert(
-  isNavigationItemActive('/profile', '/profile', paramsInspections) === false,
-  'Base /profile item is NOT active when specific tab is active'
+  isNavigationItemActive('/profile', '/inspections', emptyParams) === false,
+  '/profile item is NOT active on /inspections'
 );
 
-// 3. Active State Matching: /profile?tab=applications
-console.log('\n3. Testing active matching for /profile?tab=applications:');
-const paramsApps = createSearchParams({ tab: 'applications' });
+// 3. Active State Matching: Dedicated /applications Page
+console.log('\n3. Testing active matching for dedicated /applications:');
 assert(
-  isNavigationItemActive('/profile?tab=applications', '/profile', paramsApps) === true,
-  'Applications item IS active'
+  isNavigationItemActive('/applications', '/applications', emptyParams) === true,
+  '/applications item IS active on /applications'
 );
 assert(
-  isNavigationItemActive('/profile?tab=inspections', '/profile', paramsApps) === false,
-  'Inspections item is NOT active'
+  isNavigationItemActive('/inspections', '/applications', emptyParams) === false,
+  '/inspections item is NOT active on /applications'
 );
 assert(
-  isNavigationItemActive('/profile?tab=saved', '/profile', paramsApps) === false,
-  'Saved item is NOT active'
-);
-
-// 4. Active State Matching: /profile?tab=saved
-console.log('\n4. Testing active matching for /profile?tab=saved:');
-const paramsSaved = createSearchParams({ tab: 'saved' });
-assert(
-  isNavigationItemActive('/profile?tab=saved', '/profile', paramsSaved) === true,
-  'Saved item IS active'
-);
-assert(
-  isNavigationItemActive('/profile?tab=inspections', '/profile', paramsSaved) === false,
-  'Inspections item is NOT active'
+  isNavigationItemActive('/saved', '/applications', emptyParams) === false,
+  '/saved item is NOT active on /applications'
 );
 
-// 5. Active State Matching: /profile?tab=verification
-console.log('\n5. Testing active matching for /profile?tab=verification:');
-const paramsVerification = createSearchParams({ tab: 'verification' });
+// 4. Active State Matching: Dedicated /saved Page
+console.log('\n4. Testing active matching for dedicated /saved:');
 assert(
-  isNavigationItemActive('/profile?tab=verification', '/profile', paramsVerification) === true,
-  'Verification item IS active'
+  isNavigationItemActive('/saved', '/saved', emptyParams) === true,
+  '/saved item IS active on /saved'
 );
 assert(
-  isNavigationItemActive('/profile?tab=inspections', '/profile', paramsVerification) === false,
-  'Inspections item is NOT active'
+  isNavigationItemActive('/inspections', '/saved', emptyParams) === false,
+  '/inspections item is NOT active on /saved'
 );
 assert(
-  isNavigationItemActive('/profile', '/profile', paramsVerification) === false,
-  'Base /profile is NOT active'
-);
-
-// 6. Active State Matching: Base /profile (no query param)
-console.log('\n6. Testing active matching for base /profile:');
-const paramsBase = createSearchParams({});
-assert(
-  isNavigationItemActive('/profile', '/profile', paramsBase) === true,
-  'Base /profile IS active'
-);
-assert(
-  isNavigationItemActive('/profile?tab=inspections', '/profile', paramsBase) === false,
-  'Inspections item is NOT active'
-);
-assert(
-  isNavigationItemActive('/profile?tab=applications', '/profile', paramsBase) === false,
-  'Applications item is NOT active'
-);
-assert(
-  isNavigationItemActive('/profile?tab=verification', '/profile', paramsBase) === false,
-  'Verification item is NOT active'
+  isNavigationItemActive('/profile', '/saved', emptyParams) === false,
+  '/profile item is NOT active on /saved'
 );
 
-// 7. Active State Matching: Marketplace vs Map View
-console.log('\n7. Testing Marketplace vs Map View matching:');
+// 5. Active State Matching: Dedicated /properties Page
+console.log('\n5. Testing active matching for dedicated /properties:');
+assert(
+  isNavigationItemActive('/properties', '/properties', emptyParams) === true,
+  '/properties item IS active on /properties'
+);
+assert(
+  isNavigationItemActive('/inspections', '/properties', emptyParams) === false,
+  '/inspections item is NOT active on /properties'
+);
+assert(
+  isNavigationItemActive('/profile', '/properties', emptyParams) === false,
+  '/profile item is NOT active on /properties'
+);
+
+// 6. Active State Matching: Dedicated /verification Page
+console.log('\n6. Testing active matching for dedicated /verification:');
+assert(
+  isNavigationItemActive('/verification', '/verification', emptyParams) === true,
+  '/verification item IS active on /verification'
+);
+assert(
+  isNavigationItemActive('/profile', '/verification', emptyParams) === false,
+  '/profile item is NOT active on /verification'
+);
+
+// 7. Active State Matching: Dedicated /market-intelligence & /financials Pages
+console.log('\n7. Testing active matching for /market-intelligence & /financials:');
+assert(
+  isNavigationItemActive('/market-intelligence', '/market-intelligence', emptyParams) === true,
+  '/market-intelligence item IS active on /market-intelligence'
+);
+assert(
+  isNavigationItemActive('/financials', '/financials', emptyParams) === true,
+  '/financials item IS active on /financials'
+);
+assert(
+  isNavigationItemActive('/market-intelligence', '/financials', emptyParams) === false,
+  '/market-intelligence is NOT active on /financials'
+);
+
+// 8. Active State Matching: Dedicated /profile Page
+console.log('\n8. Testing active matching for dedicated /profile:');
+assert(
+  isNavigationItemActive('/profile', '/profile', emptyParams) === true,
+  '/profile IS active on /profile'
+);
+assert(
+  isNavigationItemActive('/inspections', '/profile', emptyParams) === false,
+  '/inspections item is NOT active on /profile'
+);
+assert(
+  isNavigationItemActive('/verification', '/profile', emptyParams) === false,
+  '/verification item is NOT active on /profile'
+);
+
+// 9. Marketplace vs Map View
+console.log('\n9. Testing Marketplace vs Map View matching:');
 const paramsMap = createSearchParams({ view: 'map' });
 assert(
   isNavigationItemActive('/marketplace?view=map', '/marketplace', paramsMap) === true,
@@ -136,38 +148,42 @@ assert(
   isNavigationItemActive('/marketplace', '/marketplace', paramsMap) === false,
   'Base Marketplace is NOT active when view=map'
 );
-
-const paramsMarketplace = createSearchParams({});
 assert(
-  isNavigationItemActive('/marketplace', '/marketplace', paramsMarketplace) === true,
+  isNavigationItemActive('/marketplace', '/marketplace', emptyParams) === true,
   'Base Marketplace IS active when view is not map'
 );
 assert(
-  isNavigationItemActive('/marketplace?view=map', '/marketplace', paramsMarketplace) === false,
+  isNavigationItemActive('/marketplace?view=map', '/marketplace', emptyParams) === false,
   'Map & Geo-Search is NOT active when view is not map'
 );
 
-// 8. Role Navigation Definition Tests
-console.log('\n8. Testing Role-differentiated Nav Items:');
+// 10. Role Navigation Definition Tests with Standalone Routes
+console.log('\n10. Testing Role-differentiated Standalone Nav Items:');
 const seekerNav = getNavItemsForRole('SEEKER');
-assert(seekerNav.some(item => item.href === '/profile?tab=inspections'), 'Seeker has Inspections');
-assert(seekerNav.some(item => item.href === '/profile?tab=applications'), 'Seeker has Applications');
-assert(seekerNav.some(item => item.href === '/profile?tab=saved'), 'Seeker has Saved Favorites');
+assert(seekerNav.some(item => item.href === '/inspections'), 'Seeker has standalone /inspections');
+assert(seekerNav.some(item => item.href === '/applications'), 'Seeker has standalone /applications');
+assert(seekerNav.some(item => item.href === '/saved'), 'Seeker has standalone /saved');
+assert(seekerNav.some(item => item.href === '/market-intelligence'), 'Seeker has standalone /market-intelligence');
 
 const ownerNav = getNavItemsForRole('OWNER');
-assert(ownerNav.some(item => item.href === '/profile?tab=properties'), 'Owner has My Properties');
-assert(ownerNav.some(item => item.href === '/profile?tab=inspections'), 'Owner has Inspection Requests');
-assert(ownerNav.some(item => item.href === '/profile?tab=applications'), 'Owner has Applications & Offers');
+assert(ownerNav.some(item => item.href === '/properties'), 'Owner has standalone /properties');
+assert(ownerNav.some(item => item.href === '/inspections'), 'Owner has standalone /inspections');
+assert(ownerNav.some(item => item.href === '/applications'), 'Owner has standalone /applications');
+assert(ownerNav.some(item => item.href === '/financials'), 'Owner has standalone /financials');
 
 const agentNav = getNavItemsForRole('AGENT');
-assert(agentNav.some(item => item.href === '/profile?tab=properties'), 'Agent has Authorized Listings');
-assert(agentNav.some(item => item.href === '/profile?tab=inspections'), 'Agent has Client Inspections');
-assert(agentNav.some(item => item.href === '/profile?tab=applications'), 'Agent has Expressions of Interest');
+assert(agentNav.some(item => item.href === '/properties'), 'Agent has standalone /properties');
+assert(agentNav.some(item => item.href === '/inspections'), 'Agent has standalone /inspections');
+assert(agentNav.some(item => item.href === '/applications'), 'Agent has standalone /applications');
 
 const adminNav = getNavItemsForRole('ADMIN');
 assert(adminNav.some(item => item.href === '/admin?tab=verification'), 'Admin has Verification Queue');
 assert(adminNav.some(item => item.href === '/admin?tab=properties'), 'Admin has Property Moderation');
 
+assert(moreNavItems.some(item => item.href === '/profile'), 'More nav has /profile');
+assert(moreNavItems.some(item => item.href === '/verification'), 'More nav has /verification');
+assert(moreNavItems.some(item => item.href === '/settings'), 'More nav has /settings');
+
 console.log('\n====================================================');
-console.log('🎉 ALL NAVIGATION & TAB NORMALIZATION TESTS PASSED!');
+console.log('🎉 ALL DEDICATED STANDALONE PAGES & NAV TESTS PASSED!');
 console.log('====================================================');

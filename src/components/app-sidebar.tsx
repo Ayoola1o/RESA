@@ -74,6 +74,34 @@ export function isNavigationItemActive(
     if (pathname !== '/dashboard') {
       return false;
     }
+  } else if (targetPath === '/inspections') {
+    if (pathname !== '/inspections' && !pathname.startsWith('/inspections/')) {
+      return false;
+    }
+  } else if (targetPath === '/applications') {
+    if (pathname !== '/applications' && !pathname.startsWith('/applications/')) {
+      return false;
+    }
+  } else if (targetPath === '/saved') {
+    if (pathname !== '/saved' && !pathname.startsWith('/saved/')) {
+      return false;
+    }
+  } else if (targetPath === '/properties') {
+    if (pathname !== '/properties' && !pathname.startsWith('/properties/')) {
+      return false;
+    }
+  } else if (targetPath === '/verification') {
+    if (pathname !== '/verification' && !pathname.startsWith('/verification/')) {
+      return false;
+    }
+  } else if (targetPath === '/financials') {
+    if (pathname !== '/financials' && !pathname.startsWith('/financials/')) {
+      return false;
+    }
+  } else if (targetPath === '/market-intelligence') {
+    if (pathname !== '/market-intelligence' && !pathname.startsWith('/market-intelligence/')) {
+      return false;
+    }
   } else {
     if (pathname !== targetPath) {
       return false;
@@ -106,7 +134,7 @@ export function isNavigationItemActive(
     const currentTab = searchParams.get('tab');
     if (currentTab) {
       const norm = normalizeTabName(currentTab);
-      // If a specific subtab is present, base /profile should NOT be active!
+      // If a specific subtab is present, base /profile should NOT be active
       if (['inspections', 'applications', 'saved', 'properties', 'financials', 'verification'].includes(norm)) {
         return false;
       }
@@ -148,23 +176,23 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
     case 'OWNER':
       return [
         { label: 'Owner Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { label: 'My Properties', href: '/profile?tab=properties', icon: Home },
+        { label: 'My Properties', href: '/properties', icon: Home },
         { label: 'Add Property', href: '/landlord/add-property', icon: Building2 },
-        { label: 'Inspection Requests', href: '/profile?tab=inspections', icon: CalendarCheck2, badge: 1 },
-        { label: 'Applications & Offers', href: '/profile?tab=applications', icon: FileSignature },
+        { label: 'Inspection Requests', href: '/inspections', icon: CalendarCheck2, badge: 1 },
+        { label: 'Applications & Offers', href: '/applications', icon: FileSignature },
         { label: 'Messages', href: '/messages', icon: MessageSquare, badge: 1 },
-        { label: 'Financial Records', href: '/profile?tab=financials', icon: BarChart3 },
+        { label: 'Financial Records', href: '/financials', icon: BarChart3 },
         { label: 'Marketplace', href: '/marketplace', icon: Store },
       ];
 
     case 'AGENT':
       return [
         { label: 'Agent Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { label: 'Authorized Listings', href: '/profile?tab=properties', icon: Home },
+        { label: 'Authorized Listings', href: '/properties', icon: Home },
         { label: 'Create Listing', href: '/landlord/add-property', icon: Building2 },
-        { label: 'Client Inspections', href: '/profile?tab=inspections', icon: CalendarCheck2, badge: 1 },
+        { label: 'Client Inspections', href: '/inspections', icon: CalendarCheck2, badge: 1 },
         { label: 'Enquiries', href: '/messages', icon: MessageSquare, badge: 1 },
-        { label: 'Expressions of Interest', href: '/profile?tab=applications', icon: FileSignature },
+        { label: 'Expressions of Interest', href: '/applications', icon: FileSignature },
         { label: 'Market Insights', href: '/marketplace?view=map', icon: MapPin },
         { label: 'Marketplace', href: '/marketplace', icon: Store },
       ];
@@ -175,18 +203,18 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
         { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
         { label: 'Verified Marketplace', href: '/marketplace', icon: Store },
         { label: 'Map & Geo-Search', href: '/marketplace?view=map', icon: MapPin },
-        { label: 'My Inspections', href: '/profile?tab=inspections', icon: CalendarCheck2, badge: 1 },
-        { label: 'Applications & Offers', href: '/profile?tab=applications', icon: FileText },
+        { label: 'My Inspections', href: '/inspections', icon: CalendarCheck2, badge: 1 },
+        { label: 'Applications & Offers', href: '/applications', icon: FileText },
         { label: 'Messages & Enquiries', href: '/messages', icon: MessageSquare, badge: 1 },
-        { label: 'Saved Favorites', href: '/profile?tab=saved', icon: Heart },
-        { label: 'Market Intelligence', href: '/profile?tab=financials', icon: BarChart3 },
+        { label: 'Saved Favorites', href: '/saved', icon: Heart },
+        { label: 'Market Intelligence', href: '/market-intelligence', icon: BarChart3 },
       ];
   }
 }
 
 export const moreNavItems: NavItem[] = [
   { label: 'Profile & Credentials', href: '/profile', icon: User },
-  { label: 'Trust & Verification', href: '/profile?tab=verification', icon: ShieldCheck },
+  { label: 'Trust & Verification', href: '/verification', icon: ShieldCheck },
   { label: 'Account Settings', href: '/settings', icon: Settings },
 ];
 

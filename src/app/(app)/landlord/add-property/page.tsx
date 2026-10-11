@@ -558,7 +558,7 @@ function AddPropertyWizard() {
             title: 'Draft Saved! 📝',
             description: `"${title}" saved as DRAFT. You can continue editing or submit for review anytime.`,
           });
-          router.push('/profile?tab=properties');
+          router.push('/properties');
         }
       }
     } catch (err: any) {
@@ -598,7 +598,7 @@ function AddPropertyWizard() {
       {/* Top Bar Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <Link
-          href="/profile?tab=properties"
+          href="/properties"
           className="flex items-center text-sm font-semibold text-slate-500 hover:text-slate-900"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />

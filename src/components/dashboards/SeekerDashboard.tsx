@@ -317,7 +317,7 @@ export default function SeekerDashboard({
             </p>
           </div>
           <Button asChild variant="outline" size="sm" className="text-xs">
-            <Link href="/profile?tab=applications">View All History</Link>
+            <Link href="/applications">View All History</Link>
           </Button>
         </div>
 
@@ -415,7 +415,7 @@ export default function SeekerDashboard({
                 </CardDescription>
               </div>
               <Button asChild variant="outline" size="sm" className="text-xs h-8">
-                <Link href="/profile?tab=inspections">Manage All</Link>
+                <Link href="/inspections">Manage All</Link>
               </Button>
             </div>
           </CardHeader>

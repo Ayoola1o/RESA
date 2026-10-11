@@ -179,7 +179,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
         description: 'Your submission has been recorded and the owner/agent has been notified.',
       });
       setIsOfferDialogOpen(false);
-      router.push('/profile?tab=applications');
+      router.push('/applications');
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to submit.' });
     }

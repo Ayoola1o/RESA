@@ -36,7 +36,7 @@ export default function MobileBottomNav() {
       case 'OWNER':
         return [
           { label: 'Dashboard', href: '/dashboard', icon: Home },
-          { label: 'Listings', href: '/profile?tab=properties', icon: Building },
+          { label: 'Listings', href: '/properties', icon: Building },
           { label: 'Add Property', href: '/landlord/add-property', icon: PlusCircle, isPrimaryAction: true },
           { label: 'Messages', href: '/messages', icon: MessageSquare },
           { label: 'Profile', href: '/profile', icon: User },
@@ -44,7 +44,7 @@ export default function MobileBottomNav() {
       case 'AGENT':
         return [
           { label: 'Dashboard', href: '/dashboard', icon: Home },
-          { label: 'Listings', href: '/profile?tab=properties', icon: Building },
+          { label: 'Listings', href: '/properties', icon: Building },
           { label: 'Add Client', href: '/landlord/add-property', icon: PlusCircle, isPrimaryAction: true },
           { label: 'Leads', href: '/messages', icon: MessageSquare },
           { label: 'Profile', href: '/profile', icon: User },
@@ -54,7 +54,7 @@ export default function MobileBottomNav() {
         return [
           { label: 'Home', href: '/dashboard', icon: Home },
           { label: 'Search', href: '/marketplace', icon: Search },
-          { label: 'Saved', href: '/profile?tab=saved', icon: Heart },
+          { label: 'Saved', href: '/saved', icon: Heart },
           { label: 'Messages', href: '/messages', icon: MessageSquare },
           { label: 'Profile', href: '/profile', icon: User },
         ];

@@ -34,9 +34,9 @@ const landlordData = {
     { id: 'prop5', name: "Miami Beachfront Condo", occupancy: "1/1 Occupied", issues: 0, revenue: 4500000 },
   ],
   recentActivity: [
-    { type: "application", text: "New application for 'Suburban Family Home' from Sarah L.", link: "/profile?tab=applications" },
+    { type: "application", text: "New application for 'Suburban Family Home' from Sarah L.", link: "/applications" },
     { type: "maintenance", text: "Maintenance request for 'Cozy Downtown Apartment': Leaky faucet", link: "/maintenance/maint1" },
-    { type: "payment", text: "Rent payment received from tenant at 'Cozy Downtown Apartment'", link: "/profile?tab=payments" },
+    { type: "payment", text: "Rent payment received from tenant at 'Cozy Downtown Apartment'", link: "/financials" },
   ]
 }
 
@@ -143,7 +143,7 @@ export default function LandlordDashboardPage() {
                         <Progress value={74} />
                     </div>
                      <Button asChild variant="outline" className="w-full">
-                        <Link href="/profile?tab=financials">
+                        <Link href="/financials">
                             View Financial Report <ArrowRight className="ml-2 h-4 w-4"/>
                         </Link>
                      </Button>

@@ -78,7 +78,7 @@ export class InspectionService {
       title: 'New Inspection Request',
       message: `${seeker.name} requested an inspection for "${property.title}" on ${data.preferredDate} (${data.preferredTimeSlot}).`,
       type: 'INSPECTION',
-      link: '/profile?tab=inspections',
+      link: '/inspections',
     });
 
     return request;
@@ -145,7 +145,7 @@ export class InspectionService {
       title: `Inspection ${status}`,
       message: `Inspection for "${inspection.propertyTitle}" has been updated to ${status}.${notes ? ` Notes: "${notes}"` : ''}`,
       type: 'INSPECTION',
-      link: '/profile?tab=inspections',
+      link: '/inspections',
     });
 
     return updated!;

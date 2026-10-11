@@ -134,7 +134,7 @@ function getDefaultDatabase(): DatabaseSchema {
         title: 'Inspection Scheduled',
         message: 'Your inspection for Admiralty Way Villa is scheduled for Oct 12.',
         type: 'INSPECTION',
-        link: '/profile?tab=inspections',
+        link: '/inspections',
         read: false,
         createdAt: '2026-10-06T10:00:00Z',
       },

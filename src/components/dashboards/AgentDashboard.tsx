@@ -364,7 +364,7 @@ export default function AgentDashboard({
                 </CardDescription>
               </div>
               <Button asChild variant="outline" size="sm" className="text-xs h-8">
-                <Link href="/profile?tab=inspections">Manage All</Link>
+                <Link href="/inspections">Manage All</Link>
               </Button>
             </div>
           </CardHeader>

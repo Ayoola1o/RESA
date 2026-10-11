@@ -97,7 +97,7 @@ export default function MaintenanceDetailPage() {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="mb-4">
-                <Link href="/profile?tab=maintenance-landlord" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/dashboard" className="flex items-center text-sm text-muted-foreground hover:text-foreground">
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Back to All Requests
                 </Link>
