@@ -74,6 +74,18 @@ assert(aiRecommendationsContent.includes('no-scrollbar'), 'AI Recommendations di
 console.log('\n7. Checking Property Detail metric pills:');
 assert(propertyDetailContent.includes('min-w-0') && propertyDetailContent.includes('tabular-nums'), 'Property detail pills use min-w-0 and tabular-nums');
 
+// 8. Header Layout, Active Badge (Logo Icon), AI Icon Alone & Searchbar
+console.log('\n8. Checking Header Layout & Navigation:');
+const headerPath = path.join(__dirname, '../src/components/header.tsx');
+const headerContent = fs.readFileSync(headerPath, 'utf8');
+assert(headerContent.includes('justify-between') && headerContent.includes('gap-3 sm:gap-6'), 'Header has fitted space-between with responsive gap');
+assert(headerContent.includes('<Logo className="h-5 w-5" />') && headerContent.includes('Active Trust Node: Lagos / Abuja'), 'Active badge uses Logo icon alone with tooltip');
+assert(!headerContent.includes('<span>AI Insights</span>'), 'AI button uses AI icon alone without text pill');
+assert(headerContent.includes('<Sparkles className="h-4 w-4 text-lime-600" />'), 'AI button renders Sparkles icon');
+assert(headerContent.includes('searchInputRef'), 'Searchbar has searchInputRef for keyboard focus');
+assert(headerContent.includes("e.key.toLowerCase() === 'k'"), 'Searchbar has Cmd+K / Ctrl+K shortcut listener');
+assert(headerContent.includes("e.key === ' '"), 'Searchbar preserves spacebar input safely without interception');
+
 console.log('\n====================================================');
 console.log('🎉 ALL UI LAYOUT QA & OVERFLOW TESTS PASSED (100%)!');
 console.log('====================================================\n');
