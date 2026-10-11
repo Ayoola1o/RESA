@@ -21,9 +21,12 @@ import {
   Building2,
   Briefcase,
   SlidersHorizontal,
-  FileSignature
+  FileSignature,
+  PanelLeftClose,
 } from 'lucide-react';
 import { useUserRole } from '@/context/UserRoleContext';
+import { useAppSidebar } from '@/context/SidebarContext';
+import { cn } from '@/lib/utils';
 import { UserRole } from '@/types/prophunta';
 import Logo from '@/components/logo';
 
@@ -191,34 +194,57 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { userRole, currentUser } = useUserRole();
+  const { isDesktopOpen, closeDesktopSidebar } = useAppSidebar();
 
   // Determine role strictly from the authenticated account
   const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
   const mainNavItems = getNavItemsForRole(activeRole);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-[#0c140d] text-slate-300 lg:flex shadow-2xl border-r border-slate-800/80">
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-[#0c140d] text-slate-300 lg:flex shadow-2xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out",
+        isDesktopOpen ? "lg:translate-x-0" : "lg:-translate-x-full pointer-events-none"
+      )}
+      aria-hidden={!isDesktopOpen}
+    >
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-5 py-4.5 border-b border-slate-800/70">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lime-500 to-lime-700 text-white shadow-md shadow-lime-950/30 p-1">
-          <Logo className="h-8 w-8" />
-        </div>
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1.5">
-            <span className="text-base font-black tracking-tight text-white">PropHunta</span>
-            <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-lime-500 text-slate-950 tracking-wide uppercase font-mono">AI</span>
+      <div className="flex items-center justify-between px-5 py-4.5 border-b border-slate-800/70">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lime-500 to-lime-700 text-white shadow-md shadow-lime-950/30 p-1">
+            <Logo className="h-8 w-8" />
           </div>
-          <span className="text-[10px] font-semibold tracking-tight text-lime-400">
-            Verified Trust Infrastructure
-          </span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base font-black tracking-tight text-white">PropHunta</span>
+              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-lime-500 text-slate-950 tracking-wide uppercase font-mono">AI</span>
+            </div>
+            <span className="text-[10px] font-semibold tracking-tight text-lime-400">
+              Verified Trust Infrastructure
+            </span>
+          </div>
         </div>
+
+        {/* Desktop Close Sidebar Button */}
+        <button
+          type="button"
+          onClick={closeDesktopSidebar}
+          title="Close sidebar (Ctrl+B)"
+          aria-label="Close sidebar"
+          className="hidden lg:flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors ml-auto shrink-0"
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Read-Only Authenticated Role Indicator */}
       <div className="px-3.5 py-2.5 bg-slate-950/60 border-b border-slate-800/50">
         <div className="flex items-center justify-between">
           <div className="flex flex-col min-w-0 pr-2">
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-slate-400 truncate">
+            <span
+              className="text-[10px] font-semibold tracking-wider uppercase text-slate-400 truncate"
+              title={currentUser?.name || 'Verified Member'}
+            >
               {currentUser?.name || 'Verified Member'}
             </span>
             <span className="text-xs font-bold text-slate-200 truncate">
@@ -238,8 +264,8 @@ export default function AppSidebar() {
         </div>
       </div>
 
-      {/* Navigation Scrollable Body */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 scrollbar-thin scrollbar-thumb-slate-800">
+      {/* Navigation Scrollable Body (scrollbar hidden cleanly) */}
+      <div className="flex-1 overflow-y-auto px-3 py-3 no-scrollbar">
         {/* Main Navigation Items */}
         <nav className="space-y-1">
           {mainNavItems.map((item) => {
@@ -256,17 +282,17 @@ export default function AppSidebar() {
                     : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
                   <Icon
-                    className={`h-4 w-4 transition-colors ${
+                    className={`h-4 w-4 shrink-0 transition-colors ${
                       isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-lime-400'
                     }`}
                   />
-                  <span>{item.label}</span>
+                  <span className="truncate" title={item.label}>{item.label}</span>
                 </div>
                 {item.badge !== undefined && (
                   <span
-                    className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
+                    className={`inline-flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-2 ${
                       isActive
                         ? 'bg-slate-950 text-lime-400'
                         : 'bg-lime-500/20 text-lime-400 border border-lime-500/30'
@@ -301,11 +327,11 @@ export default function AppSidebar() {
                   }`}
                 >
                   <Icon
-                    className={`h-4 w-4 transition-colors ${
+                    className={`h-4 w-4 shrink-0 transition-colors ${
                       isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-lime-400'
                     }`}
                   />
-                  <span>{item.label}</span>
+                  <span className="truncate" title={item.label}>{item.label}</span>
                 </Link>
               );
             })}

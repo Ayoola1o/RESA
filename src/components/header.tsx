@@ -18,6 +18,8 @@ import {
   Sparkles,
   Command,
   ShieldCheck,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -30,6 +32,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useUserRole } from '@/context/UserRoleContext';
+import { useAppSidebar } from '@/context/SidebarContext';
 import { UserRole, AppNotification } from '@/types/prophunta';
 import { getNavItemsForRole } from './app-sidebar';
 import AiRecommendations from './ai-recommendations';
@@ -44,6 +47,7 @@ import {
 export default function Header() {
   const router = useRouter();
   const { userRole, setUserRole, currentUser } = useUserRole();
+  const { isDesktopOpen, toggleDesktopSidebar } = useAppSidebar();
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
@@ -99,7 +103,7 @@ export default function Header() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 p-3.5 overflow-y-auto max-h-[calc(100vh-5rem)]">
+            <div className="flex flex-col gap-1 p-3.5 overflow-y-auto max-h-[calc(100vh-5rem)] no-scrollbar">
               {mainNavItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -130,6 +134,37 @@ export default function Header() {
           </div>
           <span className="font-extrabold text-slate-900 tracking-tight text-sm sm:text-base hidden min-[400px]:inline">PropHunta</span>
         </Link>
+      </div>
+
+      {/* Desktop Sidebar Toggle & Brand (When Closed) */}
+      <div className="hidden lg:flex items-center gap-2 mr-3 shrink-0">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={toggleDesktopSidebar}
+          className="h-9 w-9 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
+          title={isDesktopOpen ? "Close sidebar (Ctrl+B)" : "Open sidebar (Ctrl+B)"}
+          aria-label={isDesktopOpen ? "Close sidebar" : "Open sidebar"}
+        >
+          {isDesktopOpen ? (
+            <PanelLeftClose className="h-4.5 w-4.5 text-slate-600" />
+          ) : (
+            <PanelLeftOpen className="h-4.5 w-4.5 text-lime-700" />
+          )}
+        </Button>
+
+        {!isDesktopOpen && (
+          <Link href="/dashboard" className="flex items-center gap-2 group animate-in fade-in duration-200">
+            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-lg bg-gradient-to-br from-lime-500 to-lime-700 text-white shadow-xs p-1 group-hover:scale-105 transition-transform">
+              <Logo className="h-5.5 w-5.5" />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-extrabold text-slate-900 tracking-tight text-sm">PropHunta</span>
+              <span className="text-[9px] font-extrabold px-1 py-0.2 rounded bg-lime-500 text-slate-950 uppercase font-mono">AI</span>
+            </div>
+          </Link>
+        )}
       </div>
 
       {/* Global Search with ⌘ K shortcut */}
