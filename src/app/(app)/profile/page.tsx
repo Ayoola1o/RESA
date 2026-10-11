@@ -499,13 +499,13 @@ function ProfileContent() {
               </div>
             </Card>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {userProperties.map((prop) => (
-                <div key={prop.id} className="relative group">
+                <div key={prop.id} className="relative group min-w-0 w-full flex flex-col">
                   <PropertyCard property={prop} />
-                  <div className="mt-2 flex items-center justify-between px-1">
+                  <div className="mt-2 flex items-center justify-between px-1 gap-2">
                     <Badge
-                      className={`text-xs font-bold ${
+                      className={`text-xs font-bold shrink-0 truncate max-w-[70%] ${
                         prop.listingStatus === 'ACTIVE' || prop.listingStatus === 'VERIFIED'
                           ? 'bg-lime-600 text-white'
                           : prop.listingStatus === 'UNDER_REVIEW' || prop.listingStatus === 'SUBMITTED'
@@ -531,7 +531,7 @@ function ProfileContent() {
                         ? 'Action Needed'
                         : prop.listingStatus}
                     </Badge>
-                    <Button asChild variant="ghost" size="sm">
+                    <Button asChild variant="ghost" size="sm" className="shrink-0">
                       <Link href={`/property/${prop.id}`}>View &rarr;</Link>
                     </Button>
                   </div>
@@ -581,52 +581,56 @@ function ProfileContent() {
                 });
 
                 return (
-                  <Card key={insp.id} className="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200/90 shadow-xs rounded-2xl">
-                    <div className="flex items-start gap-4">
+                  <Card key={insp.id} className="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200/90 shadow-xs rounded-2xl min-w-0">
+                    <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1 w-full">
                       <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-lime-50 border border-lime-200 flex items-center justify-center shrink-0">
                         <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-lime-700" />
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/property/${insp.propertyId}`} className="font-semibold text-slate-900 hover:text-lime-700 text-base">
+                          <Link
+                            href={`/property/${insp.propertyId}`}
+                            className="font-semibold text-slate-900 hover:text-lime-700 text-base truncate max-w-full inline-block"
+                            title={insp.propertyTitle}
+                          >
                             {insp.propertyTitle}
                           </Link>
                           <Badge
                             className={
                               insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED'
-                                ? 'bg-emerald-600 text-white'
+                                ? 'bg-emerald-600 text-white shrink-0'
                                 : insp.status === 'REQUESTED'
-                                ? 'bg-amber-500 text-white'
+                                ? 'bg-amber-500 text-white shrink-0'
                                 : insp.status === 'COMPLETED'
-                                ? 'bg-lime-700 text-white'
-                                : 'bg-slate-200 text-slate-700'
+                                ? 'bg-lime-700 text-white shrink-0'
+                                : 'bg-slate-200 text-slate-700 shrink-0'
                             }
                           >
                             {insp.status}
                           </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs shrink-0">
                             {insp.type}
                           </Badge>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1 font-medium text-slate-700">
-                            <Clock className="h-3.5 w-3.5 text-slate-400" /> {dateFormatted} &bull; {insp.preferredTimeSlot}
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1 font-medium text-slate-700 shrink-0">
+                            <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" /> {dateFormatted} &bull; {insp.preferredTimeSlot}
                           </span>
-                          <span>
+                          <span className="truncate">
                             {isHost ? `Requested by: ${insp.seekerName}` : `Host Assigned`}
                           </span>
                         </div>
 
                         {insp.notes && (
-                          <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 max-w-xl">
+                          <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 max-w-xl break-words">
                             Note: &ldquo;{insp.notes}&rdquo;
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 self-end md:self-center">
+                    <div className="flex flex-wrap items-center gap-2 self-start md:self-center shrink-0 w-full md:w-auto">
                       {insp.status === 'COMPLETED' && insp.inspectionRecord && (
                         <Button
                           size="sm"
@@ -730,46 +734,50 @@ function ProfileContent() {
                 });
 
                 return (
-                  <Card key={app.id} className="p-4 sm:p-5 border border-slate-200/90 shadow-xs rounded-2xl">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                      <div className="space-y-1.5">
+                  <Card key={app.id} className="p-4 sm:p-5 border border-slate-200/90 shadow-xs rounded-2xl min-w-0">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 min-w-0">
+                      <div className="space-y-1.5 min-w-0 flex-1 w-full">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/property/${app.propertyId}`} className="font-semibold text-slate-900 hover:text-lime-700 text-base">
+                          <Link
+                            href={`/property/${app.propertyId}`}
+                            className="font-semibold text-slate-900 hover:text-lime-700 text-base truncate max-w-full inline-block"
+                            title={app.propertyTitle}
+                          >
                             {app.propertyTitle}
                           </Link>
                           <Badge
                             className={
                               app.status === 'APPROVED'
-                                ? 'bg-emerald-600 text-white'
+                                ? 'bg-emerald-600 text-white shrink-0'
                                 : app.status === 'SUBMITTED'
-                                ? 'bg-amber-500 text-white'
+                                ? 'bg-amber-500 text-white shrink-0'
                                 : app.status === 'UNDER_REVIEW'
-                                ? 'bg-lime-700 text-white'
-                                : 'bg-slate-200 text-slate-700'
+                                ? 'bg-lime-700 text-white shrink-0'
+                                : 'bg-slate-200 text-slate-700 shrink-0'
                             }
                           >
                             {app.status}
                           </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs shrink-0">
                             {app.type === 'RENTAL' ? 'Rental Application' : 'Purchase Offer'}
                           </Badge>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                          <span>Applicant: <strong>{app.applicantName}</strong></span>
-                          <span>Submitted: {dateFormatted}</span>
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
+                          <span className="truncate">Applicant: <strong>{app.applicantName}</strong></span>
+                          <span className="shrink-0">Submitted: {dateFormatted}</span>
                           {app.offerAmount && (
-                            <span className="font-semibold text-slate-900">
+                            <span className="font-semibold text-slate-900 tabular-nums shrink-0">
                               Offer: {formatNaira(app.offerAmount)}
                             </span>
                           )}
                           {app.financingStatus && (
-                            <span>Financing: <strong className="text-slate-700">{app.financingStatus}</strong></span>
+                            <span className="truncate">Financing: <strong className="text-slate-700">{app.financingStatus}</strong></span>
                           )}
                         </div>
 
                         {app.message && (
-                          <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-100 max-w-2xl mt-1">
+                          <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-100 max-w-2xl mt-1 break-words">
                             &ldquo;{app.message}&rdquo;
                           </p>
                         )}
@@ -823,9 +831,9 @@ function ProfileContent() {
               </Button>
             </Card>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {savedProperties.map((prop) => (
-                <div key={prop.id} className="relative group">
+                <div key={prop.id} className="relative group min-w-0 w-full flex flex-col">
                   <PropertyCard property={prop} />
                   <Button
                     variant="destructive"
@@ -855,28 +863,28 @@ function ProfileContent() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Account Role</span>
-                    <Badge variant="outline">{role}</Badge>
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate">Account Role</span>
+                    <Badge variant="outline" className="shrink-0">{role}</Badge>
                   </div>
-                  <p className="font-semibold text-slate-900">{getRoleLabel()}</p>
+                  <p className="font-semibold text-slate-900 truncate">{getRoleLabel()}</p>
                 </div>
 
-                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Identity Verification</span>
-                    <Badge className="bg-lime-600 text-white text-[10px] font-bold">VERIFIED</Badge>
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate">Identity Verification</span>
+                    <Badge className="bg-lime-600 text-white text-[10px] font-bold shrink-0">VERIFIED</Badge>
                   </div>
-                  <p className="font-semibold text-slate-900">National ID / BVN Matched</p>
+                  <p className="font-semibold text-slate-900 truncate">National ID / BVN Matched</p>
                 </div>
 
-                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Trust Score</span>
-                    <Badge className="bg-lime-700 text-white text-[10px] font-bold">98 / 100</Badge>
+                <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate">Trust Score</span>
+                    <Badge className="bg-lime-700 text-white text-[10px] font-bold shrink-0 tabular-nums">98 / 100</Badge>
                   </div>
-                  <p className="font-semibold text-slate-900">Zero Unresolved Reports</p>
+                  <p className="font-semibold text-slate-900 truncate">Zero Unresolved Reports</p>
                 </div>
               </div>
 
@@ -960,26 +968,26 @@ function ProfileContent() {
             <CardContent className="space-y-6">
               {activeRole === 'SEEKER' ? (
                 <>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Statutory Legal Cap</span>
-                      <p className="text-xl font-bold text-slate-900">Max 10%</p>
-                      <p className="text-xs text-lime-700 font-medium">Lagos Tenancy Law compliant</p>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Statutory Legal Cap</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">Max 10%</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Lagos Tenancy Law compliant</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Caution Escrow</span>
-                      <p className="text-xl font-bold text-slate-900">100% Protected</p>
-                      <p className="text-xs text-lime-700 font-medium">Held until verified move-out</p>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Caution Escrow</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">100% Protected</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Held until verified move-out</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Agency Extortion</span>
-                      <p className="text-xl font-bold text-slate-900">₦0 Markup</p>
-                      <p className="text-xs text-lime-700 font-medium">Zero undocumented charges</p>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Agency Extortion</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">₦0 Markup</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Zero undocumented charges</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Dispute SLA</span>
-                      <p className="text-xl font-bold text-slate-900">48 Hours</p>
-                      <p className="text-xs text-lime-700 font-medium">Dedicated arbitration panel</p>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Dispute SLA</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">48 Hours</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Dedicated arbitration panel</p>
                     </div>
                   </div>
 
@@ -1000,28 +1008,28 @@ function ProfileContent() {
                 </>
               ) : (
                 <>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Managed Listings</span>
-                      <p className="text-xl font-bold text-slate-900">{userProperties.length}</p>
-                      <p className="text-xs text-lime-700 font-medium">Active in marketplace</p>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Managed Listings</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">{userProperties.length}</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Active in marketplace</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Total Applications</span>
-                      <p className="text-xl font-bold text-slate-900">{applications.length}</p>
-                      <p className="text-xs text-lime-700 font-medium">EOIs & verified offers</p>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Total Applications</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">{applications.length}</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">EOIs & verified offers</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Completed Inspections</span>
-                      <p className="text-xl font-bold text-slate-900">
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Completed Inspections</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">
                         {inspections.filter(i => i.status === 'COMPLETED').length}
                       </p>
-                      <p className="text-xs text-lime-700 font-medium">Signed inspection reports</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Signed inspection reports</p>
                     </div>
-                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1">
-                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Payout Account</span>
-                      <p className="text-xl font-bold text-slate-900">Active</p>
-                      <p className="text-xs text-lime-700 font-medium">Direct clearing enabled</p>
+                    <div className="p-4 rounded-xl border bg-slate-50/50 space-y-1 min-w-0">
+                      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Payout Account</span>
+                      <p className="text-xl font-bold text-slate-900 tabular-nums truncate">Active</p>
+                      <p className="text-xs text-lime-700 font-medium truncate">Direct clearing enabled</p>
                     </div>
                   </div>
 

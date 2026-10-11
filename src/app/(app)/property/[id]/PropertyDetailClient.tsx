@@ -466,33 +466,33 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
 
             {/* Metric Pills */}
             <div className="grid grid-cols-2 min-[440px]:grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 pt-2">
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <BedDouble className="h-5 w-5 text-lime-700" />
-                <div>
-                  <div className="text-xs font-bold text-slate-900">{property.bedrooms} Beds</div>
-                  <div className="text-[10px] text-slate-400">Bedrooms</div>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
+                <BedDouble className="h-5 w-5 text-lime-700 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.bedrooms} Beds</div>
+                  <div className="text-[10px] text-slate-400 truncate">Bedrooms</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <Bath className="h-5 w-5 text-lime-700" />
-                <div>
-                  <div className="text-xs font-bold text-slate-900">{property.bathrooms} Baths</div>
-                  <div className="text-[10px] text-slate-400">Bathrooms</div>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
+                <Bath className="h-5 w-5 text-lime-700 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.bathrooms} Baths</div>
+                  <div className="text-[10px] text-slate-400 truncate">Bathrooms</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                <Building className="h-5 w-5 text-lime-700" />
-                <div>
-                  <div className="text-xs font-bold text-slate-900">{property.propertyType}</div>
-                  <div className="text-[10px] text-slate-400">Building Type</div>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
+                <Building className="h-5 w-5 text-lime-700 shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-slate-900 truncate" title={property.propertyType}>{property.propertyType}</div>
+                  <div className="text-[10px] text-slate-400 truncate">Building Type</div>
                 </div>
               </div>
               {property.sqft && (
-                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
-                  <FileText className="h-5 w-5 text-lime-700" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">{property.sqft} sqm</div>
-                    <div className="text-[10px] text-slate-400">Floor Area</div>
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
+                  <FileText className="h-5 w-5 text-lime-700 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.sqft} sqm</div>
+                    <div className="text-[10px] text-slate-400 truncate">Floor Area</div>
                   </div>
                 </div>
               )}

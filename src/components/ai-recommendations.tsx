@@ -84,7 +84,7 @@ export default function AiRecommendations({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] md:max-w-2xl lg:max-w-4xl">
+      <DialogContent className="w-[95vw] sm:max-w-[425px] md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-y-auto no-scrollbar">
         <DialogHeader>
           <DialogTitle className="font-headline">AI Property Recommendations</DialogTitle>
           <DialogDescription>
@@ -115,9 +115,11 @@ export default function AiRecommendations({
             <h3 className="text-lg font-semibold mb-2 font-headline">Here are your recommendations:</h3>
             {state.data.length > 0 ? (
               <ScrollArea className="max-h-[50vh]">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pr-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-1">
                   {state.data.map((property: any) => (
-                    <PropertyCard key={property.id} property={property} />
+                    <div key={property.id} className="min-w-0 w-full">
+                      <PropertyCard property={property} />
+                    </div>
                   ))}
                 </div>
               </ScrollArea>

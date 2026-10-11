@@ -245,73 +245,73 @@ export default function OwnerDashboard({
       </div>
 
       {/* 2. Portfolio Occupancy & Availability KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <Building className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Portfolio</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Portfolio</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalUnits}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Total Listed</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{totalUnits}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Total Listed</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
               <Percent className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Occupancy</span>
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider truncate ml-1">Occupancy</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{occupancyRate}%</div>
-            <span className="text-[11px] text-slate-500 font-medium">
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{occupancyRate}%</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">
               {occupiedUnits} Occupied &bull; {availableUnits} Vacant
             </span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
               <Clock className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Pending</span>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider truncate ml-1">Pending</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{pendingInspections.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Inspections to Confirm</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{pendingInspections.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Inspections to Confirm</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <FileText className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-lime-700 uppercase tracking-wider">Offers</span>
+            <span className="text-[10px] font-bold text-lime-700 uppercase tracking-wider truncate ml-1">Offers</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{pendingApplications.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Pending Applications</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{pendingApplications.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Pending Applications</span>
           </div>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="col-span-2 sm:col-span-1 xl:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold shrink-0">
               <DollarSign className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Asset Value</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate ml-1">Asset Value</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+          <div className="mt-2.5 min-w-0">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 truncate tabular-nums">
               {formatNaira(totalPortfolioValue)}
             </div>
-            <span className="text-[11px] text-slate-500 font-medium">Portfolio Valuation</span>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Portfolio Valuation</span>
           </div>
         </div>
       </div>

@@ -193,58 +193,58 @@ export default function SeekerDashboard({
       </div>
 
       {/* 2. Key Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <Bookmark className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Saved</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Saved</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{savedPropertiesList.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Bookmarked Listings</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{savedPropertiesList.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Bookmarked Listings</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
               <Calendar className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inspections</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Inspections</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">
               {inspections.filter((i) => i.status !== 'CANCELLED').length}
             </div>
-            <span className="text-[11px] text-slate-500 font-medium">Scheduled & Requested</span>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Scheduled & Requested</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <FileText className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Applications</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Applications</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{applications.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Offers & Expressions</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{applications.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Offers & Expressions</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold shrink-0">
               <MessageSquare className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Enquiries</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Enquiries</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{enquiries.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Host Conversations</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{enquiries.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Host Conversations</span>
           </div>
         </div>
       </div>
@@ -575,9 +575,9 @@ export default function SeekerDashboard({
             </Button>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5">
             {savedPropertiesList.map((prop) => (
-              <div key={prop.id} className="relative group">
+              <div key={prop.id} className="relative group min-w-0">
                 <PropertyCard property={prop} />
                 <button
                   type="button"
@@ -614,7 +614,7 @@ export default function SeekerDashboard({
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5">
           {recommendedPropertiesList.map((prop) => (
             <PropertyCard key={prop.id} property={prop} />
           ))}
@@ -635,7 +635,7 @@ export default function SeekerDashboard({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5">
           {recentlyViewedList.map((prop) => (
             <PropertyCard key={prop.id} property={prop} />
           ))}

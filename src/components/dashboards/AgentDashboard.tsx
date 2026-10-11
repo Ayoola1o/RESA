@@ -206,56 +206,56 @@ export default function AgentDashboard({
       </div>
 
       {/* 2. Key Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <Building className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Portfolio</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Portfolio</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{properties.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Managed Properties</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{properties.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Managed Properties</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
               <Clock className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Verification</span>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider truncate ml-1">Verification</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{submittedListings.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">In Audit Queue</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{submittedListings.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">In Audit Queue</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
               <Calendar className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Showings</span>
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider truncate ml-1">Showings</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{upcomingInspections.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Field Inspections</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{upcomingInspections.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Field Inspections</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold shrink-0">
               <FileSignature className="h-4.5 w-4.5" />
             </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mandates</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate ml-1">Mandates</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">{relationships.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Landlord Mandates</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{relationships.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Landlord Mandates</span>
           </div>
         </div>
       </div>

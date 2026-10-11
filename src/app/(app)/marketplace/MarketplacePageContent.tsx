@@ -611,7 +611,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <span className="text-xs font-bold uppercase tracking-wider text-lime-700">Selected Listing</span>
               {selectedProperty && (
-                <div className="mt-3">
+                <div className="mt-3 min-w-0 w-full">
                   <PropertyCard property={selectedProperty} />
                   <div className="mt-4 flex gap-2">
                     <Button asChild className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold">
@@ -637,7 +637,9 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-6">
             {currentProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <div key={property.id} className="min-w-0 w-full">
+                <PropertyCard property={property} />
+              </div>
             ))}
             {currentProperties.length === 0 && (
                 <div className="col-span-full text-center text-muted-foreground py-16">

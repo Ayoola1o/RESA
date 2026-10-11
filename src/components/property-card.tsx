@@ -48,7 +48,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
 
   return (
     <div
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2 sm:p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${className}`}
+      className={`group relative flex flex-col min-w-0 w-full overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2.5 sm:p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${className}`}
     >
       {/* Image container with compact 16:10 aspect ratio */}
       <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100">
@@ -64,23 +64,23 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         </Link>
 
         {/* Badges on Top-Left */}
-        <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1 z-10">
+        <div className="absolute top-2 left-2 flex flex-wrap items-center gap-1 z-10 max-w-[80%]">
           <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-xs ${
+            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-xs shrink-0 ${
               isRent ? 'bg-lime-700' : 'bg-slate-900'
             }`}
           >
             {statusLabel}
           </span>
           {isVerified && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-950/85 backdrop-blur-xs text-lime-400 shadow-xs border border-lime-500/30">
-              <ShieldCheck className="h-3 w-3 text-lime-400" />
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-950/85 backdrop-blur-xs text-lime-400 shadow-xs border border-lime-500/30 shrink-0">
+              <ShieldCheck className="h-3 w-3 text-lime-400 shrink-0" />
               Verified Trust
             </span>
           )}
           {property.listingStatus && property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED' && (
             <span
-              className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white shadow-xs ${
+              className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white shadow-xs shrink-0 ${
                 property.listingStatus === 'RESERVED'
                   ? 'bg-purple-600'
                   : property.listingStatus === 'OCCUPIED'
@@ -100,7 +100,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             </span>
           )}
           {availabilityStatus !== 'AVAILABLE' && property.listingStatus === 'ACTIVE' && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-600 text-white shadow-xs">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-600 text-white shadow-xs shrink-0">
               {availabilityStatus.replace('_', ' ')}
             </span>
           )}
@@ -115,7 +115,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             setIsFavorite(!isFavorite);
           }}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          className="absolute top-2 right-2 z-10 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white/90 shadow-xs backdrop-blur-xs transition-colors hover:bg-white"
+          className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-xs backdrop-blur-xs transition-colors hover:bg-white shrink-0"
         >
           <Heart
             className={`h-3.5 w-3.5 transition-colors ${
@@ -126,14 +126,19 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
       </div>
 
       {/* Card Content */}
-      <div className="flex flex-1 flex-col p-2 sm:p-2.5">
+      <div className="flex flex-1 flex-col p-1.5 sm:p-2 min-w-0">
         <div className="flex items-center gap-1.5 text-[10px] font-bold text-lime-800 mb-0.5">
-          <span className="bg-lime-50 px-1.5 py-0.2 rounded border border-lime-200/60">{property.propertyType || property.type || 'Residential'}</span>
+          <span className="bg-lime-50 px-1.5 py-0.2 rounded border border-lime-200/60 truncate">{property.propertyType || property.type || 'Residential'}</span>
         </div>
-        <Link href={`/property/${property.id}`} className="group-hover:text-lime-700 transition-colors">
-          <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{property.title}</h3>
+        <Link href={`/property/${property.id}`} className="group-hover:text-lime-700 transition-colors min-w-0">
+          <h3 className="text-sm font-bold text-slate-900 truncate" title={property.title}>
+            {property.title}
+          </h3>
         </Link>
-        <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+        <p
+          className="text-[11px] text-slate-500 mt-0.5 truncate"
+          title={`${property.address}, ${property.area ? `${property.area}, ` : ''}${property.city}`}
+        >
           {property.address}, {property.area ? `${property.area}, ` : ''}{property.city}
         </p>
 
@@ -143,7 +148,8 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             {property.features.slice(0, 2).map((feat: string) => (
               <span
                 key={feat}
-                className="inline-flex items-center text-[9px] font-medium bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded"
+                className="inline-flex items-center text-[9px] font-medium bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded truncate max-w-[120px]"
+                title={feat}
               >
                 {feat}
               </span>
@@ -155,12 +161,12 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         )}
 
         {/* Price */}
-        <div className="mt-1.5 text-[15px] font-black text-slate-950 tracking-tight">
+        <div className="mt-1.5 text-sm sm:text-[15px] font-black text-slate-950 tracking-tight truncate tabular-nums">
           {formatCurrency(property.price, statusLabel, property.priceUnit)}
         </div>
 
         {/* Specs */}
-        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600 border-t border-slate-100 pt-2 gap-1">
+        <div className="mt-2 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-600 border-t border-slate-100 pt-2 gap-1 overflow-hidden">
           <div className="flex items-center gap-1 shrink-0">
             <BedDouble className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>{property.bedrooms} Beds</span>
@@ -169,15 +175,15 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             <Bath className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             <span>{property.bathrooms} Baths</span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1 shrink-0 min-w-0">
             <Maximize2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <span>{areaDisplay}</span>
+            <span className="truncate">{areaDisplay}</span>
           </div>
         </div>
 
         {/* Rating */}
         <div className="mt-1.5 flex items-center gap-1 text-[10px] text-slate-500">
-          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+          <Star className="h-3 w-3 fill-amber-400 text-amber-400 shrink-0" />
           <span className="font-semibold text-slate-700">{rating}</span>
           <span>({reviewsCount} reviews)</span>
         </div>

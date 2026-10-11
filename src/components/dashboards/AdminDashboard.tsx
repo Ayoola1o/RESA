@@ -327,82 +327,82 @@ export default function AdminDashboard({
       </div>
 
       {/* 2. Platform Overview KPIs Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-3.5">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-lime-50 text-lime-800 flex items-center justify-center font-bold shrink-0">
               <Building className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Listings</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate ml-1">Listings</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-slate-900">{properties.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Total Properties</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-slate-900 tabular-nums truncate">{properties.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Total Properties</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
               <Clock className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Queue</span>
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider truncate ml-1">Queue</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-amber-950">{pendingVerification.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Pending Verification</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-amber-950 tabular-nums truncate">{pendingVerification.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Pending Verification</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold shrink-0">
               <ShieldAlert className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">Review</span>
+            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider truncate ml-1">Review</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-red-950">{propertiesRequiringReview.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Require Review</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-red-950 tabular-nums truncate">{propertiesRequiringReview.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Require Review</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold shrink-0">
               <AlertCircle className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider">Reports</span>
+            <span className="text-[10px] font-bold text-purple-600 uppercase tracking-wider truncate ml-1">Reports</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-purple-950">{openReports.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Active Safety Reports</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-purple-950 tabular-nums truncate">{openReports.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Active Safety Reports</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0">
               <Calendar className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Showings</span>
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider truncate ml-1">Showings</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-slate-900">{inspections.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Field Inspections</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-slate-900 tabular-nums truncate">{inspections.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Field Inspections</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">
-            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+            <div className="h-9 w-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold shrink-0">
               <History className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Audit</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate ml-1">Audit</span>
           </div>
-          <div className="mt-2.5">
-            <div className="text-2xl font-black text-slate-900">{auditLogs.length}</div>
-            <span className="text-[11px] text-slate-500 font-medium">Audit Events</span>
+          <div className="mt-2.5 min-w-0">
+            <div className="text-2xl font-black text-slate-900 tabular-nums truncate">{auditLogs.length}</div>
+            <span className="text-[11px] text-slate-500 font-medium truncate block">Audit Events</span>
           </div>
         </div>
       </div>
