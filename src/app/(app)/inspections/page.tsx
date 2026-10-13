@@ -13,6 +13,8 @@ import {
   ShieldAlert,
   Loader2,
   FileCheck,
+  AlertOctagon,
+  UserX,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,6 +38,7 @@ import {
   updateInspectionStatusAction,
   completeInspectionAction,
   proposeInspectionScheduleAction,
+  escalateInspectionAction,
 } from '@/server/actions/prophunta-actions';
 import {
   InspectionRequest,
@@ -102,6 +105,54 @@ function InspectionsContent() {
       setInspections(prev => prev.map(i => i.id === id ? { ...i, status: 'SCHEDULED' as InspectionStatus } : i));
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to confirm inspection.' });
+    }
+  };
+
+  const handleMarkNoShow = async (id: string) => {
+    setUpdatingId(id);
+    const res = await updateInspectionStatusAction(id, 'NO_SHOW', 'Attendee did not show up for scheduled inspection');
+    setUpdatingId(null);
+    if (res.success) {
+      toast({ title: 'Marked as No-Show', description: 'Inspection status updated to NO_SHOW.' });
+      setInspections(prev => prev.map(i => i.id === id ? { ...i, status: 'NO_SHOW' as InspectionStatus } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to mark no-show.' });
+    }
+  };
+
+  // Escalation state & handlers
+  const [escalateDialogOpen, setEscalateDialogOpen] = useState(false);
+  const [escalateTarget, setEscalateTarget] = useState<InspectionRequest | null>(null);
+  const [escalateReason, setEscalateReason] = useState('Misleading Price/Photos');
+  const [escalateDetails, setEscalateDetails] = useState('');
+  const [isSubmittingEscalation, setIsSubmittingEscalation] = useState(false);
+
+  const openEscalateModal = (insp: InspectionRequest) => {
+    setEscalateTarget(insp);
+    setEscalateReason('Misleading Price/Photos');
+    setEscalateDetails('');
+    setEscalateDialogOpen(true);
+  };
+
+  const handleEscalateInspection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!escalateTarget) return;
+    setIsSubmittingEscalation(true);
+    const res = await escalateInspectionAction(escalateTarget.id, escalateReason, escalateDetails);
+    setIsSubmittingEscalation(false);
+    if (res.success) {
+      toast({
+        title: 'Discrepancy Escalated',
+        description: 'Inspection issue filed with Trust & Safety for compliance review.',
+      });
+      setEscalateDialogOpen(false);
+      setInspections(prev => prev.map(i => i.id === escalateTarget.id ? {
+        ...i,
+        escalationStatus: 'ESCALATED_FRAUD_INVESTIGATION',
+        escalationNotes: `${escalateReason}: ${escalateDetails}`,
+      } : i));
+    } else {
+      toast({ variant: 'destructive', title: 'Escalation Failed', description: res.error || 'Failed to file escalation.' });
     }
   };
 
@@ -311,14 +362,26 @@ function InspectionsContent() {
                             ? 'bg-amber-500 text-white shrink-0'
                             : insp.status === 'COMPLETED'
                             ? 'bg-lime-700 text-white shrink-0'
+                            : insp.status === 'NO_SHOW'
+                            ? 'bg-rose-500 text-white shrink-0'
                             : 'bg-slate-200 text-slate-700 shrink-0'
                         }
                       >
-                        {insp.status}
+                        {insp.status === 'NO_SHOW' ? 'No Show' : insp.status}
                       </Badge>
                       <Badge variant="outline" className="text-xs shrink-0">
-                        {insp.type}
+                        {insp.type === 'IN_PERSON' ? 'Physical Visit' : 'Virtual Video Tour'}
                       </Badge>
+                      {insp.escalationStatus === 'ESCALATED_FRAUD_INVESTIGATION' && (
+                        <Badge className="bg-rose-700 text-white text-[10px] font-bold gap-1 shrink-0">
+                          <ShieldAlert className="h-3 w-3" /> Under Fraud Investigation
+                        </Badge>
+                      )}
+                      {insp.escalationStatus === 'DISCREPANCY_FLAGGED' && (
+                        <Badge className="bg-amber-600 text-white text-[10px] font-bold gap-1 shrink-0">
+                          <AlertOctagon className="h-3 w-3" /> Discrepancy Flagged
+                        </Badge>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
@@ -333,6 +396,11 @@ function InspectionsContent() {
                     {insp.notes && (
                       <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 max-w-xl break-words">
                         Note: &ldquo;{insp.notes}&rdquo;
+                      </p>
+                    )}
+                    {insp.escalationNotes && (
+                      <p className="text-xs text-rose-700 bg-rose-50 p-2 rounded border border-rose-200 max-w-xl break-words">
+                        Escalation: {insp.escalationNotes}
                       </p>
                     )}
                   </div>
@@ -369,7 +437,19 @@ function InspectionsContent() {
                       Confirm
                     </Button>
                   )}
-                  {isHost && insp.status !== 'COMPLETED' && insp.status !== 'CANCELLED' && (
+                  {isHost && insp.status === 'SCHEDULED' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-300 text-xs font-semibold rounded-xl"
+                      disabled={updatingId === insp.id}
+                      onClick={() => handleMarkNoShow(insp.id)}
+                    >
+                      <UserX className="h-3.5 w-3.5 mr-1" />
+                      Mark No-Show
+                    </Button>
+                  )}
+                  {isHost && insp.status !== 'COMPLETED' && insp.status !== 'CANCELLED' && insp.status !== 'NO_SHOW' && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -379,7 +459,7 @@ function InspectionsContent() {
                       Propose Schedule
                     </Button>
                   )}
-                  {insp.status !== 'CANCELLED' && insp.status !== 'COMPLETED' && (
+                  {insp.status !== 'CANCELLED' && insp.status !== 'COMPLETED' && insp.status !== 'NO_SHOW' && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -388,6 +468,17 @@ function InspectionsContent() {
                       onClick={() => handleCancelInspection(insp.id)}
                     >
                       Cancel
+                    </Button>
+                  )}
+                  {insp.status !== 'CANCELLED' && insp.escalationStatus !== 'ESCALATED_FRAUD_INVESTIGATION' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-slate-600 hover:text-rose-700 hover:bg-rose-50 border-slate-200 text-xs rounded-xl gap-1"
+                      onClick={() => openEscalateModal(insp)}
+                    >
+                      <AlertOctagon className="h-3 w-3 text-rose-500" />
+                      Report Discrepancy
                     </Button>
                   )}
                   <Button asChild size="sm" variant="ghost" className="text-xs">
@@ -720,6 +811,80 @@ function InspectionsContent() {
           <DialogFooter>
             <Button onClick={() => setViewRecordDialogOpen(false)}>Close Report</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Report Discrepancy & Escalate to Trust and Safety */}
+      <Dialog open={escalateDialogOpen} onOpenChange={setEscalateDialogOpen}>
+        <DialogContent className="max-w-md">
+          <form onSubmit={handleEscalateInspection}>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-lg text-rose-700">
+                <AlertOctagon className="h-5 w-5 text-rose-600" />
+                Report Inspection Discrepancy
+              </DialogTitle>
+              <DialogDescription>
+                Flag an issue observed during walkthrough for <strong>{escalateTarget?.propertyTitle}</strong>. This initiates a Trust & Safety compliance review.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4 text-sm">
+              <div className="space-y-1.5">
+                <Label htmlFor="escalateReason">Category of Discrepancy</Label>
+                <Select value={escalateReason} onValueChange={setEscalateReason}>
+                  <SelectTrigger id="escalateReason">
+                    <SelectValue placeholder="Select discrepancy reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Misleading Price/Photos">Misleading Photos or Fake Features</SelectItem>
+                    <SelectItem value="Structural/Safety Hazard">Severe Damage or Safety Hazard</SelectItem>
+                    <SelectItem value="Unavailable/Occupied Asset">Property Not Vacant / Occupied Without Disclosure</SelectItem>
+                    <SelectItem value="Host Misrepresentation">Host / Agent Impersonation or Demanding Off-Platform Cash</SelectItem>
+                    <SelectItem value="Location Mismatch">Physical Location Discrepancy</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="escalateDetails">Detailed Observations</Label>
+                <Textarea
+                  id="escalateDetails"
+                  rows={4}
+                  required
+                  placeholder="Detail what was observed on-site that contradicts the verified listing description..."
+                  value={escalateDetails}
+                  onChange={(e) => setEscalateDetails(e.target.value)}
+                />
+              </div>
+
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+                <p className="font-semibold flex items-center gap-1 mb-1">
+                  <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />
+                  Trust & Safety Protection
+                </p>
+                PropHunta compliance officers will review this escalation, inspect geotagged evidence, and can freeze or suspend listings with verified fraud.
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEscalateDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmittingEscalation || !escalateDetails.trim()}
+                className="bg-rose-600 hover:bg-rose-700 text-white font-bold"
+              >
+                {isSubmittingEscalation ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting Escalation...
+                  </>
+                ) : (
+                  'File Escalation'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

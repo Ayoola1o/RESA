@@ -74,6 +74,7 @@ import {
   updateReportStatusAction,
   updateInspectionStatusAction,
   completeInspectionAction,
+  resolveInspectionEscalationAction,
   getUsersAction,
   updateUserStatusAction,
   suspendPropertyAction,
@@ -217,6 +218,35 @@ function AdminPortalContent() {
   // User Inspection Modal State (PRD Section 13)
   const [inspectedUser, setInspectedUser] = useState<User | null>(null);
   const [isUserInspectOpen, setIsUserInspectOpen] = useState(false);
+
+  // Admin Inspection Findings & Escalation Modal State (PRD Section 15)
+  const [adminInspectionRecordDialogOpen, setAdminInspectionRecordDialogOpen] = useState(false);
+  const [adminSelectedInspection, setAdminSelectedInspection] = useState<InspectionRequest | null>(null);
+  const [adminEscalationDialogOpen, setAdminEscalationDialogOpen] = useState(false);
+  const [adminTargetEscalation, setAdminTargetEscalation] = useState<InspectionRequest | null>(null);
+  const [adminResolutionNotes, setAdminResolutionNotes] = useState('');
+  const [adminResolvingEscalation, setAdminResolvingEscalation] = useState(false);
+
+  const handleResolveInspectionEscalation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminTargetEscalation) return;
+    setAdminResolvingEscalation(true);
+    const res = await resolveInspectionEscalationAction(adminTargetEscalation.id, adminResolutionNotes);
+    setAdminResolvingEscalation(false);
+    if (res.success) {
+      toast({ title: 'Escalation Resolved', description: 'Inspection escalation successfully resolved and logged.' });
+      setAdminEscalationDialogOpen(false);
+      setInspections((prev) =>
+        prev.map((i) =>
+          i.id === adminTargetEscalation.id
+            ? { ...i, escalationStatus: 'RESOLVED', escalationNotes: adminResolutionNotes }
+            : i
+        )
+      );
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to resolve escalation.' });
+    }
+  };
 
   // Property Documents Modal State (PRD Section 13)
   const [inspectDocsProperty, setInspectDocsProperty] = useState<Property | null>(null);
@@ -1439,49 +1469,120 @@ function AdminPortalContent() {
         {/* --- TAB 5: INSPECTIONS MANAGEMENT (PRD Section 15) --- */}
         <TabsContent value="inspections" className="space-y-4">
           <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
-            <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-lg font-black text-slate-900">
-                Scheduled Inspections & Field Audits
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-500">
-                Physical visits and live video walkthroughs conducted with verified condition records.
-              </CardDescription>
+            <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <CalendarCheck2 className="h-5 w-5 text-lime-700" />
+                  Scheduled Inspections & Field Audits
+                </CardTitle>
+                <CardDescription className="text-xs text-slate-500">
+                  Physical visits and live video walkthroughs conducted with verified condition records.
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="text-xs font-bold text-slate-700">
+                {inspections.length} Total Appointments
+              </Badge>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="divide-y divide-slate-100">
-                {inspections.map((i) => (
-                  <div key={i.id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900">{i.propertyTitle}</span>
-                        <Badge variant="outline" className="text-xs font-semibold">
-                          {i.type === 'IN_PERSON' ? 'Physical Visit' : 'Video Tour'}
-                        </Badge>
+              {inspections.length === 0 ? (
+                <div className="py-12 text-center text-slate-400">
+                  <CalendarCheck2 className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-700">No Inspections Logged</p>
+                  <p className="text-xs text-slate-400 mt-1">Walkthrough appointments requested by seekers will appear here.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {inspections.map((i) => (
+                    <div key={i.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                      <div className="space-y-1.5 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link
+                            href={`/property/${i.propertyId}`}
+                            className="text-sm font-bold text-slate-900 hover:text-lime-700 hover:underline truncate"
+                          >
+                            {i.propertyTitle}
+                          </Link>
+                          <Badge variant="outline" className="text-xs font-semibold">
+                            {i.type === 'IN_PERSON' ? 'Physical Visit' : 'Video Tour'}
+                          </Badge>
+                          {i.escalationStatus === 'ESCALATED_FRAUD_INVESTIGATION' && (
+                            <Badge className="bg-rose-700 text-white text-[10px] font-bold gap-1">
+                              <ShieldAlert className="h-3 w-3" /> Fraud Review Escalated
+                            </Badge>
+                          )}
+                          {i.escalationStatus === 'DISCREPANCY_FLAGGED' && (
+                            <Badge className="bg-amber-600 text-white text-[10px] font-bold gap-1">
+                              <AlertTriangle className="h-3 w-3" /> Discrepancy Flagged
+                            </Badge>
+                          )}
+                          {i.escalationStatus === 'RESOLVED' && (
+                            <Badge className="bg-emerald-600 text-white text-[10px] font-bold gap-1">
+                              <CheckCircle2 className="h-3 w-3" /> Escalation Cleared
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          Requested by <strong>{i.seekerName}</strong> ({i.seekerEmail}) for{' '}
+                          <strong>{new Date(i.preferredDate).toLocaleDateString()} ({i.preferredTimeSlot})</strong>
+                        </p>
+                        {i.escalationNotes && (
+                          <p className="text-xs text-rose-700 bg-rose-50/80 p-2 rounded-lg border border-rose-200">
+                            <strong>Officer Note:</strong> {i.escalationNotes}
+                          </p>
+                        )}
                       </div>
-                      <p className="text-xs text-slate-500">
-                        Requested by <strong>{i.seekerName}</strong> for{' '}
-                        <strong>{new Date(i.preferredDate).toLocaleDateString()} ({i.preferredTimeSlot})</strong>
-                      </p>
-                    </div>
 
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        className={`text-xs font-bold ${
-                          i.status === 'COMPLETED'
-                            ? 'bg-emerald-600'
-                            : i.status === 'SCHEDULED' || i.status === 'ACCEPTED'
-                            ? 'bg-lime-600 text-white font-bold'
-                            : i.status === 'CANCELLED'
-                            ? 'bg-rose-600'
-                            : 'bg-amber-500'
-                        }`}
-                      >
-                        {i.status}
-                      </Badge>
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <Badge
+                          className={`text-xs font-bold ${
+                            i.status === 'COMPLETED'
+                              ? 'bg-emerald-600 text-white'
+                              : i.status === 'SCHEDULED' || i.status === 'ACCEPTED'
+                              ? 'bg-lime-600 text-white font-bold'
+                              : i.status === 'NO_SHOW'
+                              ? 'bg-rose-500 text-white'
+                              : i.status === 'CANCELLED'
+                              ? 'bg-slate-400 text-white'
+                              : 'bg-amber-500 text-white'
+                          }`}
+                        >
+                          {i.status === 'NO_SHOW' ? 'No Show' : i.status}
+                        </Badge>
+
+                        {i.inspectionRecord && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setAdminSelectedInspection(i);
+                              setAdminInspectionRecordDialogOpen(true);
+                            }}
+                            className="h-8 text-xs font-semibold rounded-xl text-emerald-700 border-emerald-300 hover:bg-emerald-50"
+                          >
+                            <FileCheck2 className="h-3.5 w-3.5 mr-1" />
+                            Inspection Report
+                          </Button>
+                        )}
+
+                        {i.escalationStatus === 'ESCALATED_FRAUD_INVESTIGATION' && (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setAdminTargetEscalation(i);
+                              setAdminResolutionNotes('Walkthrough evidence and land boundary coordinates reviewed. Case cleared.');
+                              setAdminEscalationDialogOpen(true);
+                            }}
+                            className="h-8 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white"
+                          >
+                            <ShieldAlert className="h-3.5 w-3.5 mr-1" />
+                            Resolve Escalation
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -2798,6 +2899,161 @@ function AdminPortalContent() {
               Execute Emergency Override
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 10: INSPECTION RECORD VIEWER (PRD Section 15) --- */}
+      <Dialog open={adminInspectionRecordDialogOpen} onOpenChange={setAdminInspectionRecordDialogOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-2xl rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FileCheck2 className="h-5 w-5 text-emerald-600" />
+              Verified Walkthrough & Condition Report
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Field officer inspection record for <strong>{adminSelectedInspection?.propertyTitle}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          {adminSelectedInspection?.inspectionRecord && (
+            <div className="space-y-4 py-2 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <div>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase block">Inspector</span>
+                  <span className="font-semibold text-slate-800">{adminSelectedInspection.inspectionRecord.inspectorName}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase block">Date Completed</span>
+                  <span className="font-semibold text-slate-800">
+                    {new Date(adminSelectedInspection.inspectionRecord.completedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase block">Condition Rating</span>
+                  <Badge className="mt-1 bg-lime-600 text-white font-bold">{adminSelectedInspection.inspectionRecord.conditionRating}</Badge>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-500 font-bold uppercase block">Utilities Status</span>
+                  <Badge variant={adminSelectedInspection.inspectionRecord.utilitiesFunctional ? 'default' : 'destructive'} className="mt-1">
+                    {adminSelectedInspection.inspectionRecord.utilitiesFunctional ? 'Verified Functional' : 'Discrepancy Noted'}
+                  </Badge>
+                </div>
+              </div>
+
+              {adminSelectedInspection.inspectionRecord.meterReadings && (
+                <div className="p-3 bg-white border border-slate-200 rounded-xl">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                    Meter Readings
+                  </span>
+                  <p className="font-mono text-slate-800">{adminSelectedInspection.inspectionRecord.meterReadings}</p>
+                </div>
+              )}
+
+              <div className="p-3 bg-white border border-slate-200 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  Inspector Observations
+                </span>
+                <p className="text-slate-700 leading-relaxed">{adminSelectedInspection.inspectionRecord.observations}</p>
+              </div>
+
+              {adminSelectedInspection.inspectionRecord.discrepancies && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                  <span className="text-[10px] font-bold text-amber-800 uppercase block mb-1 flex items-center gap-1">
+                    <ShieldAlert className="h-3.5 w-3.5 text-amber-600" />
+                    Noted Discrepancies
+                  </span>
+                  <p className="text-amber-900">{adminSelectedInspection.inspectionRecord.discrepancies}</p>
+                </div>
+              )}
+
+              {adminSelectedInspection.inspectionRecord.photos && adminSelectedInspection.inspectionRecord.photos.length > 0 && (
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block mb-2">
+                    Evidence Photos ({adminSelectedInspection.inspectionRecord.photos.length})
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {adminSelectedInspection.inspectionRecord.photos.map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group relative block aspect-video rounded-lg overflow-hidden border bg-slate-100"
+                      >
+                        <img src={url} alt={`Inspection Photo ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {adminSelectedInspection.inspectionRecord.video && (
+                <div className="pt-1">
+                  <Button asChild variant="outline" size="sm" className="text-xs rounded-xl">
+                    <a href={adminSelectedInspection.inspectionRecord.video} target="_blank" rel="noreferrer">
+                      Watch Video Walkthrough
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter className="pt-3 border-t border-slate-100">
+            <Button onClick={() => setAdminInspectionRecordDialogOpen(false)} className="text-xs font-bold rounded-xl">
+              Close Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 11: RESOLVE INSPECTION ESCALATION --- */}
+      <Dialog open={adminEscalationDialogOpen} onOpenChange={setAdminEscalationDialogOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-md rounded-2xl">
+          <form onSubmit={handleResolveInspectionEscalation}>
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                Resolve Inspection Escalation
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Log compliance resolution for <strong>{adminTargetEscalation?.propertyTitle}</strong>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-3 text-xs">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold text-slate-700">Compliance Resolution Notes</Label>
+                <Textarea
+                  rows={4}
+                  required
+                  placeholder="State investigation findings, whether discrepancy was addressed, and audit justification..."
+                  value={adminResolutionNotes}
+                  onChange={(e) => setAdminResolutionNotes(e.target.value)}
+                  className="text-xs rounded-xl"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAdminEscalationDialogOpen(false)}
+                className="text-xs font-semibold rounded-xl"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={adminResolvingEscalation || !adminResolutionNotes.trim()}
+                className="text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl"
+              >
+                {adminResolvingEscalation ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                Resolve & Clear Flag
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

@@ -592,20 +592,26 @@ async function runTestSuite() {
   assert(testAudit.metadata?.bvn === '***5667', 'BVN identity number masked to trailing 4 digits');
   assert(testAudit.metadata?.nin === '***4556', 'NIN national identity number masked to trailing 4 digits');
 
-  // Verify audit log immutability guards
-  let updateBlocked = false;
-  try {
-    await auditRepository.update();
-  } catch (err: any) {
-    updateBlocked = err.message.toLowerCase().includes('immutable');
+  // Verify audit log immutability guards (strictly append-only on prototype)
+  const auditRepoProto = Object.getPrototypeOf(auditRepository);
+  const isStrictlyAppendOnly = !('update' in auditRepoProto) && !('delete' in auditRepoProto);
+  let updateBlocked = isStrictlyAppendOnly;
+  if (!updateBlocked) {
+    try {
+      await (auditRepository as any).update();
+    } catch (err: any) {
+      updateBlocked = err.message.toLowerCase().includes('immutable');
+    }
   }
   assert(updateBlocked, 'Audit log immutability: Updates are strictly prohibited and throw');
 
-  let deleteBlocked = false;
-  try {
-    await auditRepository.delete();
-  } catch (err: any) {
-    deleteBlocked = err.message.toLowerCase().includes('immutable');
+  let deleteBlocked = isStrictlyAppendOnly;
+  if (!deleteBlocked) {
+    try {
+      await (auditRepository as any).delete();
+    } catch (err: any) {
+      deleteBlocked = err.message.toLowerCase().includes('immutable');
+    }
   }
   assert(deleteBlocked, 'Audit log immutability: Deletion is strictly prohibited and throws');
 

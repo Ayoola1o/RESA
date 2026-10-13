@@ -96,8 +96,8 @@
       "phone": "+2348011111111",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.492Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.480Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_staff_mgr",
@@ -106,8 +106,8 @@
       "phone": "+2348022222222",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_officer_1",
@@ -116,8 +116,8 @@
       "phone": "+2348033333333",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_mod_1",
@@ -126,8 +126,8 @@
       "phone": "+2348044444444",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_seeker_1",
@@ -136,8 +136,8 @@
       "phone": "+2348055555555",
       "role": "SEEKER",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_owner_1",
@@ -146,8 +146,8 @@
       "phone": "+2348066666666",
       "role": "OWNER",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "id": "sec_agent_1",
@@ -156,8 +156,8 @@
       "phone": "+2348077777777",
       "role": "AGENT",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     }
   ],
   "passwords": {
@@ -191,9 +191,9 @@
       "listingType": "RENT",
       "listingStatus": "SUBMITTED",
       "availabilityStatus": "AVAILABLE",
-      "id": "prop_1791900276615_cws4",
-      "createdAt": "2026-10-13T14:04:36.615Z",
-      "updatedAt": "2026-10-13T14:04:36.615Z"
+      "id": "prop_1791901868605_eaji",
+      "createdAt": "2026-10-13T14:31:08.605Z",
+      "updatedAt": "2026-10-13T14:31:08.605Z"
     },
     {
       "ownerId": "sec_owner_1",
@@ -214,14 +214,14 @@
       "media": [],
       "documents": [
         {
-          "id": "doc_1791900276604_873420ee",
-          "propertyId": "prop_1791900276543_vw4a",
+          "id": "doc_1791901868590_29943533",
+          "propertyId": "prop_1791901868531_5tdw",
           "uploadedBy": "sec_owner_1",
           "documentType": "CERTIFICATE_OF_OCCUPANCY",
           "fileName": "Confidential_Title_Deed.pdf",
-          "fileReference": "doc_1791900276603_873420ee3d6e49f7b9602bb47c6b0cc4.pdf",
+          "fileReference": "doc_1791901868588_29943533cb6f4d588cc604ec53f0e121.pdf",
           "status": "PENDING",
-          "uploadedAt": "2026-10-13T14:04:36.604Z",
+          "uploadedAt": "2026-10-13T14:31:08.590Z",
           "mimeType": "application/pdf",
           "sizeBytes": 47
         }
@@ -240,9 +240,9 @@
         "inspectionStatus": "FAILED",
         "overallStatus": "PASSED"
       },
-      "id": "prop_1791900276543_vw4a",
-      "createdAt": "2026-10-13T14:04:36.543Z",
-      "updatedAt": "2026-10-13T14:04:36.604Z"
+      "id": "prop_1791901868531_5tdw",
+      "createdAt": "2026-10-13T14:31:08.531Z",
+      "updatedAt": "2026-10-13T14:31:08.590Z"
     },
     {
       "id": "prop-1",
@@ -698,15 +698,15 @@
   ],
   "auditLogs": [
     {
-      "id": "aud_1791900276613_nb1p",
-      "timestamp": "2026-10-13T14:04:36.613Z",
+      "id": "aud_1791901868603_gojy",
+      "timestamp": "2026-10-13T14:31:08.603Z",
       "actorId": "sec_admin_root",
       "action": "DOCUMENT_VIEWED",
       "objectType": "DOCUMENT",
-      "objectId": "doc_1791900276604_873420ee",
+      "objectId": "doc_1791901868590_29943533",
       "result": "SUCCESS",
       "metadata": {
-        "propertyId": "prop_1791900276543_vw4a",
+        "propertyId": "prop_1791901868531_5tdw",
         "fileName": "Confidential_Title_Deed.pdf",
         "documentType": "CERTIFICATE_OF_OCCUPANCY",
         "sizeBytes": 47
@@ -718,19 +718,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "5d17900a6afb55dc7716fbefb29ef2199d10b7366bfd91135bd59af59fd952b1",
-      "checksum": "b66dde62a15f9aeb4de15e4e0580325828e5d17cdc9034e5adc2e8c87a2b629a"
+      "previousChecksum": "60b7142a56a36f32fb08a82b43295316d1f5e90eacc82fc1922786429fce8a88",
+      "checksum": "298f9fa1e9b32c42682a34a3070ae91ca0dce79b17df3a3e81e90f66d2316818"
     },
     {
-      "id": "aud_1791900276607_f3lv",
-      "timestamp": "2026-10-13T14:04:36.607Z",
+      "id": "aud_1791901868594_4wj2",
+      "timestamp": "2026-10-13T14:31:08.594Z",
       "actorId": "sec_owner_1",
       "action": "DOCUMENT_UPLOADED",
       "objectType": "DOCUMENT",
-      "objectId": "doc_1791900276604_873420ee",
+      "objectId": "doc_1791901868590_29943533",
       "result": "SUCCESS",
       "metadata": {
-        "propertyId": "prop_1791900276543_vw4a",
+        "propertyId": "prop_1791901868531_5tdw",
         "documentType": "CERTIFICATE_OF_OCCUPANCY",
         "fileName": "Confidential_Title_Deed.pdf",
         "sizeBytes": 47
@@ -742,12 +742,12 @@
       },
       "actorEmail": "owner.kemi@prophunta.test",
       "actorRole": "OWNER",
-      "previousChecksum": "5aa1e654abafeaf4d5a6056d2641f35b4e754d7a0f85752861948ef16614c2b3",
-      "checksum": "5d17900a6afb55dc7716fbefb29ef2199d10b7366bfd91135bd59af59fd952b1"
+      "previousChecksum": "3083bf5f9557ee49e4e100169d58192305e6cc68a2d5005cfdbf45c358785ecb",
+      "checksum": "60b7142a56a36f32fb08a82b43295316d1f5e90eacc82fc1922786429fce8a88"
     },
     {
-      "id": "aud_1791900276597_atmz",
-      "timestamp": "2026-10-13T14:04:36.597Z",
+      "id": "aud_1791901868585_1qfv",
+      "timestamp": "2026-10-13T14:31:08.585Z",
       "actorId": "sec_admin_root",
       "action": "KYC_APPROVED",
       "objectType": "USER",
@@ -766,21 +766,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "6c25b5dd4c9a7796949a19593f8cc5e6727d6db68e7df8a6eb8e45a5bb964d4d",
-      "checksum": "5aa1e654abafeaf4d5a6056d2641f35b4e754d7a0f85752861948ef16614c2b3"
+      "previousChecksum": "0e8944c3c61e92472ad508b4765f632c419933ab88c25998ba8136eb73727820",
+      "checksum": "3083bf5f9557ee49e4e100169d58192305e6cc68a2d5005cfdbf45c358785ecb"
     },
     {
-      "id": "aud_1791900276595_i2k2",
-      "timestamp": "2026-10-13T14:04:36.595Z",
+      "id": "aud_1791901868582_s3sv",
+      "timestamp": "2026-10-13T14:31:08.582Z",
       "actorId": "sec_admin_root",
       "action": "EMERGENCY_OVERRIDE_EXECUTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276586_zp3ap",
+      "objectId": "appr_1791901868574_57utu",
       "result": "SUCCESS",
       "metadata": {
         "incidentReference": "INC-SEC-CRIT-9921",
         "actionType": "PROPERTY_RESTORE",
-        "targetResourceId": "prop_1791900276543_vw4a",
+        "targetResourceId": "prop_1791901868531_5tdw",
         "justification": "Approved by CISO during active security triage meeting"
       },
       "actor": {
@@ -790,19 +790,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "a2931757b8f9cef335835d020d3e42b74bb8be6de993c4849bbc5e92caa74936",
-      "checksum": "6c25b5dd4c9a7796949a19593f8cc5e6727d6db68e7df8a6eb8e45a5bb964d4d"
+      "previousChecksum": "5ba52bf8d85b586ac5911d5ff6622be5d5384a9b8d2208345a10922070464bbe",
+      "checksum": "0e8944c3c61e92472ad508b4765f632c419933ab88c25998ba8136eb73727820"
     },
     {
-      "id": "aud_1791900276590_lubh",
-      "timestamp": "2026-10-13T14:04:36.590Z",
+      "id": "aud_1791901868578_wx1o",
+      "timestamp": "2026-10-13T14:31:08.578Z",
       "actorId": "sec_admin_root",
       "action": "LISTING_RESTORED",
       "objectType": "PROPERTY",
-      "objectId": "prop_1791900276543_vw4a",
+      "objectId": "prop_1791901868531_5tdw",
       "result": "SUCCESS",
       "metadata": {
-        "approvalRequestId": "appr_1791900276586_zp3ap",
+        "approvalRequestId": "appr_1791901868574_57utu",
         "reason": "[EMERGENCY OVERRIDE - Ref: INC-SEC-CRIT-9921] Approved by CISO during active security triage meeting"
       },
       "actor": {
@@ -812,22 +812,22 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "4d19245cf37c4d02df65f0e9ab3ab755343c74304ece848f74b34a84aeb93b9d",
-      "checksum": "a2931757b8f9cef335835d020d3e42b74bb8be6de993c4849bbc5e92caa74936"
+      "previousChecksum": "94d71f06be88d489687a07ddea5e9aae09183715ae40efa4481a0b5bf210064b",
+      "checksum": "5ba52bf8d85b586ac5911d5ff6622be5d5384a9b8d2208345a10922070464bbe"
     },
     {
-      "id": "aud_1791900276582_61x2",
-      "timestamp": "2026-10-13T14:04:36.582Z",
+      "id": "aud_1791901868570_g34c",
+      "timestamp": "2026-10-13T14:31:08.570Z",
       "actorId": "sec_admin_root",
       "action": "APPROVAL_EXECUTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276568_vdm4u",
+      "objectId": "appr_1791901868557_ag4a6",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791900276543_vw4a",
-        "requesterStaffId": "staff_1791900276507_da48u"
+        "targetResourceId": "prop_1791901868531_5tdw",
+        "requesterStaffId": "staff_1791901868487_wf0kf"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -836,19 +836,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "41f3926c156abadc0c567b78600d7375522b13e098a1605b2b7590e04adfda82",
-      "checksum": "4d19245cf37c4d02df65f0e9ab3ab755343c74304ece848f74b34a84aeb93b9d"
+      "previousChecksum": "aba06a0fbd35847332157d81f977a4bbbc26ee17745eed2f4370ca31a2aa4a43",
+      "checksum": "94d71f06be88d489687a07ddea5e9aae09183715ae40efa4481a0b5bf210064b"
     },
     {
-      "id": "aud_1791900276577_katb",
-      "timestamp": "2026-10-13T14:04:36.577Z",
+      "id": "aud_1791901868564_dory",
+      "timestamp": "2026-10-13T14:31:08.564Z",
       "actorId": "sec_mod_1",
       "action": "LISTING_RESTORED",
       "objectType": "PROPERTY",
-      "objectId": "prop_1791900276543_vw4a",
+      "objectId": "prop_1791901868531_5tdw",
       "result": "SUCCESS",
       "metadata": {
-        "approvalRequestId": "appr_1791900276568_vdm4u",
+        "approvalRequestId": "appr_1791901868557_ag4a6",
         "reason": "Legitimate request with verified documentation"
       },
       "actor": {
@@ -858,21 +858,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "6063955ce585334378f3711082cf699ed73aa0927ff366ced96f9747e1a77a1f",
-      "checksum": "41f3926c156abadc0c567b78600d7375522b13e098a1605b2b7590e04adfda82"
+      "previousChecksum": "bb48929f57658ac7a7c2741ed4d96565dbf3e7702c49f4c73b286cd4de0afe31",
+      "checksum": "aba06a0fbd35847332157d81f977a4bbbc26ee17745eed2f4370ca31a2aa4a43"
     },
     {
-      "id": "aud_1791900276570_ueke",
-      "timestamp": "2026-10-13T14:04:36.570Z",
+      "id": "aud_1791901868559_b8d7",
+      "timestamp": "2026-10-13T14:31:08.559Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276568_vdm4u",
+      "objectId": "appr_1791901868557_ag4a6",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791900276543_vw4a",
+        "targetResourceId": "prop_1791901868531_5tdw",
         "reason": "Legitimate request with verified documentation"
       },
       "actor": {
@@ -882,21 +882,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "0d296604cea0a0aa967e427c8d417abfdb7bfe55a921fc46fcf07b08b610756d",
-      "checksum": "6063955ce585334378f3711082cf699ed73aa0927ff366ced96f9747e1a77a1f"
+      "previousChecksum": "d94757a59184f927385a2eeceedd24107135b41558dc8d7b3fde2a060e3a1b3b",
+      "checksum": "bb48929f57658ac7a7c2741ed4d96565dbf3e7702c49f4c73b286cd4de0afe31"
     },
     {
-      "id": "aud_1791900276560_v594",
-      "timestamp": "2026-10-13T14:04:36.560Z",
+      "id": "aud_1791901868548_7yep",
+      "timestamp": "2026-10-13T14:31:08.548Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276558_b4ypz",
+      "objectId": "appr_1791901868546_gngxk",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791900276543_vw4a",
+        "targetResourceId": "prop_1791901868531_5tdw",
         "reason": "Deed checked"
       },
       "actor": {
@@ -906,21 +906,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "50356995a4766814d3338c3e868c9ed44a08117eb6f8bc4e74705f724c5b42a7",
-      "checksum": "0d296604cea0a0aa967e427c8d417abfdb7bfe55a921fc46fcf07b08b610756d"
+      "previousChecksum": "0d6cff7a69f12cffa2f3c19cf3e240489be62b2e79b34e2842402fb3d9423ae6",
+      "checksum": "d94757a59184f927385a2eeceedd24107135b41558dc8d7b3fde2a060e3a1b3b"
     },
     {
-      "id": "aud_1791900276554_on5k",
-      "timestamp": "2026-10-13T14:04:36.554Z",
+      "id": "aud_1791901868540_orlw",
+      "timestamp": "2026-10-13T14:31:08.540Z",
       "actorId": "sec_admin_root",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276552_i3g8z",
+      "objectId": "appr_1791901868538_dh2k7",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791900276543_vw4a",
+        "targetResourceId": "prop_1791901868531_5tdw",
         "reason": "Immediate reinstatement"
       },
       "actor": {
@@ -930,21 +930,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "2da2311f3d06050c66963e179476b7fdc45259dbbf8707c648e0d069e27b5726",
-      "checksum": "50356995a4766814d3338c3e868c9ed44a08117eb6f8bc4e74705f724c5b42a7"
+      "previousChecksum": "b50bbd8dcdf36ae4fdb711cd3c5d0ef7cc8c224020171c031508188fb717663d",
+      "checksum": "0d6cff7a69f12cffa2f3c19cf3e240489be62b2e79b34e2842402fb3d9423ae6"
     },
     {
-      "id": "aud_1791900276548_mz89",
-      "timestamp": "2026-10-13T14:04:36.548Z",
+      "id": "aud_1791901868536_7box",
+      "timestamp": "2026-10-13T14:31:08.536Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791900276546_jb5at",
+      "objectId": "appr_1791901868534_qrnzv",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791900276543_vw4a",
+        "targetResourceId": "prop_1791901868531_5tdw",
         "reason": "Original physical documentation validated with Lagos state records"
       },
       "actor": {
@@ -954,16 +954,16 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "074a947314a2a470c1909fb09f164291036cb58ddd351dc0ccf2ff1d45c8afb0",
-      "checksum": "2da2311f3d06050c66963e179476b7fdc45259dbbf8707c648e0d069e27b5726"
+      "previousChecksum": "fe8fa7dd23dee05febc389ed7d0dba72853a5563afba0c95a5b6421b21b14d9f",
+      "checksum": "b50bbd8dcdf36ae4fdb711cd3c5d0ef7cc8c224020171c031508188fb717663d"
     },
     {
-      "id": "aud_1791900276540_wo59",
-      "timestamp": "2026-10-13T14:04:36.540Z",
+      "id": "aud_1791901868528_mm0y",
+      "timestamp": "2026-10-13T14:31:08.528Z",
       "actorId": "sec_admin_root",
       "action": "STAFF_STATUS_UPDATED",
       "objectType": "STAFF",
-      "objectId": "staff_1791900276506_32f90",
+      "objectId": "staff_1791901868486_zbbaq",
       "result": "SUCCESS",
       "metadata": {
         "previousStatus": "SUSPENDED",
@@ -977,16 +977,16 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "3c9ca2e6f4bb3639fa6bb8b37d5f1f1e3a3bcdd914609f7018b5b88ca0634ff7",
-      "checksum": "074a947314a2a470c1909fb09f164291036cb58ddd351dc0ccf2ff1d45c8afb0"
+      "previousChecksum": "766777c3e1639cb0f6a8726c9e45e5d340c3de74dc3d2af9709c7df3121eee90",
+      "checksum": "fe8fa7dd23dee05febc389ed7d0dba72853a5563afba0c95a5b6421b21b14d9f"
     },
     {
-      "id": "aud_1791900276536_pq4e",
-      "timestamp": "2026-10-13T14:04:36.536Z",
+      "id": "aud_1791901868524_3qzm",
+      "timestamp": "2026-10-13T14:31:08.524Z",
       "actorId": "sec_admin_root",
       "action": "STAFF_STATUS_UPDATED",
       "objectType": "STAFF",
-      "objectId": "staff_1791900276506_32f90",
+      "objectId": "staff_1791901868486_zbbaq",
       "result": "SUCCESS",
       "metadata": {
         "previousStatus": "ACTIVE",
@@ -1000,19 +1000,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "197a6d2bdebf1d351e3459dba6a67d76d5af195eb79046cc413d77f5074c6529",
-      "checksum": "3c9ca2e6f4bb3639fa6bb8b37d5f1f1e3a3bcdd914609f7018b5b88ca0634ff7"
+      "previousChecksum": "31bfb75476b99fcb10ba23770e2efe5d21806bd86d17685584f5332d27eb321d",
+      "checksum": "766777c3e1639cb0f6a8726c9e45e5d340c3de74dc3d2af9709c7df3121eee90"
     },
     {
-      "id": "aud_1791900276527_auiw",
-      "timestamp": "2026-10-13T14:04:36.527Z",
+      "id": "aud_1791901868509_9uar",
+      "timestamp": "2026-10-13T14:31:08.509Z",
       "actorId": "sec_admin_root",
       "action": "CUSTOM_PERMISSION_REVOKED",
       "objectType": "STAFF",
-      "objectId": "staff_1791900276506_32f90",
+      "objectId": "staff_1791901868486_zbbaq",
       "result": "SUCCESS",
       "metadata": {
-        "grantId": "cgrant_1791900276514_a9gu2"
+        "grantId": "cgrant_1791901868496_48lz2"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -1021,21 +1021,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "84f80447c4be48f4561fa465baa3f70b7684c6c7092b3f2a2a960fea8d11ec50",
-      "checksum": "197a6d2bdebf1d351e3459dba6a67d76d5af195eb79046cc413d77f5074c6529"
+      "previousChecksum": "8836cddfd9e7eb1cc5be47ced107ed9a3f9d65c51cfdc155a35b282dab53d9e1",
+      "checksum": "31bfb75476b99fcb10ba23770e2efe5d21806bd86d17685584f5332d27eb321d"
     },
     {
-      "id": "aud_1791900276519_aul5",
-      "timestamp": "2026-10-13T14:04:36.519Z",
+      "id": "aud_1791901868501_hkbp",
+      "timestamp": "2026-10-13T14:31:08.501Z",
       "actorId": "sec_admin_root",
       "action": "CUSTOM_PERMISSION_GRANTED",
       "objectType": "STAFF",
-      "objectId": "staff_1791900276506_32f90",
+      "objectId": "staff_1791901868486_zbbaq",
       "result": "SUCCESS",
       "metadata": {
         "permission": "properties.suspend",
         "reason": "Temporary coverage during moderation shift",
-        "expiresAt": "2026-10-13T16:04:36.514Z"
+        "expiresAt": "2026-10-13T16:31:08.495Z"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -1045,7 +1045,7 @@
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
       "previousChecksum": "9739ab1470838e7398cb0b8dfaaf69d83fc06d370335f9ef9de7a4553d254ac8",
-      "checksum": "84f80447c4be48f4561fa465baa3f70b7684c6c7092b3f2a2a960fea8d11ec50"
+      "checksum": "8836cddfd9e7eb1cc5be47ced107ed9a3f9d65c51cfdc155a35b282dab53d9e1"
     },
     {
       "id": "aud-1",
@@ -1218,9 +1218,9 @@
         "scopeType": "GLOBAL"
       },
       "customGrants": [],
-      "id": "staff_1791900276494_iwgne",
-      "createdAt": "2026-10-13T14:04:36.494Z",
-      "updatedAt": "2026-10-13T14:04:36.494Z"
+      "id": "staff_1791901868482_3c970",
+      "createdAt": "2026-10-13T14:31:08.482Z",
+      "updatedAt": "2026-10-13T14:31:08.482Z"
     },
     {
       "userId": "sec_staff_mgr",
@@ -1246,9 +1246,9 @@
         ],
         "prohibitSuperAdminCreation": true
       },
-      "id": "staff_1791900276496_kcav1",
-      "createdAt": "2026-10-13T14:04:36.496Z",
-      "updatedAt": "2026-10-13T14:04:36.496Z"
+      "id": "staff_1791901868484_si2hd",
+      "createdAt": "2026-10-13T14:31:08.484Z",
+      "updatedAt": "2026-10-13T14:31:08.484Z"
     },
     {
       "userId": "sec_officer_1",
@@ -1263,21 +1263,21 @@
       },
       "customGrants": [
         {
-          "staffId": "staff_1791900276506_32f90",
+          "staffId": "staff_1791901868486_zbbaq",
           "permission": "properties.suspend",
           "reason": "Temporary coverage during moderation shift",
-          "grantedBy": "staff_1791900276494_iwgne",
+          "grantedBy": "staff_1791901868482_3c970",
           "status": "REVOKED",
-          "expiresAt": "2026-10-13T16:04:36.514Z",
-          "id": "cgrant_1791900276514_a9gu2",
-          "grantedAt": "2026-10-13T14:04:36.514Z",
-          "reviewedAt": "2026-10-13T14:04:36.525Z",
+          "expiresAt": "2026-10-13T16:31:08.495Z",
+          "id": "cgrant_1791901868496_48lz2",
+          "grantedAt": "2026-10-13T14:31:08.496Z",
+          "reviewedAt": "2026-10-13T14:31:08.506Z",
           "reviewedBy": "sec_admin_root"
         }
       ],
-      "id": "staff_1791900276506_32f90",
-      "createdAt": "2026-10-13T14:04:36.506Z",
-      "updatedAt": "2026-10-13T14:04:36.538Z"
+      "id": "staff_1791901868486_zbbaq",
+      "createdAt": "2026-10-13T14:31:08.486Z",
+      "updatedAt": "2026-10-13T14:31:08.526Z"
     },
     {
       "userId": "sec_mod_1",
@@ -1291,9 +1291,9 @@
         "scopeType": "GLOBAL"
       },
       "customGrants": [],
-      "id": "staff_1791900276507_da48u",
-      "createdAt": "2026-10-13T14:04:36.508Z",
-      "updatedAt": "2026-10-13T14:04:36.508Z"
+      "id": "staff_1791901868487_wf0kf",
+      "createdAt": "2026-10-13T14:31:08.487Z",
+      "updatedAt": "2026-10-13T14:31:08.487Z"
     },
     {
       "userId": "expired_user_test",
@@ -1312,23 +1312,23 @@
           "staffId": "expired_user_test",
           "permission": "audit_logs.export",
           "grantedBy": "sec_admin_root",
-          "grantedAt": "2026-10-13T14:02:56.530Z",
-          "expiresAt": "2026-10-13T14:03:46.530Z",
+          "grantedAt": "2026-10-13T14:29:28.512Z",
+          "expiresAt": "2026-10-13T14:30:18.512Z",
           "reason": "Temporary audit access",
           "status": "ACTIVE"
         }
       ],
-      "id": "staff_1791900276530_hewkg",
-      "createdAt": "2026-10-13T14:04:36.530Z",
-      "updatedAt": "2026-10-13T14:04:36.530Z"
+      "id": "staff_1791901868512_g6kfe",
+      "createdAt": "2026-10-13T14:31:08.512Z",
+      "updatedAt": "2026-10-13T14:31:08.512Z"
     }
   ],
   "approvalRequests": [
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791900276543_vw4a",
-      "requesterStaffId": "staff_1791900276507_da48u",
+      "targetResourceId": "prop_1791901868531_5tdw",
+      "requesterStaffId": "staff_1791901868487_wf0kf",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1341,16 +1341,16 @@
       },
       "reason": "Original physical documentation validated with Lagos state records",
       "supportingEvidence": "https://records.lagosstate.gov.ng/deed/LS-88190",
-      "expiresAt": "2026-10-15T14:04:36.545Z",
-      "id": "appr_1791900276546_jb5at",
+      "expiresAt": "2026-10-15T14:31:08.534Z",
+      "id": "appr_1791901868534_qrnzv",
       "status": "PENDING",
-      "createdAt": "2026-10-13T14:04:36.546Z"
+      "createdAt": "2026-10-13T14:31:08.534Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791900276543_vw4a",
-      "requesterStaffId": "staff_1791900276494_iwgne",
+      "targetResourceId": "prop_1791901868531_5tdw",
+      "requesterStaffId": "staff_1791901868482_3c970",
       "requesterUserId": "sec_admin_root",
       "requesterEmail": "admin.root@prophunta.test",
       "proposedPayload": {
@@ -1362,16 +1362,16 @@
         "price": 450000000
       },
       "reason": "Immediate reinstatement",
-      "expiresAt": "2026-10-15T14:04:36.552Z",
-      "id": "appr_1791900276552_i3g8z",
+      "expiresAt": "2026-10-15T14:31:08.538Z",
+      "id": "appr_1791901868538_dh2k7",
       "status": "PENDING",
-      "createdAt": "2026-10-13T14:04:36.552Z"
+      "createdAt": "2026-10-13T14:31:08.538Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791900276543_vw4a",
-      "requesterStaffId": "staff_1791900276507_da48u",
+      "targetResourceId": "prop_1791901868531_5tdw",
+      "requesterStaffId": "staff_1791901868487_wf0kf",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1383,18 +1383,18 @@
         "price": 450000000
       },
       "reason": "Deed checked",
-      "expiresAt": "2026-10-15T14:04:36.558Z",
-      "id": "appr_1791900276558_b4ypz",
+      "expiresAt": "2026-10-15T14:31:08.546Z",
+      "id": "appr_1791901868546_gngxk",
       "status": "CANCELLED",
-      "createdAt": "2026-10-13T14:04:36.558Z",
+      "createdAt": "2026-10-13T14:31:08.546Z",
       "decisionNotes": "Execution cancelled: Target resource state changed materially since request submission.",
-      "decidedAt": "2026-10-13T14:04:36.564Z"
+      "decidedAt": "2026-10-13T14:31:08.552Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791900276543_vw4a",
-      "requesterStaffId": "staff_1791900276507_da48u",
+      "targetResourceId": "prop_1791901868531_5tdw",
+      "requesterStaffId": "staff_1791901868487_wf0kf",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1406,22 +1406,22 @@
         "price": 450000000
       },
       "reason": "Legitimate request with verified documentation",
-      "expiresAt": "2026-10-15T14:04:36.568Z",
-      "id": "appr_1791900276568_vdm4u",
+      "expiresAt": "2026-10-15T14:31:08.557Z",
+      "id": "appr_1791901868557_ag4a6",
       "status": "EXECUTED",
-      "createdAt": "2026-10-13T14:04:36.568Z",
-      "approverStaffId": "staff_1791900276494_iwgne",
+      "createdAt": "2026-10-13T14:31:08.557Z",
+      "approverStaffId": "staff_1791901868482_3c970",
       "approverEmail": "admin.root@prophunta.test",
       "decisionNotes": "Approved and successfully executed.",
-      "decidedAt": "2026-10-13T14:04:36.572Z",
-      "executedAt": "2026-10-13T14:04:36.572Z",
+      "decidedAt": "2026-10-13T14:31:08.561Z",
+      "executedAt": "2026-10-13T14:31:08.561Z",
       "executionResult": "SUCCESS"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791900276543_vw4a",
-      "requesterStaffId": "staff_1791900276494_iwgne",
+      "targetResourceId": "prop_1791901868531_5tdw",
+      "requesterStaffId": "staff_1791901868482_3c970",
       "requesterUserId": "sec_admin_root",
       "requesterEmail": "admin.root@prophunta.test",
       "proposedPayload": {
@@ -1429,16 +1429,16 @@
       },
       "reason": "[EMERGENCY OVERRIDE - Ref: INC-SEC-CRIT-9921] Approved by CISO during active security triage meeting",
       "supportingEvidence": "INC-SEC-CRIT-9921",
-      "expiresAt": "2026-10-13T14:04:36.586Z",
+      "expiresAt": "2026-10-13T14:31:08.574Z",
       "isEmergency": true,
-      "id": "appr_1791900276586_zp3ap",
+      "id": "appr_1791901868574_57utu",
       "status": "EXECUTED",
-      "createdAt": "2026-10-13T14:04:36.586Z",
-      "approverStaffId": "staff_1791900276494_iwgne",
+      "createdAt": "2026-10-13T14:31:08.574Z",
+      "approverStaffId": "staff_1791901868482_3c970",
       "approverEmail": "admin.root@prophunta.test",
       "decisionNotes": "Emergency executed under incident ref INC-SEC-CRIT-9921",
-      "decidedAt": "2026-10-13T14:04:36.586Z",
-      "executedAt": "2026-10-13T14:04:36.586Z",
+      "decidedAt": "2026-10-13T14:31:08.574Z",
+      "executedAt": "2026-10-13T14:31:08.574Z",
       "executionResult": "SUCCESS"
     }
   ]

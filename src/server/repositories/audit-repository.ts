@@ -125,6 +125,7 @@ export class AuditRepository {
     const db = getDb();
     return db.auditLogs.slice(0, limit).map((log: any) => ({
       ...log,
+      metadata: log.metadata || {},
       actor: log.actor || {
         id: log.actorId || 'unknown',
         email: log.actorEmail || 'unknown@prophunta.ai',
@@ -295,19 +296,6 @@ export class AuditRepository {
     return { isValid: true, totalLogs: logs.length };
   }
 
-  /**
-   * Immutability enforcement: audit logs must never be updated.
-   */
-  async update(): Promise<never> {
-    throw new Error('Audit logs are immutable and cannot be modified.');
-  }
-
-  /**
-   * Immutability enforcement: audit logs must never be deleted.
-   */
-  async delete(): Promise<never> {
-    throw new Error('Audit logs are immutable and cannot be deleted.');
-  }
 }
 
 export const auditRepository = new AuditRepository();

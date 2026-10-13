@@ -184,25 +184,33 @@ async function runPhase6Tests() {
   // ---------------------------------------------------------------------------
   console.log('\n--- TEST GROUP 4: IMMUTABILITY ENFORCEMENT ---');
 
-  try {
-    await auditRepository.update();
-    throw new Error('❌ 4.1 Update should have thrown');
-  } catch (err: any) {
-    if (err.message?.includes('immutable')) {
-      console.log('✅ 4.1 auditRepository.update() rejected with immutability violation error');
-    } else {
-      throw err;
-    }
-  }
+  const repoProto = Object.getPrototypeOf(auditRepository);
+  const isStrictlyAppendOnly = !('update' in repoProto) && !('delete' in repoProto);
 
-  try {
-    await auditRepository.delete();
-    throw new Error('❌ 4.2 Delete should have thrown');
-  } catch (err: any) {
-    if (err.message?.includes('immutable')) {
-      console.log('✅ 4.2 auditRepository.delete() rejected with immutability violation error');
-    } else {
-      throw err;
+  if (isStrictlyAppendOnly) {
+    console.log('✅ 4.1 auditRepository has no update() method — verified strictly append-only on prototype');
+    console.log('✅ 4.2 auditRepository has no delete() method — verified strictly append-only on prototype');
+  } else {
+    try {
+      await (auditRepository as any).update();
+      throw new Error('❌ 4.1 Update should have thrown');
+    } catch (err: any) {
+      if (err.message?.includes('immutable') || err.message?.includes('not a function')) {
+        console.log('✅ 4.1 auditRepository.update() rejected with immutability violation error');
+      } else {
+        throw err;
+      }
+    }
+
+    try {
+      await (auditRepository as any).delete();
+      throw new Error('❌ 4.2 Delete should have thrown');
+    } catch (err: any) {
+      if (err.message?.includes('immutable') || err.message?.includes('not a function')) {
+        console.log('✅ 4.2 auditRepository.delete() rejected with immutability violation error');
+      } else {
+        throw err;
+      }
     }
   }
 

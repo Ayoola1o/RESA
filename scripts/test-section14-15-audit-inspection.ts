@@ -84,6 +84,17 @@ async function runSection14And15Tests() {
   console.log('\n5. Testing Verification Rejection and Approval audit logs...');
   // Rejection:
   await verificationService.rejectProperty(admin, submittedProp.id, 'Preliminary review failed, please update paperwork');
+  // Pass all verification checks and approve document before approval:
+  await verificationService.updateChecklist(admin, submittedProp.id, {
+    ownerIdentityStatus: 'PASSED',
+    locationStatus: 'PASSED',
+    authorityDocumentStatus: 'PASSED',
+    availabilityStatus: 'PASSED',
+    mediaStatus: 'PASSED',
+    inspectionStatus: 'PASSED',
+    reviewNotes: 'All title deeds and on-site coordinates validated by compliance',
+  });
+  await documentService.reviewDocument(admin, submittedProp.id, uploadedDoc.id, 'APPROVED', 'Deed verified with land registry');
   // Approval:
   await verificationService.approveProperty(admin, submittedProp.id, 'All title deeds and on-site coordinates validated');
 

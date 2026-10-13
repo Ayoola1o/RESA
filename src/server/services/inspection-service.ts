@@ -222,6 +222,20 @@ export class InspectionService {
       escalationStatus: fullRecord.escalationStatus,
     });
 
+    if (isIndependentInspection && property) {
+      try {
+        const { verificationRepository } = await import('../repositories/verification-repository');
+        const currentVerification = await verificationRepository.findByPropertyId(property.id);
+        if (currentVerification) {
+          currentVerification.inspectionStatus = 'PASSED';
+          currentVerification.reviewedAt = now;
+          await verificationRepository.upsert(currentVerification);
+        }
+      } catch (err) {
+        console.warn('Failed to auto-update verification inspection status', err);
+      }
+    }
+
     await auditRepository.create({
       actorId: user.id,
       actorEmail: user.email,
