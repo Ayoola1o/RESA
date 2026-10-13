@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { notFound, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Card,
@@ -18,35 +18,63 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, FileUp, Signature, Loader2, CheckCircle2 } from "lucide-react";
-import { properties } from "@/lib/mock-data";
+import { ChevronLeft, FileUp, Signature, Loader2, CheckCircle2, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/context/UserRoleContext";
+import { getPropertyAction, submitApplicationAction } from "@/server/actions/prophunta-actions";
+import { Property } from "@/types/prophunta";
 
 export default function ApplicationFormPage() {
     const params = useParams();
     const router = useRouter();
     const { toast } = useToast();
-    const property = properties.find(p => p.id === params.id);
+    const { currentUser } = useUserRole();
+    const propertyId = String(params.id);
 
-    if (!property) {
-        notFound();
-    }
+    const [property, setProperty] = useState<Property | null>(null);
+    const [loadingProp, setLoadingProp] = useState(true);
 
-    const [fullName, setFullName] = useState("Ayoola O.");
-    const [email, setEmail] = useState("ayoola@example.com");
-    const [phone, setPhone] = useState("+234 803 123 4567");
-    const [dob, setDob] = useState("1992-06-15");
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [dob, setDob] = useState("1995-06-15");
     const [currentAddress, setCurrentAddress] = useState("Victoria Island, Lagos");
     const [employer, setEmployer] = useState("TechCorp Ltd");
-    const [jobTitle, setJobTitle] = useState("Senior Product Specialist");
+    const [jobTitle, setJobTitle] = useState("Senior Professional");
     const [idUploaded, setIdUploaded] = useState(false);
     const [paystubUploaded, setPaystubUploaded] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [signature, setSignature] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        let mounted = true;
+        getPropertyAction(propertyId)
+            .then((p) => {
+                if (mounted) {
+                    setProperty(p);
+                    setLoadingProp(false);
+                }
+            })
+            .catch(() => {
+                if (mounted) setLoadingProp(false);
+            });
+        return () => {
+            mounted = false;
+        };
+    }, [propertyId]);
+
+    useEffect(() => {
+        if (currentUser) {
+            setFullName(currentUser.name || "");
+            setEmail(currentUser.email || "");
+            setPhone(currentUser.phone || "+234 803 123 4567");
+        }
+    }, [currentUser]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!property) return;
         if (!agreed) {
             toast({
                 variant: "destructive",
@@ -66,15 +94,53 @@ export default function ApplicationFormPage() {
         }
 
         setIsSubmitting(true);
-        setTimeout(() => {
-            setIsSubmitting(false);
+        const res = await submitApplicationAction({
+            propertyId: property.id,
+            type: property.listingType === 'RENT' ? 'RENTAL' : 'SALE_OFFER',
+            name: fullName.trim() || currentUser?.name || 'Verified Seeker',
+            contact: phone.trim() || email.trim() || 'N/A',
+            occupation: `${employer.trim()} - ${jobTitle.trim()}`,
+            moveInDate: dob,
+            offerAmount: property.price,
+            message: `Official application signed by ${signature.trim()}. Background check authorized.`,
+        });
+        setIsSubmitting(false);
+
+        if (res.success) {
             toast({
                 title: "Application Submitted Successfully! 🎉",
-                description: `Your rental application for ${property.title} has been submitted for review.`,
+                description: `Your expression of interest for "${property.title}" has been submitted for review.`,
             });
             router.push('/applications');
-        }, 800);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Submission Failed",
+                description: res.error || "Failed to submit application.",
+            });
+        }
     };
+
+    if (loadingProp) {
+        return (
+            <div className="flex h-64 items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-lime-600" />
+            </div>
+        );
+    }
+
+    if (!property) {
+        return (
+            <div className="max-w-md mx-auto p-12 text-center">
+                <Building2 className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="font-bold text-slate-900 text-lg">Property Not Found</h3>
+                <p className="text-sm text-muted-foreground mt-1 mb-4">The property listing you are applying for does not exist or was removed.</p>
+                <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white rounded-xl">
+                    <Link href="/marketplace">Browse Marketplace</Link>
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto">
@@ -89,7 +155,19 @@ export default function ApplicationFormPage() {
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl">Rental Application</CardTitle>
                         <div className="flex items-center gap-4 pt-2">
-                            <Image src={property.images[0]} alt={property.title} width={80} height={60} className="rounded-xl object-cover aspect-video" data-ai-hint="house exterior" />
+                            {property.media && property.media.length > 0 ? (
+                                <Image
+                                    src={property.media[0].url}
+                                    alt={property.title}
+                                    width={80}
+                                    height={60}
+                                    className="rounded-xl object-cover aspect-video"
+                                />
+                            ) : (
+                                <div className="h-14 w-20 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center">
+                                    <Building2 className="h-6 w-6 text-slate-400" />
+                                </div>
+                            )}
                             <div>
                                  <p className="font-semibold text-slate-900">{property.title}</p>
                                  <p className="text-sm text-muted-foreground">{property.address}, {property.city}</p>
