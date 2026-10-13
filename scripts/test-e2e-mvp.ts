@@ -91,8 +91,10 @@ async function runE2ETests() {
     role: 'OWNER',
   });
   if (!ownerReg.user) throw new Error('Owner registration failed: ' + ownerReg.error);
-  const owner = ownerReg.user;
-  console.log('  ✓ Owner registered successfully:', owner.email);
+  // Complete KYC identity verification for host
+  await userRepository.update(ownerReg.user.id, { verificationStatus: 'VERIFIED' });
+  const owner = (await userRepository.findById(ownerReg.user.id))!;
+  console.log('  ✓ Owner registered & KYC verified:', owner.email);
 
   const draftProperty = await propertyService.createDraft(owner, {
     title: 'Luxury 4-Bedroom Waterfront Penthouse',
@@ -152,6 +154,16 @@ async function runE2ETests() {
 
   const queue = await verificationService.listQueue();
   console.log(`  ✓ Admin verification queue contains ${queue.length} items`);
+
+  console.log('  ✓ Admin Verification Officer audits submitted title document...');
+  const { documentService } = await import('../src/server/services/document-service');
+  await documentService.reviewDocument(
+    adminUser,
+    submittedProperty.id,
+    doc.id,
+    'APPROVED',
+    'Governor Consent volume verified with Alausa Lands Registry. Title verified.'
+  );
 
   console.log('  ✓ Running granular checklist audit on submitted property...');
   await verificationService.updateChecklist(adminUser, submittedProperty.id, {
