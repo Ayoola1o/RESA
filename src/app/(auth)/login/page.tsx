@@ -42,15 +42,21 @@ export default function LoginPage() {
 
     await refreshUser();
 
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('prophunta_user_role', res.user.role);
+      } catch {}
+    }
+
     toast({
       title: 'Welcome to PropHunta AI',
       description: `Signed in as ${res.user.name} (${res.user.role})`,
     });
 
     if (res.user.role === 'ADMIN') {
-      router.push('/admin');
+      window.location.href = '/admin';
     } else {
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     }
   };
 

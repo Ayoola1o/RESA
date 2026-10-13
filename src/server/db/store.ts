@@ -43,10 +43,18 @@ export interface DatabaseSchema {
   approvalRequests: ApprovalRequest[];
 }
 
+import os from 'os';
+
 // In-memory cache representing the database state
 let dbCache: DatabaseSchema | null = null;
-const DATA_DIR = path.join(process.cwd(), '.data');
-const DATA_FILE = path.join(DATA_DIR, 'prophunta-db.json');
+
+function getStorePaths() {
+  const cwdDir = path.join(process.cwd(), '.data');
+  const cwdFile = path.join(cwdDir, 'prophunta-db.json');
+  const tmpDir = path.join(os.tmpdir(), 'prophunta-data');
+  const tmpFile = path.join(tmpDir, 'prophunta-db.json');
+  return { cwdDir, cwdFile, tmpDir, tmpFile };
+}
 
 export function hashPassword(plainPassword: string): string {
   return crypto.createHash('sha256').update(plainPassword + '_prophunta_salt_2026').digest('hex');
@@ -187,31 +195,35 @@ export function getDb(): DatabaseSchema {
     return dbCache;
   }
 
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-      dbCache = JSON.parse(raw);
-      if (dbCache && dbCache.users && dbCache.properties) {
-        if (!dbCache.notifications) {
-          dbCache.notifications = [];
+  const { cwdFile, tmpFile } = getStorePaths();
+
+  for (const candidateFile of [cwdFile, tmpFile]) {
+    try {
+      if (fs.existsSync(candidateFile)) {
+        const raw = fs.readFileSync(candidateFile, 'utf-8');
+        dbCache = JSON.parse(raw);
+        if (dbCache && dbCache.users && dbCache.properties) {
+          if (!dbCache.notifications) {
+            dbCache.notifications = [];
+          }
+          if (!dbCache.relationships) {
+            dbCache.relationships = [...SEED_RELATIONSHIPS];
+          }
+          if (!dbCache.agentCredentials) {
+            dbCache.agentCredentials = [...SEED_AGENT_CREDENTIALS];
+          }
+          if (!dbCache.staffAccounts) {
+            dbCache.staffAccounts = [...SEED_STAFF_ACCOUNTS];
+          }
+          if (!dbCache.approvalRequests) {
+            dbCache.approvalRequests = [];
+          }
+          return dbCache;
         }
-        if (!dbCache.relationships) {
-          dbCache.relationships = [...SEED_RELATIONSHIPS];
-        }
-        if (!dbCache.agentCredentials) {
-          dbCache.agentCredentials = [...SEED_AGENT_CREDENTIALS];
-        }
-        if (!dbCache.staffAccounts) {
-          dbCache.staffAccounts = [...SEED_STAFF_ACCOUNTS];
-        }
-        if (!dbCache.approvalRequests) {
-          dbCache.approvalRequests = [];
-        }
-        return dbCache;
       }
+    } catch {
+      // Continue to next candidate
     }
-  } catch (err) {
-    console.warn('[PropHunta DB] Could not read from disk store, initializing default seed store:', err);
   }
 
   // Initialize fresh database with seed data
@@ -222,13 +234,30 @@ export function getDb(): DatabaseSchema {
 
 export function saveDb(data: DatabaseSchema): void {
   dbCache = data;
+  const { cwdDir, cwdFile, tmpDir, tmpFile } = getStorePaths();
+  let written = false;
+
+  // 1. Try writing to process.cwd() .data
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(cwdDir)) {
+      fs.mkdirSync(cwdDir, { recursive: true });
     }
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    fs.writeFileSync(cwdFile, JSON.stringify(data, null, 2), 'utf-8');
+    written = true;
+  } catch {
+    // Read-only filesystem in serverless
+  }
+
+  // 2. Also write to os.tmpdir() prophunta-data (or fallback if cwd failed)
+  try {
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
+    fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf-8');
+    written = true;
   } catch (err) {
-    // In serverless environments where local disk writes might be restricted, in-memory cache preserves state during function lifetime
-    console.warn('[PropHunta DB] Disk write skipped or restricted:', err);
+    if (!written) {
+      console.warn('[PropHunta DB] Disk write skipped or restricted:', err);
+    }
   }
 }

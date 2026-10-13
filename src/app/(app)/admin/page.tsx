@@ -745,7 +745,21 @@ function AdminPortalContent() {
     return reports.filter((r) => r.propertyId === propertyId);
   };
 
-  if (!isLoading && (currentUser?.role !== 'ADMIN' && userRole !== 'ADMIN')) {
+  if (isLoading || loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-28 px-4 text-center">
+        <div className="h-12 w-12 rounded-2xl bg-lime-50 border border-lime-200 flex items-center justify-center text-lime-700 shadow-sm mb-4">
+          <Loader2 className="h-6 w-6 animate-spin text-lime-700" />
+        </div>
+        <p className="text-sm font-bold text-slate-900 tracking-tight">Verifying Administrative Credentials...</p>
+        <p className="text-xs text-slate-500 mt-1 max-w-sm">Authenticating cryptographic staff session and platform verification permissions.</p>
+      </div>
+    );
+  }
+
+  const isAdminUser = currentUser?.role === 'ADMIN' || userRole === 'ADMIN' || !!staffContext;
+
+  if (!isAdminUser) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
         <Card className="max-w-md w-full p-8 text-center rounded-2xl border-slate-200/90 shadow-lg bg-white">

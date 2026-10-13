@@ -77,9 +77,13 @@ export default function Header() {
   const mainNavItems = getNavItemsForRole(activeRole);
 
   const handleLogout = async () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('prophunta_user_role');
+      } catch {}
+    }
     await logoutAction();
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/login';
   };
 
   const handleSearch = (e: React.FormEvent) => {

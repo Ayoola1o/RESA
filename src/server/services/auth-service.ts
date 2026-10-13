@@ -1,11 +1,35 @@
+import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { User, UserRole } from '@/types/prophunta';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { getDb, saveDb } from '../db/store';
+import { SEED_USERS } from '../seed/initial-data';
 
 const SESSION_COOKIE_NAME = 'prophunta_session';
 const SESSION_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
+const SESSION_SECRET = process.env.SESSION_SECRET || 'prophunta_secret_hmac_auth_2026_super_secure';
+
+function createSignedSessionToken(payload: { userId: string; role: UserRole; email: string; expiresAt: string }): string {
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
+  return `${data}.${signature}`;
+}
+
+function verifySignedSessionToken(token: string): { userId: string; role: UserRole; email: string; expiresAt: string } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 2) return null;
+    const [data, signature] = parts;
+    const expected = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
+    if (signature !== expected) return null;
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf-8'));
+    if (new Date(payload.expiresAt) < new Date()) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
 
 export class AuthService {
   async register(data: {
@@ -143,8 +167,13 @@ export class AuthService {
   }
 
   async createSession(user: User): Promise<string> {
-    const token = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 12)}`;
     const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString();
+    const token = createSignedSessionToken({
+      userId: user.id,
+      role: user.role,
+      email: user.email,
+      expiresAt,
+    });
 
     const db = getDb();
     db.sessions[token] = {
@@ -186,6 +215,24 @@ export class AuthService {
       return null;
     }
 
+    // 1. Verify cryptographic HMAC signed session token
+    const verified = verifySignedSessionToken(token);
+    if (verified) {
+      const user = await userRepository.findById(verified.userId);
+      if (user) {
+        return user;
+      }
+      // Resilient fallback for seed accounts in case of fresh DB initialization in serverless
+      const dbUsers = getDb().users || [];
+      const matched =
+        dbUsers.find((u) => u.id === verified.userId || u.email === verified.email) ||
+        SEED_USERS.find((u) => u.id === verified.userId || u.email === verified.email);
+      if (matched) {
+        return matched;
+      }
+    }
+
+    // 2. Check legacy db.sessions
     const db = getDb();
     const session = db.sessions[token];
     if (!session) {
