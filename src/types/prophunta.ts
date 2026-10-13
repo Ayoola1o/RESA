@@ -526,7 +526,22 @@ export type AuditAction =
   | 'MEDIA_ORDER_UPDATED'
   | 'OFF_PLATFORM_WARNING_TRIGGERED'
   | 'LOCATION_DISCREPANCY_REPORTED'
-  | 'PROPERTY_STATUS_TRANSITIONED';
+  | 'PROPERTY_STATUS_TRANSITIONED'
+  | 'STAFF_INVITED'
+  | 'STAFF_ROLES_UPDATED'
+  | 'STAFF_STATUS_UPDATED'
+  | 'STAFF_DEACTIVATED'
+  | 'CUSTOM_PERMISSION_GRANTED'
+  | 'CUSTOM_PERMISSION_REVOKED'
+  | 'APPROVAL_REQUESTED'
+  | 'APPROVAL_APPROVED'
+  | 'APPROVAL_REJECTED'
+  | 'APPROVAL_CANCELLED'
+  | 'APPROVAL_EXECUTED'
+  | 'EMERGENCY_OVERRIDE_EXECUTED'
+  | 'DOCUMENT_VIEWED'
+  | 'AUDIT_LOGS_EXPORTED'
+  | 'AUDIT_INTEGRITY_CHECKED';
 
 export interface AuditActor {
   id: string;
@@ -542,9 +557,16 @@ export interface AuditLog {
   actorEmail: string;
   actorRole: UserRole;
   action: AuditAction;
-  objectType: 'PROPERTY' | 'USER' | 'DOCUMENT' | 'INSPECTION' | 'REPORT' | 'APPLICATION' | 'ENQUIRY' | 'MEDIA' | 'RELATIONSHIP' | 'CREDENTIAL';
+  objectType: 'PROPERTY' | 'USER' | 'DOCUMENT' | 'INSPECTION' | 'REPORT' | 'APPLICATION' | 'ENQUIRY' | 'MEDIA' | 'RELATIONSHIP' | 'CREDENTIAL' | 'STAFF' | 'APPROVAL';
   objectId: string;
   timestamp: string;
   result: 'SUCCESS' | 'FAILURE';
+  correlationId?: string;
+  checksum?: string;
+  previousChecksum?: string;
+  beforeState?: Record<string, any>;
+  afterState?: Record<string, any>;
   metadata?: Record<string, any>;
 }
+
+export * from './admin-governance';

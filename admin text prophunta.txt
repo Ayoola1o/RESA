@@ -1,0 +1,593 @@
+# PropHunta AI Admin System: Refined Architecture & Implementation Roadmap
+
+The Admin system should operate as a role-based platform governance and operations centre, not as a single dashboard where every staff member has unrestricted access.
+
+Your decisions establish three core design principles:
+
+1. Hybrid permissions: predefined staff roles provide standard access, while controlled custom permissions handle legitimate exceptions.
+2. Delegated staff management: the Super Admin retains ultimate authority, but explicitly authorised staff managers can manage staff within defined limits.
+3. Approval for high-impact actions: sensitive operations require a second authorised person to approve them before they take effect.
+
+The architecture should preserve the existing PropHunta AI user roles — `SEEKER`, `OWNER`, `AGENT`, and `ADMIN` — while introducing a separate staff authorisation layer. These four roles describe platform users; they should not automatically grant particular administrative privileges.
+
+## 1. Target architecture
+
+Staff identity & authentication
+
+Authenticated staff account, active status, MFA for privileged accounts, session validation
+
+Authorisation engine
+
+Predefined roles + controlled custom permissions + resource scope + approval requirements
+
+Admin interface
+
+Show only authorised modules and actions.
+
+Server-side enforcement
+
+Validate every request and every sensitive operation.
+
+Audit trail
+
+Who acted, what changed, when, and why.
+
+Approval workflow
+
+Independent approval before high-impact actions execute.
+
+Important: Hiding a button or sidebar item is a usability feature, not a security boundary. The server must enforce permissions even if a staff member calls an API directly or changes client-side state.
+
+This is the proposed target architecture, not a claim that all of these components already exist in the current codebase.
+
+## 2. Define the administrative staff roles
+
+Start with a small, clearly bounded set of predefined roles. Each role should be a permission bundle that can evolve without changing the public-facing user role enum.
+
+1\. Super Admin
+
+Highest privilege
+
+Owns global administration, staff-management delegation, custom-permission governance, platform configuration and emergency recovery. Sensitive actions still follow approval policy where feasible. Emergency exceptions must be narrowly defined and audited.
+
+2\. Verification Officer
+
+Reviews ownership evidence, identity checks, property documents and verification submissions. Can recommend or complete routine verification decisions within assigned scope. Cannot administer staff or change global security settings.
+
+3\. Property Moderation Officer
+
+Reviews listing compliance, investigates misleading listings and handles permitted listing restrictions, suspensions and restorations. High-impact actions follow the approval policy.
+
+4\. Trust & Safety Investigator
+
+Investigates fraud reports, suspicious activity and policy violations. Can document evidence and resolve cases within assigned authority, but should not have unrestricted access to unrelated identity documents or staff permissions.
+
+5\. Inspection Coordinator
+
+Oversees inspection scheduling, assignment, progress and completion records. Access to personal and property information is limited to what is necessary for inspection operations.
+
+6\. User Support Officer
+
+Handles user enquiries and permitted account-support tasks. Can view limited account information, but cannot access sensitive verification documents, grant privileges or independently perform high-risk account actions.
+
+7\. Compliance & Audit Officer
+
+Reviews audit records, administrative decisions and policy compliance. Read-only access should be the default; access to sensitive records must be explicitly granted and audited.
+
+8\. Staff Manager (delegated capability, not automatically a superuser)
+
+Manages permitted staff invitations, role assignments and account deactivation within an explicitly delegated scope. Cannot create Super Admins, grant themselves privileges, expand their own delegation or bypass approval requirements.
+
+A staff member may hold more than one operational role when necessary. Their effective permissions must be the combination of explicitly granted role permissions and approved custom permissions, subject to hard security restrictions and resource scope.
+
+Finance administration should be introduced only when PropHunta AI has real payment, payout, refund or financial reconciliation workflows requiring it.
+
+## 3. Hybrid permission model
+
+Use three layers of authorisation.
+
+- Predefined roles: standard permission bundles for operational jobs.
+- Custom permissions: individually granted exceptions for a documented business need.
+- Scope and policy constraints: restrict which records, actions and approval workflows the person can access.
+
+Custom permissions must never become a way to bypass platform security rules.
+
+### Permission catalogue
+
+Use consistent permission identifiers rather than scattering hard-coded role checks throughout the codebase.
+
+| Area              | Example permissions                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
+| Dashboard         | `admin.dashboard.view`, `admin.metrics.view`                                                    |
+| Staff             | `admin.staff.view`, `admin.staff.invite`, `admin.staff.update_role`, `admin.staff.deactivate`   |
+| Verification      | `verification.queue.view`, `verification.review`, `verification.approve`, `verification.reject` |
+| Documents         | `documents.view_metadata`, `documents.view_sensitive`, `documents.review`                       |
+| Properties        | `properties.moderate`, `properties.suspend`, `properties.restore`                               |
+| Trust & Safety    | `reports.view`, `reports.investigate`, `reports.resolve`, `reports.escalate`                    |
+| Inspections       | `inspections.view`, `inspections.assign`, `inspections.update`                                  |
+| Users             | `users.view_limited`, `users.support`, `users.suspend`                                          |
+| Audit             | `audit_logs.view`, `audit_logs.export`                                                          |
+| Platform settings | `platform.settings.view`, `platform.settings.manage`                                            |
+| Approvals         | `approvals.view_assigned`, `approvals.approve`, `approvals.reject`                              |
+
+These are proposed identifiers, not verified existing permissions. The coding agent should inspect the repository and reconcile this catalogue with the current implementation.
+
+### Custom permission rules
+
+Custom permissions should be governed by the following rules:
+
+1. No privilege escalation. Staff cannot grant themselves permissions or modify their own role, scope or delegation.
+2. No custom Super Admin equivalent. Global security administration remains a protected role, not a collection of individually assignable permissions.
+3. Bounded delegation. A Staff Manager can assign only roles and permissions explicitly included in their delegation policy.
+4. Time-bound exceptions. Where practical, exceptional access should expire automatically.
+5. Reason required. Every custom grant needs a business justification, grantor, timestamp and review or expiry date.
+6. Revocation must take effect promptly. Role changes, deactivation and permission removal must be reflected in subsequent server-side authorisation checks.
+7. Default deny. An unknown permission, invalid staff record or missing authorisation context must not grant access.
+
+## 4. Staff-management delegation
+
+The Super Admin should be able to delegate staff-management capabilities to a Staff Manager without giving them unrestricted administrative control.
+
+### Delegation hierarchy
+
+Super Admin
+
+Creates delegation boundaries and retains global authority
+
+Delegated Staff Manager
+
+Manages staff only within assigned permissions, roles and scope
+
+Operational Staff
+
+Verification, moderation, support, inspections and compliance
+
+Example: A Staff Manager can invite a new Verification Officer and assign the approved Verification Officer role. They cannot create another Staff Manager unless the Super Admin explicitly delegated that capability, and they cannot grant permissions beyond their own delegation ceiling.
+
+### Staff-management controls
+
+The Admin interface should eventually include a dedicated Staff & Access Management area with:
+
+- Staff directory with status, department, role and last activity.
+- Invitation and onboarding workflow.
+- Role assignment and permission preview.
+- Custom permission grants, expiry and review.
+- Delegation management with explicit limits.
+- Suspension and deactivation.
+- Session revocation after deactivation or material privilege changes.
+- Staff activity and access history.
+
+Use a defined lifecycle such as `INVITED → ACTIVE → SUSPENDED/DEACTIVATED`. An invitation should not grant operational access before the staff member completes the required onboarding and authentication checks.
+
+## 5. High-impact action approval
+
+Not every administrative task needs a second person. Routine work should remain efficient, while actions with serious consequences require independent approval.
+
+| Action                                  | Suggested control                                                                   |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| Review a submitted document             | Routine permission check                                                            |
+| Request more verification evidence      | Routine permission check                                                            |
+| Approve or reject verification          | Role and scope check; add second approval if the decision is designated high-impact |
+| Suspend or restore a property           | Second approval for designated high-impact cases                                    |
+| Suspend a user account                  | Risk-based policy; second approval for high-impact or extended suspensions          |
+| Change staff role or custom permissions | Protected staff-management permission; approval for privileged changes              |
+| Create a Super Admin                    | Restricted workflow with independent approval and strong authentication             |
+| Change global security settings         | Independent approval                                                                |
+| Export sensitive audit or identity data | Explicit permission, purpose logging and potentially approval                       |
+
+These controls should be configurable by risk category, but the most sensitive protections must not be removable through ordinary custom permission grants.
+
+### Approval workflow
+
+1\. Initiate
+
+An authorised staff member requests an action and provides a reason and relevant evidence.
+
+2\. Validate
+
+The server checks permissions, scope, current resource state and whether approval is required.
+
+3\. Obtain independent approval
+
+A separate, eligible approver reviews the request. The initiator cannot approve their own request.
+
+4\. Execute atomically
+
+The server revalidates authorisation and resource state, then performs the approved action exactly once.
+
+5\. Record the outcome
+
+The audit trail captures the request, approver, decision, execution result and timestamps.
+
+Approval records should bind to the exact action, target resource and proposed change. If the request changes after approval, require a new approval. Use expiry and cancellation rules for pending requests, and ensure retries cannot execute the action twice.
+
+## 6. Recommended technical architecture
+
+For the existing Next.js and TypeScript codebase, introduce these modules only after inspecting the current folder structure and data-access patterns.
+
+| Module          | Responsibility                                             |
+| --------------- | ---------------------------------------------------------- |
+| `staff`         | Staff identity, status, invitations and onboarding         |
+| `permissions`   | Permission catalogue, role bundles and custom grants       |
+| `authorization` | Central permission checks and scope enforcement            |
+| `delegation`    | Staff-management authority and delegation ceilings         |
+| `approvals`     | Approval policies, requests, decisions and execution state |
+| `audit`         | Append-oriented administrative event records               |
+| `admin`         | Dashboard, operational queues and staff-facing interfaces  |
+
+These are logical boundaries; they do not require seven separate services or a large microservice architecture. A modular application with shared server-side services is likely the more maintainable starting point.
+
+### Data model to plan for
+
+Adapt the names to the existing ORM and database schema rather than creating duplicate models.
+
+- `StaffProfile`: user reference, staff status, department and onboarding state.
+- `AdminRole`: role name, description, protected-role flag and status.
+- `Permission`: unique key, description and sensitivity classification.
+- `RolePermission`: predefined permission bundle.
+- `StaffRoleAssignment`: staff member, role, scope, grantor and validity period.
+- `CustomPermissionGrant`: staff member, permission, scope, justification, grantor, expiry and review status.
+- `StaffDelegation`: delegator, delegate, permitted management operations, role/permission ceiling, scope and expiry.
+- `ApprovalRequest`: requester, action, target, proposed change, reason, state, expiry and approval policy.
+- `ApprovalDecision`: approver, decision, timestamp and rationale.
+- `AdminAuditEvent`: actor, action, target, outcome, timestamp, request/correlation ID and safe change metadata.
+
+Use existing authentication identities rather than building a second login system for administrators. If platform users can also be staff, represent their staff authorisation explicitly and prevent their normal `SEEKER`, `OWNER` or `AGENT` role from implying staff access.
+
+For high-impact writes, combine authorisation checks, current-state validation and transactional execution where the database supports it. Keep sensitive document contents and authentication secrets out of audit payloads.
+
+## 7. Admin navigation and interface
+
+The Admin sidebar should be generated from a permission-aware navigation configuration. It must remain consistent with the server's access rules.
+
+Platform Overview
+
+Verification Queue
+
+Property Moderation
+
+Trust & Safety
+
+Inspection Oversight
+
+User Support
+
+Staff & Access Management
+
+Approval Queue
+
+System Audit Logs
+
+Platform Settings
+
+Proposed navigation. Each entry should appear only when the staff member has the appropriate view permission; the corresponding APIs must independently enforce access.
+
+For usability and operational clarity, the dashboard should prioritise pending work, ageing queues, escalations, approval requests, recent security events and task-specific metrics. A Verification Officer should not see unrestricted staff-management controls simply because they can access the same Admin layout.
+
+## 8. Implementation roadmap
+
+The safest approach is to implement this in stages, beginning with a codebase and security audit rather than immediately replacing the existing Admin page.
+
+## P0
+
+Foundation
+
+Phase 0 — Repository audit and threat model
+
+- Inspect current Admin routes, server actions, API handlers, middleware, database schema and authentication.
+- Map every existing Admin action to its actual server-side enforcement.
+- Identify missing authorisation checks, cross-account access risks and any client-controlled role assumptions.
+- Document existing behaviour before changing it.
+
+Exit criteria: a verified route/action inventory, a permission gap report and a migration plan.
+
+## P1
+
+Security
+
+Phase 1 — Central authorisation foundation
+
+- Establish the permission catalogue and predefined role bundles.
+- Introduce central server-side authorisation helpers.
+- Protect every existing Admin route, API and mutation.
+- Fail closed for missing or invalid staff authorisation.
+- Preserve current operational functionality while replacing scattered role checks.
+
+Exit criteria: automated tests prove unauthorised users and insufficiently privileged staff cannot perform protected operations.
+
+## P2
+
+Access control
+
+Phase 2 — Staff roles, custom grants and delegation
+
+- Implement staff lifecycle and predefined role assignment.
+- Add controlled custom permissions, scope, expiry and audit metadata.
+- Implement Super Admin delegation to Staff Managers.
+- Prevent self-promotion and privilege escalation.
+- Add revocation and session invalidation rules.
+
+Exit criteria: staff managers cannot exceed their delegated authority, and privilege changes take effect reliably.
+
+## P3
+
+Governance
+
+Phase 3 — Independent approval workflows
+
+- Implement policy-driven high-impact action approval.
+- Enforce separation of requester and approver.
+- Bind approval to the exact proposed change and target resource.
+- Add expiry, cancellation, retry protection and transactional execution.
+- Define a narrow emergency procedure with immutable or append-oriented logging.
+
+Exit criteria: unapproved high-impact actions cannot execute, and duplicate requests cannot cause duplicate effects.
+
+## P4
+
+Operations
+
+Phase 4 — Admin interface and workflow integration
+
+- Build Staff & Access Management and Approval Queue.
+- Connect existing verification, moderation, inspections and trust-and-safety workflows to permissions.
+- Add role-aware dashboard metrics and navigation.
+- Add clear explanations when an action is unavailable.
+- Keep sensitive documents behind separate, explicit permissions.
+
+Exit criteria: each staff role can complete its intended duties without unnecessary access to other operational areas.
+
+## P5
+
+Assurance
+
+Phase 5 — Security testing and controlled rollout
+
+- Test every permission boundary and sensitive action.
+- Test IDOR/BOLA, cross-account isolation, direct API calls and client-side role manipulation.
+- Test deactivation, session revocation, expired grants and approver conflicts.
+- Run database migration checks and regression tests.
+- Deploy to staging, seed test staff accounts and validate end-to-end workflows before production rollout.
+
+Exit criteria: documented test evidence, no unresolved critical/high-severity authorisation defects, successful migration rehearsal and an operational rollback plan.
+
+The phases are an order of implementation, not an estimate of calendar duration. The audit may reveal existing architecture that changes the amount of work or the best migration sequence.
+
+## 9. Copy-ready prompt for your coding agent
+
+Use this prompt against the existing PropHunta AI repository. It deliberately requires an audit and design report before large-scale implementation.
+
+# PropHunta AI — Admin Governance, RBAC, Delegation & Approval Architecture
+
+## Objective
+
+Perform a deep technical audit and phased redesign of the existing PropHunta AI Admin system. Evolve it into a secure, maintainable administrative governance system with predefined staff roles, controlled custom permissions, delegated staff management, and independent approval for high-impact actions.
+
+**Repository:** [https://github.com/Ayoola1o/RESA](https://github.com/Ayoola1o/RESA)
+
+Work with the existing codebase, conventions, authentication system, database and UI architecture. Do not assume that proposed features already exist. Verify everything against actual source code.
+
+## Mandatory product decisions
+
+1. Use a hybrid permission model: predefined staff roles plus controlled custom permissions.
+2. Super Admin retains ultimate administrative authority.
+3. Staff Managers may manage staff only when explicitly delegated that authority, with strict limits on which roles, permissions and scopes they can assign.
+4. High-impact actions require independent approval before execution.
+5. A requester must not approve their own request.
+6. Platform user roles remain SEEKER, OWNER, AGENT and ADMIN. Do not overload this existing enum with operational staff job titles unless repository evidence proves a separate design is necessary. Prefer a dedicated staff authorisation model.
+7. The Admin UI is not a security boundary. All permissions must be enforced on the server.
+8. Follow least privilege and default-deny principles.
+9. Preserve existing working Admin workflows and public-facing user functionality.
+10. Do not claim tests, deployments or changes succeeded unless they were actually executed and verified.
+
+## Stage 1 — Audit before implementation
+
+Inspect:
+
+- All Admin pages, layouts, navigation and shared components.
+- Authentication, session handling, middleware and role resolution.
+- Every Admin API route, server action and mutation.
+- Database/ORM schema and migrations.
+- Existing verification, property moderation, user management, inspections, trust-and-safety reports and audit-log workflows.
+- Existing tests and CI configuration.
+- Current permissions, staff-management features and approval mechanisms, if any.
+
+Produce an inventory of every administrative operation, its data/resource scope, current server-side authorisation and identified gaps.
+
+Identify any fallback role behaviour, client-controlled privilege assumptions, IDOR/BOLA vulnerabilities, sensitive-document exposure, missing audit records, unsafe direct mutations, and ways a staff member could elevate their privileges.
+
+Do not infer functionality from sidebar labels or UI buttons alone.
+
+## Stage 2 — Define the authorisation model
+
+Propose and document a central permission catalogue with stable identifiers, including:
+
+- admin.dashboard.view
+- admin.staff.view
+- admin.staff.invite
+- admin.staff.update_role
+- admin.staff.deactivate
+- verification.queue.view
+- verification.review
+- verification.approve
+- verification.reject
+- documents.view_metadata
+- documents.view_sensitive
+- documents.review
+- properties.moderate
+- properties.suspend
+- properties.restore
+- reports.view
+- reports.investigate
+- reports.resolve
+- reports.escalate
+- inspections.view
+- inspections.assign
+- inspections.update
+- users.view_limited
+- users.support
+- users.suspend
+- audit_logs.view
+- audit_logs.export
+- approvals.view_assigned
+- approvals.approve
+- approvals.reject
+- platform.settings.view
+- platform.settings.manage
+
+Adjust this catalogue to actual product features. Do not create dead permissions or grant broad access merely to make the UI work.
+
+Define these predefined roles:
+
+- Super Admin
+- Verification Officer
+- Property Moderation Officer
+- Trust & Safety Investigator
+- Inspection Coordinator
+- User Support Officer
+- Compliance & Audit Officer
+- Staff Manager as a delegated management capability, not an automatic superuser
+
+Document the role-permission matrix and data scopes. Multiple operational roles may be assigned when justified.
+
+Custom permissions must include a reason, grantor, scope, status and expiry/review policy. Prevent self-grants, privilege escalation, unrestricted Super Admin-equivalent custom grants, and delegation beyond the grantor's authority.
+
+## Stage 3 — Implement central server-side enforcement
+
+Create or adapt central authorisation services following the repository's conventions.
+
+Requirements:
+
+- Check authenticated identity and active staff status.
+- Resolve effective permissions from roles, approved custom grants and scope.
+- Enforce resource-level access, not just page-level access.
+- Apply authorisation to every protected query and mutation.
+- Fail closed for missing, invalid, expired or revoked authorisation.
+- Never trust role or permission values supplied by the browser.
+- Avoid scattered, inconsistent role comparisons.
+- Revalidate authorisation at the point of sensitive execution.
+- Revoke or refresh sessions and cached permissions after deactivation or material privilege changes.
+- Ensure normal platform users cannot access Admin APIs simply by changing client state or URLs.
+
+## Stage 4 — Implement staff management and delegation
+
+Add or adapt a Staff & Access Management workflow supporting:
+
+- Staff directory and account status.
+- Invitation and onboarding.
+- Predefined role assignment.
+- Custom permission grants, expiry and review.
+- Explicit Staff Manager delegation and delegation limits.
+- Suspension, deactivation and revocation.
+- Audit history and effective-permission preview.
+
+Only Super Admins and staff with the appropriate explicit delegation may manage staff.
+
+A Staff Manager must not grant permissions beyond their delegation ceiling, promote themselves, alter their own security boundary, create Super Admins or bypass protected-role rules.
+
+Use the existing identity system where possible; do not introduce a duplicate authentication system.
+
+## Stage 5 — Implement high-impact action approval
+
+Create a policy-driven approval workflow for designated high-impact operations, including privileged staff changes, selected property/user restrictions, global security-setting changes and other consequential operations identified during the audit.
+
+Requirements:
+
+- Requester, exact target resource, proposed change, reason and supporting evidence.
+- Independent eligible approver; requester cannot approve their own request.
+- Explicit pending, approved, rejected, expired and cancelled states.
+- Approval bound to the exact proposed change.
+- Reject execution if the target state or proposed change has materially changed since approval.
+- Revalidate permissions and current resource state before execution.
+- Execute approved actions atomically where supported.
+- Prevent duplicate execution and unsafe retries.
+- Audit the request, decision and execution outcome.
+- Define a narrowly scoped emergency procedure with explicit safeguards and logging.
+
+Routine low-risk operations should not be unnecessarily blocked by the approval system.
+
+## Stage 6 — Audit logging and sensitive data
+
+Record security-relevant administrative events with actor, action, target, outcome, timestamp, request/correlation ID and safe before/after metadata where appropriate.
+
+Protect audit records against ordinary staff modification or deletion. Avoid logging passwords, authentication tokens or full sensitive identity-document contents.
+
+Apply explicit permissions to sensitive documents and exports, and record access where appropriate.
+
+## Stage 7 — Integrate the existing Admin workflows
+
+Preserve and correctly protect the existing workflows discovered in the repository, including:
+
+- Platform Overview.
+- Verification Queue.
+- Property Moderation.
+- Trust & Safety Reports.
+- Inspection Oversight.
+- User Support.
+- Staff & Access Management.
+- Approval Queue.
+- System Audit Logs.
+- Platform Settings, if supported.
+
+Generate sidebar visibility and action availability from effective permissions, but independently enforce all access on the server.
+
+Provide understandable empty states, access-denied responses and loading/error handling. Maintain responsive layouts and existing visual conventions.
+
+## Stage 8 — Security and regression testing
+
+Write automated tests for:
+
+- Every permission and protected operation.
+- Unauthenticated and non-staff access.
+- Each predefined staff role and its denied actions.
+- Cross-account and cross-resource isolation.
+- Direct API calls that bypass the UI.
+- Client-side role/permission manipulation.
+- Custom grants, scope restrictions, expiry and revocation.
+- Delegation ceilings and attempted self-promotion.
+- Staff deactivation and session invalidation.
+- Approval separation of duties.
+- Changed or expired approval requests.
+- Duplicate execution and retry handling.
+- Audit event creation.
+- Existing Admin workflows and public user-role behaviour.
+
+Use isolated test accounts and staging/test data. Do not run destructive penetration tests against production.
+
+## Stage 9 — Delivery process
+
+Before major implementation, provide:
+
+1. Repository findings with file paths and relevant symbols.
+2. Existing workflow inventory.
+3. Security gaps ranked by severity.
+4. Proposed role-permission matrix.
+5. Proposed data-model changes and migration strategy.
+6. Implementation phases and dependencies.
+7. Tests required for each phase.
+
+Then implement incrementally in small, reviewable changes. Do not replace the whole Admin page or introduce a new framework without evidence that it is necessary.
+
+After each phase, run the available lint, type-check, test and build commands. Report the actual command and outcome. If a check cannot run, explain why.
+
+## Definition of done
+
+- All protected Admin operations have verified server-side authorisation.
+- Staff roles and custom grants follow least privilege.
+- Delegated staff management cannot exceed its defined authority.
+- High-impact actions require independent approval.
+- Revoked privileges cannot continue to authorise new protected operations.
+- Audit records capture sensitive administrative decisions without exposing secrets.
+- Existing user roles and legitimate product workflows remain functional.
+- Security and regression tests provide evidence for the implemented behaviour.
+- All incomplete items, migration risks and deployment requirements are documented.
+
+**Start with the audit and implementation plan. Do not perform a sweeping rewrite before presenting the findings and proposed changes.**
+
+## 10. What should be implemented first?
+
+My recommendation is to begin with Phase 0 and Phase 1 together as the first delivery milestone: understand the existing code and close any verified authorisation gaps before adding staff-management screens.
+
+A polished permission interface cannot compensate for a backend that trusts a browser-supplied role. Once central authorisation is reliable, staff management, delegation and approvals can be built on top of it without duplicating security logic across the application.
+
+The immediate deliverable should be an evidence-based Admin audit, a role-permission matrix and a phased migration plan. That gives you a defensible foundation for turning PropHunta AI Admin into a proper operational governance system.

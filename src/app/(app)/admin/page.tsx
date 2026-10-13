@@ -35,6 +35,13 @@ import {
   Mail,
   MapPin,
   Building,
+  Briefcase,
+  Key,
+  FileCheck2,
+  UserPlus,
+  RefreshCw,
+  FileSpreadsheet,
+  CheckCheck,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,6 +78,20 @@ import {
   updateUserStatusAction,
   suspendPropertyAction,
   restorePropertyAction,
+  getCurrentStaffContextAction,
+  getStaffDirectoryAction,
+  inviteStaffAction,
+  updateStaffRolesAction,
+  grantCustomPermissionAction,
+  revokeCustomPermissionAction,
+  updateStaffStatusAction,
+  previewStaffPermissionsAction,
+  getAllApprovalsAction,
+  decideApprovalAction,
+  cancelApprovalRequestAction,
+  executeEmergencyOverrideAction,
+  verifyAuditTrailIntegrityAction,
+  exportAuditLogsAction,
 } from '@/server/actions/prophunta-actions';
 import {
   Property,
@@ -83,6 +104,12 @@ import {
   UserVerificationStatus,
   PropertyDocument,
   DocumentStatus,
+  StaffAccount,
+  StaffRole,
+  StaffStatus,
+  AdminPermission,
+  ApprovalRequest,
+  ApprovalActionType,
 } from '@/types/prophunta';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
@@ -94,6 +121,26 @@ const VERIFICATION_STATUS_OPTIONS: { value: VerificationSubStatus; label: string
   { value: 'CHANGES_REQUIRED', label: 'Changes Required' },
   { value: 'FAILED', label: 'Failed' },
   { value: 'NOT_REVIEWED', label: 'Not Reviewed' },
+];
+
+const ALL_STAFF_ROLES: { role: StaffRole; label: string; desc: string; badgeClass: string }[] = [
+  { role: 'SUPER_ADMIN', label: 'Super Admin', desc: 'Full administrative authority', badgeClass: 'bg-red-100 text-red-800 border-red-200' },
+  { role: 'VERIFICATION_OFFICER', label: 'Verification Officer', desc: 'Title document authentication & review', badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  { role: 'PROPERTY_MODERATOR', label: 'Property Moderator', desc: 'Listing moderation & suspension', badgeClass: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { role: 'TRUST_SAFETY_INVESTIGATOR', label: 'Trust & Safety', desc: 'Fraud reports & investigations', badgeClass: 'bg-rose-100 text-rose-800 border-rose-200' },
+  { role: 'INSPECTION_COORDINATOR', label: 'Inspection Coordinator', desc: 'Field & video inspection audits', badgeClass: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+  { role: 'USER_SUPPORT_OFFICER', label: 'User Support', desc: 'Account support & KYC inquiries', badgeClass: 'bg-blue-100 text-blue-800 border-blue-200' },
+  { role: 'COMPLIANCE_AUDITOR', label: 'Compliance Auditor', desc: 'Read-only audit trail & approval reviewer', badgeClass: 'bg-purple-100 text-purple-800 border-purple-200' },
+  { role: 'STAFF_MANAGER', label: 'Staff Manager', desc: 'Delegated staff provisioning within ceilings', badgeClass: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
+];
+
+const GRANTABLE_PERMISSIONS: { perm: AdminPermission; label: string; desc: string }[] = [
+  { perm: 'documents.view_sensitive', label: 'View Sensitive Documents', desc: 'Access confidential title deeds and land registry certificates' },
+  { perm: 'properties.suspend', label: 'Suspend Property Listings', desc: 'Take down fraudulent or non-compliant listings' },
+  { perm: 'users.suspend', label: 'Suspend Platform Users', desc: 'Restrict user access for safety violations' },
+  { perm: 'audit_logs.export', label: 'Export Audit Logs', desc: 'Generate compliance export files (CSV/JSON)' },
+  { perm: 'approvals.approve', label: 'Four-Eyes Dual Approver', desc: 'Authorize independent approval of high-impact changes' },
+  { perm: 'approvals.reject', label: 'Four-Eyes Rejector', desc: 'Reject non-compliant high-impact change requests' },
 ];
 
 function AdminPortalContent() {
@@ -109,6 +156,49 @@ function AdminPortalContent() {
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Phase 7 Staff Governance & Approval States
+  const [staffContext, setStaffContext] = useState<{
+    staffAccount: StaffAccount;
+    effectivePermissions: AdminPermission[];
+    activeRoles: StaffRole[];
+    scope: any;
+  } | null>(null);
+  const [staffDirectory, setStaffDirectory] = useState<StaffAccount[]>([]);
+  const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>([]);
+  const [approvalStatusFilter, setApprovalStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'>('ALL');
+  const [integrityResult, setIntegrityResult] = useState<{ isValid: boolean; totalLogs: number; checkedAt: string; error?: string } | null>(null);
+
+  // Staff Modals State
+  const [isInviteStaffOpen, setIsInviteStaffOpen] = useState(false);
+  const [newStaffName, setNewStaffName] = useState('');
+  const [newStaffEmail, setNewStaffEmail] = useState('');
+  const [newStaffRoles, setNewStaffRoles] = useState<StaffRole[]>(['VERIFICATION_OFFICER']);
+
+  const [selectedStaffForRoleEdit, setSelectedStaffForRoleEdit] = useState<StaffAccount | null>(null);
+  const [isManageRolesOpen, setIsManageRolesOpen] = useState(false);
+  const [editingRoles, setEditingRoles] = useState<StaffRole[]>([]);
+
+  const [selectedStaffForGrant, setSelectedStaffForGrant] = useState<StaffAccount | null>(null);
+  const [isCustomGrantOpen, setIsCustomGrantOpen] = useState(false);
+  const [grantPerm, setGrantPerm] = useState<AdminPermission>('documents.view_sensitive');
+  const [grantReason, setGrantReason] = useState('');
+  const [grantDuration, setGrantDuration] = useState('48');
+
+  const [selectedStaffForPreview, setSelectedStaffForPreview] = useState<StaffAccount | null>(null);
+  const [isPreviewPermsOpen, setIsPreviewPermsOpen] = useState(false);
+  const [permsPreview, setPermsPreview] = useState<any>(null);
+
+  // Four-Eyes Approval Modals State
+  const [rejectingApprovalId, setRejectingApprovalId] = useState<string | null>(null);
+  const [isRejectApprovalOpen, setIsRejectApprovalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+
+  const [isEmergencyOverrideOpen, setIsEmergencyOverrideOpen] = useState(false);
+  const [overrideActionType, setOverrideActionType] = useState<ApprovalActionType>('PROPERTY_RESTORE');
+  const [overrideResourceId, setOverrideResourceId] = useState('');
+  const [overrideIncidentRef, setOverrideIncidentRef] = useState('');
+  const [overrideJustification, setOverrideJustification] = useState('');
 
   // Review Dialog State (PRD Section 12)
   const [reviewProperty, setReviewProperty] = useState<Property | null>(null);
@@ -132,21 +222,40 @@ function AdminPortalContent() {
   const [inspectDocsProperty, setInspectDocsProperty] = useState<Property | null>(null);
   const [isDocsDialogOpen, setIsDocsDialogOpen] = useState(false);
 
+  const can = (perm: AdminPermission): boolean => {
+    if (!staffContext) {
+      return currentUser?.role === 'ADMIN';
+    }
+    return staffContext.effectivePermissions.includes(perm);
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
-      const [props, reps, insps, auds, usrs] = await Promise.all([
+      const [props, reps, insps, auds, usrs, staffCtxRes, staffDirRes, approvalsRes] = await Promise.all([
         getPropertiesAction(),
         getReportsAction().catch(() => []),
         getUserInspectionsAction().catch(() => []),
         getAuditLogsAction().catch(() => []),
         getUsersAction().catch(() => []),
+        getCurrentStaffContextAction().catch(() => ({ success: false, context: null })),
+        getStaffDirectoryAction().catch(() => ({ success: false, staff: [] })),
+        getAllApprovalsAction().catch(() => ({ success: false, requests: [] })),
       ]);
       setProperties(props);
       setReports(reps);
       setInspections(insps);
       setAuditLogs(auds);
       setUsers(usrs);
+      if (staffCtxRes?.success && staffCtxRes.context) {
+        setStaffContext(staffCtxRes.context);
+      }
+      if (staffDirRes?.success && staffDirRes.staff) {
+        setStaffDirectory(staffDirRes.staff);
+      }
+      if (approvalsRes?.success && approvalsRes.requests) {
+        setApprovalRequests(approvalsRes.requests);
+      }
     } catch (err) {
       console.warn('Error loading admin portal data:', err);
     } finally {
@@ -354,6 +463,245 @@ function AdminPortalContent() {
     }
   };
 
+  // --- PHASE 7: STAFF MANAGEMENT HANDLERS ---
+  const handleInviteStaff = async () => {
+    if (!newStaffName.trim() || !newStaffEmail.trim() || newStaffRoles.length === 0) {
+      toast({ variant: 'destructive', title: 'Validation Error', description: 'Name, email, and at least one staff role are required.' });
+      return;
+    }
+    setSubmittingAction(true);
+    const res = await inviteStaffAction({
+      name: newStaffName.trim(),
+      email: newStaffEmail.trim().toLowerCase(),
+      roles: newStaffRoles,
+    });
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Staff Onboarded', description: `${newStaffName} has been invited as ${newStaffRoles.join(', ')}.` });
+      setIsInviteStaffOpen(false);
+      setNewStaffName('');
+      setNewStaffEmail('');
+      setNewStaffRoles(['VERIFICATION_OFFICER']);
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Onboarding Failed', description: res.error || 'Failed to onboard staff.' });
+    }
+  };
+
+  const handleOpenRoleEdit = (staff: StaffAccount) => {
+    setSelectedStaffForRoleEdit(staff);
+    setEditingRoles([...staff.roles]);
+    setIsManageRolesOpen(true);
+  };
+
+  const handleSaveStaffRoles = async () => {
+    if (!selectedStaffForRoleEdit || editingRoles.length === 0) return;
+    setSubmittingAction(true);
+    const res = await updateStaffRolesAction(selectedStaffForRoleEdit.id, editingRoles);
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Roles Updated', description: `Assigned roles updated for ${selectedStaffForRoleEdit.name}.` });
+      setIsManageRolesOpen(false);
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Update Failed', description: res.error || 'Failed to update roles.' });
+    }
+  };
+
+  const handleOpenCustomGrant = (staff: StaffAccount) => {
+    setSelectedStaffForGrant(staff);
+    setGrantPerm('documents.view_sensitive');
+    setGrantReason('');
+    setGrantDuration('48');
+    setIsCustomGrantOpen(true);
+  };
+
+  const handleGrantCustomPermission = async () => {
+    if (!selectedStaffForGrant || !grantReason.trim()) {
+      toast({ variant: 'destructive', title: 'Validation Error', description: 'A justification reason is required for custom grants.' });
+      return;
+    }
+    setSubmittingAction(true);
+    const res = await grantCustomPermissionAction(
+      selectedStaffForGrant.id,
+      grantPerm,
+      grantReason.trim(),
+      parseInt(grantDuration, 10) || 48
+    );
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Custom Permission Granted', description: `[${grantPerm}] granted to ${selectedStaffForGrant.name} for ${grantDuration}h.` });
+      setIsCustomGrantOpen(false);
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Grant Failed', description: res.error || 'Failed to grant permission.' });
+    }
+  };
+
+  const handleRevokeCustomGrant = async (staffId: string, grantId: string) => {
+    setSubmittingAction(true);
+    const res = await revokeCustomPermissionAction(staffId, grantId);
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Permission Revoked', description: 'Custom permission grant has been revoked.' });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Revocation Failed', description: res.error || 'Failed to revoke grant.' });
+    }
+  };
+
+  const handleToggleStaffStatus = async (staff: StaffAccount) => {
+    const nextStatus: StaffStatus = staff.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+    const reason = nextStatus === 'SUSPENDED' ? 'Administrative suspension' : 'Administrative reinstatement';
+    setSubmittingAction(true);
+    const res = await updateStaffStatusAction(staff.id, nextStatus, reason);
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({
+        title: nextStatus === 'ACTIVE' ? 'Staff Reinstated' : 'Staff Suspended',
+        description: `${staff.name} status is now ${nextStatus}. Active sessions invalidated.`,
+      });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Status Update Failed', description: res.error || 'Failed to update status.' });
+    }
+  };
+
+  const handleOpenPermsPreview = async (staff: StaffAccount) => {
+    setSelectedStaffForPreview(staff);
+    const res = await previewStaffPermissionsAction(staff.id);
+    if (res.success && res.preview) {
+      setPermsPreview(res.preview);
+      setIsPreviewPermsOpen(true);
+    } else {
+      toast({ variant: 'destructive', title: 'Preview Error', description: res.error || 'Failed to preview permissions.' });
+    }
+  };
+
+  // --- PHASE 7: FOUR-EYES APPROVAL HANDLERS ---
+  const handleApproveRequest = async (approvalId: string) => {
+    setSubmittingAction(true);
+    const res = await decideApprovalAction(approvalId, 'APPROVE');
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Request Approved & Executed', description: 'High-impact operation successfully confirmed and atomically executed.' });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Approval Failed', description: res.error || 'Dual-custody approval failed.' });
+    }
+  };
+
+  const handleOpenRejectModal = (approvalId: string) => {
+    setRejectingApprovalId(approvalId);
+    setRejectionReason('');
+    setIsRejectApprovalOpen(true);
+  };
+
+  const handleRejectRequest = async () => {
+    if (!rejectingApprovalId || !rejectionReason.trim()) {
+      toast({ variant: 'destructive', title: 'Validation Error', description: 'Mandatory rejection justification is required.' });
+      return;
+    }
+    setSubmittingAction(true);
+    const res = await decideApprovalAction(rejectingApprovalId, 'REJECT', rejectionReason.trim());
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Request Rejected', description: 'Approval request formally rejected and audited.' });
+      setIsRejectApprovalOpen(false);
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Rejection Failed', description: res.error || 'Failed to reject request.' });
+    }
+  };
+
+  const handleCancelRequest = async (approvalId: string) => {
+    setSubmittingAction(true);
+    const res = await cancelApprovalRequestAction(approvalId);
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Request Cancelled', description: 'Pending approval request was retracted.' });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Cancellation Failed', description: res.error || 'Failed to cancel request.' });
+    }
+  };
+
+  const handleExecuteEmergencyOverride = async () => {
+    if (!overrideResourceId.trim() || !overrideIncidentRef.trim() || !overrideJustification.trim()) {
+      toast({ variant: 'destructive', title: 'Validation Error', description: 'Resource ID, incident ticket reference, and justification are mandatory.' });
+      return;
+    }
+    setSubmittingAction(true);
+    const targetResourceType =
+      overrideActionType === 'PROPERTY_RESTORE'
+        ? 'PROPERTY'
+        : overrideActionType === 'PRIVILEGED_STAFF_ROLE_CHANGE'
+        ? 'STAFF'
+        : overrideActionType === 'PLATFORM_SETTINGS_CHANGE'
+        ? 'SETTINGS'
+        : 'USER';
+
+    const res = await executeEmergencyOverrideAction({
+      actionType: overrideActionType,
+      targetResourceType,
+      targetResourceId: overrideResourceId.trim(),
+      proposedPayload: { reason: overrideJustification.trim() },
+      incidentReference: overrideIncidentRef.trim(),
+      mandatoryJustification: overrideJustification.trim(),
+    });
+    setSubmittingAction(false);
+    if (res.success) {
+      toast({ title: 'Emergency Override Executed', description: 'Action executed with incident reference and high-severity audit logging.' });
+      setIsEmergencyOverrideOpen(false);
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Override Blocked', description: res.error || 'Emergency override execution failed.' });
+    }
+  };
+
+  // --- PHASE 7: AUDIT INTEGRITY & EXPORT HANDLERS ---
+  const handleVerifyAuditIntegrity = async () => {
+    setSubmittingAction(true);
+    const res = await verifyAuditTrailIntegrityAction();
+    setSubmittingAction(false);
+    if (res.success && res.verification) {
+      setIntegrityResult({
+        isValid: res.verification.isValid,
+        totalLogs: res.verification.totalLogs,
+        checkedAt: new Date().toLocaleTimeString(),
+        error: res.verification.error,
+      });
+      if (res.verification.isValid) {
+        toast({ title: 'Audit Trail Verified', description: `All ${res.verification.totalLogs} logs pass cryptographic SHA-256 hash chaining.` });
+      } else {
+        toast({ variant: 'destructive', title: 'Tamper Detected!', description: res.verification.error });
+      }
+    } else {
+      toast({ variant: 'destructive', title: 'Verification Failed', description: res.error || 'Integrity check failed.' });
+    }
+  };
+
+  const handleExportAuditLogs = async (format: 'csv' | 'json') => {
+    setSubmittingAction(true);
+    const res = await exportAuditLogsAction(format);
+    setSubmittingAction(false);
+    if (res.success && res.exportData) {
+      const blob = new Blob([res.exportData.content], { type: res.exportData.mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = res.exportData.fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({ title: 'Audit Logs Exported', description: `Downloaded ${res.exportData.recordCount} audit entries as ${format.toUpperCase()}.` });
+      loadData();
+    } else {
+      toast({ variant: 'destructive', title: 'Export Failed', description: res.error || 'Failed to export audit logs.' });
+    }
+  };
+
   const pendingVerificationList = properties.filter(
     (p) => p.listingStatus === 'SUBMITTED' || p.listingStatus === 'UNDER_REVIEW' || p.listingStatus === 'CHANGES_REQUIRED'
   );
@@ -399,9 +747,28 @@ function AdminPortalContent() {
               Officer Console
             </Badge>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Administered by {currentUser?.name || 'Amina Bello'} (Verification Officer) • Lagos & Abuja Trust Nodes
-          </p>
+          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+            <span className="text-xs text-slate-500">
+              Administered by <strong>{currentUser?.name || 'Amina Bello'}</strong> ({currentUser?.email})
+            </span>
+            {staffContext?.activeRoles.map((r) => {
+              const meta = ALL_STAFF_ROLES.find((m) => m.role === r);
+              return (
+                <Badge
+                  key={r}
+                  variant="outline"
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${meta?.badgeClass || 'bg-slate-100 text-slate-700'}`}
+                >
+                  {meta?.label || r}
+                </Badge>
+              );
+            })}
+            {staffContext?.staffAccount?.customGrants?.some((g: any) => g.status === 'ACTIVE' && new Date(g.expiresAt) > new Date()) && (
+              <Badge className="text-[9px] bg-purple-600 text-white font-bold px-2 py-0.5 rounded-full">
+                Custom Grants Active
+              </Badge>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -412,7 +779,7 @@ function AdminPortalContent() {
             disabled={loading}
             className="text-xs font-semibold rounded-xl"
           >
-            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <RefreshCw className="h-3.5 w-3.5 mr-1.5" />}
             Refresh Records
           </Button>
           <Button size="sm" asChild className="bg-lime-600 hover:bg-lime-500 rounded-xl text-xs font-bold text-white">
@@ -421,67 +788,93 @@ function AdminPortalContent() {
         </div>
       </div>
 
-      {/* --- SECTION 13: OVERVIEW METRIC CARDS --- */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      {/* --- OVERVIEW METRIC CARDS --- */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
         {/* Total Users */}
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Users</span>
-              <Users className="h-4 w-4 text-purple-600" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Users</span>
+              <Users className="h-3.5 w-3.5 text-purple-600" />
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{users.length}</div>
-            <p className="text-[10px] text-purple-600 font-semibold mt-0.5">Seekers, Hosts & Agents</p>
+            <div className="text-xl font-black text-slate-900 mt-1">{users.length}</div>
+            <p className="text-[9px] text-purple-600 font-semibold mt-0.5">Seekers, Hosts & Agents</p>
           </CardContent>
         </Card>
 
         {/* Total Properties */}
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Properties</span>
-              <Home className="h-4 w-4 text-lime-700" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Properties</span>
+              <Home className="h-3.5 w-3.5 text-lime-700" />
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{properties.length}</div>
-            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">
-              {properties.filter((p) => p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE').length} Verified Active
+            <div className="text-xl font-black text-slate-900 mt-1">{properties.length}</div>
+            <p className="text-[9px] text-emerald-600 font-semibold mt-0.5">
+              {properties.filter((p) => p.listingStatus === 'VERIFIED' || p.listingStatus === 'ACTIVE').length} Verified
             </p>
           </CardContent>
         </Card>
 
         {/* Pending Verification */}
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pending Verification</span>
-              <ShieldCheck className="h-4 w-4 text-amber-500" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Verification</span>
+              <ShieldCheck className="h-3.5 w-3.5 text-amber-500" />
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{pendingVerificationList.length}</div>
-            <p className="text-[10px] text-amber-600 font-semibold mt-0.5">Awaiting Compliance Audit</p>
+            <div className="text-xl font-black text-slate-900 mt-1">{pendingVerificationList.length}</div>
+            <p className="text-[9px] text-amber-600 font-semibold mt-0.5">Audit Required</p>
           </CardContent>
         </Card>
 
         {/* Inspections */}
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Inspections</span>
-              <CalendarCheck2 className="h-4 w-4 text-indigo-600" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Inspections</span>
+              <CalendarCheck2 className="h-3.5 w-3.5 text-indigo-600" />
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{inspections.length}</div>
-            <p className="text-[10px] text-slate-500 font-semibold mt-0.5">Physical & Video Audits</p>
+            <div className="text-xl font-black text-slate-900 mt-1">{inspections.length}</div>
+            <p className="text-[9px] text-slate-500 font-semibold mt-0.5">Field Audits</p>
           </CardContent>
         </Card>
 
         {/* Reports */}
         <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
-          <CardContent className="p-4">
+          <CardContent className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Reports</span>
-              <BadgeAlert className="h-4 w-4 text-rose-600" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Reports</span>
+              <BadgeAlert className="h-3.5 w-3.5 text-rose-600" />
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-1.5">{reports.length}</div>
-            <p className="text-[10px] text-rose-600 font-semibold mt-0.5">Trust & Safety Flags</p>
+            <div className="text-xl font-black text-slate-900 mt-1">{reports.length}</div>
+            <p className="text-[9px] text-rose-600 font-semibold mt-0.5">Trust & Safety</p>
+          </CardContent>
+        </Card>
+
+        {/* Staff & Access */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Staff</span>
+              <Briefcase className="h-3.5 w-3.5 text-cyan-600" />
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-1">{staffDirectory.length}</div>
+            <p className="text-[9px] text-cyan-700 font-semibold mt-0.5">RBAC Governed</p>
+          </CardContent>
+        </Card>
+
+        {/* Four-Eyes Approvals */}
+        <Card className="rounded-2xl border-slate-200/80 shadow-2xs bg-white">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Approvals</span>
+              <FileCheck2 className="h-3.5 w-3.5 text-purple-600" />
+            </div>
+            <div className="text-xl font-black text-slate-900 mt-1">
+              {approvalRequests.filter((a) => a.status === 'PENDING').length}
+            </div>
+            <p className="text-[9px] text-purple-700 font-semibold mt-0.5">Dual-Custody Queue</p>
           </CardContent>
         </Card>
       </div>
@@ -508,6 +901,14 @@ function AdminPortalContent() {
           <TabsTrigger value="inspections" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <CalendarCheck2 className="h-3.5 w-3.5" />
             Inspections ({inspections.length})
+          </TabsTrigger>
+          <TabsTrigger value="staff" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+            <Briefcase className="h-3.5 w-3.5" />
+            Staff & Governance ({staffDirectory.length})
+          </TabsTrigger>
+          <TabsTrigger value="approvals" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+            <FileCheck2 className="h-3.5 w-3.5" />
+            Approval Queue ({approvalRequests.filter((a) => a.status === 'PENDING').length})
           </TabsTrigger>
           <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
             <History className="h-3.5 w-3.5" />
@@ -1085,33 +1486,448 @@ function AdminPortalContent() {
           </Card>
         </TabsContent>
 
-        {/* --- TAB 6: SYSTEM AUDIT TRAIL (PRD Section 14) --- */}
+        {/* --- TAB 6: STAFF & ACCESS MANAGEMENT (PHASE 4 & 7) --- */}
+        <TabsContent value="staff" className="space-y-4">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-black text-slate-900">
+                      Staff &amp; Access Governance
+                    </CardTitle>
+                    <Badge className="bg-cyan-600 text-white font-bold text-xs">
+                      Delegated Least Privilege
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs text-slate-500 mt-1">
+                    Manage operational staff accounts, predefined role assignments, and controlled expiring custom permissions.
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {can('admin.staff.invite') && (
+                    <Button
+                      size="sm"
+                      onClick={() => setIsInviteStaffOpen(true)}
+                      className="bg-lime-600 hover:bg-lime-500 rounded-xl text-xs font-bold text-white shadow-xs"
+                    >
+                      <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                      Onboard Staff Member
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              {staffDirectory.length === 0 ? (
+                <div className="py-12 text-center text-slate-400">
+                  <Briefcase className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-700">No Staff Accounts Provisioned</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Use the onboarding button above to assign operational duties.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {staffDirectory.map((st) => {
+                    const activeGrants = (st.customGrants || []).filter(
+                      (g: any) => g.status === 'ACTIVE' && new Date(g.expiresAt) > new Date()
+                    );
+                    return (
+                      <div
+                        key={st.id}
+                        className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-bold text-slate-900">{st.name}</span>
+                            <span className="text-xs text-slate-500 font-mono">({st.email})</span>
+                            <Badge
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                st.status === 'ACTIVE'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : st.status === 'SUSPENDED'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-rose-100 text-rose-800'
+                              }`}
+                            >
+                              {st.status}
+                            </Badge>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[11px] font-semibold text-slate-400 mr-1">Roles:</span>
+                            {st.roles.map((r) => {
+                              const meta = ALL_STAFF_ROLES.find((m) => m.role === r);
+                              return (
+                                <Badge
+                                  key={r}
+                                  variant="outline"
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${meta?.badgeClass || 'bg-slate-100 text-slate-700'}`}
+                                >
+                                  {meta?.label || r}
+                                </Badge>
+                              );
+                            })}
+                            {activeGrants.length > 0 && (
+                              <Badge className="text-[9px] bg-purple-600 text-white font-bold px-1.5 py-0.5 rounded-full">
+                                {activeGrants.length} Custom Grant{activeGrants.length > 1 ? 's' : ''} Active
+                              </Badge>
+                            )}
+                          </div>
+
+                          {st.scope?.scopeType && st.scope.scopeType !== 'GLOBAL' && (
+                            <p className="text-[11px] text-slate-400">
+                              Scope: <strong className="text-slate-600">{st.scope.scopeType}</strong> {st.scope.region ? `(${st.scope.region})` : ''}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenPermsPreview(st)}
+                            className="h-8 text-xs font-semibold rounded-xl"
+                          >
+                            <Key className="h-3.5 w-3.5 mr-1 text-slate-500" />
+                            Effective Perms
+                          </Button>
+
+                          {can('admin.staff.update_role') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenRoleEdit(st)}
+                              className="h-8 text-xs font-semibold rounded-xl"
+                            >
+                              Edit Roles
+                            </Button>
+                          )}
+
+                          {can('admin.staff.update_role') && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenCustomGrant(st)}
+                              className="h-8 text-xs font-semibold rounded-xl text-purple-700 border-purple-200 hover:bg-purple-50"
+                            >
+                              Grant Perm
+                            </Button>
+                          )}
+
+                          {can('admin.staff.deactivate') && st.id !== currentUser?.id && (
+                            <Button
+                              size="sm"
+                              variant={st.status === 'SUSPENDED' ? 'outline' : 'destructive'}
+                              onClick={() => handleToggleStaffStatus(st)}
+                              className="h-8 text-xs font-bold rounded-xl"
+                            >
+                              {st.status === 'SUSPENDED' ? 'Reactivate' : 'Suspend'}
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* --- TAB 7: DUAL-CUSTODY APPROVAL QUEUE (PHASE 5 & 7) --- */}
+        <TabsContent value="approvals" className="space-y-4">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
+            <CardHeader className="pb-3 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-black text-slate-900">
+                      Four-Eyes Dual-Custody Approval Queue
+                    </CardTitle>
+                    <Badge className="bg-purple-600 text-white font-bold text-xs">
+                      Mandatory Dual Custody
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs text-slate-500 mt-1">
+                    High-impact administrative mutations require independent review. Requesters cannot approve their own requests.
+                  </CardDescription>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {staffContext?.activeRoles.includes('SUPER_ADMIN') && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => setIsEmergencyOverrideOpen(true)}
+                      className="rounded-xl text-xs font-bold"
+                    >
+                      <AlertTriangle className="h-3.5 w-3.5 mr-1.5" />
+                      Emergency Override
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-3">
+                {(['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'] as const).map((filterStatus) => (
+                  <Button
+                    key={filterStatus}
+                    size="sm"
+                    variant={approvalStatusFilter === filterStatus ? 'default' : 'outline'}
+                    onClick={() => setApprovalStatusFilter(filterStatus)}
+                    className={`h-7 text-[11px] rounded-lg font-bold ${
+                      approvalStatusFilter === filterStatus
+                        ? 'bg-slate-900 text-white'
+                        : 'text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    {filterStatus}
+                    {filterStatus === 'PENDING' && (
+                      <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[9px] bg-amber-400 text-slate-900">
+                        {approvalRequests.filter((a) => a.status === 'PENDING').length}
+                      </span>
+                    )}
+                  </Button>
+                ))}
+              </div>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              {approvalRequests.filter((a) => approvalStatusFilter === 'ALL' || a.status === approvalStatusFilter).length === 0 ? (
+                <div className="py-12 text-center text-slate-400">
+                  <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto mb-2 opacity-80" />
+                  <p className="text-sm font-bold text-slate-700">Approval Queue is Clear</p>
+                  <p className="text-xs text-slate-400 mt-0.5">No requests matching filter: {approvalStatusFilter}.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {approvalRequests
+                    .filter((a) => approvalStatusFilter === 'ALL' || a.status === approvalStatusFilter)
+                    .map((req) => {
+                      const isMyRequest = req.requesterUserId === currentUser?.id;
+                      const isPending = req.status === 'PENDING';
+                      return (
+                        <div
+                          key={req.id}
+                          className="p-5 flex flex-col lg:flex-row lg:items-start justify-between gap-5 hover:bg-slate-50/60 transition-colors"
+                        >
+                          <div className="space-y-2 min-w-0 max-w-2xl">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge className="bg-slate-900 text-white font-mono text-[10px]">
+                                {req.actionType}
+                              </Badge>
+                              <Badge
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                  req.status === 'APPROVED'
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : req.status === 'PENDING'
+                                    ? 'bg-amber-100 text-amber-800'
+                                    : req.status === 'REJECTED'
+                                    ? 'bg-rose-100 text-rose-800'
+                                    : 'bg-slate-100 text-slate-700'
+                                }`}
+                              >
+                                {req.status}
+                              </Badge>
+                              <span className="text-xs text-slate-400 font-mono">ID: {req.id}</span>
+                            </div>
+
+                            <p className="text-xs text-slate-600">
+                              Target Resource: <strong className="text-slate-900">{req.targetResourceType} [{req.targetResourceId}]</strong>
+                            </p>
+
+                            <p className="text-xs text-slate-500">
+                              Requested by <strong>{req.requesterEmail}</strong> on {new Date(req.createdAt).toLocaleString()}
+                            </p>
+
+                            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                              <span className="font-bold text-slate-700 block mb-1">Reason &amp; Evidence:</span>
+                              <p className="text-slate-600 italic">&quot;{req.reason}&quot;</p>
+                              {req.supportingEvidence && (
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                  Evidence: {req.supportingEvidence}
+                                </p>
+                              )}
+                            </div>
+
+                            {(req.approverEmail || req.approverStaffId) && (
+                              <div className="text-[11px] text-slate-500 border-l-2 border-slate-300 pl-2">
+                                Decided by: <strong>{req.approverEmail || req.approverStaffId}</strong> on {req.decidedAt ? new Date(req.decidedAt).toLocaleString() : ''}
+                                {req.decisionNotes && <div>Notes: &quot;{req.decisionNotes}&quot;</div>}
+                                {req.executionResult && <div className="text-emerald-600 font-bold">Outcome: {req.executionResult}</div>}
+                              </div>
+                            )}
+
+                            {isMyRequest && isPending && (
+                              <p className="text-[11px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-200">
+                                🔒 <strong>Dual-Custody Lock:</strong> You submitted this request. Independent peer confirmation is required.
+                              </p>
+                            )}
+                          </div>
+
+                          {isPending && (
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                              {can('approvals.approve') && !isMyRequest && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleApproveRequest(req.id)}
+                                  disabled={submittingAction}
+                                  className="h-8 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl"
+                                >
+                                  <Check className="h-3.5 w-3.5 mr-1" />
+                                  Approve &amp; Execute
+                                </Button>
+                              )}
+
+                              {can('approvals.reject') && !isMyRequest && (
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleOpenRejectModal(req.id)}
+                                  disabled={submittingAction}
+                                  className="h-8 text-xs font-bold rounded-xl"
+                                >
+                                  <X className="h-3.5 w-3.5 mr-1" />
+                                  Reject
+                                </Button>
+                              )}
+
+                              {isMyRequest && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleCancelRequest(req.id)}
+                                  disabled={submittingAction}
+                                  className="h-8 text-xs font-semibold rounded-xl text-slate-600"
+                                >
+                                  Cancel Request
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* --- TAB 8: SYSTEM AUDIT TRAIL (PHASE 6 & 7) --- */}
         <TabsContent value="audit" className="space-y-4">
           <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-3 border-b border-slate-100">
-              <CardTitle className="text-lg font-black text-slate-900">
-                Immutable System Audit Logs
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-500">
-                Cryptographically tracked record of sensitive operational decisions, verifications, and suspensions.
-              </CardDescription>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-lg font-black text-slate-900">
+                      Immutable System Audit Trail
+                    </CardTitle>
+                    <Badge className="bg-emerald-600 text-white font-bold text-xs flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      SHA-256 Hash Chained
+                    </Badge>
+                  </div>
+                  <CardDescription className="text-xs text-slate-500 mt-1">
+                    Cryptographically tamper-evident event log. Automatically redacts passwords, tokens, and identity numbers.
+                  </CardDescription>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleVerifyAuditIntegrity}
+                    disabled={submittingAction}
+                    className="h-8 text-xs font-semibold rounded-xl"
+                  >
+                    <CheckCheck className="h-3.5 w-3.5 mr-1 text-emerald-600" />
+                    Verify Trail Integrity
+                  </Button>
+
+                  {can('audit_logs.export') && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleExportAuditLogs('csv')}
+                        disabled={submittingAction}
+                        className="h-8 text-xs font-semibold rounded-xl"
+                      >
+                        <FileSpreadsheet className="h-3.5 w-3.5 mr-1 text-lime-700" />
+                        Export CSV
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleExportAuditLogs('json')}
+                        disabled={submittingAction}
+                        className="h-8 text-xs font-semibold rounded-xl"
+                      >
+                        <Download className="h-3.5 w-3.5 mr-1" />
+                        Export JSON
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {integrityResult && (
+                <div
+                  className={`mt-3 p-3 rounded-xl text-xs font-sans flex items-center justify-between border ${
+                    integrityResult.isValid
+                      ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                      : 'bg-rose-50 text-rose-900 border-rose-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {integrityResult.isValid ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-rose-600" />
+                    )}
+                    <span>
+                      {integrityResult.isValid
+                        ? `Cryptographic chain validated: All ${integrityResult.totalLogs} entries unbroken.`
+                        : `Integrity Failure: ${integrityResult.error}`}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">Checked at {integrityResult.checkedAt}</span>
+                </div>
+              )}
             </CardHeader>
+
             <CardContent className="p-0">
               <div className="divide-y divide-slate-100 font-mono text-xs">
                 {auditLogs.map((log) => (
                   <div key={log.id} className="p-4 hover:bg-slate-50/80 flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="font-bold text-lime-900 bg-lime-50 px-1.5 py-0.5 rounded text-[11px] border border-lime-200">
                           {log.action}
                         </span>
                         <span className="text-slate-700 font-sans font-semibold">
                           Actor: {log.actorEmail} ({log.actorRole})
                         </span>
+                        <Badge
+                          variant="outline"
+                          className={`text-[9px] font-sans ${log.result === 'SUCCESS' ? 'text-emerald-700' : 'text-rose-700'}`}
+                        >
+                          {log.result}
+                        </Badge>
                       </div>
                       <p className="text-[11px] text-slate-400 font-sans">
                         Target: {log.objectType} [{log.objectId}] {log.metadata ? `• Details: ${JSON.stringify(log.metadata)}` : ''}
                       </p>
+                      {log.checksum && (
+                        <p className="text-[10px] text-slate-400 font-mono">
+                          SHA-256: <span className="text-slate-600">{log.checksum.slice(0, 16)}...</span>
+                        </p>
+                      )}
                     </div>
                     <span className="text-[11px] text-slate-400 shrink-0 font-sans">
                       {new Date(log.timestamp).toLocaleString()}
@@ -1560,6 +2376,428 @@ function AdminPortalContent() {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 4: ONBOARD STAFF MEMBER (PHASE 4 & 7) --- */}
+      <Dialog open={isInviteStaffOpen} onOpenChange={setIsInviteStaffOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[500px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-lime-700" />
+              Onboard Staff Member
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Provision administrative staff with least-privilege predefined roles.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2 text-xs">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Full Name</Label>
+              <Input
+                placeholder="e.g. Babatunde Lawal"
+                value={newStaffName}
+                onChange={(e) => setNewStaffName(e.target.value)}
+                className="h-9 text-xs rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Email Address</Label>
+              <Input
+                type="email"
+                placeholder="e.g. babatunde.vo@prophunta.ai"
+                value={newStaffEmail}
+                onChange={(e) => setNewStaffEmail(e.target.value)}
+                className="h-9 text-xs rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Assign Operational Roles</Label>
+              <div className="space-y-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                {ALL_STAFF_ROLES.filter((r) => r.role !== 'SUPER_ADMIN' || staffContext?.activeRoles.includes('SUPER_ADMIN')).map((r) => {
+                  const isChecked = newStaffRoles.includes(r.role);
+                  return (
+                    <label key={r.role} className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewStaffRoles([...newStaffRoles, r.role]);
+                          } else {
+                            setNewStaffRoles(newStaffRoles.filter((role) => role !== r.role));
+                          }
+                        }}
+                        className="mt-0.5 rounded text-lime-600 focus:ring-lime-500"
+                      />
+                      <div className="min-w-0">
+                        <span className="font-bold text-slate-900 block">{r.label}</span>
+                        <span className="text-[11px] text-slate-500">{r.desc}</span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsInviteStaffOpen(false)}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleInviteStaff}
+              disabled={submittingAction}
+              className="text-xs font-bold bg-lime-600 hover:bg-lime-500 text-white rounded-xl"
+            >
+              {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              Confirm Onboarding
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 5: MANAGE STAFF ROLES (PHASE 4 & 7) --- */}
+      <Dialog open={isManageRolesOpen} onOpenChange={setIsManageRolesOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[480px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-cyan-700" />
+              Manage Staff Roles
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Update operational duties for <strong>{selectedStaffForRoleEdit?.name}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2 text-xs">
+            <div className="space-y-2 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              {ALL_STAFF_ROLES.filter((r) => r.role !== 'SUPER_ADMIN' || staffContext?.activeRoles.includes('SUPER_ADMIN')).map((r) => {
+                const isChecked = editingRoles.includes(r.role);
+                return (
+                  <label key={r.role} className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setEditingRoles([...editingRoles, r.role]);
+                        } else {
+                          setEditingRoles(editingRoles.filter((role) => role !== r.role));
+                        }
+                      }}
+                      className="mt-0.5 rounded text-lime-600 focus:ring-lime-500"
+                    />
+                    <div className="min-w-0">
+                      <span className="font-bold text-slate-900 block">{r.label}</span>
+                      <span className="text-[11px] text-slate-500">{r.desc}</span>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsManageRolesOpen(false)}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveStaffRoles}
+              disabled={submittingAction || editingRoles.length === 0}
+              className="text-xs font-bold bg-cyan-700 hover:bg-cyan-600 text-white rounded-xl"
+            >
+              {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              Save Assigned Roles
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 6: GRANT CUSTOM EXPIRING PERMISSION (PHASE 4 & 7) --- */}
+      <Dialog open={isCustomGrantOpen} onOpenChange={setIsCustomGrantOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[480px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Key className="h-5 w-5 text-purple-700" />
+              Issue Controlled Custom Grant
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Grant a temporary, auto-expiring permission to <strong>{selectedStaffForGrant?.name}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2 text-xs">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Permission to Grant</Label>
+              <Select value={grantPerm} onValueChange={(v: any) => setGrantPerm(v)}>
+                <SelectTrigger className="h-9 text-xs rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {GRANTABLE_PERMISSIONS.map((p) => (
+                    <SelectItem key={p.perm} value={p.perm}>
+                      {p.label} [{p.perm}]
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Expiry Duration</Label>
+              <Select value={grantDuration} onValueChange={setGrantDuration}>
+                <SelectTrigger className="h-9 text-xs rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="24">24 Hours (1 Day)</SelectItem>
+                  <SelectItem value="48">48 Hours (2 Days)</SelectItem>
+                  <SelectItem value="72">72 Hours (3 Days)</SelectItem>
+                  <SelectItem value="120">120 Hours (5 Days)</SelectItem>
+                  <SelectItem value="168">168 Hours (7 Days)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Mandatory Justification Reason</Label>
+              <Textarea
+                rows={3}
+                placeholder="Document operational reason, audit ticket, or regulatory requirement..."
+                value={grantReason}
+                onChange={(e) => setGrantReason(e.target.value)}
+                className="text-xs rounded-xl"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsCustomGrantOpen(false)}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleGrantCustomPermission}
+              disabled={submittingAction || !grantReason.trim()}
+              className="text-xs font-bold bg-purple-700 hover:bg-purple-600 text-white rounded-xl"
+            >
+              {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              Confirm Custom Grant
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 7: PREVIEW EFFECTIVE PERMISSIONS (PHASE 4 & 7) --- */}
+      <Dialog open={isPreviewPermsOpen} onOpenChange={setIsPreviewPermsOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[520px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Key className="h-5 w-5 text-slate-700" />
+              Effective Permissions Preview
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Resolved permissions and active custom grants for <strong>{selectedStaffForPreview?.name}</strong>
+            </DialogDescription>
+          </DialogHeader>
+
+          {permsPreview && (
+            <div className="space-y-4 pt-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-semibold">Account Status</span>
+                  <Badge className="text-[10px] font-bold">{permsPreview.status}</Badge>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                  <span className="text-slate-500 font-semibold">Predefined Roles</span>
+                  <span className="font-bold text-slate-800">{permsPreview.roles.join(', ')}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-semibold">Effective Permissions Count</span>
+                  <span className="font-bold text-emerald-700">{permsPreview.effectivePermissions.length} Granted</span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-xs font-bold text-slate-700 mb-1.5 block">Resolved Granted Permissions</Label>
+                <div className="flex flex-wrap gap-1 p-3 rounded-xl bg-slate-50 border border-slate-200/80 max-h-48 overflow-y-auto font-mono text-[11px]">
+                  {permsPreview.effectivePermissions.map((p: string) => (
+                    <span key={p} className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-800">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {permsPreview.activeCustomGrants?.length > 0 && (
+                <div>
+                  <Label className="text-xs font-bold text-slate-700 mb-1.5 block">Active Custom Grants</Label>
+                  <div className="space-y-1.5">
+                    {permsPreview.activeCustomGrants.map((g: any) => (
+                      <div key={g.id} className="p-2.5 rounded-xl bg-purple-50/60 border border-purple-200/80 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="font-bold text-purple-900 block font-mono">{g.permission}</span>
+                          <span className="text-[10px] text-purple-700">Reason: &quot;{g.reason}&quot; • Expires: {new Date(g.expiresAt).toLocaleString()}</span>
+                        </div>
+                        {can('admin.staff.update_role') && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRevokeCustomGrant(selectedStaffForPreview!.id, g.id)}
+                            className="h-6 text-[10px] rounded-lg"
+                          >
+                            Revoke
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 8: REJECT APPROVAL REQUEST (PHASE 5 & 7) --- */}
+      <Dialog open={isRejectApprovalOpen} onOpenChange={setIsRejectApprovalOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[460px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-rose-600" />
+              Reject Approval Request
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Provide formal audit reasoning for declining this high-impact change.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 pt-2 text-xs">
+            <Label className="text-xs font-bold text-slate-700">Rejection Justification</Label>
+            <Textarea
+              rows={3}
+              placeholder="State compliance reason, missing documentation, or policy conflict..."
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              className="text-xs rounded-xl"
+            />
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsRejectApprovalOpen(false)}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRejectRequest}
+              disabled={submittingAction || !rejectionReason.trim()}
+              className="text-xs font-bold rounded-xl"
+            >
+              {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              Confirm Formal Rejection
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- MODAL 9: EMERGENCY OVERRIDE (PHASE 5 & 7) --- */}
+      <Dialog open={isEmergencyOverrideOpen} onOpenChange={setIsEmergencyOverrideOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-full sm:max-w-[500px] rounded-2xl max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-rose-700 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-rose-600" />
+              Super Admin Emergency Override
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Narrowly-scoped fail-safe execution. Requires verified security incident ticket and permanent audit logging.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2 text-xs">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Action Type</Label>
+              <Select value={overrideActionType} onValueChange={(v: any) => setOverrideActionType(v)}>
+                <SelectTrigger className="h-9 text-xs rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PROPERTY_RESTORE">Restore Suspended Property</SelectItem>
+                  <SelectItem value="PLATFORM_SETTINGS_CHANGE">Modify Platform Security Settings</SelectItem>
+                  <SelectItem value="PRIVILEGED_STAFF_ROLE_CHANGE">Emergency Staff Reassignment</SelectItem>
+                  <SelectItem value="USER_SUSPENSION">Emergency User Suspension</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Target Resource ID</Label>
+              <Input
+                placeholder="e.g. prop-1 or user-123"
+                value={overrideResourceId}
+                onChange={(e) => setOverrideResourceId(e.target.value)}
+                className="h-9 text-xs rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Incident Reference Number</Label>
+              <Input
+                placeholder="e.g. INC-SEC-88219"
+                value={overrideIncidentRef}
+                onChange={(e) => setOverrideIncidentRef(e.target.value)}
+                className="h-9 text-xs rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-700">Mandatory Justification</Label>
+              <Textarea
+                rows={3}
+                placeholder="Full operational explanation for bypassing independent peer approval..."
+                value={overrideJustification}
+                onChange={(e) => setOverrideJustification(e.target.value)}
+                className="text-xs rounded-xl"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEmergencyOverrideOpen(false)}
+              className="text-xs font-semibold rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleExecuteEmergencyOverride}
+              disabled={submittingAction || !overrideResourceId.trim() || !overrideIncidentRef.trim() || !overrideJustification.trim()}
+              className="text-xs font-bold rounded-xl"
+            >
+              {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+              Execute Emergency Override
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

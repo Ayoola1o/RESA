@@ -169,7 +169,10 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
         { label: 'Property Moderation', href: '/admin?tab=properties', icon: Home },
         { label: 'Trust & Safety Reports', href: '/admin?tab=reports', icon: FileText, badge: 1 },
         { label: 'Inspections Audit', href: '/admin?tab=inspections', icon: CalendarCheck2 },
-        { label: 'System Audit Logs', href: '/admin?tab=audit', icon: BarChart3 },
+        { label: 'User Management', href: '/admin?tab=users', icon: User },
+        { label: 'Staff & Governance', href: '/admin?tab=staff', icon: Briefcase },
+        { label: 'Four-Eyes Approvals', href: '/admin?tab=approvals', icon: FileCheck2 },
+        { label: 'System Audit Trail', href: '/admin?tab=audit', icon: BarChart3 },
         { label: 'Public Marketplace', href: '/marketplace', icon: Store },
       ];
 

@@ -28,6 +28,16 @@ import {
   AgentVerificationLevel,
   AgentCredential,
   OwnerAgentRelationship,
+  StaffRole,
+  StaffStatus,
+  AdminPermission,
+  DataScope,
+  DelegationCeiling,
+  StaffAccount,
+  ApprovalActionType,
+  ApprovalRequest,
+  AuditLog,
+  AuditAction,
 } from '@/types/prophunta';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
@@ -42,6 +52,9 @@ import { auditService } from '../services/audit-service';
 import { notificationService } from '../services/notification-service';
 import { relationshipService } from '../services/relationship-service';
 import { agentCredentialService } from '../services/agent-credential-service';
+import { staffManagementService } from '../services/staff-management-service';
+import { staffAuthorizationService } from '../services/staff-authorization-service';
+import { approvalService } from '../services/approval-service';
 
 // --- AUTHENTICATION ACTIONS ---
 
@@ -1048,3 +1061,303 @@ export async function calculateFeeBreakdownAction(
     return { success: false, error: err.message || 'Failed to calculate fee breakdown.' };
   }
 }
+
+// --- STAGE 4: STAFF & ACCESS MANAGEMENT ACTIONS ---
+
+export async function getCurrentStaffContextAction(): Promise<{
+  success: boolean;
+  context?: {
+    staffAccount: StaffAccount;
+    effectivePermissions: AdminPermission[];
+    activeRoles: StaffRole[];
+    scope: DataScope;
+  } | null;
+  error?: string;
+}> {
+  try {
+    const user = await authService.getCurrentUser();
+    if (!user || user.role !== 'ADMIN') {
+      return { success: true, context: null };
+    }
+    const ctx = await staffAuthorizationService.getStaffContext(user);
+    if (!ctx) return { success: true, context: null };
+    return {
+      success: true,
+      context: {
+        staffAccount: ctx.staffAccount,
+        effectivePermissions: Array.from(ctx.effectivePermissions),
+        activeRoles: ctx.activeRoles,
+        scope: ctx.scope,
+      },
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve staff context.' };
+  }
+}
+
+export async function getStaffDirectoryAction(): Promise<{ success: boolean; staff?: StaffAccount[]; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const staff = await staffManagementService.listStaff(user);
+    return { success: true, staff };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve staff directory.' };
+  }
+}
+
+export async function inviteStaffAction(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  roles: StaffRole[];
+  scope?: DataScope;
+  delegation?: DelegationCeiling;
+  initialPassword?: string;
+}): Promise<{ success: boolean; staff?: StaffAccount; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const staff = await staffManagementService.inviteStaff(user, data);
+    revalidatePath('/admin');
+    return { success: true, staff };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to onboard staff member.' };
+  }
+}
+
+export async function updateStaffRolesAction(
+  staffId: string,
+  newRoles: StaffRole[]
+): Promise<{ success: boolean; staff?: StaffAccount; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const staff = await staffManagementService.updateStaffRoles(user, staffId, newRoles);
+    revalidatePath('/admin');
+    return { success: true, staff };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update staff roles.' };
+  }
+}
+
+export async function grantCustomPermissionAction(
+  staffId: string,
+  permission: AdminPermission,
+  reason: string,
+  durationHours: number,
+  scope?: DataScope
+): Promise<{ success: boolean; grant?: any; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const grant = await staffManagementService.grantCustomPermission(user, staffId, {
+      permission,
+      reason,
+      durationHours,
+      scope,
+    });
+    revalidatePath('/admin');
+    return { success: true, grant };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to grant custom permission.' };
+  }
+}
+
+export async function revokeCustomPermissionAction(
+  staffId: string,
+  grantId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await staffManagementService.revokeCustomPermission(user, staffId, grantId);
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to revoke custom permission.' };
+  }
+}
+
+export async function updateStaffStatusAction(
+  staffId: string,
+  newStatus: StaffStatus,
+  reason?: string
+): Promise<{ success: boolean; staff?: StaffAccount; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const staff = await staffManagementService.updateStaffStatus(user, staffId, newStatus, reason);
+    revalidatePath('/admin');
+    return { success: true, staff };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update staff status.' };
+  }
+}
+
+export async function previewStaffPermissionsAction(
+  staffId: string
+): Promise<{ success: boolean; preview?: any; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const preview = await staffManagementService.previewEffectivePermissions(user, staffId);
+    return { success: true, preview };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to preview staff permissions.' };
+  }
+}
+
+// --- STAGE 5: FOUR-EYES APPROVAL QUEUE ACTIONS ---
+
+export async function submitApprovalRequestAction(data: {
+  actionType: ApprovalActionType;
+  targetResourceType: 'PROPERTY' | 'USER' | 'STAFF' | 'SETTINGS';
+  targetResourceId: string;
+  proposedPayload: Record<string, any>;
+  reason: string;
+  supportingEvidence?: string;
+}): Promise<{ success: boolean; request?: ApprovalRequest; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const request = await approvalService.submitApprovalRequest(user, data);
+    revalidatePath('/admin');
+    return { success: true, request };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to submit approval request.' };
+  }
+}
+
+export async function getPendingApprovalsAction(): Promise<{ success: boolean; requests?: ApprovalRequest[]; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const requests = await approvalService.listPendingApprovals(user);
+    return { success: true, requests };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to load pending approvals.' };
+  }
+}
+
+export async function getAllApprovalsAction(): Promise<{ success: boolean; requests?: ApprovalRequest[]; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const requests = await approvalService.listAllApprovals(user);
+    return { success: true, requests };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to load approval audit history.' };
+  }
+}
+
+export async function decideApprovalAction(
+  approvalId: string,
+  decision: 'APPROVE' | 'REJECT',
+  decisionNotes?: string
+): Promise<{ success: boolean; request?: ApprovalRequest; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const request = await approvalService.decideApproval(user, approvalId, decision, decisionNotes);
+    revalidatePath('/admin');
+    revalidatePath('/marketplace');
+    return { success: true, request };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to decide approval request.' };
+  }
+}
+
+export async function cancelApprovalRequestAction(
+  approvalId: string
+): Promise<{ success: boolean; request?: ApprovalRequest; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const request = await approvalService.cancelApprovalRequest(user, approvalId);
+    revalidatePath('/admin');
+    return { success: true, request };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to cancel approval request.' };
+  }
+}
+
+export async function executeEmergencyOverrideAction(data: {
+  actionType: ApprovalActionType;
+  targetResourceType: 'PROPERTY' | 'USER' | 'STAFF' | 'SETTINGS';
+  targetResourceId: string;
+  proposedPayload: Record<string, any>;
+  incidentReference: string;
+  mandatoryJustification: string;
+}): Promise<{ success: boolean; request?: ApprovalRequest; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const request = await approvalService.executeEmergencyOverride(user, data);
+    revalidatePath('/admin');
+    return { success: true, request };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Emergency override execution failed.' };
+  }
+}
+
+// --- AUDIT GOVERNANCE ACTIONS (PHASE 6) ---
+
+export async function queryAuditLogsAction(
+  filters?: {
+    action?: AuditAction;
+    objectType?: AuditLog['objectType'];
+    objectId?: string;
+    actorId?: string;
+    startDate?: string;
+    endDate?: string;
+    correlationId?: string;
+  },
+  limit = 100
+): Promise<{ success: boolean; logs?: AuditLog[]; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    const logs = await auditService.listAuditLogs(user, filters, limit);
+    return { success: true, logs };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve audit logs.' };
+  }
+}
+
+export async function verifyAuditTrailIntegrityAction(): Promise<{
+  success: boolean;
+  verification?: {
+    isValid: boolean;
+    totalLogs: number;
+    brokenAtIndex?: number;
+    error?: string;
+  };
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const verification = await auditService.verifyAuditTrailIntegrity(user);
+    revalidatePath('/admin');
+    return { success: true, verification };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Audit trail integrity verification failed.' };
+  }
+}
+
+export async function exportAuditLogsAction(
+  format: 'json' | 'csv',
+  filters?: {
+    action?: AuditAction;
+    objectType?: AuditLog['objectType'];
+    objectId?: string;
+    actorId?: string;
+    startDate?: string;
+    endDate?: string;
+  }
+): Promise<{
+  success: boolean;
+  exportData?: {
+    fileName: string;
+    mimeType: string;
+    content: string;
+    recordCount: number;
+  };
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const exportData = await auditService.exportAuditLogs(user, format, filters);
+    revalidatePath('/admin');
+    return { success: true, exportData };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to export audit logs.' };
+  }
+}
+

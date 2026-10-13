@@ -43,3 +43,8 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# runtime vault documents
+/.data/vault/documents/*
+!/.data/vault/documents/doc_1791643059868_3c4520d786df4fb187c05fca6c5f02c9.pdf
+!/.data/vault/documents/doc_1791660406763_76863bac8fd1475fbeb3fa1faa3aa9ec.pdf

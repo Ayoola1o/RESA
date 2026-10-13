@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto';
 import { User, PropertyDocument, DocumentType, DocumentStatus, Property } from '@/types/prophunta';
 import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { staffAuthorizationService } from './staff-authorization-service';
 
 const VAULT_DIR = path.join(process.cwd(), '.data', 'vault', 'documents');
 
@@ -115,12 +116,35 @@ export class DocumentService {
       throw new Error('Unauthorized: Confidential property document access denied');
     }
 
+    if (isAdmin) {
+      await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+    }
+
     const diskPath = path.join(VAULT_DIR, foundDoc.fileReference);
     if (!fs.existsSync(diskPath)) {
       throw new Error('Physical document file missing from secure vault');
     }
 
     const fileBuffer = fs.readFileSync(diskPath);
+
+    if (isAdmin) {
+      await auditRepository.create({
+        actorId: user.id,
+        actorEmail: user.email,
+        actorRole: user.role,
+        action: 'DOCUMENT_VIEWED',
+        objectType: 'DOCUMENT',
+        objectId: foundDoc.id,
+        result: 'SUCCESS',
+        metadata: {
+          propertyId: foundProperty.id,
+          fileName: foundDoc.fileName,
+          documentType: foundDoc.documentType,
+          sizeBytes: fileBuffer.length,
+        },
+      });
+    }
+
     return { document: foundDoc, fileBuffer, property: foundProperty };
   }
 
@@ -137,6 +161,8 @@ export class DocumentService {
     if (adminUser.role !== 'ADMIN') {
       throw new Error('Only Verification Officers can audit property documentation');
     }
+
+    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.review');
 
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
@@ -228,6 +254,10 @@ export class DocumentService {
 
     if (!isOwner && !isAgent && !isAdmin) {
       throw new Error('Unauthorized to view documents for this property');
+    }
+
+    if (isAdmin) {
+      await staffAuthorizationService.assertPermission(user.id, 'documents.view_metadata');
     }
 
     return property.documents || [];

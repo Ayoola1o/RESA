@@ -13,6 +13,8 @@ import {
   AppNotification,
   OwnerAgentRelationship,
   AgentCredential,
+  StaffAccount,
+  ApprovalRequest,
 } from '@/types/prophunta';
 import {
   SEED_USERS,
@@ -37,6 +39,8 @@ export interface DatabaseSchema {
   notifications: AppNotification[];
   relationships: OwnerAgentRelationship[];
   agentCredentials: AgentCredential[];
+  staffAccounts: StaffAccount[];
+  approvalRequests: ApprovalRequest[];
 }
 
 // In-memory cache representing the database state
@@ -109,6 +113,21 @@ export const SEED_AGENT_CREDENTIALS: AgentCredential[] = [
   },
 ];
 
+export const SEED_STAFF_ACCOUNTS: StaffAccount[] = [
+  {
+    id: 'staff_super_admin_1',
+    userId: 'user_admin_1',
+    email: 'admin@prophunta.ai',
+    name: 'Amina Bello (Verification Officer)',
+    roles: ['SUPER_ADMIN'],
+    status: 'ACTIVE',
+    scope: { scopeType: 'GLOBAL' },
+    customGrants: [],
+    createdAt: '2026-07-01T08:00:00Z',
+    updatedAt: '2026-10-05T09:00:00Z',
+  },
+];
+
 function getDefaultDatabase(): DatabaseSchema {
   const defaultPasswordHash = hashPassword('Password123!');
   const passwords: Record<string, string> = {};
@@ -151,6 +170,8 @@ function getDefaultDatabase(): DatabaseSchema {
     ],
     relationships: [...SEED_RELATIONSHIPS],
     agentCredentials: [...SEED_AGENT_CREDENTIALS],
+    staffAccounts: [...SEED_STAFF_ACCOUNTS],
+    approvalRequests: [],
   };
 }
 
@@ -179,6 +200,12 @@ export function getDb(): DatabaseSchema {
         }
         if (!dbCache.agentCredentials) {
           dbCache.agentCredentials = [...SEED_AGENT_CREDENTIALS];
+        }
+        if (!dbCache.staffAccounts) {
+          dbCache.staffAccounts = [...SEED_STAFF_ACCOUNTS];
+        }
+        if (!dbCache.approvalRequests) {
+          dbCache.approvalRequests = [];
         }
         return dbCache;
       }

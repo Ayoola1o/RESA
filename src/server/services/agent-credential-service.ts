@@ -2,6 +2,7 @@ import { User, AgentCredential, AgentVerificationLevel } from '@/types/prophunta
 import { agentCredentialRepository } from '../repositories/agent-credential-repository';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { staffAuthorizationService } from './staff-authorization-service';
 
 export class AgentCredentialService {
   async getAgentCredentials(agentId: string): Promise<AgentCredential[]> {
@@ -12,6 +13,7 @@ export class AgentCredentialService {
     if (admin.role !== 'ADMIN') {
       throw new Error('Unauthorized: Only administrators can view credential review queues.');
     }
+    await staffAuthorizationService.assertPermission(admin.id, 'verification.queue.view');
     return agentCredentialRepository.listAll();
   }
 
@@ -80,6 +82,7 @@ export class AgentCredentialService {
     if (admin.role !== 'ADMIN') {
       throw new Error('Unauthorized: Only administrators can audit agent credentials.');
     }
+    await staffAuthorizationService.assertPermission(admin.id, 'verification.review');
 
     const credential = await agentCredentialRepository.findById(credentialId);
     if (!credential) throw new Error('Credential record not found.');

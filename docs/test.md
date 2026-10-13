@@ -1,0 +1,1 @@
+http-load-profiler	Runs stepped HTTP load tests with ab or wrk, ramping up concurrency to measure p50, p90, and p99 latency, detect performance inflection points, and recommend optimal concurrency.
