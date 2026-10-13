@@ -531,6 +531,17 @@ export async function getEnquiryAction(id: string) {
   return enquiryService.getEnquiry(user, id);
 }
 
+export async function markEnquiryAsReadAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await enquiryService.markAsRead(user, id);
+    revalidatePath('/messages');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to mark as read' };
+  }
+}
+
 // --- APPLICATION / EXPRESSION OF INTEREST ACTIONS ---
 
 export async function submitApplicationAction(data: {

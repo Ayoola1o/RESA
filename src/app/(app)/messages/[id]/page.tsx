@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { getSuggestedReply } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { getEnquiryAction, replyEnquiryAction } from '@/server/actions/prophunta-actions';
+import { getEnquiryAction, replyEnquiryAction, markEnquiryAsReadAction } from '@/server/actions/prophunta-actions';
 import { useUserRole } from '@/context/UserRoleContext';
 import { PropertyEnquiry } from '@/types/prophunta';
 import { conversations as mockConversations } from '@/lib/mock-data';
@@ -29,7 +29,7 @@ export default function ChatRoomPage() {
   const [isSending, setIsSending] = useState(false);
   const [isSuggesting, startSuggesting] = useTransition();
 
-  // Load enquiry
+  // Load enquiry & mark as read
   useEffect(() => {
     let mounted = true;
     getEnquiryAction(convId)
@@ -38,6 +38,7 @@ export default function ChatRoomPage() {
         if (data) {
           setEnquiry(data);
           setLoading(false);
+          markEnquiryAsReadAction(convId).catch(() => {});
         } else {
           // Check mock fallback if it's a numeric mock id
           const numericId = Number(convId);
