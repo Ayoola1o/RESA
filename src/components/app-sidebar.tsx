@@ -217,7 +217,6 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
 
 export const moreNavItems: NavItem[] = [
   { label: 'Profile & Credentials', href: '/profile', icon: User },
-  { label: 'Trust & Verification', href: '/verification', icon: ShieldCheck },
   { label: 'Account Settings', href: '/settings', icon: Settings },
 ];
 
