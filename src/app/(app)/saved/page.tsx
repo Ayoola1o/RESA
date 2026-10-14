@@ -29,8 +29,18 @@ function SavedContent() {
       try {
         const allProps = await getPropertiesAction().catch(() => []);
         if (mounted) {
-          // Provide saved properties
-          setSavedProperties(allProps.slice(0, 4));
+          let savedIds: string[] = [];
+          try {
+            const raw = localStorage.getItem('prophunta_saved_properties');
+            if (raw) savedIds = JSON.parse(raw);
+          } catch {}
+
+          if (savedIds.length > 0) {
+            setSavedProperties(allProps.filter((p) => savedIds.includes(p.id)));
+          } else {
+            // Default sample saved listings
+            setSavedProperties(allProps.slice(0, 2));
+          }
         }
       } catch (err) {
         console.error('Failed to load saved properties', err);
@@ -46,6 +56,17 @@ function SavedContent() {
 
   const handleRemoveSaved = (propId: string) => {
     setSavedProperties((prev) => prev.filter((p) => p.id !== propId));
+    try {
+      const raw = localStorage.getItem('prophunta_saved_properties');
+      if (raw) {
+        const ids: string[] = JSON.parse(raw);
+        localStorage.setItem(
+          'prophunta_saved_properties',
+          JSON.stringify(ids.filter((id) => id !== propId))
+        );
+      }
+    } catch {}
+
     toast({
       title: 'Listing Removed',
       description: 'Property removed from your saved shortlist.',
@@ -66,7 +87,7 @@ function SavedContent() {
           </p>
         </div>
         <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
-          <Link href="/marketplace">Explore Marketplace</Link>
+          <Link href="/homes">Explore Homes</Link>
         </Button>
       </div>
 
@@ -80,10 +101,10 @@ function SavedContent() {
           <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
           <h3 className="font-semibold text-slate-900 text-lg">No saved properties yet</h3>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
-            Click the heart icon on any property in the marketplace to save it here for easy reference.
+            Click the heart icon on any property in the listings grid to save it here for easy reference.
           </p>
           <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
-            <Link href="/marketplace">Browse Verified Marketplace</Link>
+            <Link href="/homes">Browse Verified Homes</Link>
           </Button>
         </Card>
       ) : (

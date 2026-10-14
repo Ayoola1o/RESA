@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Bath, BedDouble, CheckCircle2, Heart, Maximize2, Star, ShieldCheck } from 'lucide-react';
+import { Bath, BedDouble, Heart, Maximize2, ShieldCheck, MapPin } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PropertyCardProps {
@@ -13,6 +13,39 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property, className = '' }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('prophunta_saved_properties');
+      if (saved) {
+        const ids: string[] = JSON.parse(saved);
+        if (ids.includes(property.id)) {
+          setIsFavorite(true);
+        }
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, [property.id]);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const saved = localStorage.getItem('prophunta_saved_properties');
+      let ids: string[] = saved ? JSON.parse(saved) : [];
+      if (isFavorite) {
+        ids = ids.filter((id) => id !== property.id);
+        setIsFavorite(false);
+      } else {
+        if (!ids.includes(property.id)) ids.push(property.id);
+        setIsFavorite(true);
+      }
+      localStorage.setItem('prophunta_saved_properties', JSON.stringify(ids));
+    } catch {
+      setIsFavorite(!isFavorite);
+    }
+  };
 
   const isRent =
     property.listingType === 'RENT' ||
@@ -30,16 +63,8 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
     property.status ||
     (property.listingType === 'RENT' ? 'For Rent' : property.listingType === 'SALE' ? 'For Sale' : 'Available');
 
-  const rating =
-    property.rating ||
-    (4.3 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 7) * 0.1).toFixed(1);
-
-  const reviewsCount =
-    property.reviewsCount ||
-    8 + (parseInt(property.id.replace(/\D/g, '') || '1', 10) % 20);
-
-  const sqft = property.sqft || 350;
-  const areaDisplay = `${sqft.toLocaleString()} sqm`;
+  const sqft = property.sqft;
+  const areaDisplay = sqft ? `${sqft.toLocaleString()} sqm` : null;
 
   const imageUrl =
     (property.media && property.media[0]?.url) ||
@@ -59,7 +84,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
             height={240}
             src={imageUrl}
             width={380}
-            data-ai-hint="house exterior"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </Link>
 
@@ -78,42 +103,42 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
               Verified Trust
             </span>
           )}
-          {property.listingStatus && property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED' && (
-            <span
-              className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white shadow-xs shrink-0 ${
-                property.listingStatus === 'RESERVED'
-                  ? 'bg-purple-600'
-                  : property.listingStatus === 'OCCUPIED'
-                  ? 'bg-slate-800'
-                  : property.listingStatus === 'SOLD'
-                  ? 'bg-slate-900'
-                  : property.listingStatus === 'SUSPENDED'
-                  ? 'bg-rose-600'
-                  : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
-                  ? 'bg-amber-600'
-                  : property.listingStatus === 'CHANGES_REQUIRED'
-                  ? 'bg-orange-600'
-                  : 'bg-slate-600'
-              }`}
-            >
-              {property.listingStatus.replace('_', ' ')}
-            </span>
-          )}
-          {availabilityStatus !== 'AVAILABLE' && property.listingStatus === 'ACTIVE' && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-600 text-white shadow-xs shrink-0">
-              {availabilityStatus.replace('_', ' ')}
-            </span>
-          )}
+          {property.listingStatus &&
+            property.listingStatus !== 'ACTIVE' &&
+            property.listingStatus !== 'VERIFIED' && (
+              <span
+                className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white shadow-xs shrink-0 ${
+                  property.listingStatus === 'RESERVED'
+                    ? 'bg-purple-600'
+                    : property.listingStatus === 'OCCUPIED'
+                    ? 'bg-slate-800'
+                    : property.listingStatus === 'SOLD'
+                    ? 'bg-slate-900'
+                    : property.listingStatus === 'SUSPENDED'
+                    ? 'bg-rose-600'
+                    : property.listingStatus === 'UNDER_REVIEW' ||
+                      property.listingStatus === 'SUBMITTED'
+                    ? 'bg-amber-600'
+                    : property.listingStatus === 'CHANGES_REQUIRED'
+                    ? 'bg-orange-600'
+                    : 'bg-slate-600'
+                }`}
+              >
+                {property.listingStatus.replace('_', ' ')}
+              </span>
+            )}
+          {availabilityStatus !== 'AVAILABLE' &&
+            property.listingStatus === 'ACTIVE' && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-600 text-white shadow-xs shrink-0">
+                {availabilityStatus.replace('_', ' ')}
+              </span>
+            )}
         </div>
 
         {/* Favorite Button on Top-Right */}
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsFavorite(!isFavorite);
-          }}
+          onClick={toggleFavorite}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-xs backdrop-blur-xs transition-colors hover:bg-white shrink-0"
         >
@@ -128,8 +153,17 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
       {/* Card Content */}
       <div className="flex flex-1 flex-col p-1.5 sm:p-2 min-w-0">
         <div className="flex items-center gap-1.5 text-[10px] font-bold text-lime-800 mb-0.5">
-          <span className="bg-lime-50 px-1.5 py-0.2 rounded border border-lime-200/60 truncate">{property.propertyType || property.type || 'Residential'}</span>
+          <span className="bg-lime-50 px-1.5 py-0.5 rounded border border-lime-200/60 truncate">
+            {property.propertyType || property.type || 'Residential'}
+          </span>
+          {property.city && (
+            <span className="text-slate-400 font-normal flex items-center gap-0.5 truncate">
+              <MapPin className="h-2.5 w-2.5" />
+              {property.city}
+            </span>
+          )}
         </div>
+
         <Link href={`/property/${property.id}`} className="group-hover:text-lime-700 transition-colors min-w-0">
           <h3 className="text-sm font-bold text-slate-900 truncate" title={property.title}>
             {property.title}
@@ -155,7 +189,9 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
               </span>
             ))}
             {property.features.length > 2 && (
-              <span className="text-[9px] text-slate-400 font-medium self-center">+{property.features.length - 2}</span>
+              <span className="text-[9px] text-slate-400 font-medium self-center">
+                +{property.features.length - 2}
+              </span>
             )}
           </div>
         )}
@@ -167,26 +203,33 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
 
         {/* Specs */}
         <div className="mt-2 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-600 border-t border-slate-100 pt-2 gap-1 overflow-hidden">
-          <div className="flex items-center gap-1 shrink-0">
-            <BedDouble className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <span>{property.bedrooms} Beds</span>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Bath className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <span>{property.bathrooms} Baths</span>
-          </div>
-          <div className="flex items-center gap-1 shrink-0 min-w-0">
-            <Maximize2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-            <span className="truncate">{areaDisplay}</span>
-          </div>
+          {property.bedrooms !== undefined && (
+            <div className="flex items-center gap-1 shrink-0">
+              <BedDouble className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <span>{property.bedrooms} Beds</span>
+            </div>
+          )}
+          {property.bathrooms !== undefined && (
+            <div className="flex items-center gap-1 shrink-0">
+              <Bath className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <span>{property.bathrooms} Baths</span>
+            </div>
+          )}
+          {areaDisplay && (
+            <div className="flex items-center gap-1 shrink-0 min-w-0">
+              <Maximize2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <span className="truncate">{areaDisplay}</span>
+            </div>
+          )}
         </div>
 
-        {/* Rating */}
-        <div className="mt-1.5 flex items-center gap-1 text-[10px] text-slate-500">
-          <Star className="h-3 w-3 fill-amber-400 text-amber-400 shrink-0" />
-          <span className="font-semibold text-slate-700">{rating}</span>
-          <span>({reviewsCount} reviews)</span>
-        </div>
+        {/* Real Rating if present */}
+        {property.rating && (
+          <div className="mt-1.5 flex items-center gap-1 text-[10px] text-slate-500">
+            <span className="font-semibold text-slate-700">{property.rating}</span>
+            {property.reviewsCount && <span>({property.reviewsCount} reviews)</span>}
+          </div>
+        )}
       </div>
     </div>
   );

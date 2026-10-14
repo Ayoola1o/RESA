@@ -1,13 +1,23 @@
-import { Suspense } from 'react';
-import { propertyService } from '@/server/services/property-service';
-import MarketplacePageContent from './MarketplacePageContent';
+import { redirect } from 'next/navigation';
 
-export default async function MarketplacePage() {
-  const properties = await propertyService.getAllProperties();
+interface MarketplacePageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-  return (
-    <Suspense>
-      <MarketplacePageContent initialProperties={properties} />
-    </Suspense>
-  );
+export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
+  const params = await searchParams;
+  const urlParams = new URLSearchParams();
+
+  if (params) {
+    Object.entries(params).forEach(([key, val]) => {
+      if (typeof val === 'string') {
+        urlParams.set(key, val);
+      } else if (Array.isArray(val) && val.length > 0) {
+        urlParams.set(key, val[0]);
+      }
+    });
+  }
+
+  const query = urlParams.toString();
+  redirect(query ? `/homes?${query}` : '/homes');
 }
