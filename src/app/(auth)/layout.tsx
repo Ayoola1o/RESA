@@ -5,12 +5,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <UserRoleProvider>
       <div className="relative flex min-h-screen w-full items-center justify-center p-4 overflow-hidden bg-slate-950">
-        {/* Intro Video Background */}
+        {/* Intro Video Background with Edge-Resilient Configuration */}
         <video
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          poster="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
           className="absolute inset-0 h-full w-full object-cover opacity-25 filter brightness-75 blur-[1px] pointer-events-none"
         >
           <source src="/introvideo.mp4" type="video/mp4" />

@@ -87,12 +87,14 @@ export default function HeroSearch() {
 
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-24 lg:pb-32">
-      {/* Intro Video Background */}
+      {/* Intro Video Background with Edge-Resilient Configuration */}
       <video
         autoPlay
         loop
         muted
         playsInline
+        preload="metadata"
+        poster="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
         className="absolute inset-0 h-full w-full object-cover opacity-35 filter brightness-90 pointer-events-none"
       >
         <source src="/introvideo.mp4" type="video/mp4" />
