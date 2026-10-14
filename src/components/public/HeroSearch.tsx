@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search,
@@ -52,11 +52,25 @@ const PRICE_TIERS_SALE = [
 
 export default function HeroSearch() {
   const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [purpose, setPurpose] = useState<'RENT' | 'SALE'>('RENT');
   const [location, setLocation] = useState('');
   const [propertyType, setPropertyType] = useState('all');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.defaultMuted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Graceful handling of browser autoplay policies
+        });
+      }
+    }
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,43 +101,40 @@ export default function HeroSearch() {
 
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white pt-14 pb-20 sm:pt-20 sm:pb-28 lg:pt-24 lg:pb-32">
-      {/* Intro Video Background with Edge-Resilient Configuration */}
+      {/* Intro Video Background (Muted, Auto-Playing, No Overlay) */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
         poster="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
-        className="absolute inset-0 h-full w-full object-cover opacity-35 filter brightness-90 pointer-events-none"
+        className="absolute inset-0 h-full w-full object-cover pointer-events-none"
       >
         <source src="/introvideo.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark & Gradient Overlays for High Legibility */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/75 to-[#080d09] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[800px] rounded-full bg-lime-500/10 blur-[140px] pointer-events-none" />
-
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Top Trust Eyebrow */}
         <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-lime-500/30 bg-lime-950/60 px-3.5 py-1.5 text-xs font-semibold text-lime-400 backdrop-blur-md shadow-inner">
+          <div className="inline-flex items-center gap-2 rounded-full border border-lime-500/40 bg-slate-950/80 px-3.5 py-1.5 text-xs font-semibold text-lime-400 backdrop-blur-md shadow-lg">
             <ShieldCheck className="h-4 w-4 text-lime-400" />
             <span>Verified Nigerian Real Estate Discovery</span>
-            <span className="hidden sm:inline-block text-slate-500">•</span>
-            <span className="hidden sm:inline-block text-slate-300">Title Authentication & Inspection Audits</span>
+            <span className="hidden sm:inline-block text-slate-400">•</span>
+            <span className="hidden sm:inline-block text-slate-200">Title Authentication & Inspection Audits</span>
           </div>
         </div>
 
-        {/* Main Headings */}
+        {/* Main Headings with Drop Shadow for Maximum Legibility over Video */}
         <div className="mx-auto max-w-4xl text-center mb-10 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight text-white leading-[1.1] sm:leading-[1.15]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline tracking-tight text-white leading-[1.1] sm:leading-[1.15] drop-shadow-[0_3px_12px_rgba(0,0,0,0.85)]">
             Find a Place to Call{' '}
-            <span className="bg-gradient-to-r from-lime-400 via-emerald-300 to-lime-200 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-lime-400 via-emerald-300 to-lime-200 bg-clip-text text-transparent drop-shadow-[0_3px_12px_rgba(0,0,0,0.85)]">
               Home.
             </span>
           </h1>
-          <p className="mt-5 text-base sm:text-lg lg:text-xl text-slate-200 font-normal leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
+          <p className="mt-5 text-base sm:text-lg lg:text-xl text-white font-medium leading-relaxed max-w-2xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             Discover properties, connect with trusted real-estate professionals, and take your next step with greater confidence.
           </p>
         </div>
