@@ -18,11 +18,26 @@ import { registerAction } from '@/server/actions/prophunta-actions';
 import { UserRole } from '@/types/prophunta';
 import { ShieldCheck, UserCheck, Building2, Briefcase, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-xs text-slate-400">Loading registration...</div>}>
+      <SignupContent />
+    </Suspense>
+  );
+}
+
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [selectedRole, setSelectedRole] = useState<UserRole>('SEEKER');
+
+  const roleParam = searchParams.get('role')?.toUpperCase();
+  const initialRole: UserRole = roleParam === 'OWNER' || roleParam === 'AGENT' ? roleParam : 'SEEKER';
+
+  const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
