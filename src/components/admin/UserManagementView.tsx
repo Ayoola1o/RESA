@@ -19,6 +19,7 @@ interface UserManagementViewProps {
   users: User[];
   properties: Property[];
   can: (perm: AdminPermission) => boolean;
+  isSuperAdmin?: boolean;
   onInspectUser: (user: User) => void;
   onToggleStatus: (user: User) => Promise<void>;
   submittingAction: boolean;
@@ -29,12 +30,18 @@ export function UserManagementView({
   users,
   properties,
   can,
+  isSuperAdmin = false,
   onInspectUser,
   onToggleStatus,
   submittingAction,
   searchQuery,
 }: UserManagementViewProps) {
   const filteredUsers = users.filter((u) => {
+    // SECURITY GUARDRAIL: Non-super-admins cannot view, inspect, or manage Admin/Staff accounts in User Directory
+    if (!isSuperAdmin && u.role === 'ADMIN') {
+      return false;
+    }
+
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     const matchesName = u.name.toLowerCase().includes(q);
@@ -62,7 +69,7 @@ export function UserManagementView({
             </CardDescription>
           </div>
           <Badge variant="outline" className="text-xs font-bold text-slate-700 bg-slate-50 border-slate-200">
-            {users.length} Registered Accounts
+            {filteredUsers.length} Platform Account{filteredUsers.length !== 1 ? 's' : ''}
           </Badge>
         </div>
       </CardHeader>
@@ -140,7 +147,7 @@ export function UserManagementView({
                       Inspect Profile
                     </Button>
 
-                    {u.role !== 'ADMIN' && (
+                    {u.role !== 'ADMIN' && can('users.suspend') && (
                       <>
                         {u.verificationStatus === 'SUSPENDED' ? (
                           <Button

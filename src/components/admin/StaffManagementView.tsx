@@ -39,6 +39,7 @@ interface StaffManagementViewProps {
   allStaffRoles: { role: StaffRole; label: string; desc: string; badgeClass: string }[];
   grantablePermissions: { perm: AdminPermission; label: string; desc: string }[];
   can: (perm: AdminPermission) => boolean;
+  isSuperAdmin?: boolean;
   onInviteStaff: (name: string, email: string, roles: StaffRole[]) => Promise<void>;
   onUpdateRoles: (staffId: string, roles: StaffRole[]) => Promise<void>;
   onGrantCustomPerm: (staffId: string, perm: AdminPermission, reason: string, durationHours: string) => Promise<void>;
@@ -55,6 +56,7 @@ export function StaffManagementView({
   allStaffRoles,
   grantablePermissions,
   can,
+  isSuperAdmin = false,
   onInviteStaff,
   onUpdateRoles,
   onGrantCustomPerm,
@@ -213,51 +215,66 @@ export function StaffManagementView({
                       )}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleOpenPreviewModal(st)}
-                        className="h-8 text-xs font-semibold rounded-xl"
-                      >
-                        <Key className="h-3.5 w-3.5 mr-1 text-slate-500" />
-                        Effective Perms
-                      </Button>
+                    {(() => {
+                      const isTargetSuperAdmin = st.roles.includes('SUPER_ADMIN');
+                      const canEditThisStaff = isSuperAdmin || (!isTargetSuperAdmin && can('admin.staff.update_role'));
+                      const canDeactivateThisStaff = (isSuperAdmin || (!isTargetSuperAdmin && can('admin.staff.deactivate'))) && st.id !== currentUser?.id;
 
-                      {can('admin.staff.update_role') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleOpenRoleModal(st)}
-                          className="h-8 text-xs font-semibold rounded-xl"
-                        >
-                          Edit Roles
-                        </Button>
-                      )}
+                      return (
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenPreviewModal(st)}
+                            className="h-8 text-xs font-semibold rounded-xl"
+                          >
+                            <Key className="h-3.5 w-3.5 mr-1 text-slate-500" />
+                            Effective Perms
+                          </Button>
 
-                      {can('admin.staff.update_role') && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleOpenGrantModal(st)}
-                          className="h-8 text-xs font-semibold rounded-xl text-purple-700 border-purple-200 hover:bg-purple-50"
-                        >
-                          Grant Perm
-                        </Button>
-                      )}
+                          {isTargetSuperAdmin && !isSuperAdmin && (
+                            <Badge variant="outline" className="text-[10px] font-bold text-red-700 bg-red-50 border-red-200 py-1 px-2 rounded-lg flex items-center gap-1">
+                              <Lock className="h-3 w-3" />
+                              Protected Super Admin
+                            </Badge>
+                          )}
 
-                      {can('admin.staff.deactivate') && st.id !== currentUser?.id && (
-                        <Button
-                          size="sm"
-                          variant={st.status === 'SUSPENDED' ? 'outline' : 'destructive'}
-                          onClick={() => onToggleStatus(st)}
-                          disabled={submittingAction}
-                          className="h-8 text-xs font-bold rounded-xl"
-                        >
-                          {st.status === 'SUSPENDED' ? 'Reactivate' : 'Suspend'}
-                        </Button>
-                      )}
-                    </div>
+                          {canEditThisStaff && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenRoleModal(st)}
+                              className="h-8 text-xs font-semibold rounded-xl"
+                            >
+                              Edit Roles
+                            </Button>
+                          )}
+
+                          {canEditThisStaff && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleOpenGrantModal(st)}
+                              className="h-8 text-xs font-semibold rounded-xl text-purple-700 border-purple-200 hover:bg-purple-50"
+                            >
+                              Grant Perm
+                            </Button>
+                          )}
+
+                          {canDeactivateThisStaff && (
+                            <Button
+                              size="sm"
+                              variant={st.status === 'SUSPENDED' ? 'outline' : 'destructive'}
+                              onClick={() => onToggleStatus(st)}
+                              disabled={submittingAction}
+                              className="h-8 text-xs font-bold rounded-xl"
+                            >
+                              {st.status === 'SUSPENDED' ? 'Reactivate' : 'Suspend'}
+                            </Button>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })}
@@ -300,7 +317,9 @@ export function StaffManagementView({
             <div className="space-y-1.5 pt-1">
               <Label className="text-xs font-bold text-slate-800">Assign Operational Roles *</Label>
               <div className="space-y-1 max-h-48 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-slate-50/50">
-                {allStaffRoles.map((r) => {
+                {allStaffRoles
+                  .filter((r) => isSuperAdmin || r.role !== 'SUPER_ADMIN')
+                  .map((r) => {
                   const isChecked = inviteRoles.includes(r.role);
                   return (
                     <label
@@ -362,7 +381,9 @@ export function StaffManagementView({
           </DialogHeader>
           <div className="py-2 text-xs space-y-1.5">
             <div className="space-y-1 max-h-56 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-slate-50/50">
-              {allStaffRoles.map((r) => {
+              {allStaffRoles
+                .filter((r) => isSuperAdmin || r.role !== 'SUPER_ADMIN')
+                .map((r) => {
                 const isChecked = editingRoles.includes(r.role);
                 return (
                   <label

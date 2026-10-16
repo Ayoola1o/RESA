@@ -195,9 +195,15 @@ function AdminPortalContent() {
   const [inspectedUser, setInspectedUser] = useState<User | null>(null);
   const [isUserInspectOpen, setIsUserInspectOpen] = useState(false);
 
+  const isSuperAdmin = Boolean(
+    staffContext?.activeRoles.includes('SUPER_ADMIN') ||
+    (!staffContext && currentUser?.email === 'admin@prophunta.ai')
+  );
+
   const can = (perm: AdminPermission): boolean => {
     if (!staffContext) {
-      return currentUser?.role === 'ADMIN';
+      // Fail-closed security: Only system fallback administrator holds access prior to staff context load
+      return currentUser?.email === 'admin@prophunta.ai';
     }
     return staffContext.effectivePermissions.includes(perm);
   };
@@ -662,38 +668,61 @@ function AdminPortalContent() {
       {/* --- URL-SYNCED SEGMENTED WORKSPACE NAVIGATION --- */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-slate-100/90 p-1.5 rounded-2xl flex overflow-x-auto no-scrollbar whitespace-nowrap gap-1 w-full max-w-full">
-          <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Property Approvals ({pendingVerificationList.length})
-          </TabsTrigger>
-          <TabsTrigger value="approvals" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <FileCheck2 className="h-3.5 w-3.5" />
-            Dual-Custody Approvals ({approvalRequests.filter((a) => a.status === 'PENDING').length})
-          </TabsTrigger>
-          <TabsTrigger value="inspections" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <CalendarCheck2 className="h-3.5 w-3.5" />
-            Inspections ({inspections.length})
-          </TabsTrigger>
-          <TabsTrigger value="staff" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <Briefcase className="h-3.5 w-3.5" />
-            Staff &amp; RBAC ({staffDirectory.length})
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <BadgeAlert className="h-3.5 w-3.5" />
-            Trust &amp; Safety ({reports.length})
-          </TabsTrigger>
-          <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <History className="h-3.5 w-3.5" />
-            Audit Ledger ({auditLogs.length})
-          </TabsTrigger>
-          <TabsTrigger value="properties" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <Home className="h-3.5 w-3.5" />
-            Property Moderation ({properties.length})
-          </TabsTrigger>
-          <TabsTrigger value="users" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
-            <Users className="h-3.5 w-3.5" />
-            User Directory ({users.length})
-          </TabsTrigger>
+          {(can('verification.queue.view') || isSuperAdmin) && (
+            <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Property Approvals ({pendingVerificationList.length})
+            </TabsTrigger>
+          )}
+
+          {(can('approvals.view_assigned') || can('approvals.approve') || isSuperAdmin) && (
+            <TabsTrigger value="approvals" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <FileCheck2 className="h-3.5 w-3.5" />
+              Dual-Custody Approvals ({approvalRequests.filter((a) => a.status === 'PENDING').length})
+            </TabsTrigger>
+          )}
+
+          {(can('inspections.view') || isSuperAdmin) && (
+            <TabsTrigger value="inspections" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <CalendarCheck2 className="h-3.5 w-3.5" />
+              Inspections ({inspections.length})
+            </TabsTrigger>
+          )}
+
+          {(can('admin.staff.view') || isSuperAdmin) && (
+            <TabsTrigger value="staff" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <Briefcase className="h-3.5 w-3.5" />
+              Staff &amp; RBAC ({staffDirectory.length})
+            </TabsTrigger>
+          )}
+
+          {(can('reports.view') || isSuperAdmin) && (
+            <TabsTrigger value="reports" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <BadgeAlert className="h-3.5 w-3.5" />
+              Trust &amp; Safety ({reports.length})
+            </TabsTrigger>
+          )}
+
+          {(can('audit_logs.view') || isSuperAdmin) && (
+            <TabsTrigger value="audit" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <History className="h-3.5 w-3.5" />
+              Audit Ledger ({auditLogs.length})
+            </TabsTrigger>
+          )}
+
+          {(can('properties.moderate') || isSuperAdmin) && (
+            <TabsTrigger value="properties" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <Home className="h-3.5 w-3.5" />
+              Property Moderation ({properties.length})
+            </TabsTrigger>
+          )}
+
+          {(can('users.view_limited') || isSuperAdmin) && (
+            <TabsTrigger value="users" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
+              <Users className="h-3.5 w-3.5" />
+              User Directory ({users.filter((u) => isSuperAdmin || u.role !== 'ADMIN').length})
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* --- TAB 1: PROPERTY VERIFICATION QUEUE & DUAL CUSTODY WORKBENCH --- */}
@@ -750,21 +779,30 @@ function AdminPortalContent() {
 
         {/* --- TAB 4: STAFF & RBAC GOVERNANCE --- */}
         <TabsContent value="staff" className="space-y-4">
-          <StaffManagementView
-            staffDirectory={staffDirectory}
-            currentUser={currentUser}
-            allStaffRoles={ALL_STAFF_ROLES}
-            grantablePermissions={GRANTABLE_PERMISSIONS}
-            can={can}
-            onInviteStaff={handleInviteStaff}
-            onUpdateRoles={handleUpdateRoles}
-            onGrantCustomPerm={handleGrantCustomPerm}
-            onRevokeCustomPerm={handleRevokeCustomPerm}
-            onToggleStatus={handleToggleStaffStatus}
-            onPreviewPermissions={handlePreviewPermissions}
-            submittingAction={submittingAction}
-            searchQuery={searchQuery}
-          />
+          {can('admin.staff.view') || isSuperAdmin ? (
+            <StaffManagementView
+              staffDirectory={staffDirectory}
+              currentUser={currentUser}
+              allStaffRoles={ALL_STAFF_ROLES}
+              grantablePermissions={GRANTABLE_PERMISSIONS}
+              can={can}
+              isSuperAdmin={isSuperAdmin}
+              onInviteStaff={handleInviteStaff}
+              onUpdateRoles={handleUpdateRoles}
+              onGrantCustomPerm={handleGrantCustomPerm}
+              onRevokeCustomPerm={handleRevokeCustomPerm}
+              onToggleStatus={handleToggleStaffStatus}
+              onPreviewPermissions={handlePreviewPermissions}
+              submittingAction={submittingAction}
+              searchQuery={searchQuery}
+            />
+          ) : (
+            <Card className="p-8 text-center rounded-2xl bg-slate-50 border-slate-200">
+              <Lock className="h-10 w-10 text-rose-500 mx-auto mb-2" />
+              <h3 className="text-sm font-bold text-slate-800">Privilege Ceilings Enforced</h3>
+              <p className="text-xs text-slate-500 mt-1">Staff management and RBAC access matrix is restricted to authorized Super Administrators and Staff Managers.</p>
+            </Card>
+          )}
         </TabsContent>
 
         {/* --- TAB 5: TRUST & SAFETY INCIDENT DESK --- */}
@@ -820,18 +858,27 @@ function AdminPortalContent() {
 
         {/* --- TAB 8: USER DIRECTORY --- */}
         <TabsContent value="users" className="space-y-4">
-          <UserManagementView
-            users={users}
-            properties={properties}
-            can={can}
-            onInspectUser={(u) => {
-              setInspectedUser(u);
-              setIsUserInspectOpen(true);
-            }}
-            onToggleStatus={handleToggleUserStatus}
-            submittingAction={submittingAction}
-            searchQuery={searchQuery}
-          />
+          {can('users.view_limited') || isSuperAdmin ? (
+            <UserManagementView
+              users={users}
+              properties={properties}
+              can={can}
+              isSuperAdmin={isSuperAdmin}
+              onInspectUser={(u) => {
+                setInspectedUser(u);
+                setIsUserInspectOpen(true);
+              }}
+              onToggleStatus={handleToggleUserStatus}
+              submittingAction={submittingAction}
+              searchQuery={searchQuery}
+            />
+          ) : (
+            <Card className="p-8 text-center rounded-2xl bg-slate-50 border-slate-200">
+              <Lock className="h-10 w-10 text-rose-500 mx-auto mb-2" />
+              <h3 className="text-sm font-bold text-slate-800">Privilege Ceilings Enforced</h3>
+              <p className="text-xs text-slate-500 mt-1">User management directory is restricted to authorized support personnel and Super Administrators.</p>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
 
@@ -850,73 +897,87 @@ function AdminPortalContent() {
 
           {inspectedUser && (
             <div className="space-y-4 pt-2 text-xs">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="h-12 w-12 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300 flex items-center justify-center text-base shrink-0">
-                  {inspectedUser.name.charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-slate-900 truncate">{inspectedUser.name}</p>
-                  <p className="text-slate-500 truncate">{inspectedUser.email}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge className="text-[10px]">{inspectedUser.role}</Badge>
-                    <Badge variant="outline" className="text-[10px]">{inspectedUser.verificationStatus}</Badge>
+              {inspectedUser.role === 'ADMIN' && !isSuperAdmin ? (
+                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                    <Lock className="h-4 w-4 text-amber-700" />
+                    <span>Super Admin Authorization Required</span>
                   </div>
+                  <p className="text-[11px] text-amber-700">
+                    Administrative staff identities and security permissions can only be inspected or audited by a Super Administrator.
+                  </p>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="h-12 w-12 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-300 flex items-center justify-center text-base shrink-0">
+                      {inspectedUser.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">{inspectedUser.name}</p>
+                      <p className="text-slate-500 truncate">{inspectedUser.email}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className="text-[10px]">{inspectedUser.role}</Badge>
+                        <Badge variant="outline" className="text-[10px]">{inspectedUser.verificationStatus}</Badge>
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="space-y-2 border-t border-slate-100 pt-3">
-                <div className="flex justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">User ID</span>
-                  <span className="font-mono text-slate-800">{inspectedUser.id}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Phone Number</span>
-                  <span className="font-semibold text-slate-800">{inspectedUser.phone}</span>
-                </div>
-                {inspectedUser.agencyName && (
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500 font-medium">Agency Name</span>
-                    <span className="font-semibold text-slate-800">{inspectedUser.agencyName}</span>
-                  </div>
-                )}
-                {inspectedUser.licenseNumber && (
-                  <div className="flex justify-between py-1 border-b border-slate-100">
-                    <span className="text-slate-500 font-medium">License / Reg Number</span>
-                    <span className="font-mono font-semibold text-slate-800">{inspectedUser.licenseNumber}</span>
-                  </div>
-                )}
-                <div className="flex justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-500 font-medium">Account Created</span>
-                  <span className="text-slate-800">{new Date(inspectedUser.createdAt).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-slate-500 font-medium">Properties Owned / Represented</span>
-                  <span className="font-bold text-slate-900">
-                    {properties.filter((p) => p.ownerId === inspectedUser.id || p.authorizedAgentId === inspectedUser.id).length} Listings
-                  </span>
-                </div>
-              </div>
-
-              {inspectedUser.role !== 'ADMIN' && (
-                <div className="pt-2">
-                  <Button
-                    variant={inspectedUser.verificationStatus === 'SUSPENDED' ? 'outline' : 'destructive'}
-                    className="w-full text-xs font-bold rounded-xl"
-                    onClick={() => handleToggleUserStatus(inspectedUser)}
-                  >
-                    {inspectedUser.verificationStatus === 'SUSPENDED' ? (
-                      <>
-                        <UserCheck className="h-4 w-4 mr-1 text-emerald-600" />
-                        Reactivate User Account
-                      </>
-                    ) : (
-                      <>
-                        <UserX className="h-4 w-4 mr-1" />
-                        Suspend User Account
-                      </>
+                  <div className="space-y-2 border-t border-slate-100 pt-3">
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500 font-medium">User ID</span>
+                      <span className="font-mono text-slate-800">{inspectedUser.id}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500 font-medium">Phone Number</span>
+                      <span className="font-semibold text-slate-800">{inspectedUser.phone}</span>
+                    </div>
+                    {inspectedUser.agencyName && (
+                      <div className="flex justify-between py-1 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">Agency Name</span>
+                        <span className="font-semibold text-slate-800">{inspectedUser.agencyName}</span>
+                      </div>
                     )}
-                  </Button>
-                </div>
+                    {inspectedUser.licenseNumber && (
+                      <div className="flex justify-between py-1 border-b border-slate-100">
+                        <span className="text-slate-500 font-medium">License / Reg Number</span>
+                        <span className="font-mono font-semibold text-slate-800">{inspectedUser.licenseNumber}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between py-1 border-b border-slate-100">
+                      <span className="text-slate-500 font-medium">Account Created</span>
+                      <span className="text-slate-800">{new Date(inspectedUser.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span className="text-slate-500 font-medium">Properties Owned / Represented</span>
+                      <span className="font-bold text-slate-900">
+                        {properties.filter((p) => p.ownerId === inspectedUser.id || p.authorizedAgentId === inspectedUser.id).length} Listings
+                      </span>
+                    </div>
+                  </div>
+
+                  {inspectedUser.role !== 'ADMIN' && can('users.suspend') && (
+                    <div className="pt-2">
+                      <Button
+                        variant={inspectedUser.verificationStatus === 'SUSPENDED' ? 'outline' : 'destructive'}
+                        className="w-full text-xs font-bold rounded-xl"
+                        onClick={() => handleToggleUserStatus(inspectedUser)}
+                      >
+                        {inspectedUser.verificationStatus === 'SUSPENDED' ? (
+                          <>
+                            <UserCheck className="h-4 w-4 mr-1 text-emerald-600" />
+                            Reactivate User Account
+                          </>
+                        ) : (
+                          <>
+                            <UserX className="h-4 w-4 mr-1" />
+                            Suspend User Account
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
