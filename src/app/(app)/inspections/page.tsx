@@ -407,16 +407,31 @@ function InspectionsContent() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 self-start md:self-center shrink-0 w-full md:w-auto">
-                  {insp.status === 'COMPLETED' && insp.inspectionRecord && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-semibold gap-1 rounded-xl"
-                      onClick={() => openViewInspectionRecord(insp)}
-                    >
-                      <ClipboardCheck className="h-3.5 w-3.5 text-emerald-600" />
-                      View Inspection Report
-                    </Button>
+                  {insp.status === 'COMPLETED' && (
+                    <>
+                      {insp.inspectionRecord && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-semibold gap-1 rounded-xl"
+                          onClick={() => openViewInspectionRecord(insp)}
+                        >
+                          <ClipboardCheck className="h-3.5 w-3.5 text-emerald-600" />
+                          View Inspection Report
+                        </Button>
+                      )}
+                      {!isHost && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs"
+                        >
+                          <Link href={`/apply/${insp.propertyId}`}>
+                            Apply / Make Offer <ChevronRight className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                      )}
+                    </>
                   )}
                   {isHost && (insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED') && (
                     <Button

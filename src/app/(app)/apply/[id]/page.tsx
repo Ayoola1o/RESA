@@ -307,10 +307,70 @@ export default function ApplicationFormPage() {
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Step 4: Agreement & Signature */}
+
+                        {/* Step 4: Transparent Fee Schedule & Escrow Notice */}
                         <div className="space-y-4">
-                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 4: Agreement &amp; Signature</h3>
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900 flex items-center justify-between">
+                                <span>Step 4: Initial Financial Outlay Schedule</span>
+                                <span className="text-xs font-semibold text-lime-800 bg-lime-50 border border-lime-200 px-2.5 py-0.5 rounded-full">
+                                    Zero Hidden Fees Guarantee
+                                </span>
+                            </h3>
+
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2 text-xs">
+                                <div className="flex justify-between text-slate-600">
+                                    <span>Annual Base Rent</span>
+                                    <span className="font-semibold text-slate-900 font-mono">
+                                        ₦{property.price.toLocaleString()}/yr
+                                    </span>
+                                </div>
+                                <div className="flex justify-between text-slate-600">
+                                    <span>Legal &amp; Tenancy Agreement Fee (10% capped)</span>
+                                    <span className="font-semibold text-slate-900 font-mono">
+                                        ₦{Math.round(property.price * 0.1).toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between text-slate-600">
+                                    <span className="flex items-center gap-1">
+                                        Refundable Caution Deposit
+                                        <span className="text-[10px] text-lime-700 bg-lime-100 px-1 rounded">Escrow Held</span>
+                                    </span>
+                                    <span className="font-semibold text-slate-900 font-mono">
+                                        ₦{Math.round(property.price * 0.1).toLocaleString()}
+                                    </span>
+                                </div>
+                                {property.serviceCharge ? (
+                                    <div className="flex justify-between text-slate-600">
+                                        <span>Estate Service Charge</span>
+                                        <span className="font-semibold text-slate-900 font-mono">
+                                            ₦{property.serviceCharge.toLocaleString()}
+                                        </span>
+                                    </div>
+                                ) : null}
+
+                                <Separator className="my-2" />
+
+                                <div className="flex justify-between text-sm font-bold text-slate-900 pt-1">
+                                    <span>Total Initial Outlay Payable Upon Approval</span>
+                                    <span className="text-base text-lime-800 font-mono">
+                                        ₦{(property.price + Math.round(property.price * 0.2) + (property.serviceCharge || 0)).toLocaleString()}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-slate-900 text-white text-xs flex items-start gap-2.5">
+                                <div className="h-5 w-5 rounded-full bg-lime-500/20 text-lime-400 flex items-center justify-center shrink-0 mt-0.5">
+                                    ✓
+                                </div>
+                                <p className="text-slate-300 text-[11px] leading-relaxed">
+                                    <strong>Escrow Protection Notice:</strong> You do not pay now. Once your application is vetted and approved by the host, your initial outlay is deposited directly into PropHunta&apos;s Segregated Escrow Trust Account. Funds are only released to the landlord after physical key handover.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {/* Step 5: Agreement & Signature */}
+                        <div className="space-y-4">
+                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 5: Authorization &amp; Digital Signature</h3>
                              <div className="flex items-start space-x-2">
                                 <Checkbox
                                     id="terms"

@@ -61,6 +61,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Property, ReportReason, VerificationSubStatus, User } from '@/types/prophunta';
 import { formatCurrency } from '@/lib/utils';
+import GooglePropertyMap, { getValidCoordinates } from '@/components/maps/GooglePropertyMap';
 import { useUserRole } from '@/context/UserRoleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -611,25 +612,51 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                 Survey coordinates and jurisdictional boundaries verified for this parcel
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                <div>
-                  <span className="text-slate-400 font-medium">Latitude</span>
-                  <p className="font-bold text-slate-800">{property.coordinates?.lat ? `${property.coordinates.lat}° N` : '6.4531° N'}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">Longitude</span>
-                  <p className="font-bold text-slate-800">{property.coordinates?.lng ? `${property.coordinates.lng}° E` : '3.5852° E'}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">LGA / District</span>
-                  <p className="font-bold text-slate-800">{property.lga || property.area || 'Eti-Osa LGA'}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">Cadastral Reference</span>
-                  <p className="font-bold text-slate-800">{property.cadastralNumber || 'SURV/LAG/2024/0912'}</p>
-                </div>
-              </div>
+            <CardContent className="space-y-4">
+              {(() => {
+                const validCoords = getValidCoordinates(property);
+                return (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                      <div>
+                        <span className="text-slate-400 font-medium">Latitude</span>
+                        <p className="font-bold text-slate-800">
+                          {validCoords ? `${validCoords.lat.toFixed(4)}° N` : 'Pending capture'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 font-medium">Longitude</span>
+                        <p className="font-bold text-slate-800">
+                          {validCoords ? `${validCoords.lng.toFixed(4)}° E` : 'Pending capture'}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 font-medium">LGA / District</span>
+                        <p className="font-bold text-slate-800">{property.lga || property.area || 'Eti-Osa LGA'}</p>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 font-medium">Cadastral Reference</span>
+                        <p className="font-bold text-slate-800">{property.cadastralNumber || 'SURV/LAG/2024/0912'}</p>
+                      </div>
+                    </div>
+
+                    {validCoords ? (
+                      <div className="rounded-xl overflow-hidden border border-slate-200">
+                        <GooglePropertyMap
+                          properties={[property]}
+                          selectedPropertyId={property.id}
+                          singlePropertyMode={true}
+                          height="240px"
+                        />
+                      </div>
+                    ) : (
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-500">
+                        Physical GPS coordinates have not yet been logged for this parcel by a field surveyor.
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
               <p className="text-[11px] text-slate-500 italic">
                 Property markers reflect recorded surveyor data. If physical GPS coordinates on-site disagree with this survey map, flag a location discrepancy above.
               </p>

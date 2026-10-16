@@ -584,9 +584,61 @@ export async function updateApplicationStatusAction(
     const user = await authService.requireUser();
     await applicationService.updateStatus(user, applicationId, status, notes);
     revalidatePath('/profile');
+    revalidatePath('/applications');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to update application status.' };
+  }
+}
+
+export async function getApplicationAction(applicationId: string) {
+  return applicationService.getApplication(applicationId);
+}
+
+export async function fundEscrowAction(
+  applicationId: string,
+  paymentMethod: string,
+  paymentRef?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await applicationService.fundEscrow(user, applicationId, paymentMethod, paymentRef);
+    revalidatePath('/applications');
+    revalidatePath('/profile');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to fund escrow account.' };
+  }
+}
+
+export async function signLeaseAgreementAction(
+  applicationId: string,
+  signature: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await applicationService.signLeaseAgreement(user, applicationId, signature);
+    revalidatePath('/applications');
+    revalidatePath('/profile');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to sign lease agreement.' };
+  }
+}
+
+export async function confirmKeyHandoverAction(
+  applicationId: string,
+  notes?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await authService.requireUser();
+    await applicationService.confirmHandover(user, applicationId, notes);
+    revalidatePath('/applications');
+    revalidatePath('/profile');
+    revalidatePath('/properties');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to confirm key handover.' };
   }
 }
 

@@ -11,6 +11,7 @@ import { ListFilter, ChevronLeft, ChevronRight, Save, LayoutGrid, Map as MapIcon
 import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
+import GooglePropertyMap from '@/components/maps/GooglePropertyMap';
 
 const ITEMS_PER_PAGE = 16;
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
@@ -114,8 +115,12 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
   const currentProperties = filteredAndSortedProperties.slice(startIndex, endIndex);
 
   const selectedProperty = useMemo(() => {
-    return initialProperties.find(p => p.id === selectedMapPropertyId) || initialProperties[0];
-  }, [initialProperties, selectedMapPropertyId]);
+    return (
+      filteredAndSortedProperties.find(p => p.id === selectedMapPropertyId) ||
+      filteredAndSortedProperties[0] ||
+      null
+    );
+  }, [filteredAndSortedProperties, selectedMapPropertyId]);
 
   const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (value: string) => {
     setter(value);
@@ -536,81 +541,36 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
       {/* VIEW SWITCHER: Map View vs Grid View */}
       {viewMode === 'map' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
-          {/* Interactive Map Visual */}
+          {/* Google Maps Visual */}
           <div className="lg:col-span-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm overflow-hidden flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-bold text-slate-900 text-lg">Interactive Property Map</h3>
-                <p className="text-xs text-slate-500">Click on pins to explore listings across prime Nigerian locations</p>
+                <h3 className="font-bold text-slate-900 text-lg">Google Maps Property Explorer</h3>
+                <p className="text-xs text-slate-500">Live coordinates for verified Nigerian properties</p>
               </div>
               <div className="flex items-center gap-3 text-xs font-semibold">
                 <span className="flex items-center gap-1.5 text-lime-700">
                   <span className="h-2.5 w-2.5 rounded-full bg-lime-600" /> For Rent
                 </span>
-                <span className="flex items-center gap-1.5 text-emerald-600">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" /> For Sale / Land
+                <span className="flex items-center gap-1.5 text-slate-800">
+                  <span className="h-2.5 w-2.5 rounded-full bg-slate-900" /> For Sale / Land
                 </span>
               </div>
             </div>
 
-            <div className="relative h-[480px] w-full rounded-2xl bg-gradient-to-br from-lime-50/50 via-slate-50 to-emerald-50/40 border border-slate-200/80 overflow-hidden">
-              {/* Map vector topography */}
-              <svg viewBox="0 0 800 480" className="absolute inset-0 h-full w-full object-cover" fill="none">
-                <path d="M0,280 C200,240 360,310 560,260 C680,230 760,280 800,290 L800,480 L0,480 Z" fill="#d9f99d" opacity="0.3" />
-                <path d="M120,140 C240,110 360,180 500,140 C620,110 720,160 800,130" stroke="#bef264" strokeWidth="4" strokeDasharray="6 6" opacity="0.6" />
-                <path d="M40,60 Q200,80 380,50 T760,70" stroke="#cbd5e1" strokeWidth="2" />
-              </svg>
-
-              {/* Interactive Region Pins */}
-              {initialProperties.slice(0, 8).map((prop, idx) => {
-                const positions = [
-                  { top: '38%', left: '68%', name: 'Lekki Phase 1' },
-                  { top: '22%', left: '32%', name: 'Gwarinpa Abuja' },
-                  { top: '48%', left: '52%', name: 'Victoria Island' },
-                  { top: '28%', left: '46%', name: 'Ikeja GRA' },
-                  { top: '44%', left: '60%', name: 'Ikoyi Lagos' },
-                  { top: '65%', left: '42%', name: 'Port Harcourt' },
-                  { top: '34%', left: '56%', name: 'Surulere' },
-                  { top: '52%', left: '72%', name: 'Ajah' },
-                ];
-                const pos = positions[idx] || { top: '50%', left: '50%', name: prop.city };
-                const isSelected = selectedMapPropertyId === prop.id;
-
-                return (
-                  <button
-                    key={prop.id}
-                    type="button"
-                    onClick={() => setSelectedMapPropertyId(prop.id)}
-                    style={{ top: pos.top, left: pos.left }}
-                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 group z-20 flex flex-col items-center transition-all ${
-                      isSelected ? 'scale-110 z-30' : 'hover:scale-105'
-                    }`}
-                  >
-                    <div
-                      className={`px-2.5 py-1 rounded-xl text-[11px] font-bold shadow-lg border transition-all ${
-                        isSelected
-                          ? 'bg-lime-600 text-white border-lime-400 ring-4 ring-lime-300/60'
-                          : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      {formatCurrency(prop.price, prop.status, prop.priceUnit)}
-                    </div>
-                    <div
-                      className={`h-3 w-3 rounded-full mt-1 shadow-md transition-colors ${
-                        isSelected ? 'bg-lime-600 ring-4 ring-lime-200' : 'bg-slate-700 group-hover:bg-lime-600'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-            </div>
+            <GooglePropertyMap
+              properties={filteredAndSortedProperties}
+              selectedPropertyId={selectedProperty?.id}
+              onSelectProperty={(prop) => setSelectedMapPropertyId(prop.id)}
+              height="500px"
+            />
           </div>
 
           {/* Map Selected Property Preview Panel */}
           <div className="lg:col-span-4 flex flex-col gap-4">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <span className="text-xs font-bold uppercase tracking-wider text-lime-700">Selected Listing</span>
-              {selectedProperty && (
+              {selectedProperty ? (
                 <div className="mt-3 min-w-0 w-full">
                   <PropertyCard property={selectedProperty} />
                   <div className="mt-4 flex gap-2">
@@ -621,6 +581,10 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
                       </Link>
                     </Button>
                   </div>
+                </div>
+              ) : (
+                <div className="mt-3 p-8 text-center text-slate-400 border border-slate-200 rounded-2xl bg-slate-50">
+                  <p className="text-xs">Select a pin on the map to preview listing details.</p>
                 </div>
               )}
             </div>

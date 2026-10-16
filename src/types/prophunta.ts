@@ -386,7 +386,31 @@ export interface FeeBreakdown {
 }
 
 export type ApplicationType = 'RENTAL' | 'SALE_OFFER';
-export type ApplicationStatus = 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+export type ApplicationStatus =
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'APPROVED'
+  | 'ESCROW_FUNDED'
+  | 'LEASE_SIGNED'
+  | 'HANDOVER_COMPLETED'
+  | 'REJECTED';
+
+export interface EscrowPaymentRecord {
+  paymentRef: string;
+  paymentMethod: string;
+  amountPaid: number;
+  paidAt: string;
+  escrowStatus: 'HELD_IN_ESCROW' | 'RELEASED_TO_HOST';
+  cautionDepositHeld: number;
+}
+
+export interface DigitalSignatureRecord {
+  signature: string;
+  signedAt: string;
+  signerName: string;
+  signerRole: UserRole;
+  checksum: string;
+}
 
 export interface Application {
   id: string;
@@ -411,6 +435,16 @@ export interface Application {
 
   // Transparent fee breakdown
   feeBreakdown?: FeeBreakdown;
+
+  // Post-inspection execution milestones
+  escrowPayment?: EscrowPaymentRecord;
+  tenantSignature?: DigitalSignatureRecord;
+  landlordSignature?: DigitalSignatureRecord;
+  handoverRecord?: {
+    confirmedAt: string;
+    confirmedBy: string;
+    notes?: string;
+  };
 
   message: string;
   status: ApplicationStatus;

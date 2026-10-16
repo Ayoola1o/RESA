@@ -54,6 +54,21 @@ export class ApplicationRepository {
     saveDb(db);
     return db.applications[idx];
   }
+
+  async update(id: string, data: Partial<Application>): Promise<Application | null> {
+    const db = getDb();
+    const idx = db.applications.findIndex((a) => a.id === id);
+    if (idx === -1) return null;
+
+    db.applications[idx] = {
+      ...db.applications[idx],
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveDb(db);
+    return db.applications[idx];
+  }
 }
 
 export const applicationRepository = new ApplicationRepository();

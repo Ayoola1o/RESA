@@ -68,3 +68,36 @@ All accounts share the default password: `Password123!`
 - **Owner**: `owner@prophunta.ai` (Alhaji Ibrahim Danjuma)
 - **Agent**: `agent@prophunta.ai` (Tunde Adeleke)
 - **Admin**: `admin@prophunta.ai` (Amina Bello)
+
+---
+
+## Google Maps Platform Integration
+
+PropHunta AI uses Google Maps Platform for displaying real property parcel coordinates across Nigeria:
+- **Verified Geographic Positioning**: Real latitude and longitude coordinates are rendered with interactive markers, bounds auto-fitting, and Nigerian Naira (`₦`) price tags.
+- **Search Synchronization**: Markers dynamically synchronize with all active filters (rent/sale, property type, price ranges, verified status, city/neighborhood search).
+- **Graceful Unconfigured Fallbacks**: If `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is not present, the application renders a clean informative fallback card with listings summaries without breaking the page or throwing unhandled errors.
+- **Zero Web Scraping / No Apify**: Google Maps serves exclusively as the visual map provider. PropHunta AI does **not** use Apify, external scrapers, or third-party listing harvesters. All inventory originates from the verified PropHunta property repository.
+
+### Google Cloud Platform Setup & Security
+
+1. **Enable API**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/google/maps-apis).
+   - Enable **Maps JavaScript API**. *(No Places Autocomplete, Geocoding, or Routes APIs required).*
+2. **Restrict API Key (Browser Security)**:
+   - Under Credentials, edit your browser key and set **Application restrictions** to `HTTP referrers (web sites)`.
+   - Add authorized domains:
+     - `http://localhost:9002/*`
+     - `http://localhost:3000/*`
+     - `https://*.vercel.app/*`
+     - `https://your-custom-domain.com/*`
+   - Under **API restrictions**, select **Restrict key** and choose only **Maps JavaScript API**.
+3. **Billing & Quota Safeguards**:
+   - Google Maps JavaScript API includes a recurring monthly credit of $200 (~28,000 map loads/month for free).
+   - Configure a budget alert at $10 to prevent unexpected charges.
+4. **Environment Configuration**:
+   - Add the key to `.env.local`:
+     ```bash
+     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your_actual_maps_api_key_here"
+     ```
+

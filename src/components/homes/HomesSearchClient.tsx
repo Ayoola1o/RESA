@@ -40,6 +40,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
+import GooglePropertyMap from '@/components/maps/GooglePropertyMap';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -333,8 +334,12 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
   }, [listingType, propertyType, minPrice, maxPrice, bedrooms, bathrooms, verifiedOnly, searchTerm]);
 
   const selectedMapProperty = useMemo(() => {
-    return initialProperties.find((p) => p.id === selectedMapPropertyId) || initialProperties[0];
-  }, [initialProperties, selectedMapPropertyId]);
+    return (
+      filteredProperties.find((p) => p.id === selectedMapPropertyId) ||
+      filteredProperties[0] ||
+      null
+    );
+  }, [filteredProperties, selectedMapPropertyId]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -802,12 +807,12 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
         {/* VIEW: Map Mode */}
         {viewMode === 'map' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-12">
-            {/* Interactive Vector Topography Map */}
+            {/* Google Maps Property Visual */}
             <div className="lg:col-span-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-xs overflow-hidden flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base sm:text-lg">Interactive Property Map</h3>
-                  <p className="text-xs text-slate-500">Click on pins to explore verified Nigerian locations</p>
+                  <h3 className="font-bold text-slate-900 text-base sm:text-lg">Google Maps Property Explorer</h3>
+                  <p className="text-xs text-slate-500">Live coordinates for verified Nigerian properties</p>
                 </div>
                 <div className="flex items-center gap-3 text-xs font-semibold">
                   <span className="flex items-center gap-1.5 text-lime-700">
@@ -819,58 +824,12 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
                 </div>
               </div>
 
-              <div className="relative h-[480px] w-full rounded-2xl bg-gradient-to-br from-lime-50/50 via-slate-50 to-emerald-50/40 border border-slate-200/80 overflow-hidden">
-                <svg viewBox="0 0 800 480" className="absolute inset-0 h-full w-full object-cover" fill="none">
-                  <path d="M0,280 C200,240 360,310 560,260 C680,230 760,280 800,290 L800,480 L0,480 Z" fill="#d9f99d" opacity="0.3" />
-                  <path d="M120,140 C240,110 360,180 500,140 C620,110 720,160 800,130" stroke="#bef264" strokeWidth="4" strokeDasharray="6 6" opacity="0.6" />
-                  <path d="M40,60 Q200,80 380,50 T760,70" stroke="#cbd5e1" strokeWidth="2" />
-                </svg>
-
-                {/* Interactive Map Pins */}
-                {filteredProperties.slice(0, 10).map((prop, idx) => {
-                  const positions = [
-                    { top: '38%', left: '68%' },
-                    { top: '22%', left: '32%' },
-                    { top: '48%', left: '52%' },
-                    { top: '28%', left: '46%' },
-                    { top: '44%', left: '60%' },
-                    { top: '65%', left: '42%' },
-                    { top: '34%', left: '56%' },
-                    { top: '52%', left: '72%' },
-                    { top: '58%', left: '62%' },
-                    { top: '30%', left: '38%' },
-                  ];
-                  const pos = positions[idx] || { top: '50%', left: '50%' };
-                  const isSelected = selectedMapPropertyId === prop.id;
-
-                  return (
-                    <button
-                      key={prop.id}
-                      type="button"
-                      onClick={() => setSelectedMapPropertyId(prop.id)}
-                      style={{ top: pos.top, left: pos.left }}
-                      className={`absolute transform -translate-x-1/2 -translate-y-1/2 group z-20 flex flex-col items-center transition-all ${
-                        isSelected ? 'scale-110 z-30' : 'hover:scale-105'
-                      }`}
-                    >
-                      <div
-                        className={`px-2.5 py-1 rounded-xl text-[11px] font-bold shadow-lg border transition-all ${
-                          isSelected
-                            ? 'bg-lime-600 text-white border-lime-400 ring-4 ring-lime-300/60'
-                            : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        {formatCurrency(prop.price, prop.listingType === 'RENT' ? 'For Rent' : 'For Sale', prop.priceUnit)}
-                      </div>
-                      <div
-                        className={`h-3 w-3 rounded-full mt-1 shadow-md transition-colors ${
-                          isSelected ? 'bg-lime-600 ring-4 ring-lime-200' : 'bg-slate-700 group-hover:bg-lime-600'
-                        }`}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
+              <GooglePropertyMap
+                properties={filteredProperties}
+                selectedPropertyId={selectedMapProperty?.id}
+                onSelectProperty={(prop) => setSelectedMapPropertyId(prop.id)}
+                height="500px"
+              />
             </div>
 
             {/* Selected Card Preview on Map */}
