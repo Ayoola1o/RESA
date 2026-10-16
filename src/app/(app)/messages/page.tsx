@@ -57,7 +57,7 @@ export default function MessagesPage() {
         <CardHeader className="pb-3 border-b border-slate-100">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base sm:text-lg font-headline flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-lime-700" /> Active Conversations
+              <MessageSquare className="h-5 w-5 text-emerald-600" /> Active Conversations
             </CardTitle>
             <span className="text-xs text-muted-foreground">
               {filteredEnquiries.length} {filteredEnquiries.length === 1 ? 'thread' : 'threads'}
@@ -91,7 +91,7 @@ export default function MessagesPage() {
               {!searchQuery && (
                 <Link
                   href="/marketplace"
-                  className="inline-block mt-4 text-sm font-semibold text-lime-700 hover:underline"
+                  className="inline-block mt-4 text-sm font-semibold text-emerald-700 hover:underline"
                 >
                   Browse Marketplace &rarr;
                 </Link>

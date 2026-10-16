@@ -51,13 +51,13 @@ export default function LandlordDashboardPage() {
       {/* Key Metrics */}
       <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {landlordData.metrics.map((metric) => (
-          <Card key={metric.title}>
+          <Card key={metric.title} className="rounded-2xl border-slate-200/80 bg-white shadow-xs">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
               <metric.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metric.value}</div>
+              <div className="text-2xl font-bold tabular-nums text-slate-900">{metric.value}</div>
               <p className="text-xs text-muted-foreground">{metric.change}</p>
             </CardContent>
           </Card>
@@ -67,13 +67,13 @@ export default function LandlordDashboardPage() {
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
             {/* My Properties */}
-            <Card>
+            <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="font-headline">My Properties</CardTitle>
                         <CardDescription>An overview of your managed properties.</CardDescription>
                     </div>
-                    <Button asChild size="sm">
+                    <Button asChild size="sm" className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl">
                         <Link href="/landlord/add-property"><PlusCircle className="mr-2 h-4 w-4"/> Add Property</Link>
                     </Button>
                 </CardHeader>

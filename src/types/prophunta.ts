@@ -59,6 +59,42 @@ export interface User {
   isDemo?: boolean;
 }
 
+export type UserDocumentType =
+  | 'GOVERNMENT_ID'
+  | 'PROOF_OF_INCOME'
+  | 'PROOF_OF_RESIDENCE'
+  | 'EMPLOYMENT_REFERENCE'
+  | 'OTHER';
+
+export type UserDocumentStatus = 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED';
+
+export interface UserDocument {
+  id: string;
+  userId: string;
+  documentType: UserDocumentType;
+  title: string;
+  fileName: string;
+  fileReference: string;
+  fileSize: number;
+  mimeType: string;
+  status: UserDocumentStatus;
+  uploadedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  reviewNotes?: string;
+}
+
+export interface SeekerHousingPreferences {
+  userId: string;
+  targetLocations: string[];
+  minBudget: string;
+  maxBudget: string;
+  propertyType: string;
+  bedrooms: string;
+  timeline: string;
+  updatedAt: string;
+}
+
 export type OwnerAgentRelationshipStatus =
   | 'INVITED'
   | 'ACCEPTED'

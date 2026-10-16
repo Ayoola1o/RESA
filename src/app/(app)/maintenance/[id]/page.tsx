@@ -123,11 +123,11 @@ export default function MaintenanceDetailPage() {
                             </div>
                             <Separator />
                             <div>
-                                <h3 className="text-base sm:text-lg font-bold mb-2 font-headline flex items-center gap-2 text-slate-900"><Sparkles className="text-lime-700 h-4 w-4"/> AI Diagnostic Summary</h3>
+                                <h3 className="text-base sm:text-lg font-bold mb-2 font-headline flex items-center gap-2 text-slate-900"><Sparkles className="text-emerald-600 h-4 w-4"/> AI Diagnostic Summary</h3>
                                 <div className="grid grid-cols-2 gap-3 sm:gap-4 border border-slate-200/80 p-3.5 sm:p-4 rounded-xl bg-slate-50/50">
                                     <div className="space-y-1">
                                         <p className="text-xs font-medium text-muted-foreground">Category</p>
-                                        <Badge className="bg-lime-50 text-lime-800 border-lime-300 font-bold text-xs">{request.category}</Badge>
+                                        <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 font-bold text-xs">{request.category}</Badge>
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-xs font-medium text-muted-foreground">Priority</p>
@@ -214,7 +214,7 @@ export default function MaintenanceDetailPage() {
                             </div>
                             <Button
                                 onClick={handleMarkComplete}
-                                className="w-full bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl h-10 shadow-xs text-xs"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl h-10 shadow-xs text-xs"
                                 disabled={currentStatus === 'Completed'}
                             >
                                 <CheckCircle className="mr-2 h-4 w-4"/>

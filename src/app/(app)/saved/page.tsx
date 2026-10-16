@@ -6,7 +6,11 @@ import { Heart, Trash2, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getPropertiesAction } from '@/server/actions/prophunta-actions';
+import {
+  getPropertiesAction,
+  getSavedPropertiesAction,
+  toggleSavedPropertyAction,
+} from '@/server/actions/prophunta-actions';
 import { Property } from '@/types/prophunta';
 import PropertyCard from '@/components/property-card';
 
@@ -27,23 +31,33 @@ function SavedContent() {
     let mounted = true;
     async function loadSaved() {
       try {
-        const allProps = await getPropertiesAction().catch(() => []);
-        if (mounted) {
-          let savedIds: string[] = [];
-          try {
-            const raw = localStorage.getItem('prophunta_saved_properties');
-            if (raw) savedIds = JSON.parse(raw);
-          } catch {}
+        // Query server saved properties first
+        const res = await getSavedPropertiesAction().catch(() => ({ success: false, properties: [] }));
+        if (mounted && res?.success && res.properties && res.properties.length > 0) {
+          setSavedProperties(res.properties);
+          setLoading(false);
+          return;
+        }
 
-          if (savedIds.length > 0) {
+        // Secondary check against localStorage if client-side session or guest
+        let savedIds: string[] = [];
+        try {
+          const raw = localStorage.getItem('prophunta_saved_properties');
+          if (raw) savedIds = JSON.parse(raw);
+        } catch {}
+
+        if (savedIds.length > 0) {
+          const allProps = await getPropertiesAction().catch(() => []);
+          if (mounted) {
             setSavedProperties(allProps.filter((p) => savedIds.includes(p.id)));
-          } else {
-            // Default sample saved listings
-            setSavedProperties(allProps.slice(0, 2));
           }
+        } else if (mounted) {
+          // Honest empty state: 0 items, never fake sample listings
+          setSavedProperties([]);
         }
       } catch (err) {
         console.error('Failed to load saved properties', err);
+        if (mounted) setSavedProperties([]);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -54,9 +68,14 @@ function SavedContent() {
     };
   }, []);
 
-  const handleRemoveSaved = (propId: string) => {
+  const handleRemoveSaved = async (propId: string) => {
     setSavedProperties((prev) => prev.filter((p) => p.id !== propId));
+
     try {
+      // Sync with server action
+      await toggleSavedPropertyAction(propId).catch(() => null);
+
+      // Sync local storage
       const raw = localStorage.getItem('prophunta_saved_properties');
       if (raw) {
         const ids: string[] = JSON.parse(raw);
@@ -86,24 +105,24 @@ function SavedContent() {
             Verified properties you have shortlisted and are actively monitoring.
           </p>
         </div>
-        <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
+        <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm rounded-xl shadow-xs">
           <Link href="/homes">Explore Homes</Link>
         </Button>
       </div>
 
       {loading ? (
         <div className="p-16 text-center text-sm text-muted-foreground">
-          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-lime-600" />
+          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-emerald-600" />
           Loading your saved favorites...
         </div>
       ) : savedProperties.length === 0 ? (
-        <Card className="p-12 text-center rounded-2xl border-slate-200">
+        <Card className="p-12 text-center rounded-2xl border-slate-200/80 bg-white">
           <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
           <h3 className="font-semibold text-slate-900 text-lg">No saved properties yet</h3>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
             Click the heart icon on any property in the listings grid to save it here for easy reference.
           </p>
-          <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-xs">
             <Link href="/homes">Browse Verified Homes</Link>
           </Button>
         </Card>

@@ -76,7 +76,7 @@
     },
     {
       "id": "user_admin_1",
-      "name": "Amina Bello (Verification Officer)",
+      "name": "Amina Bello (Super Admin)",
       "email": "admin@prophunta.ai",
       "phone": "+234 809 111 2233",
       "role": "ADMIN",
@@ -87,7 +87,112 @@
       "isDemo": true,
       "createdAt": "2026-07-01T08:00:00Z",
       "updatedAt": "2026-10-05T09:00:00Z",
-      "bio": "Lead Property Verification Officer & Platform Trust Administrator."
+      "bio": "Lead Platform Trust Administrator & Super Admin."
+    },
+    {
+      "id": "user_admin_verification",
+      "name": "Ngozi Okonjo (Verification Officer)",
+      "email": "verification@prophunta.ai",
+      "phone": "+234 809 111 2234",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Title Review Lab, Lagos",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-07-15T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Senior Property Verification Officer specializing in title verification, cadastral review, and Governor’s Consent audits."
+    },
+    {
+      "id": "user_admin_moderator",
+      "name": "Emeka Nwosu (Property Moderator)",
+      "email": "moderator@prophunta.ai",
+      "phone": "+234 809 111 2235",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Moderation Hub, Abuja",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-08-01T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Property Listing Moderator overseeing compliance, duplicate detection, and marketplace suspensions."
+    },
+    {
+      "id": "user_admin_trust",
+      "name": "Farouk Umar (Trust & Safety)",
+      "email": "trust@prophunta.ai",
+      "phone": "+234 809 111 2236",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Trust & Safety Division, Lagos",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-08-10T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Trust & Safety Investigator managing fraud disputes, escrow protection, and incident escalations."
+    },
+    {
+      "id": "user_admin_inspections",
+      "name": "Bisi Adeyemi (Inspection Coordinator)",
+      "email": "inspections@prophunta.ai",
+      "phone": "+234 809 111 2237",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Field Operations, Lagos",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-08-15T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Inspection Coordinator auditing verified physical walkthroughs and live video inspection records."
+    },
+    {
+      "id": "user_admin_support",
+      "name": "Fatima Aliyu (User Support)",
+      "email": "support@prophunta.ai",
+      "phone": "+234 809 111 2238",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Support Center, Abuja",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-08-20T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "User Support Officer managing seeker and landlord account assistance, KYC submissions, and general support tickets."
+    },
+    {
+      "id": "user_admin_compliance",
+      "name": "Kelechi Obi (Compliance Auditor)",
+      "email": "compliance@prophunta.ai",
+      "phone": "+234 809 111 2239",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Legal & Compliance, Lagos",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-09-01T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Compliance Auditor performing non-repudiation cryptographic ledger audits and governance reviews."
+    },
+    {
+      "id": "user_admin_staff_manager",
+      "name": "Tariq Balogun (Staff Manager)",
+      "email": "staffmanager@prophunta.ai",
+      "phone": "+234 809 111 2240",
+      "role": "ADMIN",
+      "profilePhoto": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=256&q=80",
+      "location": "PropHunta Operations, Lagos",
+      "verificationStatus": "VERIFIED",
+      "kycStatus": "VERIFIED",
+      "isDemo": true,
+      "createdAt": "2026-09-10T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z",
+      "bio": "Delegated Staff Manager provisioning operational roles within authorized delegation ceilings."
     },
     {
       "id": "sec_admin_root",
@@ -96,8 +201,8 @@
       "phone": "+2348011111111",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.480Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.855Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_staff_mgr",
@@ -106,8 +211,8 @@
       "phone": "+2348022222222",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_officer_1",
@@ -116,8 +221,8 @@
       "phone": "+2348033333333",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_mod_1",
@@ -126,8 +231,8 @@
       "phone": "+2348044444444",
       "role": "ADMIN",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_seeker_1",
@@ -136,8 +241,8 @@
       "phone": "+2348055555555",
       "role": "SEEKER",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_owner_1",
@@ -146,8 +251,8 @@
       "phone": "+2348066666666",
       "role": "OWNER",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "id": "sec_agent_1",
@@ -156,8 +261,38 @@
       "phone": "+2348077777777",
       "role": "AGENT",
       "verificationStatus": "VERIFIED",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
+    },
+    {
+      "name": "Amaka Seeker",
+      "email": "amaka.phase10.1792170311167@test.com",
+      "role": "SEEKER",
+      "phone": "+2348011223344",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1792170311174_7hd6y",
+      "createdAt": "2026-10-16T17:05:11.174Z",
+      "updatedAt": "2026-10-16T17:05:11.174Z"
+    },
+    {
+      "name": "Emeka Host",
+      "email": "emeka.phase10.1792170311167@test.com",
+      "role": "OWNER",
+      "phone": "+2348055667788",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1792170311183_lq859",
+      "createdAt": "2026-10-16T17:05:11.183Z",
+      "updatedAt": "2026-10-16T17:05:11.183Z"
+    },
+    {
+      "name": "Super Admin Officer",
+      "email": "compliance.phase10.1792170311167@prophunta.ai",
+      "role": "ADMIN",
+      "phone": "+2348099887766",
+      "verificationStatus": "VERIFIED",
+      "id": "user_1792170311195_kfdwd",
+      "createdAt": "2026-10-16T17:05:11.195Z",
+      "updatedAt": "2026-10-16T17:05:11.195Z"
     }
   ],
   "passwords": {
@@ -165,10 +300,76 @@
     "user_seeker_unverified": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_owner_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
     "user_agent_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
-    "user_admin_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0"
+    "user_admin_1": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_verification": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_moderator": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_trust": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_inspections": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_support": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_compliance": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_admin_staff_manager": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1792170311174_7hd6y": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1792170311183_lq859": "391597f652de7e649d93768ee7f30098df64a61524c113d116c7f04d7e860bf0",
+    "user_1792170311195_kfdwd": "529d413349613776417a1370af8cee842ccd1b566b43b26c203372ad3df0ba74"
   },
   "sessions": {},
   "properties": [
+    {
+      "ownerId": "user_1792170311183_lq859",
+      "isDirectListing": true,
+      "title": "Waterfront Duplex in Victoria Island",
+      "propertyType": "Duplex",
+      "listingType": "RENT",
+      "description": "Suspiciously cheap luxury waterfront duplex.",
+      "state": "Lagos",
+      "city": "Victoria Island",
+      "area": "Victoria Island Extension",
+      "address": "42 Akin Adesola Street",
+      "price": 3500000,
+      "priceUnit": "/year",
+      "agreementFee": 0,
+      "cautionFee": 0,
+      "serviceCharge": 0,
+      "otherCharges": 0,
+      "bedrooms": 5,
+      "bathrooms": 5,
+      "features": [
+        "Swimming Pool",
+        "Ocean View"
+      ],
+      "availabilityStatus": "AVAILABLE",
+      "intendedUse": "Residential",
+      "listingStatus": "ACTIVE",
+      "media": [
+        {
+          "id": "med_1792170311207_0",
+          "propertyId": "",
+          "url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+          "type": "image",
+          "caption": "Main Facade & Front Entrance",
+          "isPrimary": true,
+          "order": 1,
+          "uploadStatus": "COMPLETED",
+          "createdAt": "2026-10-16T17:05:11.207Z"
+        }
+      ],
+      "documents": [],
+      "verification": {
+        "verificationId": "ver_1792170311207",
+        "propertyId": "prop_1792170311209_or8l",
+        "ownerIdentityStatus": "PENDING",
+        "locationStatus": "PENDING",
+        "authorityDocumentStatus": "PENDING",
+        "availabilityStatus": "PENDING",
+        "mediaStatus": "PENDING",
+        "inspectionStatus": "PENDING",
+        "overallStatus": "PENDING",
+        "reviewNotes": "Draft property created. Awaiting submission for compliance review."
+      },
+      "id": "prop_1792170311209_or8l",
+      "createdAt": "2026-10-16T17:05:11.209Z",
+      "updatedAt": "2026-10-16T17:05:11.422Z"
+    },
     {
       "ownerId": "sec_owner_1",
       "title": "Modern Waterfront Studio",
@@ -191,9 +392,9 @@
       "listingType": "RENT",
       "listingStatus": "SUBMITTED",
       "availabilityStatus": "AVAILABLE",
-      "id": "prop_1791901868605_eaji",
-      "createdAt": "2026-10-13T14:31:08.605Z",
-      "updatedAt": "2026-10-13T14:31:08.605Z"
+      "id": "prop_1792170302089_uvg1",
+      "createdAt": "2026-10-16T17:05:02.089Z",
+      "updatedAt": "2026-10-16T17:05:02.089Z"
     },
     {
       "ownerId": "sec_owner_1",
@@ -214,14 +415,14 @@
       "media": [],
       "documents": [
         {
-          "id": "doc_1791901868590_29943533",
-          "propertyId": "prop_1791901868531_5tdw",
+          "id": "doc_1792170302068_96e87286",
+          "propertyId": "prop_1792170301943_i7c2",
           "uploadedBy": "sec_owner_1",
           "documentType": "CERTIFICATE_OF_OCCUPANCY",
           "fileName": "Confidential_Title_Deed.pdf",
-          "fileReference": "doc_1791901868588_29943533cb6f4d588cc604ec53f0e121.pdf",
+          "fileReference": "doc_1792170302067_96e8728649864438838f857c97e93f70.pdf",
           "status": "PENDING",
-          "uploadedAt": "2026-10-13T14:31:08.590Z",
+          "uploadedAt": "2026-10-16T17:05:02.068Z",
           "mimeType": "application/pdf",
           "sizeBytes": 47
         }
@@ -240,9 +441,9 @@
         "inspectionStatus": "FAILED",
         "overallStatus": "PASSED"
       },
-      "id": "prop_1791901868531_5tdw",
-      "createdAt": "2026-10-13T14:31:08.531Z",
-      "updatedAt": "2026-10-13T14:31:08.590Z"
+      "id": "prop_1792170301943_i7c2",
+      "createdAt": "2026-10-16T17:05:01.943Z",
+      "updatedAt": "2026-10-16T17:05:02.068Z"
     },
     {
       "id": "prop-1",
@@ -685,6 +886,20 @@
   ],
   "reports": [
     {
+      "propertyId": "prop_1792170311209_or8l",
+      "propertyTitle": "Waterfront Duplex in Victoria Island",
+      "reporterId": "user_1792170311174_7hd6y",
+      "reporterName": "Amaka Seeker",
+      "reason": "Suspected Scam",
+      "description": "Price is drastically below market rate for VI waterfront, and poster demands upfront bank deposit before viewing.",
+      "id": "rep_1792170311251_xlal",
+      "status": "RESOLVED",
+      "reportedAt": "2026-10-16T17:05:11.251Z",
+      "resolvedBy": "user_1792170311195_kfdwd",
+      "resolvedAt": "2026-10-16T17:05:11.433Z",
+      "resolutionNotes": "Investigation completed. Property restored after legitimate title documents verified."
+    },
+    {
       "id": "rep-1",
       "propertyId": "prop-4",
       "propertyTitle": "Brand New 4 Bedroom Terrace with Swimming Pool",
@@ -698,15 +913,331 @@
   ],
   "auditLogs": [
     {
-      "id": "aud_1791901868603_gojy",
-      "timestamp": "2026-10-13T14:31:08.603Z",
+      "id": "aud_1792170311453_qhv5",
+      "timestamp": "2026-10-16T17:05:11.453Z",
+      "actorId": "system",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_1792170311174_7hd6y",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1792170311448_y7bf",
+        "type": "REPORT",
+        "title": "Report Status: RESOLVED"
+      },
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "582068cd309a5d8626fe642ca35023d6d519e745a6d8349b4daa65fd6c933f32",
+      "checksum": "c6e0e9c70dcafccefd0f82569e5ea01b8078997b4a2cd26c0613966bb6e5e6be"
+    },
+    {
+      "id": "aud_1792170311439_qz1q",
+      "timestamp": "2026-10-16T17:05:11.439Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "REPORT_RESOLVED",
+      "objectType": "REPORT",
+      "objectId": "rep_1792170311251_xlal",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "SUSPENDED",
+        "newStatus": "RESOLVED",
+        "propertyId": "prop_1792170311209_or8l",
+        "propertyTitle": "Waterfront Duplex in Victoria Island",
+        "reporterId": "user_1792170311174_7hd6y",
+        "reason": "Suspected Scam",
+        "resolutionNotes": "Investigation completed. Property restored after legitimate title documents verified.",
+        "resolvedAt": "2026-10-16T17:05:11.439Z"
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "9148d19e9779f668744c726943f5457459642cbffe6ef1588ac6f0bda0bb9ffe",
+      "checksum": "582068cd309a5d8626fe642ca35023d6d519e745a6d8349b4daa65fd6c933f32"
+    },
+    {
+      "id": "aud_1792170311427_45w7",
+      "timestamp": "2026-10-16T17:05:11.427Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "LISTING_RESTORED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1792170311209_or8l",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Waterfront Duplex in Victoria Island",
+        "reason": "Title documents verified with Lagos State Lands Bureau. Listing restored to marketplace."
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "b846d4d5e528c21c34011dead5bbb50d905dd6bdebf951532bd1ba053f462f4f",
+      "checksum": "9148d19e9779f668744c726943f5457459642cbffe6ef1588ac6f0bda0bb9ffe"
+    },
+    {
+      "id": "aud_1792170311415_f4ze",
+      "timestamp": "2026-10-16T17:05:11.415Z",
+      "actorId": "system",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_1792170311174_7hd6y",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1792170311405_12fr",
+        "type": "REPORT",
+        "title": "Report Status: SUSPENDED"
+      },
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "10547a4092d7755353da36fd323a26ca6f4a68c4486463c1819a1f2a2a000a0d",
+      "checksum": "b846d4d5e528c21c34011dead5bbb50d905dd6bdebf951532bd1ba053f462f4f"
+    },
+    {
+      "id": "aud_1792170311399_mw31",
+      "timestamp": "2026-10-16T17:05:11.399Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "LISTING_SUSPENDED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1792170311209_or8l",
+      "result": "SUCCESS",
+      "metadata": {
+        "triggerReportId": "rep_1792170311251_xlal",
+        "reason": "Host failed to supply governor consent. Listing confirmed fraudulent. Suspended immediately."
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "da1e11d05c012beddccb52cb053c9eaf810ebc7561424428c2fe5dde8cbbe092",
+      "checksum": "10547a4092d7755353da36fd323a26ca6f4a68c4486463c1819a1f2a2a000a0d"
+    },
+    {
+      "id": "aud_1792170311386_4c2m",
+      "timestamp": "2026-10-16T17:05:11.386Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "REPORT_SUSPENDED",
+      "objectType": "REPORT",
+      "objectId": "rep_1792170311251_xlal",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "DOCUMENTATION_REQUESTED",
+        "newStatus": "SUSPENDED",
+        "propertyId": "prop_1792170311209_or8l",
+        "propertyTitle": "Waterfront Duplex in Victoria Island",
+        "reporterId": "user_1792170311174_7hd6y",
+        "reason": "Suspected Scam",
+        "resolutionNotes": "Host failed to supply governor consent. Listing confirmed fraudulent. Suspended immediately.",
+        "resolvedAt": "2026-10-16T17:05:11.386Z"
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "ffe2fc7d2290b066095a32c70c940b9f5ab2e3b3ffdc354e41339cab353ab0d6",
+      "checksum": "da1e11d05c012beddccb52cb053c9eaf810ebc7561424428c2fe5dde8cbbe092"
+    },
+    {
+      "id": "aud_1792170311373_i363",
+      "timestamp": "2026-10-16T17:05:11.373Z",
+      "actorId": "system",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_1792170311174_7hd6y",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1792170311363_usr1",
+        "type": "REPORT",
+        "title": "Report Status: DOCUMENTATION_REQUESTED"
+      },
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "8414da2f25f0f2bff460f896068f3bc4771277927f136ed677b3bb248d69be99",
+      "checksum": "ffe2fc7d2290b066095a32c70c940b9f5ab2e3b3ffdc354e41339cab353ab0d6"
+    },
+    {
+      "id": "aud_1792170311356_nrck",
+      "timestamp": "2026-10-16T17:05:11.356Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "REPORT_DOCUMENTATION_REQUESTED",
+      "objectType": "REPORT",
+      "objectId": "rep_1792170311251_xlal",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "UNDER_INVESTIGATION",
+        "newStatus": "DOCUMENTATION_REQUESTED",
+        "propertyId": "prop_1792170311209_or8l",
+        "propertyTitle": "Waterfront Duplex in Victoria Island",
+        "reporterId": "user_1792170311174_7hd6y",
+        "reason": "Suspected Scam",
+        "resolutionNotes": "Requested proof of ownership and verified governor consent from host.",
+        "resolvedAt": "2026-10-16T17:05:11.356Z"
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "334aad7c77db8c284166264f4ff1aa924fd56adb28600965723055f9378d9858",
+      "checksum": "8414da2f25f0f2bff460f896068f3bc4771277927f136ed677b3bb248d69be99"
+    },
+    {
+      "id": "aud_1792170311331_3kt2",
+      "timestamp": "2026-10-16T17:05:11.331Z",
+      "actorId": "system",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_1792170311174_7hd6y",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1792170311325_atp3",
+        "type": "REPORT",
+        "title": "Report Status: UNDER_INVESTIGATION"
+      },
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "66b925fe247a2914db3bd7b8739de74b5cc4d48b12309551ba10babf008760ff",
+      "checksum": "334aad7c77db8c284166264f4ff1aa924fd56adb28600965723055f9378d9858"
+    },
+    {
+      "id": "aud_1792170311318_1ghi",
+      "timestamp": "2026-10-16T17:05:11.318Z",
+      "actorId": "user_1792170311195_kfdwd",
+      "action": "REPORT_INVESTIGATED",
+      "objectType": "REPORT",
+      "objectId": "rep_1792170311251_xlal",
+      "result": "SUCCESS",
+      "metadata": {
+        "previousStatus": "REPORTED",
+        "newStatus": "UNDER_INVESTIGATION",
+        "propertyId": "prop_1792170311209_or8l",
+        "propertyTitle": "Waterfront Duplex in Victoria Island",
+        "reporterId": "user_1792170311174_7hd6y",
+        "reason": "Suspected Scam",
+        "resolutionNotes": "Escalated to internal fraud team. Reviewing title deed provenance.",
+        "resolvedAt": "2026-10-16T17:05:11.318Z"
+      },
+      "actor": {
+        "id": "user_1792170311195_kfdwd",
+        "email": "compliance.phase10.1792170311167@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "compliance.phase10.1792170311167@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "55c4c9087240975245035bd608960074e8fa8cb8f99636f59048100bf8b683a3",
+      "checksum": "66b925fe247a2914db3bd7b8739de74b5cc4d48b12309551ba10babf008760ff"
+    },
+    {
+      "id": "aud_1792170311298_bsem",
+      "timestamp": "2026-10-16T17:05:11.298Z",
+      "actorId": "system",
+      "action": "NOTIFICATION_SENT",
+      "objectType": "USER",
+      "objectId": "user_1792170311174_7hd6y",
+      "result": "SUCCESS",
+      "metadata": {
+        "notificationId": "notif_1792170311286_0uay",
+        "type": "REPORT",
+        "title": "Report Received"
+      },
+      "actor": {
+        "id": "system",
+        "email": "system@prophunta.ai",
+        "role": "ADMIN"
+      },
+      "actorEmail": "system@prophunta.ai",
+      "actorRole": "ADMIN",
+      "previousChecksum": "ecb2e77d7568510ebe4237892d925ce80d21dd40fc968f2728b563899cf6b150",
+      "checksum": "55c4c9087240975245035bd608960074e8fa8cb8f99636f59048100bf8b683a3"
+    },
+    {
+      "id": "aud_1792170311271_obwz",
+      "timestamp": "2026-10-16T17:05:11.271Z",
+      "actorId": "user_1792170311174_7hd6y",
+      "action": "REPORT_FILED",
+      "objectType": "REPORT",
+      "objectId": "rep_1792170311251_xlal",
+      "result": "SUCCESS",
+      "metadata": {
+        "propertyId": "prop_1792170311209_or8l",
+        "propertyTitle": "Waterfront Duplex in Victoria Island",
+        "reason": "Suspected Scam",
+        "description": "Price is drastically below market rate for VI waterfront, and poster demands upfront bank deposit before viewing."
+      },
+      "actor": {
+        "id": "user_1792170311174_7hd6y",
+        "email": "amaka.phase10.1792170311167@test.com",
+        "role": "SEEKER"
+      },
+      "actorEmail": "amaka.phase10.1792170311167@test.com",
+      "actorRole": "SEEKER",
+      "previousChecksum": "0043da3f206bf9235e551b60c36d44f1345076aa36317cf3b528ca54a1a8fe85",
+      "checksum": "ecb2e77d7568510ebe4237892d925ce80d21dd40fc968f2728b563899cf6b150"
+    },
+    {
+      "id": "aud_1792170311235_ahwb",
+      "timestamp": "2026-10-16T17:05:11.235Z",
+      "actorId": "user_1792170311183_lq859",
+      "action": "PROPERTY_DRAFT_CREATED",
+      "objectType": "PROPERTY",
+      "objectId": "prop_1792170311209_or8l",
+      "result": "SUCCESS",
+      "metadata": {
+        "title": "Waterfront Duplex in Victoria Island"
+      },
+      "actor": {
+        "id": "user_1792170311183_lq859",
+        "email": "emeka.phase10.1792170311167@test.com",
+        "role": "OWNER"
+      },
+      "actorEmail": "emeka.phase10.1792170311167@test.com",
+      "actorRole": "OWNER",
+      "previousChecksum": "11b3ce3402fa7bc1e9bb19fb42e4072d84f1b36496b555875af3d284f9c9e6ff",
+      "checksum": "0043da3f206bf9235e551b60c36d44f1345076aa36317cf3b528ca54a1a8fe85"
+    },
+    {
+      "id": "aud_1792170302081_yckp",
+      "timestamp": "2026-10-16T17:05:02.081Z",
       "actorId": "sec_admin_root",
       "action": "DOCUMENT_VIEWED",
       "objectType": "DOCUMENT",
-      "objectId": "doc_1791901868590_29943533",
+      "objectId": "doc_1792170302068_96e87286",
       "result": "SUCCESS",
       "metadata": {
-        "propertyId": "prop_1791901868531_5tdw",
+        "propertyId": "prop_1792170301943_i7c2",
         "fileName": "Confidential_Title_Deed.pdf",
         "documentType": "CERTIFICATE_OF_OCCUPANCY",
         "sizeBytes": 47
@@ -718,19 +1249,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "60b7142a56a36f32fb08a82b43295316d1f5e90eacc82fc1922786429fce8a88",
-      "checksum": "298f9fa1e9b32c42682a34a3070ae91ca0dce79b17df3a3e81e90f66d2316818"
+      "previousChecksum": "f1a90e7d0d846ac015a7f2fcd6046ef3b7963efc2fda20737609689c59aa5d4a",
+      "checksum": "11b3ce3402fa7bc1e9bb19fb42e4072d84f1b36496b555875af3d284f9c9e6ff"
     },
     {
-      "id": "aud_1791901868594_4wj2",
-      "timestamp": "2026-10-13T14:31:08.594Z",
+      "id": "aud_1792170302073_y358",
+      "timestamp": "2026-10-16T17:05:02.073Z",
       "actorId": "sec_owner_1",
       "action": "DOCUMENT_UPLOADED",
       "objectType": "DOCUMENT",
-      "objectId": "doc_1791901868590_29943533",
+      "objectId": "doc_1792170302068_96e87286",
       "result": "SUCCESS",
       "metadata": {
-        "propertyId": "prop_1791901868531_5tdw",
+        "propertyId": "prop_1792170301943_i7c2",
         "documentType": "CERTIFICATE_OF_OCCUPANCY",
         "fileName": "Confidential_Title_Deed.pdf",
         "sizeBytes": 47
@@ -742,12 +1273,12 @@
       },
       "actorEmail": "owner.kemi@prophunta.test",
       "actorRole": "OWNER",
-      "previousChecksum": "3083bf5f9557ee49e4e100169d58192305e6cc68a2d5005cfdbf45c358785ecb",
-      "checksum": "60b7142a56a36f32fb08a82b43295316d1f5e90eacc82fc1922786429fce8a88"
+      "previousChecksum": "1b1ccbee688a8c64244b8254d59a075a07336d29671a468a215c7ec6d1914e84",
+      "checksum": "f1a90e7d0d846ac015a7f2fcd6046ef3b7963efc2fda20737609689c59aa5d4a"
     },
     {
-      "id": "aud_1791901868585_1qfv",
-      "timestamp": "2026-10-13T14:31:08.585Z",
+      "id": "aud_1792170302057_3c89",
+      "timestamp": "2026-10-16T17:05:02.057Z",
       "actorId": "sec_admin_root",
       "action": "KYC_APPROVED",
       "objectType": "USER",
@@ -766,21 +1297,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "0e8944c3c61e92472ad508b4765f632c419933ab88c25998ba8136eb73727820",
-      "checksum": "3083bf5f9557ee49e4e100169d58192305e6cc68a2d5005cfdbf45c358785ecb"
+      "previousChecksum": "7e945d42a4a75edd7a90a9bb6c805f7495be27ef19a04bd3440db30852eafc40",
+      "checksum": "1b1ccbee688a8c64244b8254d59a075a07336d29671a468a215c7ec6d1914e84"
     },
     {
-      "id": "aud_1791901868582_s3sv",
-      "timestamp": "2026-10-13T14:31:08.582Z",
+      "id": "aud_1792170302051_a0s4",
+      "timestamp": "2026-10-16T17:05:02.051Z",
       "actorId": "sec_admin_root",
       "action": "EMERGENCY_OVERRIDE_EXECUTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868574_57utu",
+      "objectId": "appr_1792170302029_svjiq",
       "result": "SUCCESS",
       "metadata": {
         "incidentReference": "INC-SEC-CRIT-9921",
         "actionType": "PROPERTY_RESTORE",
-        "targetResourceId": "prop_1791901868531_5tdw",
+        "targetResourceId": "prop_1792170301943_i7c2",
         "justification": "Approved by CISO during active security triage meeting"
       },
       "actor": {
@@ -790,19 +1321,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "5ba52bf8d85b586ac5911d5ff6622be5d5384a9b8d2208345a10922070464bbe",
-      "checksum": "0e8944c3c61e92472ad508b4765f632c419933ab88c25998ba8136eb73727820"
+      "previousChecksum": "6424de262d1b7486cbd3e2ad5be6670f677a17fd869128ad6f4f9710d2bc09c3",
+      "checksum": "7e945d42a4a75edd7a90a9bb6c805f7495be27ef19a04bd3440db30852eafc40"
     },
     {
-      "id": "aud_1791901868578_wx1o",
-      "timestamp": "2026-10-13T14:31:08.578Z",
+      "id": "aud_1792170302042_0ubc",
+      "timestamp": "2026-10-16T17:05:02.042Z",
       "actorId": "sec_admin_root",
       "action": "LISTING_RESTORED",
       "objectType": "PROPERTY",
-      "objectId": "prop_1791901868531_5tdw",
+      "objectId": "prop_1792170301943_i7c2",
       "result": "SUCCESS",
       "metadata": {
-        "approvalRequestId": "appr_1791901868574_57utu",
+        "approvalRequestId": "appr_1792170302029_svjiq",
         "reason": "[EMERGENCY OVERRIDE - Ref: INC-SEC-CRIT-9921] Approved by CISO during active security triage meeting"
       },
       "actor": {
@@ -812,22 +1343,22 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "94d71f06be88d489687a07ddea5e9aae09183715ae40efa4481a0b5bf210064b",
-      "checksum": "5ba52bf8d85b586ac5911d5ff6622be5d5384a9b8d2208345a10922070464bbe"
+      "previousChecksum": "012ded42249fdeaeddff003ab157c0c8617a8d0fc33fa30bb38932fdba914733",
+      "checksum": "6424de262d1b7486cbd3e2ad5be6670f677a17fd869128ad6f4f9710d2bc09c3"
     },
     {
-      "id": "aud_1791901868570_g34c",
-      "timestamp": "2026-10-13T14:31:08.570Z",
+      "id": "aud_1792170302022_ef7q",
+      "timestamp": "2026-10-16T17:05:02.022Z",
       "actorId": "sec_admin_root",
       "action": "APPROVAL_EXECUTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868557_ag4a6",
+      "objectId": "appr_1792170301996_3omhr",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791901868531_5tdw",
-        "requesterStaffId": "staff_1791901868487_wf0kf"
+        "targetResourceId": "prop_1792170301943_i7c2",
+        "requesterStaffId": "staff_1792170301871_6zjgd"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -836,19 +1367,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "aba06a0fbd35847332157d81f977a4bbbc26ee17745eed2f4370ca31a2aa4a43",
-      "checksum": "94d71f06be88d489687a07ddea5e9aae09183715ae40efa4481a0b5bf210064b"
+      "previousChecksum": "94a026b62f7ed02c9edadc59bbec691f059957d8c5ea3a798937b4bdcad3e501",
+      "checksum": "012ded42249fdeaeddff003ab157c0c8617a8d0fc33fa30bb38932fdba914733"
     },
     {
-      "id": "aud_1791901868564_dory",
-      "timestamp": "2026-10-13T14:31:08.564Z",
+      "id": "aud_1792170302014_q878",
+      "timestamp": "2026-10-16T17:05:02.014Z",
       "actorId": "sec_mod_1",
       "action": "LISTING_RESTORED",
       "objectType": "PROPERTY",
-      "objectId": "prop_1791901868531_5tdw",
+      "objectId": "prop_1792170301943_i7c2",
       "result": "SUCCESS",
       "metadata": {
-        "approvalRequestId": "appr_1791901868557_ag4a6",
+        "approvalRequestId": "appr_1792170301996_3omhr",
         "reason": "Legitimate request with verified documentation"
       },
       "actor": {
@@ -858,21 +1389,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "bb48929f57658ac7a7c2741ed4d96565dbf3e7702c49f4c73b286cd4de0afe31",
-      "checksum": "aba06a0fbd35847332157d81f977a4bbbc26ee17745eed2f4370ca31a2aa4a43"
+      "previousChecksum": "6fc34a78b34b2a63ac0b739b113e41675ccd18c2f483104f6b8b4906867b65f1",
+      "checksum": "94a026b62f7ed02c9edadc59bbec691f059957d8c5ea3a798937b4bdcad3e501"
     },
     {
-      "id": "aud_1791901868559_b8d7",
-      "timestamp": "2026-10-13T14:31:08.559Z",
+      "id": "aud_1792170302002_xo4d",
+      "timestamp": "2026-10-16T17:05:02.002Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868557_ag4a6",
+      "objectId": "appr_1792170301996_3omhr",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791901868531_5tdw",
+        "targetResourceId": "prop_1792170301943_i7c2",
         "reason": "Legitimate request with verified documentation"
       },
       "actor": {
@@ -882,21 +1413,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "d94757a59184f927385a2eeceedd24107135b41558dc8d7b3fde2a060e3a1b3b",
-      "checksum": "bb48929f57658ac7a7c2741ed4d96565dbf3e7702c49f4c73b286cd4de0afe31"
+      "previousChecksum": "1dc8e9c078ded09b1a1ba55ff8ba83da3d8687e3cf5531e49c76499b1131281a",
+      "checksum": "6fc34a78b34b2a63ac0b739b113e41675ccd18c2f483104f6b8b4906867b65f1"
     },
     {
-      "id": "aud_1791901868548_7yep",
-      "timestamp": "2026-10-13T14:31:08.548Z",
+      "id": "aud_1792170301975_1cyr",
+      "timestamp": "2026-10-16T17:05:01.975Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868546_gngxk",
+      "objectId": "appr_1792170301969_dueu1",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791901868531_5tdw",
+        "targetResourceId": "prop_1792170301943_i7c2",
         "reason": "Deed checked"
       },
       "actor": {
@@ -906,21 +1437,21 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "0d6cff7a69f12cffa2f3c19cf3e240489be62b2e79b34e2842402fb3d9423ae6",
-      "checksum": "d94757a59184f927385a2eeceedd24107135b41558dc8d7b3fde2a060e3a1b3b"
+      "previousChecksum": "5ea32557e72ef35b8852b85364d0ef6218bc80a4c6fb6960cdae88ce36adbdba",
+      "checksum": "1dc8e9c078ded09b1a1ba55ff8ba83da3d8687e3cf5531e49c76499b1131281a"
     },
     {
-      "id": "aud_1791901868540_orlw",
-      "timestamp": "2026-10-13T14:31:08.540Z",
+      "id": "aud_1792170301964_ki65",
+      "timestamp": "2026-10-16T17:05:01.964Z",
       "actorId": "sec_admin_root",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868538_dh2k7",
+      "objectId": "appr_1792170301958_htjyn",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791901868531_5tdw",
+        "targetResourceId": "prop_1792170301943_i7c2",
         "reason": "Immediate reinstatement"
       },
       "actor": {
@@ -930,21 +1461,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "b50bbd8dcdf36ae4fdb711cd3c5d0ef7cc8c224020171c031508188fb717663d",
-      "checksum": "0d6cff7a69f12cffa2f3c19cf3e240489be62b2e79b34e2842402fb3d9423ae6"
+      "previousChecksum": "d8e669629d12bbc9d1e86ec56e74bc4e75b65034a0ca8171eaa645142fe6949a",
+      "checksum": "5ea32557e72ef35b8852b85364d0ef6218bc80a4c6fb6960cdae88ce36adbdba"
     },
     {
-      "id": "aud_1791901868536_7box",
-      "timestamp": "2026-10-13T14:31:08.536Z",
+      "id": "aud_1792170301953_6xmd",
+      "timestamp": "2026-10-16T17:05:01.953Z",
       "actorId": "sec_mod_1",
       "action": "APPROVAL_REQUESTED",
       "objectType": "APPROVAL",
-      "objectId": "appr_1791901868534_qrnzv",
+      "objectId": "appr_1792170301949_5ebdo",
       "result": "SUCCESS",
       "metadata": {
         "actionType": "PROPERTY_RESTORE",
         "targetResourceType": "PROPERTY",
-        "targetResourceId": "prop_1791901868531_5tdw",
+        "targetResourceId": "prop_1792170301943_i7c2",
         "reason": "Original physical documentation validated with Lagos state records"
       },
       "actor": {
@@ -954,16 +1485,16 @@
       },
       "actorEmail": "mod.chioma@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "fe8fa7dd23dee05febc389ed7d0dba72853a5563afba0c95a5b6421b21b14d9f",
-      "checksum": "b50bbd8dcdf36ae4fdb711cd3c5d0ef7cc8c224020171c031508188fb717663d"
+      "previousChecksum": "4f29bd4d9de7ac8a002511974d6b8d4022256e2bf7c600b516a35d4819a9a7d7",
+      "checksum": "d8e669629d12bbc9d1e86ec56e74bc4e75b65034a0ca8171eaa645142fe6949a"
     },
     {
-      "id": "aud_1791901868528_mm0y",
-      "timestamp": "2026-10-13T14:31:08.528Z",
+      "id": "aud_1792170301939_lb7y",
+      "timestamp": "2026-10-16T17:05:01.939Z",
       "actorId": "sec_admin_root",
       "action": "STAFF_STATUS_UPDATED",
       "objectType": "STAFF",
-      "objectId": "staff_1791901868486_zbbaq",
+      "objectId": "staff_1792170301867_sfocl",
       "result": "SUCCESS",
       "metadata": {
         "previousStatus": "SUSPENDED",
@@ -977,16 +1508,16 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "766777c3e1639cb0f6a8726c9e45e5d340c3de74dc3d2af9709c7df3121eee90",
-      "checksum": "fe8fa7dd23dee05febc389ed7d0dba72853a5563afba0c95a5b6421b21b14d9f"
+      "previousChecksum": "72637bec34326c3a462b37dc7738c7181da9ed3db6e140e68f887882d3d478dc",
+      "checksum": "4f29bd4d9de7ac8a002511974d6b8d4022256e2bf7c600b516a35d4819a9a7d7"
     },
     {
-      "id": "aud_1791901868524_3qzm",
-      "timestamp": "2026-10-13T14:31:08.524Z",
+      "id": "aud_1792170301927_w8ne",
+      "timestamp": "2026-10-16T17:05:01.927Z",
       "actorId": "sec_admin_root",
       "action": "STAFF_STATUS_UPDATED",
       "objectType": "STAFF",
-      "objectId": "staff_1791901868486_zbbaq",
+      "objectId": "staff_1792170301867_sfocl",
       "result": "SUCCESS",
       "metadata": {
         "previousStatus": "ACTIVE",
@@ -1000,19 +1531,19 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "31bfb75476b99fcb10ba23770e2efe5d21806bd86d17685584f5332d27eb321d",
-      "checksum": "766777c3e1639cb0f6a8726c9e45e5d340c3de74dc3d2af9709c7df3121eee90"
+      "previousChecksum": "b61adce754b836ccdce399900daf2a37ec289d5dbe58dfcd7ba7362401841f82",
+      "checksum": "72637bec34326c3a462b37dc7738c7181da9ed3db6e140e68f887882d3d478dc"
     },
     {
-      "id": "aud_1791901868509_9uar",
-      "timestamp": "2026-10-13T14:31:08.509Z",
+      "id": "aud_1792170301907_7cdx",
+      "timestamp": "2026-10-16T17:05:01.907Z",
       "actorId": "sec_admin_root",
       "action": "CUSTOM_PERMISSION_REVOKED",
       "objectType": "STAFF",
-      "objectId": "staff_1791901868486_zbbaq",
+      "objectId": "staff_1792170301867_sfocl",
       "result": "SUCCESS",
       "metadata": {
-        "grantId": "cgrant_1791901868496_48lz2"
+        "grantId": "cgrant_1792170301881_awokj"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -1021,21 +1552,21 @@
       },
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
-      "previousChecksum": "8836cddfd9e7eb1cc5be47ced107ed9a3f9d65c51cfdc155a35b282dab53d9e1",
-      "checksum": "31bfb75476b99fcb10ba23770e2efe5d21806bd86d17685584f5332d27eb321d"
+      "previousChecksum": "f9de21688a3ec67edde2d764ce31a761112f2a6c52d0b40fde390be1bafd6f99",
+      "checksum": "b61adce754b836ccdce399900daf2a37ec289d5dbe58dfcd7ba7362401841f82"
     },
     {
-      "id": "aud_1791901868501_hkbp",
-      "timestamp": "2026-10-13T14:31:08.501Z",
+      "id": "aud_1792170301895_dhaa",
+      "timestamp": "2026-10-16T17:05:01.895Z",
       "actorId": "sec_admin_root",
       "action": "CUSTOM_PERMISSION_GRANTED",
       "objectType": "STAFF",
-      "objectId": "staff_1791901868486_zbbaq",
+      "objectId": "staff_1792170301867_sfocl",
       "result": "SUCCESS",
       "metadata": {
         "permission": "properties.suspend",
         "reason": "Temporary coverage during moderation shift",
-        "expiresAt": "2026-10-13T16:31:08.495Z"
+        "expiresAt": "2026-10-16T19:05:01.880Z"
       },
       "actor": {
         "id": "sec_admin_root",
@@ -1045,7 +1576,7 @@
       "actorEmail": "admin.root@prophunta.test",
       "actorRole": "ADMIN",
       "previousChecksum": "9739ab1470838e7398cb0b8dfaaf69d83fc06d370335f9ef9de7a4553d254ac8",
-      "checksum": "8836cddfd9e7eb1cc5be47ced107ed9a3f9d65c51cfdc155a35b282dab53d9e1"
+      "checksum": "f9de21688a3ec67edde2d764ce31a761112f2a6c52d0b40fde390be1bafd6f99"
     },
     {
       "id": "aud-1",
@@ -1106,6 +1637,56 @@
     }
   ],
   "notifications": [
+    {
+      "userId": "user_1792170311174_7hd6y",
+      "title": "Report Status: RESOLVED",
+      "message": "Your report for \"Waterfront Duplex in Victoria Island\" was reviewed: RESOLVED. Resolution notes: \"Investigation completed. Property restored after legitimate title documents verified.\"",
+      "type": "REPORT",
+      "link": "/property/prop_1792170311209_or8l",
+      "read": false,
+      "id": "notif_1792170311448_y7bf",
+      "createdAt": "2026-10-16T17:05:11.448Z"
+    },
+    {
+      "userId": "user_1792170311174_7hd6y",
+      "title": "Report Status: SUSPENDED",
+      "message": "Your report for \"Waterfront Duplex in Victoria Island\" was reviewed: SUSPENDED. Resolution notes: \"Host failed to supply governor consent. Listing confirmed fraudulent. Suspended immediately.\"",
+      "type": "REPORT",
+      "link": "/property/prop_1792170311209_or8l",
+      "read": false,
+      "id": "notif_1792170311405_12fr",
+      "createdAt": "2026-10-16T17:05:11.405Z"
+    },
+    {
+      "userId": "user_1792170311174_7hd6y",
+      "title": "Report Status: DOCUMENTATION_REQUESTED",
+      "message": "Your report for \"Waterfront Duplex in Victoria Island\" was reviewed: DOCUMENTATION_REQUESTED. Resolution notes: \"Requested proof of ownership and verified governor consent from host.\"",
+      "type": "REPORT",
+      "link": "/property/prop_1792170311209_or8l",
+      "read": false,
+      "id": "notif_1792170311363_usr1",
+      "createdAt": "2026-10-16T17:05:11.363Z"
+    },
+    {
+      "userId": "user_1792170311174_7hd6y",
+      "title": "Report Status: UNDER_INVESTIGATION",
+      "message": "Your report for \"Waterfront Duplex in Victoria Island\" was reviewed: UNDER_INVESTIGATION. Resolution notes: \"Escalated to internal fraud team. Reviewing title deed provenance.\"",
+      "type": "REPORT",
+      "link": "/property/prop_1792170311209_or8l",
+      "read": false,
+      "id": "notif_1792170311325_atp3",
+      "createdAt": "2026-10-16T17:05:11.325Z"
+    },
+    {
+      "userId": "user_1792170311174_7hd6y",
+      "title": "Report Received",
+      "message": "Your report regarding \"Waterfront Duplex in Victoria Island\" has been logged and assigned to a compliance officer.",
+      "type": "REPORT",
+      "link": "/property/prop_1792170311209_or8l",
+      "read": false,
+      "id": "notif_1792170311286_0uay",
+      "createdAt": "2026-10-16T17:05:11.286Z"
+    },
     {
       "id": "notif-1",
       "userId": "user_seeker_1",
@@ -1194,7 +1775,7 @@
       "id": "staff_super_admin_1",
       "userId": "user_admin_1",
       "email": "admin@prophunta.ai",
-      "name": "Amina Bello (Verification Officer)",
+      "name": "Amina Bello (Super Admin)",
       "roles": [
         "SUPER_ADMIN"
       ],
@@ -1204,6 +1785,133 @@
       },
       "customGrants": [],
       "createdAt": "2026-07-01T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_verification_1",
+      "userId": "user_admin_verification",
+      "email": "verification@prophunta.ai",
+      "name": "Ngozi Okonjo (Verification Officer)",
+      "roles": [
+        "VERIFICATION_OFFICER"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-07-15T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_moderator_1",
+      "userId": "user_admin_moderator",
+      "email": "moderator@prophunta.ai",
+      "name": "Emeka Nwosu (Property Moderator)",
+      "roles": [
+        "PROPERTY_MODERATOR"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-08-01T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_trust_1",
+      "userId": "user_admin_trust",
+      "email": "trust@prophunta.ai",
+      "name": "Farouk Umar (Trust & Safety)",
+      "roles": [
+        "TRUST_SAFETY_INVESTIGATOR"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-08-10T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_inspections_1",
+      "userId": "user_admin_inspections",
+      "email": "inspections@prophunta.ai",
+      "name": "Bisi Adeyemi (Inspection Coordinator)",
+      "roles": [
+        "INSPECTION_COORDINATOR"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-08-15T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_support_1",
+      "userId": "user_admin_support",
+      "email": "support@prophunta.ai",
+      "name": "Fatima Aliyu (User Support)",
+      "roles": [
+        "USER_SUPPORT_OFFICER"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-08-20T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_compliance_1",
+      "userId": "user_admin_compliance",
+      "email": "compliance@prophunta.ai",
+      "name": "Kelechi Obi (Compliance Auditor)",
+      "roles": [
+        "COMPLIANCE_AUDITOR"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "customGrants": [],
+      "createdAt": "2026-09-01T08:00:00Z",
+      "updatedAt": "2026-10-05T09:00:00Z"
+    },
+    {
+      "id": "staff_manager_1",
+      "userId": "user_admin_staff_manager",
+      "email": "staffmanager@prophunta.ai",
+      "name": "Tariq Balogun (Staff Manager)",
+      "roles": [
+        "STAFF_MANAGER"
+      ],
+      "status": "ACTIVE",
+      "scope": {
+        "scopeType": "GLOBAL"
+      },
+      "delegation": {
+        "canManageStaff": true,
+        "maxAssignableRoles": [
+          "VERIFICATION_OFFICER",
+          "PROPERTY_MODERATOR",
+          "USER_SUPPORT_OFFICER",
+          "INSPECTION_COORDINATOR"
+        ],
+        "allowedCustomPermissions": [
+          "documents.view_sensitive",
+          "properties.suspend",
+          "users.support"
+        ],
+        "prohibitSuperAdminCreation": true
+      },
+      "customGrants": [],
+      "createdAt": "2026-09-10T08:00:00Z",
       "updatedAt": "2026-10-05T09:00:00Z"
     },
     {
@@ -1218,9 +1926,9 @@
         "scopeType": "GLOBAL"
       },
       "customGrants": [],
-      "id": "staff_1791901868482_3c970",
-      "createdAt": "2026-10-13T14:31:08.482Z",
-      "updatedAt": "2026-10-13T14:31:08.482Z"
+      "id": "staff_1792170301857_49btr",
+      "createdAt": "2026-10-16T17:05:01.857Z",
+      "updatedAt": "2026-10-16T17:05:01.857Z"
     },
     {
       "userId": "sec_staff_mgr",
@@ -1246,9 +1954,9 @@
         ],
         "prohibitSuperAdminCreation": true
       },
-      "id": "staff_1791901868484_si2hd",
-      "createdAt": "2026-10-13T14:31:08.484Z",
-      "updatedAt": "2026-10-13T14:31:08.484Z"
+      "id": "staff_1792170301863_l7ni0",
+      "createdAt": "2026-10-16T17:05:01.863Z",
+      "updatedAt": "2026-10-16T17:05:01.863Z"
     },
     {
       "userId": "sec_officer_1",
@@ -1263,21 +1971,21 @@
       },
       "customGrants": [
         {
-          "staffId": "staff_1791901868486_zbbaq",
+          "staffId": "staff_1792170301867_sfocl",
           "permission": "properties.suspend",
           "reason": "Temporary coverage during moderation shift",
-          "grantedBy": "staff_1791901868482_3c970",
+          "grantedBy": "staff_1792170301857_49btr",
           "status": "REVOKED",
-          "expiresAt": "2026-10-13T16:31:08.495Z",
-          "id": "cgrant_1791901868496_48lz2",
-          "grantedAt": "2026-10-13T14:31:08.496Z",
-          "reviewedAt": "2026-10-13T14:31:08.506Z",
+          "expiresAt": "2026-10-16T19:05:01.880Z",
+          "id": "cgrant_1792170301881_awokj",
+          "grantedAt": "2026-10-16T17:05:01.881Z",
+          "reviewedAt": "2026-10-16T17:05:01.903Z",
           "reviewedBy": "sec_admin_root"
         }
       ],
-      "id": "staff_1791901868486_zbbaq",
-      "createdAt": "2026-10-13T14:31:08.486Z",
-      "updatedAt": "2026-10-13T14:31:08.526Z"
+      "id": "staff_1792170301867_sfocl",
+      "createdAt": "2026-10-16T17:05:01.867Z",
+      "updatedAt": "2026-10-16T17:05:01.932Z"
     },
     {
       "userId": "sec_mod_1",
@@ -1291,9 +1999,9 @@
         "scopeType": "GLOBAL"
       },
       "customGrants": [],
-      "id": "staff_1791901868487_wf0kf",
-      "createdAt": "2026-10-13T14:31:08.487Z",
-      "updatedAt": "2026-10-13T14:31:08.487Z"
+      "id": "staff_1792170301871_6zjgd",
+      "createdAt": "2026-10-16T17:05:01.871Z",
+      "updatedAt": "2026-10-16T17:05:01.871Z"
     },
     {
       "userId": "expired_user_test",
@@ -1312,23 +2020,23 @@
           "staffId": "expired_user_test",
           "permission": "audit_logs.export",
           "grantedBy": "sec_admin_root",
-          "grantedAt": "2026-10-13T14:29:28.512Z",
-          "expiresAt": "2026-10-13T14:30:18.512Z",
+          "grantedAt": "2026-10-16T17:03:21.914Z",
+          "expiresAt": "2026-10-16T17:04:11.914Z",
           "reason": "Temporary audit access",
           "status": "ACTIVE"
         }
       ],
-      "id": "staff_1791901868512_g6kfe",
-      "createdAt": "2026-10-13T14:31:08.512Z",
-      "updatedAt": "2026-10-13T14:31:08.512Z"
+      "id": "staff_1792170301914_23vjl",
+      "createdAt": "2026-10-16T17:05:01.914Z",
+      "updatedAt": "2026-10-16T17:05:01.914Z"
     }
   ],
   "approvalRequests": [
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791901868531_5tdw",
-      "requesterStaffId": "staff_1791901868487_wf0kf",
+      "targetResourceId": "prop_1792170301943_i7c2",
+      "requesterStaffId": "staff_1792170301871_6zjgd",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1341,16 +2049,16 @@
       },
       "reason": "Original physical documentation validated with Lagos state records",
       "supportingEvidence": "https://records.lagosstate.gov.ng/deed/LS-88190",
-      "expiresAt": "2026-10-15T14:31:08.534Z",
-      "id": "appr_1791901868534_qrnzv",
+      "expiresAt": "2026-10-18T17:05:01.948Z",
+      "id": "appr_1792170301949_5ebdo",
       "status": "PENDING",
-      "createdAt": "2026-10-13T14:31:08.534Z"
+      "createdAt": "2026-10-16T17:05:01.949Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791901868531_5tdw",
-      "requesterStaffId": "staff_1791901868482_3c970",
+      "targetResourceId": "prop_1792170301943_i7c2",
+      "requesterStaffId": "staff_1792170301857_49btr",
       "requesterUserId": "sec_admin_root",
       "requesterEmail": "admin.root@prophunta.test",
       "proposedPayload": {
@@ -1362,16 +2070,16 @@
         "price": 450000000
       },
       "reason": "Immediate reinstatement",
-      "expiresAt": "2026-10-15T14:31:08.538Z",
-      "id": "appr_1791901868538_dh2k7",
+      "expiresAt": "2026-10-18T17:05:01.958Z",
+      "id": "appr_1792170301958_htjyn",
       "status": "PENDING",
-      "createdAt": "2026-10-13T14:31:08.538Z"
+      "createdAt": "2026-10-16T17:05:01.958Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791901868531_5tdw",
-      "requesterStaffId": "staff_1791901868487_wf0kf",
+      "targetResourceId": "prop_1792170301943_i7c2",
+      "requesterStaffId": "staff_1792170301871_6zjgd",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1383,18 +2091,18 @@
         "price": 450000000
       },
       "reason": "Deed checked",
-      "expiresAt": "2026-10-15T14:31:08.546Z",
-      "id": "appr_1791901868546_gngxk",
+      "expiresAt": "2026-10-18T17:05:01.969Z",
+      "id": "appr_1792170301969_dueu1",
       "status": "CANCELLED",
-      "createdAt": "2026-10-13T14:31:08.546Z",
+      "createdAt": "2026-10-16T17:05:01.969Z",
       "decisionNotes": "Execution cancelled: Target resource state changed materially since request submission.",
-      "decidedAt": "2026-10-13T14:31:08.552Z"
+      "decidedAt": "2026-10-16T17:05:01.986Z"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791901868531_5tdw",
-      "requesterStaffId": "staff_1791901868487_wf0kf",
+      "targetResourceId": "prop_1792170301943_i7c2",
+      "requesterStaffId": "staff_1792170301871_6zjgd",
       "requesterUserId": "sec_mod_1",
       "requesterEmail": "mod.chioma@prophunta.test",
       "proposedPayload": {
@@ -1406,22 +2114,22 @@
         "price": 450000000
       },
       "reason": "Legitimate request with verified documentation",
-      "expiresAt": "2026-10-15T14:31:08.557Z",
-      "id": "appr_1791901868557_ag4a6",
+      "expiresAt": "2026-10-18T17:05:01.996Z",
+      "id": "appr_1792170301996_3omhr",
       "status": "EXECUTED",
-      "createdAt": "2026-10-13T14:31:08.557Z",
-      "approverStaffId": "staff_1791901868482_3c970",
+      "createdAt": "2026-10-16T17:05:01.996Z",
+      "approverStaffId": "staff_1792170301857_49btr",
       "approverEmail": "admin.root@prophunta.test",
       "decisionNotes": "Approved and successfully executed.",
-      "decidedAt": "2026-10-13T14:31:08.561Z",
-      "executedAt": "2026-10-13T14:31:08.561Z",
+      "decidedAt": "2026-10-16T17:05:02.008Z",
+      "executedAt": "2026-10-16T17:05:02.008Z",
       "executionResult": "SUCCESS"
     },
     {
       "actionType": "PROPERTY_RESTORE",
       "targetResourceType": "PROPERTY",
-      "targetResourceId": "prop_1791901868531_5tdw",
-      "requesterStaffId": "staff_1791901868482_3c970",
+      "targetResourceId": "prop_1792170301943_i7c2",
+      "requesterStaffId": "staff_1792170301857_49btr",
       "requesterUserId": "sec_admin_root",
       "requesterEmail": "admin.root@prophunta.test",
       "proposedPayload": {
@@ -1429,17 +2137,20 @@
       },
       "reason": "[EMERGENCY OVERRIDE - Ref: INC-SEC-CRIT-9921] Approved by CISO during active security triage meeting",
       "supportingEvidence": "INC-SEC-CRIT-9921",
-      "expiresAt": "2026-10-13T14:31:08.574Z",
+      "expiresAt": "2026-10-16T17:05:02.029Z",
       "isEmergency": true,
-      "id": "appr_1791901868574_57utu",
+      "id": "appr_1792170302029_svjiq",
       "status": "EXECUTED",
-      "createdAt": "2026-10-13T14:31:08.574Z",
-      "approverStaffId": "staff_1791901868482_3c970",
+      "createdAt": "2026-10-16T17:05:02.029Z",
+      "approverStaffId": "staff_1792170301857_49btr",
       "approverEmail": "admin.root@prophunta.test",
       "decisionNotes": "Emergency executed under incident ref INC-SEC-CRIT-9921",
-      "decidedAt": "2026-10-13T14:31:08.574Z",
-      "executedAt": "2026-10-13T14:31:08.574Z",
+      "decidedAt": "2026-10-16T17:05:02.029Z",
+      "executedAt": "2026-10-16T17:05:02.029Z",
       "executionResult": "SUCCESS"
     }
-  ]
+  ],
+  "userDocuments": [],
+  "savedPropertyIds": {},
+  "seekerPreferences": {}
 }

@@ -302,7 +302,7 @@ function InspectionsContent() {
           </p>
         </div>
         {activeRole === 'SEEKER' && (
-          <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
+          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm rounded-xl shadow-xs">
             <Link href="/marketplace">Find Properties to Inspect</Link>
           </Button>
         )}
@@ -310,11 +310,11 @@ function InspectionsContent() {
 
       {loading ? (
         <div className="p-16 text-center text-sm text-muted-foreground">
-          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-lime-600" />
+          <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-emerald-600" />
           Loading inspection schedules...
         </div>
       ) : inspections.length === 0 ? (
-        <Card className="p-12 text-center rounded-2xl border-slate-200">
+        <Card className="p-12 text-center rounded-2xl border-slate-200/80 bg-white">
           <Calendar className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
           <h3 className="font-semibold text-slate-900 text-lg">No inspections scheduled</h3>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
@@ -323,7 +323,7 @@ function InspectionsContent() {
               : 'You have no pending or completed inspections for your listings.'}
           </p>
           {activeRole === 'SEEKER' && (
-            <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+            <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-xs">
               <Link href="/marketplace">Browse Marketplace</Link>
             </Button>
           )}
@@ -340,10 +340,10 @@ function InspectionsContent() {
             });
 
             return (
-              <Card key={insp.id} className="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200/90 shadow-xs rounded-2xl min-w-0">
+              <Card key={insp.id} className="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-slate-200/80 bg-white shadow-xs rounded-2xl min-w-0">
                 <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1 w-full">
-                  <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-lime-50 border border-lime-200 flex items-center justify-center shrink-0">
-                    <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-lime-700" />
+                  <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-700" />
                   </div>
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -424,7 +424,7 @@ function InspectionsContent() {
                         <Button
                           asChild
                           size="sm"
-                          className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs"
+                          className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs gap-1.5 rounded-xl shadow-xs"
                         >
                           <Link href={`/apply/${insp.propertyId}`}>
                             Apply / Make Offer <ChevronRight className="h-3.5 w-3.5" />
@@ -436,7 +436,7 @@ function InspectionsContent() {
                   {isHost && (insp.status === 'SCHEDULED' || insp.status === 'ACCEPTED') && (
                     <Button
                       size="sm"
-                      className="bg-lime-600 hover:bg-lime-500 text-white text-xs font-bold shadow-xs rounded-xl"
+                      className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs rounded-xl"
                       onClick={() => openCompleteInspectionModal(insp)}
                     >
                       Complete & Log Report
@@ -629,10 +629,10 @@ function InspectionsContent() {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCompleteDialogOpen(false)}>
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setCompleteDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmittingRecord} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
+              <Button type="submit" disabled={isSubmittingRecord} className="bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl">
                 {isSubmittingRecord ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving Report...

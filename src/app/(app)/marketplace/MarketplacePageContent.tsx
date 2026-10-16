@@ -250,21 +250,21 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
         </div>
       </div>
 
-      {/* Mobile & Desktop Search & Filter Container */}
-      <Card className="mb-6 p-3 sm:p-5 shadow-xs border-slate-200/90 rounded-2xl bg-white">
-        {/* Row 0: Search input & Mobile filter trigger */}
-        <div className="flex items-center gap-2 mb-3">
+      {/* Sticky Horizontal Search & Filter Bar */}
+      <div className="sticky top-14 sm:top-16 z-20 mb-6 rounded-2xl border border-slate-200/80 bg-white/95 p-2.5 sm:p-3.5 shadow-xs backdrop-blur-md transition-all">
+        {/* Row 0: Search input & Actions */}
+        <div className="flex items-center gap-2 mb-2.5">
           <div className="relative flex-1 min-w-0">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-lime-700 shrink-0" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-600 shrink-0 pointer-events-none" />
             <Input
               type="text"
-              placeholder="Area, street, or city (e.g. Lekki, Ikoyi, Ikeja)..."
+              placeholder="Search verified properties by neighborhood, city, or title (e.g. Lekki, Ikoyi)..."
               value={locationSearch}
               onChange={(e) => {
                 setLocationSearch(e.target.value);
                 setCurrentPage(1);
               }}
-              className="h-10 pl-9 pr-14 rounded-xl text-xs sm:text-sm font-medium border-slate-200 bg-slate-50/70 focus:bg-white transition-colors"
+              className="h-10 pl-9 pr-14 rounded-xl text-xs sm:text-sm font-medium border-slate-200 bg-slate-50/80 focus:bg-white focus:border-slate-400 transition-colors"
             />
             {locationSearch && (
               <button
@@ -280,28 +280,45 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             )}
           </div>
 
-          {/* Mobile Filter Toggle Button (visible below md) */}
+          {/* Detailed Filters Modal/Drawer Trigger */}
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-            className={`md:hidden h-10 px-3 rounded-xl border text-xs font-bold shrink-0 gap-1.5 ${
-              activeFiltersCount > 0 ? 'bg-lime-50 border-lime-300 text-lime-800' : 'border-slate-200'
+            className={`h-10 px-3.5 rounded-xl border text-xs font-bold shrink-0 gap-1.5 transition-all ${
+              activeFiltersCount > 0
+                ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs'
+                : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
             }`}
           >
             <ListFilter className="h-3.5 w-3.5" />
-            <span>Filters</span>
+            <span className="hidden sm:inline">More Filters</span>
+            <span className="sm:hidden">Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="h-5 w-5 rounded-full bg-lime-600 text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="h-5 w-5 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-bold">
                 {activeFiltersCount}
               </span>
             )}
           </Button>
+
+          {hasActiveFilters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleResetFilters}
+              title="Reset all filters"
+              className="h-10 px-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-900 shrink-0"
+            >
+              <RotateCcw className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">Reset</span>
+            </Button>
+          )}
         </div>
 
-        {/* Swipeable Quick-Filter Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs">
+        {/* Scrollable Quick-Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
           <button
             type="button"
             onClick={() => {
@@ -310,11 +327,26 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             }}
             className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
               listingType === 'all'
-                ? 'bg-slate-900 text-white'
+                ? 'bg-slate-900 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
             All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setVerifiedOnly(!verifiedOnly);
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 flex items-center gap-1.5 ${
+              verifiedOnly
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-100'
+            }`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+            RESA Verified Only
           </button>
           <button
             type="button"
@@ -324,7 +356,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             }}
             className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
               listingType === 'rent'
-                ? 'bg-lime-600 text-white'
+                ? 'bg-slate-900 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -338,26 +370,11 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
             }}
             className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
               listingType === 'sale'
-                ? 'bg-lime-600 text-white'
+                ? 'bg-slate-900 text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
             For Sale
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setVerifiedOnly(!verifiedOnly);
-              setCurrentPage(1);
-            }}
-            className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 flex items-center gap-1 ${
-              verifiedOnly
-                ? 'bg-emerald-600 text-white'
-                : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-            }`}
-          >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Verified Only
           </button>
           {QUICK_LOCATION_PILLS.slice(1).map((loc) => (
             <button
@@ -369,7 +386,7 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
               }}
               className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition shrink-0 ${
                 locationSearch === loc
-                  ? 'bg-slate-900 text-white'
+                  ? 'bg-slate-900 text-white shadow-xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
@@ -378,165 +395,93 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
           ))}
         </div>
 
-        {/* Full Filter Controls: Collapsible on Mobile, Expanded on Desktop */}
-        <div className={`${isMobileFiltersOpen ? 'block' : 'hidden md:block'} pt-3 border-t border-slate-100 mt-2`}>
-          {/* Row 1: Primary Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
-            <div className="grid gap-1">
-              <label className="text-[11px] font-bold text-slate-700">Listing Type</label>
-              <Select value={listingType} onValueChange={handleFilterChange(setListingType)}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Listings</SelectItem>
-                  <SelectItem value="sale">For Sale</SelectItem>
-                  <SelectItem value="rent">For Rent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-1.5">
-              <label className="text-xs font-bold text-slate-700">Property Type</label>
-               <Select value={propertyType} onValueChange={handleFilterChange(setPropertyType)}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="house">House</SelectItem>
-                    <SelectItem value="apartment">Apartment</SelectItem>
-                    <SelectItem value="condo">Condo</SelectItem>
-                    <SelectItem value="single-room">Single Room</SelectItem>
-                    <SelectItem value="rp-apart">R&amp;P Apart</SelectItem>
-                    <SelectItem value="self-apart">Self Apart</SelectItem>
-                    <SelectItem value="office-space">Office Space</SelectItem>
-                    <SelectItem value="warehouse">Warehouse</SelectItem>
-                    <SelectItem value="shop">Shop</SelectItem>
-                    <SelectItem value="land">Land</SelectItem>
-                </SelectContent>
+        {/* Detailed Filter Panel (Expandable) */}
+        {isMobileFiltersOpen && (
+          <div className="pt-3 border-t border-slate-100 mt-2.5 animate-in fade-in duration-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 items-end">
+              <div className="grid gap-1">
+                <label className="text-[11px] font-bold text-slate-700">Listing Type</label>
+                <Select value={listingType} onValueChange={handleFilterChange(setListingType)}>
+                  <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Listings</SelectItem>
+                    <SelectItem value="sale">For Sale</SelectItem>
+                    <SelectItem value="rent">For Rent</SelectItem>
+                  </SelectContent>
                 </Select>
-            </div>
-             <div className="grid gap-1.5">
-              <label className="text-xs font-bold text-slate-700">Beds</label>
-               <Select value={bedrooms} onValueChange={handleFilterChange(setBedrooms)}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="any">Any Beds</SelectItem>
+              </div>
+              <div className="grid gap-1">
+                <label className="text-[11px] font-bold text-slate-700">Property Type</label>
+                <Select value={propertyType} onValueChange={handleFilterChange(setPropertyType)}>
+                  <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="apartment">Apartment</SelectItem>
+                    <SelectItem value="duplex">Duplex</SelectItem>
+                    <SelectItem value="terrace">Terrace</SelectItem>
+                    <SelectItem value="penthouse">Penthouse</SelectItem>
+                    <SelectItem value="commercial">Commercial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-1">
+                <label className="text-[11px] font-bold text-slate-700">Min Bedrooms</label>
+                <Select value={bedrooms} onValueChange={handleFilterChange(setBedrooms)}>
+                  <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any Bedrooms</SelectItem>
                     <SelectItem value="1">1+ Bed</SelectItem>
                     <SelectItem value="2">2+ Beds</SelectItem>
                     <SelectItem value="3">3+ Beds</SelectItem>
                     <SelectItem value="4">4+ Beds</SelectItem>
-                </SelectContent>
+                    <SelectItem value="5">5+ Beds</SelectItem>
+                  </SelectContent>
                 </Select>
+              </div>
+              <div className="grid gap-1">
+                <label className="text-[11px] font-bold text-slate-700">Min Price (₦)</label>
+                <Input
+                  type="number"
+                  placeholder="Min ₦"
+                  value={minPrice}
+                  onChange={(e) => {
+                    setMinPrice(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="h-9 text-xs rounded-xl tabular-nums font-mono"
+                />
+              </div>
+              <div className="grid gap-1">
+                <label className="text-[11px] font-bold text-slate-700">Max Price (₦)</label>
+                <Input
+                  type="number"
+                  placeholder="Max ₦"
+                  value={maxPrice}
+                  onChange={(e) => {
+                    setMaxPrice(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="h-9 text-xs rounded-xl tabular-nums font-mono"
+                />
+              </div>
             </div>
-             <div className="grid gap-1.5">
-              <label className="text-xs font-bold text-slate-700">Baths</label>
-               <Select value={bathrooms} onValueChange={handleFilterChange(setBathrooms)}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="any">Any Baths</SelectItem>
-                    <SelectItem value="1">1+ Bath</SelectItem>
-                    <SelectItem value="2">2+ Baths</SelectItem>
-                    <SelectItem value="3">3+ Baths</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-            <div className="grid gap-1.5">
-              <label className="text-xs font-bold text-slate-700">Availability</label>
-               <Select value={availability} onValueChange={handleFilterChange(setAvailability)}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Availabilities</SelectItem>
-                    <SelectItem value="AVAILABLE">Available</SelectItem>
-                    <SelectItem value="UNDER_OFFER">Under Offer</SelectItem>
-                    <SelectItem value="OCCUPIED">Occupied</SelectItem>
-                </SelectContent>
-                </Select>
-            </div>
-        </div>
 
-        {/* Row 2: Price Range & Trust Filter */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3.5 items-end mt-3 pt-3 border-t border-slate-100">
-          <div className="md:col-span-3 grid gap-1.5">
-            <label className="text-xs font-bold text-slate-700">Min Price (₦)</label>
-            <Input
-              type="number"
-              placeholder="e.g. 500,000"
-              value={minPrice}
-              onChange={(e) => {
-                setMinPrice(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="h-9 text-xs rounded-xl"
-            />
-          </div>
-          <div className="md:col-span-3 grid gap-1.5">
-            <label className="text-xs font-bold text-slate-700">Max Price (₦)</label>
-            <Input
-              type="number"
-              placeholder="e.g. 20,000,000"
-              value={maxPrice}
-              onChange={(e) => {
-                setMaxPrice(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="h-9 text-xs rounded-xl"
-            />
-          </div>
-          <div className="md:col-span-3 grid gap-1.5">
-            <label className="text-xs font-bold text-slate-700">Sort by</label>
-            <Select value={sortOption} onValueChange={handleSortChange}>
-                <SelectTrigger className="h-9 text-xs rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                </SelectContent>
-            </Select>
-          </div>
-          <div className="md:col-span-3 flex items-center h-9">
-            <button
-              type="button"
-              onClick={() => {
-                setVerifiedOnly(!verifiedOnly);
-                setCurrentPage(1);
-              }}
-              className={`w-full h-9 flex items-center justify-center gap-2 rounded-xl text-xs font-bold border transition ${
-                verifiedOnly
-                  ? 'bg-slate-900 text-emerald-400 border-slate-900 shadow-sm'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              <ShieldCheck className={`h-4 w-4 ${verifiedOnly ? 'text-emerald-400' : 'text-slate-500'}`} />
-              <span>Verified Trust Only</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Row 3: Actions & Active Filters Reset */}
-        <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 pt-3 border-t border-slate-100">
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-                <span>Showing <strong>{filteredAndSortedProperties.length}</strong> matching listings</span>
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="inline-flex items-center gap-1 text-xs text-lime-700 hover:underline font-semibold ml-2"
-                  >
-                    <RotateCcw className="h-3 w-3" />
-                    Reset filters
-                  </button>
-                )}
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
-                <Button onClick={handleApplyFilters} className="w-full sm:w-auto h-9 text-xs rounded-xl bg-lime-600 hover:bg-lime-500 text-white font-bold shadow-xs">
-                    <ListFilter className="mr-1.5 h-3.5 w-3.5" />
-                    Apply Filters
+            <div className="mt-3 flex justify-between items-center pt-2.5 border-t border-slate-100 text-xs">
+              <span className="text-slate-500 font-medium">
+                Showing <strong className="text-slate-900">{filteredAndSortedProperties.length}</strong> matching listings
+              </span>
+              <div className="flex gap-2">
+                <Button onClick={handleResetFilters} variant="outline" size="sm" className="h-8 text-xs rounded-xl">
+                  Reset Filters
                 </Button>
-                <Button onClick={handleSaveSearch} variant="outline" className="w-full sm:w-auto h-9 text-xs rounded-xl">
-                    <Save className="mr-1.5 h-3.5 w-3.5" />
-                    Save Search
+                <Button onClick={() => setIsMobileFiltersOpen(false)} size="sm" className="h-8 text-xs rounded-xl bg-slate-900 text-white font-bold">
+                  Done
                 </Button>
+              </div>
             </div>
-        </div>
-        </div>
-      </Card>
+          </div>
+        )}
+      </div>
 
       {/* VIEW SWITCHER: Map View vs Grid View */}
       {viewMode === 'map' ? (
@@ -606,10 +551,23 @@ export default function MarketplacePageContent({ initialProperties = [] }: Marke
               </div>
             ))}
             {currentProperties.length === 0 && (
-                <div className="col-span-full text-center text-muted-foreground py-16">
-                    <p className="text-lg">No properties match your criteria.</p>
-                    <p>Try adjusting your filters or clearing your search.</p>
-                </div>
+              <div className="col-span-full">
+                <Card className="p-12 text-center rounded-2xl border-slate-200 bg-white shadow-xs max-w-md mx-auto">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto mb-3 border border-emerald-200">
+                    <Building className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-lg">No matching properties found</h3>
+                  <p className="text-xs text-slate-500 mt-1 mb-4 leading-relaxed">
+                    We couldn&apos;t find verified listings matching your specific criteria. Try broadening your price range or clearing neighborhood filters.
+                  </p>
+                  <Button
+                    onClick={handleResetFilters}
+                    className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Reset All Filters
+                  </Button>
+                </Card>
+              </div>
             )}
           </div>
 

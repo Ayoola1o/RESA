@@ -254,7 +254,7 @@ function ApplicationsContent() {
           <Button asChild variant="outline" className="rounded-xl text-xs font-semibold">
             <Link href="/inspections">Inspection Schedule</Link>
           </Button>
-          <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl text-xs shadow-xs">
+          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow-xs">
             <Link href="/marketplace">Browse Homes</Link>
           </Button>
         </div>
@@ -263,12 +263,12 @@ function ApplicationsContent() {
       {/* Main Applications Feed */}
       {loading ? (
         <div className="p-12 text-center text-muted-foreground flex items-center justify-center gap-2">
-          <Loader2 className="h-5 w-5 animate-spin text-lime-600" />
+          <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
           Loading applications and escrow status...
         </div>
       ) : applications.length === 0 ? (
-        <Card className="p-12 text-center border-dashed rounded-2xl">
-          <div className="h-12 w-12 rounded-2xl bg-lime-100 text-lime-800 flex items-center justify-center mx-auto mb-3">
+        <Card className="p-12 text-center border-dashed rounded-2xl bg-white">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto mb-3">
             <FileText className="h-6 w-6" />
           </div>
           <h3 className="text-lg font-bold font-headline text-slate-900">No applications on record</h3>
@@ -278,7 +278,7 @@ function ApplicationsContent() {
               : 'You have not received any tenant applications for your listings yet.'}
           </p>
           {activeRole === 'SEEKER' && (
-            <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl text-xs">
+            <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs">
               <Link href="/marketplace">Browse Verified Listings</Link>
             </Button>
           )}

@@ -1,46 +1,35 @@
 ---
-version: alpha
+version: 1.0.0
 name: prophunta-ai
-description: Design language and token system for PropHunta AI real estate verification, property discovery, and Nigerian real estate trust infrastructure.
+description: Institutional-grade PropTech design language blending Airbnb discovery polish with Stripe/Linear operational clarity.
 colors:
-  primary: hsl(84 81% 34%)
-  primary-foreground: hsl(0 0% 100%)
-  secondary: hsl(210 40% 96.1%)
-  secondary-foreground: hsl(222.2 47.4% 11.2%)
-  background: hsl(210 40% 98%)
-  foreground: hsl(222.2 84% 4.9%)
-  muted: hsl(210 40% 96.1%)
-  muted-foreground: hsl(215.4 16.3% 46.9%)
-  accent: hsl(84 48% 93%)
-  accent-foreground: hsl(84 85% 22%)
-  destructive: hsl(0 84.2% 60.2%)
-  destructive-foreground: hsl(210 40% 98%)
-  border: hsl(214.3 31.8% 91.4%)
-  input: hsl(214.3 31.8% 91.4%)
-  ring: hsl(84 81% 34%)
+  canvas: '#F8FAFC'
+  card: '#FFFFFF'
+  border: 'rgba(226, 232, 240, 0.8)'
+  primary: '#0F172A'
+  primary-foreground: '#FFFFFF'
+  emerald-trust: '#059669'
+  amber-pending: '#D97706'
+  rose-flag: '#E11D48'
 typography:
-  sans:
-    fontFamily: Plus Jakarta Sans, Inter, sans-serif
-  body:
-    fontFamily: Plus Jakarta Sans, Inter, sans-serif
-  headline:
-    fontFamily: Plus Jakarta Sans, sans-serif
+  sans: Plus Jakarta Sans, Inter, sans-serif
+  tabular-nums: true
 rounded:
-  base: 0.75rem
+  cards: 1rem (rounded-2xl)
+  controls: 0.75rem (rounded-xl)
+  badges: 9999px (rounded-full)
 ---
 
 ## Overview
 
-PropHunta AI is an institutional-grade Nigerian real estate trust and property discovery platform. Its visual design direction combines high-contrast modern editorial layouts, dark slate chrome accents, and vibrant lime/emerald security indicators to convey institutional authority, verified title integrity, and radical anti-fraud transparency.
+PropHunta AI is an institutional-grade Nigerian real estate trust and property discovery platform. Its visual design direction blends Airbnb's visual discovery polish with Stripe and Linear's operational dashboard clarity:
 
-## Colors
-
-The palette is built around trustworthy dark neutrals, luminous lime and emerald accents, and crisp card backgrounds:
-
-- **Primary**: Deep energetic lime (`hsl(84 81% 34%)`) paired with high-contrast white text for trust badges, primary search actions, and affirmative status indicators.
-- **Accents**: Subtle lime tint (`hsl(84 48% 93%)`) and intense emerald borders for verified credential badges and LASRERA compliance cards.
-- **Neutrals**: Crisp slate-950 (`#080d09` / `#0c140d`) used for hero backdrops, app headers, and sticky sidebars; clean white and slate-50 used for client dashboard surfaces.
-- **Destructive**: Deep crimson (`hsl(0 84.2% 60.2%)`) reserved for revoked verifications, rejected titles, or cancelled bookings.
+- **Canvas Background**: Pristine `#F8FAFC` (`bg-slate-50`) for main app backgrounds; pure `#FFFFFF` (`bg-white`) for elevated cards and surfaces.
+- **Borders & Dividers**: Crisp `1px` borders using `border-slate-200/80` (dark mode: `border-slate-800`).
+- **Primary Action / Brand**: Deep Architectural Slate (`bg-slate-900 text-white hover:bg-slate-800`).
+- **Trust & Verification Accent**: PropTech Emerald (`bg-emerald-600`, soft badge: `bg-emerald-50 text-emerald-700 border-emerald-200`). Used strictly for Verified Properties, Active Leases, Escrow Protection, and AI Match Scores.
+- **Warning / Pending**: Warm Amber (`bg-amber-50 text-amber-700 border-amber-200`) for pending inspections, unverified documents, or escrow holds.
+- **Danger / Governance Flag**: Rose (`bg-rose-50 text-rose-700 border-rose-200`) for rejected properties, overdue rent, or compliance flags.
 
 ## Themes
 

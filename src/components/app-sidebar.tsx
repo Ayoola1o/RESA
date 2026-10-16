@@ -217,39 +217,101 @@ export function getNavItemsForRole(role: UserRole): NavItem[] {
 
 export const moreNavItems: NavItem[] = [
   { label: 'Profile & Credentials', href: '/profile', icon: User },
+  { label: 'Trust & Verification', href: '/verification', icon: ShieldCheck },
   { label: 'Account Settings', href: '/settings', icon: Settings },
 ];
 
 export default function AppSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { userRole, currentUser } = useUserRole();
+  const { userRole, setUserRole, currentUser } = useUserRole();
   const { isDesktopOpen, closeDesktopSidebar } = useAppSidebar();
 
   // Determine role strictly from the authenticated account
   const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
-  const mainNavItems = getNavItemsForRole(activeRole);
+  const allNavItems = getNavItemsForRole(activeRole);
+
+  // Group items into clean operational sections
+  const discoveryHrefs = ['/marketplace', '/saved', '/marketplace?view=map'];
+  const portalHrefs = ['/admin', '/landlord/add-property', '/market-intelligence'];
+
+  const discoveryItems = allNavItems.filter((item) =>
+    discoveryHrefs.some((h) => item.href === h || item.href.startsWith(h))
+  );
+  const portalItems = allNavItems.filter((item) =>
+    portalHrefs.some((h) => item.href === h || item.href.startsWith(h))
+  );
+  const operationsItems = allNavItems.filter(
+    (item) => !discoveryItems.includes(item) && !portalItems.includes(item)
+  );
+
+  const renderNavGroup = (title: string, items: NavItem[]) => {
+    if (items.length === 0) return null;
+    return (
+      <div className="space-y-1">
+        <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block pt-2.5 pb-1">
+          {title}
+        </span>
+        {items.map((item) => {
+          const isActive = isNavigationItemActive(item.href, pathname, searchParams);
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`group flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
+                isActive
+                  ? 'bg-emerald-600 text-white shadow-xs font-semibold'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Icon
+                  className={`h-4 w-4 shrink-0 transition-colors ${
+                    isActive ? 'text-white' : 'text-slate-400 group-hover:text-emerald-400'
+                  }`}
+                />
+                <span className="truncate" title={item.label}>{item.label}</span>
+              </div>
+              {item.badge !== undefined && (
+                <span
+                  className={`inline-flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-2 ${
+                    isActive
+                      ? 'bg-slate-950 text-emerald-300'
+                      : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-[#0c140d] text-slate-300 lg:flex shadow-2xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out",
+        "fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-slate-950 text-slate-300 lg:flex shadow-2xl border-r border-slate-800/80 transition-transform duration-300 ease-in-out",
         isDesktopOpen ? "lg:translate-x-0" : "lg:-translate-x-full pointer-events-none"
       )}
       aria-hidden={!isDesktopOpen}
     >
       {/* Brand Header */}
-      <div className="flex items-center justify-between px-5 py-4.5 border-b border-slate-800/70">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/70">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lime-500 to-lime-700 text-white shadow-md shadow-lime-950/30 p-1">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white shadow-md p-1">
             <Logo className="h-8 w-8" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="text-base font-black tracking-tight text-white">PropHunta</span>
-              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-lime-500 text-slate-950 tracking-wide uppercase font-mono">AI</span>
+              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-600 text-white tracking-wide uppercase font-mono">AI</span>
             </div>
-            <span className="text-[10px] font-semibold tracking-tight text-lime-400">
+            <span className="text-[10px] font-semibold tracking-tight text-emerald-400">
               Verified Trust Infrastructure
             </span>
           </div>
@@ -267,8 +329,8 @@ export default function AppSidebar() {
         </button>
       </div>
 
-      {/* Read-Only Authenticated Role Indicator */}
-      <div className="px-3.5 py-2.5 bg-slate-950/60 border-b border-slate-800/50">
+      {/* Sleek Active Role Badge & Switcher */}
+      <div className="px-3.5 py-2.5 bg-slate-900/80 border-b border-slate-800/70">
         <div className="flex items-center justify-between">
           <div className="flex flex-col min-w-0 pr-2">
             <span
@@ -287,61 +349,25 @@ export default function AppSidebar() {
                 : 'Compliance Admin'}
             </span>
           </div>
-          <span className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-lime-950/80 text-lime-400 border border-lime-800/60 flex items-center gap-1.5 shadow-2xs">
-            <span className="h-1.5 w-1.5 rounded-full bg-lime-400 animate-pulse" />
+          <span className="shrink-0 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 flex items-center gap-1.5 shadow-xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             {activeRole}
           </span>
         </div>
       </div>
 
       {/* Navigation Scrollable Body (scrollbar hidden cleanly) */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 no-scrollbar">
-        {/* Main Navigation Items */}
-        <nav className="space-y-1">
-          {mainNavItems.map((item) => {
-            const isActive = isNavigationItemActive(item.href, pathname, searchParams);
-            const Icon = item.icon;
+      <div className="flex-1 overflow-y-auto px-3 py-2 no-scrollbar space-y-3">
+        {renderNavGroup('Discovery', discoveryItems)}
+        {renderNavGroup('Tenancy & Operations', operationsItems)}
+        {renderNavGroup('Role Portals', portalItems)}
 
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={`group flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
-                  isActive
-                    ? 'bg-lime-500 text-slate-950 shadow-md shadow-lime-950/40 font-bold'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
-                }`}
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <Icon
-                    className={`h-4 w-4 shrink-0 transition-colors ${
-                      isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-lime-400'
-                    }`}
-                  />
-                  <span className="truncate" title={item.label}>{item.label}</span>
-                </div>
-                {item.badge !== undefined && (
-                  <span
-                    className={`inline-flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-2 ${
-                      isActive
-                        ? 'bg-slate-950 text-lime-400'
-                        : 'bg-lime-500/20 text-lime-400 border border-lime-500/30'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* More Items Section */}
-        <div className="mt-5 pt-4 border-t border-slate-800/60">
-          <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        {/* Account & Security Section */}
+        <div className="pt-2 border-t border-slate-800/60">
+          <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block pt-1 pb-1">
             Account & Security
           </span>
-          <nav className="mt-1.5 space-y-1">
+          <nav className="mt-0.5 space-y-1">
             {moreNavItems.map((item) => {
               const isActive = isNavigationItemActive(item.href, pathname, searchParams);
               const Icon = item.icon;
@@ -352,13 +378,13 @@ export default function AppSidebar() {
                   href={item.href}
                   className={`group flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 ${
                     isActive
-                      ? 'bg-lime-500 text-slate-950 shadow-md shadow-lime-950/40 font-bold'
+                      ? 'bg-emerald-600 text-white shadow-xs font-semibold'
                       : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
                   }`}
                 >
                   <Icon
                     className={`h-4 w-4 shrink-0 transition-colors ${
-                      isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-lime-400'
+                      isActive ? 'text-white' : 'text-slate-400 group-hover:text-emerald-400'
                     }`}
                   />
                   <span className="truncate" title={item.label}>{item.label}</span>
@@ -369,7 +395,7 @@ export default function AppSidebar() {
         </div>
 
         {/* Promo Intelligence Card */}
-        <div className="mt-5 rounded-2xl bg-gradient-to-b from-[#132215] to-[#0c160e] border border-lime-900/40 p-3 relative overflow-hidden shadow-lg">
+        <div className="mt-4 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 p-3 relative overflow-hidden shadow-lg">
           <div className="relative h-18 w-full overflow-hidden rounded-xl bg-slate-900 mb-2.5">
             <Image
               src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=400&q=80"

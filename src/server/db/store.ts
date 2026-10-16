@@ -15,6 +15,8 @@ import {
   AgentCredential,
   StaffAccount,
   ApprovalRequest,
+  UserDocument,
+  SeekerHousingPreferences,
 } from '@/types/prophunta';
 import {
   SEED_USERS,
@@ -41,6 +43,9 @@ export interface DatabaseSchema {
   agentCredentials: AgentCredential[];
   staffAccounts: StaffAccount[];
   approvalRequests: ApprovalRequest[];
+  userDocuments: UserDocument[];
+  savedPropertyIds: Record<string, string[]>;
+  seekerPreferences: Record<string, SeekerHousingPreferences>;
 }
 
 import os from 'os';
@@ -270,6 +275,9 @@ function getDefaultDatabase(): DatabaseSchema {
     agentCredentials: [...SEED_AGENT_CREDENTIALS],
     staffAccounts: [...SEED_STAFF_ACCOUNTS],
     approvalRequests: [],
+    userDocuments: [],
+    savedPropertyIds: {},
+    seekerPreferences: {},
   };
 }
 
@@ -307,6 +315,15 @@ export function getDb(): DatabaseSchema {
           }
           if (!dbCache.approvalRequests) {
             dbCache.approvalRequests = [];
+          }
+          if (!dbCache.userDocuments) {
+            dbCache.userDocuments = [];
+          }
+          if (!dbCache.savedPropertyIds) {
+            dbCache.savedPropertyIds = {};
+          }
+          if (!dbCache.seekerPreferences) {
+            dbCache.seekerPreferences = {};
           }
           return dbCache;
         }

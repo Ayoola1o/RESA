@@ -180,7 +180,7 @@ export default function ChatRoomPage() {
               {enquiry.propertyImage && (
                 <AvatarImage src={enquiry.propertyImage} alt={otherPartyName} />
               )}
-              <AvatarFallback className="bg-lime-100 text-lime-900 font-bold text-xs sm:text-sm border border-lime-300">
+              <AvatarFallback className="bg-emerald-100 text-emerald-900 font-bold text-xs sm:text-sm border border-emerald-300">
                 {otherPartyName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -191,7 +191,7 @@ export default function ChatRoomPage() {
                   {otherPartyRole}
                 </Badge>
                 {enquiry.authorizedAgentId && (
-                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4 bg-lime-50 text-lime-800 border-lime-200">
+                  <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4 bg-emerald-50 text-emerald-800 border-emerald-200">
                     <Users className="h-2.5 w-2.5 mr-1" /> Authorized Agent Shared Thread
                   </Badge>
                 )}
@@ -291,22 +291,22 @@ export default function ChatRoomPage() {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-lime-700 hover:text-lime-800 hover:bg-lime-50 rounded-lg"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
                 onClick={handleSuggestReply}
                 disabled={isSuggesting || isSending}
                 title="Use AI to suggest an appropriate reply"
               >
                 {isSuggesting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
                 ) : (
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4 text-emerald-600" />
                 )}
               </Button>
             </div>
 
             <Button
               type="submit"
-              className="bg-lime-600 hover:bg-lime-500 text-white font-bold h-10 px-3.5 rounded-xl shrink-0"
+              className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 px-3.5 rounded-xl shrink-0"
               disabled={isSending || !newMessage.trim()}
             >
               {isSending ? (

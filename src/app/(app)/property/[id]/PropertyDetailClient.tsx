@@ -28,6 +28,8 @@ import {
   Check,
   Flag,
   Video,
+  Images,
+  Sparkles,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +91,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
   const [isEnquiryDialogOpen, setIsEnquiryDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [isLocationDiscrepancyDialogOpen, setIsLocationDiscrepancyDialogOpen] = useState(false);
+  const [isMediaGalleryOpen, setIsMediaGalleryOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form states
@@ -340,109 +343,235 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
         </div>
       </div>
 
-      {/* Main Grid: Left Details & Right Action / Verification Column */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        {/* Left Column (2 Cols) */}
-        <div className="lg:col-span-2 space-y-6 sm:space-y-8 min-w-0">
-          {/* Media Carousel (PRD Section 7: Persistent Media with ordering, captions, video, and primary display) */}
-          <div className="relative rounded-2xl overflow-hidden shadow-md bg-slate-900 border border-slate-200/80">
-            <Carousel className="w-full">
-              <CarouselContent>
-                {[...(property.media || [])]
-                  .sort((a, b) => (a.isPrimary ? -1 : b.isPrimary ? 1 : (a.order || 0) - (b.order || 0)))
-                  .map((med, index) => (
-                    <CarouselItem key={med.id || index}>
-                      <div className="relative h-[250px] xs:h-[300px] sm:h-[460px] w-full bg-slate-950 flex items-center justify-center">
-                        {med.type === 'video' ? (
-                          <video
-                            src={med.url}
-                            controls
-                            className="w-full h-full object-contain"
-                            poster={property.media.find((m) => m.type === 'image')?.url}
-                          />
-                        ) : (
-                          <Image
-                            src={med.url}
-                            alt={med.caption || property.title}
-                            fill
-                            className="object-cover"
-                            priority={index === 0}
-                          />
-                        )}
-                        <div className="absolute bottom-3 left-4 flex items-center gap-2 z-10">
-                          {med.type === 'video' && (
-                            <span className="bg-lime-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-sm">
-                              <Video className="h-3 w-3" /> Video Walkthrough
-                            </span>
+      {/* Bento Photo & Media Grid */}
+      {(() => {
+        const sortedMedia = [...(property.media || [])].sort((a, b) =>
+          a.isPrimary ? -1 : b.isPrimary ? 1 : (a.order || 0) - (b.order || 0)
+        );
+        const primaryMedia = sortedMedia[0] || {
+          id: 'fallback-0',
+          url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80',
+          type: 'image' as const,
+          caption: property.title,
+        };
+        const secondaryMedia = sortedMedia.slice(1);
+
+        return (
+          <>
+            <div className="relative rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-950">
+              {/* Desktop Bento Grid (md and up) */}
+              <div className="hidden md:grid md:grid-cols-4 md:grid-rows-2 gap-2 h-[440px] p-2">
+                {/* Large Primary Tile (spans 2 cols, 2 rows) */}
+                <div
+                  onClick={() => setIsMediaGalleryOpen(true)}
+                  className="md:col-span-2 md:row-span-2 relative h-full w-full rounded-xl overflow-hidden cursor-pointer group bg-slate-900"
+                >
+                  {primaryMedia.type === 'video' ? (
+                    <video src={primaryMedia.url} className="w-full h-full object-cover" muted loop playsInline />
+                  ) : (
+                    <Image
+                      src={primaryMedia.url}
+                      alt={primaryMedia.caption || property.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      priority
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+                  {primaryMedia.type === 'video' && (
+                    <span className="absolute bottom-3 left-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1 shadow-xs">
+                      <Video className="h-3 w-3" /> Video Walkthrough
+                    </span>
+                  )}
+                  {primaryMedia.caption && (
+                    <div className="absolute bottom-3 right-3 bg-slate-900/80 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-lg border border-white/10 font-medium">
+                      {primaryMedia.caption}
+                    </div>
+                  )}
+                </div>
+
+                {/* Secondary Tiles */}
+                {secondaryMedia.slice(0, 4).map((med, idx) => (
+                  <div
+                    key={med.id || idx}
+                    onClick={() => setIsMediaGalleryOpen(true)}
+                    className="md:col-span-1 md:row-span-1 relative h-full w-full rounded-xl overflow-hidden cursor-pointer group bg-slate-900"
+                  >
+                    {med.type === 'video' ? (
+                      <video src={med.url} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <Image
+                        src={med.url}
+                        alt={med.caption || `${property.title} photo ${idx + 2}`}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-slate-950/0 group-hover:bg-slate-950/20 transition-colors pointer-events-none" />
+                    {med.type === 'video' && (
+                      <span className="absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                        <Video className="h-2.5 w-2.5" /> Video
+                      </span>
+                    )}
+                  </div>
+                ))}
+
+                {/* Fillers if property has fewer than 5 media items */}
+                {Array.from({ length: Math.max(0, 4 - secondaryMedia.length) }).map((_, fIdx) => (
+                  <div
+                    key={`filler-${fIdx}`}
+                    onClick={() => setIsMediaGalleryOpen(true)}
+                    className="md:col-span-1 md:row-span-1 relative h-full w-full rounded-xl overflow-hidden cursor-pointer group bg-slate-100 flex items-center justify-center border border-slate-200/60"
+                  >
+                    <Building className="h-8 w-8 text-slate-300" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile View: Swipeable Carousel */}
+              <div className="block md:hidden relative">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {sortedMedia.map((med, index) => (
+                      <CarouselItem key={med.id || index}>
+                        <div
+                          onClick={() => setIsMediaGalleryOpen(true)}
+                          className="relative h-[280px] xs:h-[320px] w-full bg-slate-950 flex items-center justify-center"
+                        >
+                          {med.type === 'video' ? (
+                            <video src={med.url} controls className="w-full h-full object-contain" />
+                          ) : (
+                            <Image
+                              src={med.url}
+                              alt={med.caption || property.title}
+                              fill
+                              className="object-cover"
+                              priority={index === 0}
+                            />
                           )}
                           {med.caption && (
-                            <div className="bg-slate-900/80 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                            <div className="absolute bottom-3 left-4 bg-slate-900/80 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-lg border border-white/10 font-medium">
                               {med.caption}
                             </div>
                           )}
                         </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-4" />
-              <CarouselNext className="right-4" />
-            </Carousel>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-3" />
+                  <CarouselNext className="right-3" />
+                </Carousel>
+              </div>
 
-            {/* Badges Overlay */}
-            <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-              <Badge
-                className={`text-xs font-bold px-3 py-1 ${
-                  property.listingStatus === 'VERIFIED' || property.listingStatus === 'ACTIVE'
-                    ? 'bg-lime-600 text-white'
-                    : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
-                    ? 'bg-amber-500 text-white'
+              {/* Badges Overlay on Bento */}
+              <div className="absolute top-4 left-4 flex flex-wrap gap-2 pointer-events-none z-10">
+                <Badge
+                  className={`text-xs font-bold px-3 py-1 shadow-xs ${
+                    property.listingStatus === 'VERIFIED' || property.listingStatus === 'ACTIVE'
+                      ? 'bg-emerald-600 text-white'
+                      : property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED'
+                      ? 'bg-amber-500 text-white'
+                      : property.listingStatus === 'CHANGES_REQUIRED'
+                      ? 'bg-orange-500 text-white'
+                      : property.listingStatus === 'RESERVED'
+                      ? 'bg-purple-600 text-white'
+                      : property.listingStatus === 'OCCUPIED'
+                      ? 'bg-slate-700 text-white'
+                      : property.listingStatus === 'SOLD'
+                      ? 'bg-slate-800 text-white'
+                      : property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'
+                      ? 'bg-rose-600 text-white'
+                      : 'bg-slate-700 text-white'
+                  }`}
+                >
+                  <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                  {property.listingStatus === 'VERIFIED'
+                    ? 'RESA Verified'
+                    : property.listingStatus === 'ACTIVE'
+                    ? 'Verified Active'
+                    : property.listingStatus === 'UNDER_REVIEW'
+                    ? 'Under Verification Review'
+                    : property.listingStatus === 'SUBMITTED'
+                    ? 'Submitted for Review'
                     : property.listingStatus === 'CHANGES_REQUIRED'
-                    ? 'bg-orange-500 text-white'
+                    ? 'Changes Required'
                     : property.listingStatus === 'RESERVED'
-                    ? 'bg-purple-600 text-white'
+                    ? 'Reserved'
                     : property.listingStatus === 'OCCUPIED'
-                    ? 'bg-slate-700 text-white'
+                    ? 'Occupied'
                     : property.listingStatus === 'SOLD'
-                    ? 'bg-slate-800 text-white'
-                    : property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'
-                    ? 'bg-rose-600 text-white'
-                    : 'bg-slate-700 text-white'
-                }`}
-              >
-                {property.listingStatus === 'VERIFIED'
-                  ? '✓ Verified Listing'
-                  : property.listingStatus === 'ACTIVE'
-                  ? '✓ Verified Active'
-                  : property.listingStatus === 'UNDER_REVIEW'
-                  ? '⏳ Under Verification Review'
-                  : property.listingStatus === 'SUBMITTED'
-                  ? '📋 Submitted for Review'
-                  : property.listingStatus === 'CHANGES_REQUIRED'
-                  ? '⚠️ Changes Required'
-                  : property.listingStatus === 'RESERVED'
-                  ? '🔒 Reserved'
-                  : property.listingStatus === 'OCCUPIED'
-                  ? '🏠 Occupied'
-                  : property.listingStatus === 'SOLD'
-                  ? '🤝 Sold'
-                  : property.listingStatus === 'SUSPENDED'
-                  ? '⛔ Suspended'
-                  : property.listingStatus === 'REJECTED'
-                  ? '✕ Rejected'
-                  : '📝 Draft'}
-              </Badge>
-              <Badge variant="secondary" className="text-xs font-bold bg-white/90 text-slate-800 shadow-sm">
-                {property.listingType === 'RENT' ? 'For Rent' : 'For Sale'}
-              </Badge>
-              {property.intendedUse && (
-                <Badge variant="secondary" className="text-xs font-bold bg-white/90 text-slate-800 shadow-sm">
-                  {property.intendedUse}
+                    ? 'Sold'
+                    : property.listingStatus === 'SUSPENDED'
+                    ? 'Suspended'
+                    : property.listingStatus === 'REJECTED'
+                    ? 'Rejected'
+                    : 'Draft'}
                 </Badge>
-              )}
-            </div>
-          </div>
+                <Badge variant="secondary" className="text-xs font-bold bg-white/95 text-slate-800 shadow-xs backdrop-blur-md">
+                  {property.listingType === 'RENT' ? 'For Rent' : 'For Sale'}
+                </Badge>
+                {property.intendedUse && (
+                  <Badge variant="secondary" className="text-xs font-bold bg-white/95 text-slate-800 shadow-xs backdrop-blur-md">
+                    {property.intendedUse}
+                  </Badge>
+                )}
+              </div>
 
+              {/* "View All Photos / Virtual Tour" Action Button Overlay */}
+              <Button
+                onClick={() => setIsMediaGalleryOpen(true)}
+                variant="secondary"
+                size="sm"
+                className="absolute bottom-4 right-4 z-10 bg-white/90 hover:bg-white text-slate-900 font-semibold text-xs rounded-xl shadow-md backdrop-blur-md border border-slate-200/80 gap-1.5"
+              >
+                <Images className="h-3.5 w-3.5 text-slate-700" />
+                <span>View All Photos ({sortedMedia.length})</span>
+              </Button>
+            </div>
+
+            {/* Lightbox Dialog for Bento Photos */}
+            <Dialog open={isMediaGalleryOpen} onOpenChange={setIsMediaGalleryOpen}>
+              <DialogContent className="max-w-5xl p-2 sm:p-4 bg-slate-950 text-white border-slate-800 rounded-2xl">
+                <DialogHeader className="px-2 pt-2 text-left">
+                  <DialogTitle className="text-base font-bold text-white flex items-center justify-between">
+                    <span>{property.title} &bull; Media Gallery</span>
+                    <span className="text-xs text-slate-400 font-normal">{sortedMedia.length} Photos &amp; Walkthroughs</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="py-2">
+                  <Carousel className="w-full">
+                    <CarouselContent>
+                      {sortedMedia.map((med, idx) => (
+                        <CarouselItem key={med.id || idx}>
+                          <div className="relative h-[350px] sm:h-[500px] w-full flex items-center justify-center bg-black rounded-xl overflow-hidden">
+                            {med.type === 'video' ? (
+                              <video src={med.url} controls className="w-full h-full object-contain" />
+                            ) : (
+                              <Image src={med.url} alt={med.caption || `Photo ${idx + 1}`} fill className="object-contain" />
+                            )}
+                            {med.caption && (
+                              <div className="absolute bottom-3 left-4 bg-slate-900/85 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                                {med.caption}
+                              </div>
+                            )}
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-3 text-slate-900" />
+                    <CarouselNext className="right-3 text-slate-900" />
+                  </Carousel>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </>
+        );
+      })()}
+
+      {/* Main Asymmetric Grid: Left Details (8 Cols) & Right Action/Trust Sidebar (4 Cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column (8 Cols) */}
+        <div className="lg:col-span-8 space-y-6 sm:space-y-8 min-w-0">
           {/* Title & Core Overview */}
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -451,12 +580,12 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   {property.title}
                 </h1>
                 <p className="flex items-center text-sm font-medium text-slate-500 mt-1.5">
-                  <MapPin className="h-4 w-4 mr-1 text-lime-700 shrink-0" />
+                  <MapPin className="h-4 w-4 mr-1 text-emerald-700 shrink-0" />
                   {property.address}, {property.area}, {property.city}, {property.state}
                 </p>
               </div>
               <div className="text-left sm:text-right shrink-0">
-                <div className="text-2xl sm:text-3xl font-black text-lime-800">
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
                   {formatCurrency(property.price, property.listingType === 'RENT' ? 'For Rent' : 'For Sale', property.priceUnit)}
                 </div>
                 <p className="text-xs font-semibold text-slate-400">
@@ -468,21 +597,21 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             {/* Metric Pills */}
             <div className="grid grid-cols-2 min-[440px]:grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 pt-2">
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
-                <BedDouble className="h-5 w-5 text-lime-700 shrink-0" />
+                <BedDouble className="h-5 w-5 text-emerald-700 shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.bedrooms} Beds</div>
                   <div className="text-[10px] text-slate-400 truncate">Bedrooms</div>
                 </div>
               </div>
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
-                <Bath className="h-5 w-5 text-lime-700 shrink-0" />
+                <Bath className="h-5 w-5 text-emerald-700 shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.bathrooms} Baths</div>
                   <div className="text-[10px] text-slate-400 truncate">Bathrooms</div>
                 </div>
               </div>
               <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
-                <Building className="h-5 w-5 text-lime-700 shrink-0" />
+                <Building className="h-5 w-5 text-emerald-700 shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs font-bold text-slate-900 truncate" title={property.propertyType}>{property.propertyType}</div>
                   <div className="text-[10px] text-slate-400 truncate">Building Type</div>
@@ -490,7 +619,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               </div>
               {property.sqft && (
                 <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-slate-200/80 shadow-2xs min-w-0">
-                  <FileText className="h-5 w-5 text-lime-700 shrink-0" />
+                  <FileText className="h-5 w-5 text-emerald-700 shrink-0" />
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-slate-900 truncate tabular-nums">{property.sqft} sqm</div>
                     <div className="text-[10px] text-slate-400 truncate">Floor Area</div>
@@ -501,7 +630,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </div>
 
           {/* Description */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold text-slate-900">About this Property</CardTitle>
             </CardHeader>
@@ -513,15 +642,15 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </Card>
 
           {/* Verified Features */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bold text-slate-900">Verified Features & Amenities</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {property.features.map((feat) => (
-                  <div key={feat} className="flex items-center gap-2 text-xs font-medium text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                    <CheckCircle className="h-3.5 w-3.5 text-lime-700 shrink-0" />
+                  <div key={feat} className="flex items-center gap-2 text-xs font-medium text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                    <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -530,13 +659,13 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </Card>
 
           {/* Full Cost Breakdown (PRD Section 11) */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-bold text-slate-900">
                   Transparent Cost Breakdown
                 </CardTitle>
-                <span className="text-[11px] font-bold text-lime-800 bg-lime-50 border border-lime-200 px-2 py-0.5 rounded-md">
+                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
                   No Hidden Agency Fees
                 </span>
               </div>
@@ -548,35 +677,35 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               <div className="space-y-2 text-sm divide-y divide-slate-100">
                 <div className="flex justify-between pt-1">
                   <span className="text-slate-600 font-medium">Base Price ({property.listingType === 'RENT' ? 'Annual Rent' : 'Purchase'})</span>
-                  <span className="font-bold text-slate-900">₦{basePrice.toLocaleString()}</span>
+                  <span className="font-bold text-slate-900 tabular-nums">₦{basePrice.toLocaleString()}</span>
                 </div>
                 {agreementFee > 0 && (
                   <div className="flex justify-between pt-2">
                     <span className="text-slate-600 font-medium">Legal / Agreement Fee</span>
-                    <span className="font-bold text-slate-900">₦{agreementFee.toLocaleString()}</span>
+                    <span className="font-bold text-slate-900 tabular-nums">₦{agreementFee.toLocaleString()}</span>
                   </div>
                 )}
                 {cautionFee > 0 && (
                   <div className="flex justify-between pt-2">
                     <span className="text-slate-600 font-medium">Refundable Caution Deposit</span>
-                    <span className="font-bold text-slate-900">₦{cautionFee.toLocaleString()}</span>
+                    <span className="font-bold text-slate-900 tabular-nums">₦{cautionFee.toLocaleString()}</span>
                   </div>
                 )}
                 {serviceCharge > 0 && (
                   <div className="flex justify-between pt-2">
                     <span className="text-slate-600 font-medium">Annual Facility Service Charge</span>
-                    <span className="font-bold text-slate-900">₦{serviceCharge.toLocaleString()}</span>
+                    <span className="font-bold text-slate-900 tabular-nums">₦{serviceCharge.toLocaleString()}</span>
                   </div>
                 )}
                 {otherCharges > 0 && (
                   <div className="flex justify-between pt-2">
                     <span className="text-slate-600 font-medium">Survey / Documentation / Stamp</span>
-                    <span className="font-bold text-slate-900">₦{otherCharges.toLocaleString()}</span>
+                    <span className="font-bold text-slate-900 tabular-nums">₦{otherCharges.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between pt-3 text-base font-black text-slate-950 bg-lime-50/80 p-3 rounded-xl border border-lime-200">
+                <div className="flex justify-between pt-3 text-base font-black text-slate-950 bg-emerald-50/80 p-3 rounded-xl border border-emerald-200">
                   <span>Total First Outlay</span>
-                  <span>₦{totalOutlay.toLocaleString()}</span>
+                  <span className="tabular-nums">₦{totalOutlay.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -591,18 +720,18 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </Card>
 
           {/* Location & Cadastral Coordinates Context */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs">
+          <Card className="rounded-2xl border-slate-200/80 shadow-xs bg-white">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-lime-700" />
+                  <MapPin className="h-4 w-4 text-emerald-700" />
                   Cadastral Location Context
                 </CardTitle>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setIsLocationDiscrepancyDialogOpen(true)}
-                  className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+                  className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50 rounded-xl"
                 >
                   <Flag className="h-3.5 w-3.5 mr-1" />
                   Report Discrepancy
@@ -620,13 +749,13 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                     <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-100">
                       <div>
                         <span className="text-slate-400 font-medium">Latitude</span>
-                        <p className="font-bold text-slate-800">
+                        <p className="font-bold text-slate-800 tabular-nums">
                           {validCoords ? `${validCoords.lat.toFixed(4)}° N` : 'Pending capture'}
                         </p>
                       </div>
                       <div>
                         <span className="text-slate-400 font-medium">Longitude</span>
-                        <p className="font-bold text-slate-800">
+                        <p className="font-bold text-slate-800 tabular-nums">
                           {validCoords ? `${validCoords.lng.toFixed(4)}° E` : 'Pending capture'}
                         </p>
                       </div>
@@ -664,270 +793,230 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           </Card>
         </div>
 
-        {/* Right Column: Verification Panel & CTAs (PRD Section 11 & 12) */}
-        <div className="space-y-6">
-          {/* Granular Verification Panel */}
-          <Card className="rounded-2xl border-slate-200/90 bg-white shadow-lg overflow-hidden">
-            <div className="bg-[#0c140d] p-4 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-lime-400" />
-                  <span className="font-black text-sm tracking-wide">Verification Audit</span>
-                </div>
-                <span className="text-[10px] font-bold bg-lime-600 px-2 py-0.5 rounded text-white uppercase">
-                  {v?.overallStatus || 'IN_REVIEW'}
+        {/* Right Column: Sticky Action & Trust Sidebar (4 Cols) */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="lg:sticky lg:top-24 space-y-5">
+            {/* Main Action & Fee Breakdown Card */}
+            <Card className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm space-y-5">
+              {/* Price Header */}
+              <div className="border-b border-slate-100 pb-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {property.listingType === 'RENT' ? 'Annual Rent' : 'Purchase Price'}
                 </span>
-              </div>
-              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
-                Granular compliance parameters audited by PropHunta trust officers.
-              </p>
-            </div>
-
-            <CardContent className="p-4 space-y-3">
-              {/* Granular Checklist Items */}
-              <div className="space-y-2.5 divide-y divide-slate-100">
-                <div className="flex items-center justify-between pt-1">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Owner Identity</p>
-                    <p className="text-[10px] text-slate-400">KYC & Government ID verified</p>
-                  </div>
-                  {renderStatusBadge(v?.ownerIdentityStatus)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Property Location</p>
-                    <p className="text-[10px] text-slate-400">Cadastral coordinates authenticated</p>
-                  </div>
-                  {renderStatusBadge(v?.locationStatus)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Documentation Reviewed</p>
-                    <p className="text-[10px] text-slate-400">Governor&apos;s Consent / C of O / Survey</p>
-                  </div>
-                  {renderStatusBadge(v?.authorityDocumentStatus)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Availability Status</p>
-                    <p className="text-[10px] text-slate-400">Confirmed vacant & ready for handover</p>
-                  </div>
-                  {renderStatusBadge(v?.availabilityStatus)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Media Authentication</p>
-                    <p className="text-[10px] text-slate-400">Timestamped photos & verified video</p>
-                  </div>
-                  {renderStatusBadge(v?.mediaStatus)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Physical Inspection</p>
-                    <p className="text-[10px] text-slate-400">Field agent condition score logged</p>
-                  </div>
-                  {renderStatusBadge(v?.inspectionStatus)}
+                <div className="text-3xl font-black text-slate-900 tracking-tight mt-1 tabular-nums">
+                  ₦{property.price.toLocaleString()}
+                  {property.listingType === 'RENT' && (
+                    <span className="text-sm font-semibold text-slate-400 ml-1">/ year</span>
+                  )}
                 </div>
               </div>
 
-              {/* Disclaimer per PRD Section 11 */}
-              <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500 leading-snug flex items-start gap-2">
-                <Info className="h-4 w-4 text-lime-700 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Legal Notice:</strong> PropHunta audits public records and documentation reviewed. This constitutes verified due diligence, not an insurance guarantee.
-                </span>
-              </div>
-
-              {v?.lastVerifiedAt && (
-                <div className="text-[10px] text-slate-400 text-center pt-1 font-medium">
-                  Last verified on {new Date(v.lastVerifiedAt).toLocaleDateString()}
+              {/* Itemized Initial Package Breakdown */}
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Refundable Caution Deposit</span>
+                  <span className="font-semibold text-slate-900 tabular-nums">
+                    ₦{(cautionFee || Math.round(property.price * 0.1)).toLocaleString()}
+                  </span>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <div className="flex justify-between text-slate-600">
+                  <span>Facility Service Charge</span>
+                  <span className="font-semibold text-slate-900 tabular-nums">
+                    ₦{(serviceCharge || 0).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Legal & Tenancy Agreement</span>
+                  <span className="font-semibold text-slate-900 tabular-nums">
+                    ₦{(agreementFee || Math.round(property.price * 0.1)).toLocaleString()}
+                  </span>
+                </div>
 
-          {/* Action CTAs Card */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-md bg-white p-5 space-y-3.5">
-            <h3 className="text-sm font-bold text-slate-900">Property Next Steps</h3>
-
-            {/* Status-driven guidance banners */}
-            {property.listingStatus === 'RESERVED' && (
-              <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 leading-relaxed">
-                <strong>🔒 Listing Reserved:</strong> A holding deposit or preliminary agreement has been recorded for this property. Booking new inspections and submitting offers is currently paused.
-              </div>
-            )}
-            {property.listingStatus === 'OCCUPIED' && (
-              <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-800 leading-relaxed">
-                <strong>🏠 Currently Occupied:</strong> This property is actively leased and unavailable for new tenancy applications.
-              </div>
-            )}
-            {property.listingStatus === 'SOLD' && (
-              <div className="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed">
-                <strong>🤝 Property Sold:</strong> This property transaction has been concluded.
-              </div>
-            )}
-            {property.listingStatus === 'SUSPENDED' && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 leading-relaxed">
-                <strong>⛔ Listing Suspended:</strong> This property has been suspended by compliance officers and cannot be transacted.
-              </div>
-            )}
-            {(property.listingStatus === 'UNDER_REVIEW' || property.listingStatus === 'SUBMITTED') && (
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
-                <strong>⏳ In Verification Review:</strong> Title and field checks are underway. Applications will open once approved.
-              </div>
-            )}
-            {(property.listingStatus === 'DRAFT' || property.listingStatus === 'CHANGES_REQUIRED' || property.listingStatus === 'REJECTED') && (
-              <div className="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 leading-relaxed">
-                <strong>📝 Status: {property.listingStatus}</strong> — This listing is not publicly active.
-              </div>
-            )}
-
-            {/* Request Inspection CTA */}
-            <Button
-              onClick={() => setIsTourDialogOpen(true)}
-              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="w-full h-11 rounded-xl bg-lime-600 hover:bg-lime-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-lime-950/10"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Schedule Inspection (Physical / Video)
-            </Button>
-
-            {/* Submit Application / Make Offer CTA */}
-            <Button
-              onClick={() => setIsOfferDialogOpen(true)}
-              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              variant="outline"
-              className="w-full h-11 rounded-xl border-lime-300 text-lime-800 hover:bg-lime-50 disabled:opacity-50 font-bold text-xs"
-            >
-              <Banknote className="h-4 w-4 mr-2" />
-              {property.listingType === 'RENT' ? 'Submit Rental Expression of Interest' : 'Submit Purchase Offer'}
-            </Button>
-
-            {/* Send Enquiry CTA */}
-            <Button
-              onClick={() => setIsEnquiryDialogOpen(true)}
-              disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
-              variant="secondary"
-              className="w-full h-10 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-800 font-semibold text-xs"
-            >
-              <MessageSquare className="h-3.5 w-3.5 mr-2 text-slate-600" />
-              Send Direct Enquiry to Authorized Host
-            </Button>
-          </Card>
-
-          {/* Inspection Information Card (PRD Section 11 & 15) */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <Calendar className="h-4 w-4 text-lime-700" />
-                <span>Inspection Information</span>
-              </div>
-              <span className="text-[10px] font-bold text-lime-800 bg-lime-50 px-2 py-0.5 rounded border border-lime-200">
-                Field-Agent Guided
-              </span>
-            </div>
-
-            <div className="space-y-2 text-xs text-slate-600">
-              <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <Check className="h-3.5 w-3.5 text-lime-700 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-slate-800">Physical On-Site Walkthrough</p>
-                  <p className="text-[11px] text-slate-500">Accompanied by a verified PropHunta inspection officer</p>
+                <div className="mt-3 p-3.5 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-200 flex items-center justify-between text-sm font-bold">
+                  <span>Total Initial Package</span>
+                  <span className="text-base tabular-nums">
+                    ₦{totalOutlay.toLocaleString()}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                <Video className="h-3.5 w-3.5 text-lime-700 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-slate-800">Live Virtual Video Tour</p>
-                  <p className="text-[11px] text-slate-500">Real-time HD interactive inspection for diaspora & remote buyers</p>
+
+              {/* Primary Action Buttons */}
+              <div className="space-y-2.5 pt-2">
+                {/* Request Inspection CTA */}
+                <Button
+                  onClick={() => setIsTourDialogOpen(true)}
+                  disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+                  className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all"
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Schedule Inspection
+                </Button>
+
+                {/* Submit Application / Make Offer CTA */}
+                <Button
+                  onClick={() => setIsOfferDialogOpen(true)}
+                  disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
+                  className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all"
+                >
+                  <Banknote className="h-4 w-4 mr-2" />
+                  {property.listingType === 'RENT' ? 'Apply for Lease' : 'Submit Purchase Offer'}
+                </Button>
+
+                {/* Send Enquiry CTA */}
+                <Button
+                  onClick={() => setIsEnquiryDialogOpen(true)}
+                  disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
+                  variant="outline"
+                  className="w-full h-10 rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-50 font-semibold text-xs"
+                >
+                  <MessageSquare className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                  Message Landlord
+                </Button>
+              </div>
+
+              {/* PropHunta Trust & Escrow Protection Callout */}
+              <div className="p-4 rounded-xl bg-slate-900 text-white space-y-2 border border-slate-800 shadow-xs">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                  <ShieldCheck className="h-4 w-4 shrink-0" />
+                  <span>PropHunta Trust & Escrow Protection</span>
                 </div>
-              </div>
-              <div className="text-[11px] text-slate-500 space-y-1 pt-1">
-                <p><strong>Available Days:</strong> Monday – Saturday (9:00 AM – 5:00 PM WAT)</p>
-                <p><strong>Notice Period:</strong> Minimum 4 hours advance notice required</p>
-                <p><strong>Escrow Guard:</strong> Never pay cash directly to any party at the inspection</p>
-              </div>
-            </div>
-
-            <Button
-              onClick={() => setIsTourDialogOpen(true)}
-              disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              variant="outline"
-              className="w-full h-9 rounded-xl border-lime-300 text-lime-800 hover:bg-lime-50 text-xs font-semibold"
-            >
-              <Calendar className="h-3.5 w-3.5 mr-1.5" />
-              Book Inspection Slot
-            </Button>
-          </Card>
-
-          {/* Authorized Party Info (PRD Section 11) */}
-          <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <BadgeCheck className="h-4 w-4 text-lime-700" />
-                <span>Authorized Party</span>
-              </div>
-              <span className="text-[10px] font-bold text-lime-800 bg-lime-50 px-2 py-0.5 rounded border border-lime-200">
-                {authorizedParty?.verificationStatus === 'VERIFIED' ? 'Verified Partner' : 'Authority Documented'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 pt-1">
-              <div className="h-10 w-10 rounded-full bg-lime-100 text-lime-900 font-bold flex items-center justify-center text-sm shrink-0 border border-lime-300">
-                {authorizedParty?.name ? authorizedParty.name.charAt(0).toUpperCase() : (property.authorizedAgentId ? 'A' : 'O')}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-slate-900 truncate">
-                  {authorizedParty?.name || (property.authorizedAgentId ? 'Authorized Licensed Broker' : 'Direct Property Title Holder')}
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Never transfer funds, reservation fees, or security deposits outside the RESA platform. Verified properties hold funds in a segregated trust until physical inspection and contract execution.
                 </p>
-                <p className="text-[11px] text-slate-500">
-                  {authorizedParty?.role === 'AGENT' || property.authorizedAgentId
-                    ? `Licensed Agent${authorizedParty?.agencyName ? ` • ${authorizedParty.agencyName}` : ''}`
-                    : 'Registered Landlord / Owner'}
+              </div>
+            </Card>
+
+            {/* Granular Verification Panel */}
+            <Card className="rounded-2xl border-slate-200/90 bg-white shadow-xs overflow-hidden">
+              <div className="bg-slate-900 p-4 text-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    <span className="font-bold text-sm tracking-wide">Verification Audit</span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-emerald-600 px-2 py-0.5 rounded text-white uppercase">
+                    {v?.overallStatus || 'IN_REVIEW'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                  Granular compliance parameters audited by PropHunta trust officers.
                 </p>
-                {authorizedParty?.licenseNumber && (
-                  <p className="text-[10px] text-slate-400 font-mono">
-                    Lic: {authorizedParty.licenseNumber}
-                  </p>
+              </div>
+
+              <CardContent className="p-4 space-y-3">
+                <div className="space-y-2.5 divide-y divide-slate-100">
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Owner Identity</p>
+                      <p className="text-[10px] text-slate-400">KYC & Government ID verified</p>
+                    </div>
+                    {renderStatusBadge(v?.ownerIdentityStatus)}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Property Location</p>
+                      <p className="text-[10px] text-slate-400">Cadastral coordinates authenticated</p>
+                    </div>
+                    {renderStatusBadge(v?.locationStatus)}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Documentation Reviewed</p>
+                      <p className="text-[10px] text-slate-400">Governor&apos;s Consent / C of O / Survey</p>
+                    </div>
+                    {renderStatusBadge(v?.authorityDocumentStatus)}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Availability Status</p>
+                      <p className="text-[10px] text-slate-400">Confirmed vacant & ready for handover</p>
+                    </div>
+                    {renderStatusBadge(v?.availabilityStatus)}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Media Authentication</p>
+                      <p className="text-[10px] text-slate-400">Timestamped photos & verified video</p>
+                    </div>
+                    {renderStatusBadge(v?.mediaStatus)}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-800">Physical Inspection</p>
+                      <p className="text-[10px] text-slate-400">Field agent condition score logged</p>
+                    </div>
+                    {renderStatusBadge(v?.inspectionStatus)}
+                  </div>
+                </div>
+
+                {v?.lastVerifiedAt && (
+                  <div className="text-[10px] text-slate-400 text-center pt-1 font-medium">
+                    Last verified on {new Date(v.lastVerifiedAt).toLocaleDateString()}
+                  </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Authorized Party Info */}
+            <Card className="rounded-2xl border-slate-200/80 shadow-xs p-4 space-y-3 bg-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                  <BadgeCheck className="h-4 w-4 text-emerald-700" />
+                  <span>Authorized Party</span>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {authorizedParty?.verificationStatus === 'VERIFIED' ? 'Verified Partner' : 'Authority Documented'}
+                </span>
               </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <div className="h-10 w-10 rounded-full bg-emerald-100 text-emerald-900 font-bold flex items-center justify-center text-sm shrink-0 border border-emerald-300">
+                  {authorizedParty?.name ? authorizedParty.name.charAt(0).toUpperCase() : (property.authorizedAgentId ? 'A' : 'O')}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-slate-900 truncate">
+                    {authorizedParty?.name || (property.authorizedAgentId ? 'Authorized Licensed Broker' : 'Direct Property Title Holder')}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {authorizedParty?.role === 'AGENT' || property.authorizedAgentId
+                      ? `Licensed Agent${authorizedParty?.agencyName ? ` • ${authorizedParty.agencyName}` : ''}`
+                      : 'Registered Landlord / Owner'}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setIsEnquiryDialogOpen(true)}
+                disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
+                variant="secondary"
+                className="w-full h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs"
+              >
+                <MessageSquare className="h-3 w-3 mr-1.5" />
+                Contact Representative
+              </Button>
+            </Card>
+
+            {/* Notice / Report Discrepancy */}
+            <div className="p-3.5 rounded-2xl border border-rose-100 bg-rose-50/50 flex items-center justify-between gap-3">
+              <div className="text-xs">
+                <p className="font-bold text-slate-800">Notice a discrepancy?</p>
+                <p className="text-[11px] text-slate-500">Report false claims or off-platform demands</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsReportDialogOpen(true)}
+                className="text-xs font-semibold text-rose-600 border-rose-200 hover:bg-rose-100 hover:text-rose-700 shrink-0 rounded-xl"
+              >
+                <Flag className="h-3.5 w-3.5 mr-1" />
+                Report Listing
+              </Button>
             </div>
-
-            <p className="text-[11px] text-slate-500 leading-relaxed pt-1 border-t border-slate-100">
-              Identity documents and representation mandates have been audited by PropHunta trust compliance. Direct communications are secured.
-            </p>
-
-            <Button
-              onClick={() => setIsEnquiryDialogOpen(true)}
-              disabled={property.listingStatus === 'SUSPENDED' || property.listingStatus === 'REJECTED'}
-              variant="secondary"
-              className="w-full h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs"
-            >
-              <MessageSquare className="h-3 w-3 mr-1.5" />
-              Contact Representative
-            </Button>
-          </Card>
-
-          {/* Report Listing Trigger Card (PRD Section 11 & 18) */}
-          <div className="p-3.5 rounded-2xl border border-rose-100 bg-rose-50/50 flex items-center justify-between gap-3">
-            <div className="text-xs">
-              <p className="font-bold text-slate-800">Notice a discrepancy?</p>
-              <p className="text-[11px] text-slate-500">Report false claims or suspicious requests</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsReportDialogOpen(true)}
-              className="text-xs font-semibold text-rose-600 border-rose-200 hover:bg-rose-100 hover:text-rose-700 shrink-0 rounded-xl"
-            >
-              <Flag className="h-3.5 w-3.5 mr-1" />
-              Report Listing
-            </Button>
           </div>
         </div>
       </div>
@@ -959,7 +1048,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               size="sm"
               onClick={() => setIsTourDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="h-10 px-3 rounded-xl bg-lime-600 hover:bg-lime-500 text-white text-xs font-bold shadow-md shadow-lime-950/20"
+              className="h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md"
             >
               <Calendar className="h-3.5 w-3.5 mr-1" />
               <span>Inspection</span>
@@ -969,7 +1058,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
               size="sm"
               onClick={() => setIsOfferDialogOpen(true)}
               disabled={property.listingStatus !== 'ACTIVE' && property.listingStatus !== 'VERIFIED'}
-              className="h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold"
+              className="h-10 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
             >
               <span>Apply</span>
             </Button>
@@ -1024,7 +1113,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   onClick={() => setTourType('IN_PERSON')}
                   className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
                     tourType === 'IN_PERSON'
-                      ? 'border-lime-600 bg-lime-50 text-lime-950 font-bold'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold'
                       : 'border-slate-200 text-slate-600'
                   }`}
                 >
@@ -1035,7 +1124,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
                   onClick={() => setTourType('VIDEO')}
                   className={`py-2 px-3 text-xs font-semibold rounded-xl border text-center transition-all ${
                     tourType === 'VIDEO'
-                      ? 'border-lime-600 bg-lime-50 text-lime-950 font-bold'
+                      ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold'
                       : 'border-slate-200 text-slate-600'
                   }`}
                 >
@@ -1057,10 +1146,10 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             </div>
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsTourDialogOpen(false)}>
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setIsTourDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Confirm Inspection Request
               </Button>
@@ -1199,10 +1288,10 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             </p>
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsOfferDialogOpen(false)}>
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setIsOfferDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Submit Application
               </Button>
@@ -1236,10 +1325,10 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsEnquiryDialogOpen(false)}>
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setIsEnquiryDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-lime-600 hover:bg-lime-500 text-white font-bold">
+              <Button type="submit" disabled={isSubmitting} className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Send Message
               </Button>

@@ -38,7 +38,14 @@ import {
   ApprovalRequest,
   AuditLog,
   AuditAction,
+  UserDocument,
+  UserDocumentType,
+  UserDocumentStatus,
+  SeekerHousingPreferences,
 } from '@/types/prophunta';
+import { getDb, saveDb } from '../db/store';
+import { userRepository } from '../repositories/user-repository';
+import { auditRepository } from '../repositories/audit-repository';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
 import { mediaService } from '../services/media-service';
@@ -1423,4 +1430,240 @@ export async function exportAuditLogsAction(
     return { success: false, error: err.message || 'Failed to export audit logs.' };
   }
 }
+
+// --- USER CREDENTIAL DOCUMENTS, SAVED PROPERTIES & VERIFICATION OVERVIEW ACTIONS ---
+
+export async function getUserDocumentsAction(): Promise<{
+  success: boolean;
+  documents?: UserDocument[];
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const documents = await documentService.listUserDocuments(user);
+    return { success: true, documents };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve documents.' };
+  }
+}
+
+export async function uploadUserDocumentAction(formData: FormData): Promise<{
+  success: boolean;
+  document?: UserDocument;
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const file = formData.get('file') as File | null;
+    const documentType = (formData.get('documentType') as UserDocumentType) || 'OTHER';
+    const title = (formData.get('title') as string) || file?.name || 'Untitled Document';
+
+    if (!file || typeof file.arrayBuffer !== 'function') {
+      return { success: false, error: 'Please choose a valid file to upload.' };
+    }
+
+    const arrayBuf = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuf);
+
+    const doc = await documentService.uploadUserDocument(
+      user,
+      buffer,
+      file.name,
+      file.type || 'application/pdf',
+      documentType,
+      title
+    );
+
+    revalidatePath('/profile');
+    return { success: true, document: doc };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to upload document.' };
+  }
+}
+
+export async function deleteUserDocumentAction(documentId: string): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const success = await documentService.deleteUserDocument(user, documentId);
+    revalidatePath('/profile');
+    return { success };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to delete document.' };
+  }
+}
+
+export async function getSavedPropertyIdsAction(): Promise<{
+  success: boolean;
+  propertyIds: string[];
+}> {
+  try {
+    const user = await authService.getCurrentUser();
+    if (!user) {
+      return { success: true, propertyIds: [] };
+    }
+    const db = getDb();
+    const ids = db.savedPropertyIds?.[user.id] || [];
+    return { success: true, propertyIds: ids };
+  } catch {
+    return { success: true, propertyIds: [] };
+  }
+}
+
+export async function getSavedPropertiesAction(): Promise<{
+  success: boolean;
+  properties: Property[];
+}> {
+  try {
+    const user = await authService.getCurrentUser();
+    if (!user) {
+      return { success: true, properties: [] };
+    }
+    const db = getDb();
+    const ids = db.savedPropertyIds?.[user.id] || [];
+    if (ids.length === 0) {
+      return { success: true, properties: [] };
+    }
+    const allProps: Property[] = db.properties || [];
+    const saved = allProps.filter((p: Property) => ids.includes(p.id));
+    return { success: true, properties: saved };
+  } catch {
+    return { success: true, properties: [] };
+  }
+}
+
+export async function toggleSavedPropertyAction(propertyId: string): Promise<{
+  success: boolean;
+  isSaved?: boolean;
+  count?: number;
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const db = getDb();
+    if (!db.savedPropertyIds) {
+      db.savedPropertyIds = {};
+    }
+    let userSaved = db.savedPropertyIds[user.id] || [];
+    const isSaved = userSaved.includes(propertyId);
+
+    if (isSaved) {
+      userSaved = userSaved.filter((id) => id !== propertyId);
+    } else {
+      userSaved.push(propertyId);
+    }
+
+    db.savedPropertyIds[user.id] = userSaved;
+    saveDb(db);
+
+    revalidatePath('/saved');
+    revalidatePath('/profile');
+
+    return { success: true, isSaved: !isSaved, count: userSaved.length };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to update saved properties.' };
+  }
+}
+
+export async function getSeekerPreferencesAction(): Promise<{
+  success: boolean;
+  preferences?: SeekerHousingPreferences;
+}> {
+  try {
+    const user = await authService.getCurrentUser();
+    if (!user) {
+      return { success: true };
+    }
+    const db = getDb();
+    const pref = db.seekerPreferences?.[user.id];
+    return { success: true, preferences: pref };
+  } catch {
+    return { success: true };
+  }
+}
+
+export async function saveSeekerPreferencesAction(data: {
+  targetLocations: string[];
+  minBudget: string;
+  maxBudget: string;
+  propertyType: string;
+  bedrooms: string;
+  timeline: string;
+}): Promise<{
+  success: boolean;
+  preferences?: SeekerHousingPreferences;
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const db = getDb();
+    if (!db.seekerPreferences) {
+      db.seekerPreferences = {};
+    }
+
+    const now = new Date().toISOString();
+    const pref: SeekerHousingPreferences = {
+      userId: user.id,
+      targetLocations: data.targetLocations,
+      minBudget: data.minBudget,
+      maxBudget: data.maxBudget,
+      propertyType: data.propertyType,
+      bedrooms: data.bedrooms,
+      timeline: data.timeline,
+      updatedAt: now,
+    };
+
+    db.seekerPreferences[user.id] = pref;
+    saveDb(db);
+
+    revalidatePath('/profile');
+    return { success: true, preferences: pref };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to save housing preferences.' };
+  }
+}
+
+export async function getUserVerificationOverviewAction(): Promise<{
+  success: boolean;
+  data?: {
+    user: User;
+    documents: UserDocument[];
+    savedCount: number;
+    inspectionCount: number;
+    applicationCount: number;
+    propertyCount: number;
+  };
+  error?: string;
+}> {
+  try {
+    const user = await authService.requireUser();
+    const db = getDb();
+
+    const freshUser = (await userRepository.findById(user.id)) || user;
+    const documents = await documentService.listUserDocuments(freshUser);
+    const savedIds = db.savedPropertyIds?.[freshUser.id] || [];
+    const inspections = (db.inspections || []).filter((i) => i.seekerId === freshUser.id);
+    const applications = (db.applications || []).filter((a) => a.seekerId === freshUser.id);
+    const properties = (db.properties || []).filter(
+      (p) => p.ownerId === freshUser.id || p.authorizedAgentId === freshUser.id
+    );
+
+    return {
+      success: true,
+      data: {
+        user: freshUser,
+        documents,
+        savedCount: savedIds.length,
+        inspectionCount: inspections.length,
+        applicationCount: applications.length,
+        propertyCount: properties.length,
+      },
+    };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to retrieve profile overview.' };
+  }
+}
+
 

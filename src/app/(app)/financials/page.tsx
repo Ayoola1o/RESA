@@ -60,7 +60,7 @@ function FinancialsContent() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold font-headline text-slate-900 tracking-tight flex items-center gap-2">
-            <BarChart3 className="h-7 w-7 text-lime-600" />
+            <BarChart3 className="h-7 w-7 text-emerald-600" />
             Financial Records & Escrow Disbursement
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -68,7 +68,7 @@ function FinancialsContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-xs">
             <Link href="/landlord/add-property">
               <Plus className="mr-2 h-4 w-4" /> Add Listing
             </Link>
@@ -81,35 +81,35 @@ function FinancialsContent() {
 
       {/* Main Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="rounded-2xl border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
+        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Managed Listings</span>
           <p className="text-2xl font-bold text-slate-900 tabular-nums truncate">{properties.length}</p>
-          <p className="text-xs text-lime-700 font-medium truncate">Active in portfolio</p>
+          <p className="text-xs text-emerald-700 font-medium truncate">Active in portfolio</p>
         </Card>
-        <Card className="rounded-2xl border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
+        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Total Offers & EOIs</span>
           <p className="text-2xl font-bold text-slate-900 tabular-nums truncate">{applications.length}</p>
-          <p className="text-xs text-lime-700 font-medium truncate">Verified applicant pool</p>
+          <p className="text-xs text-emerald-700 font-medium truncate">Verified applicant pool</p>
         </Card>
-        <Card className="rounded-2xl border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
+        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Completed Audits</span>
           <p className="text-2xl font-bold text-slate-900 tabular-nums truncate">
             {inspections.filter((i) => i.status === 'COMPLETED').length}
           </p>
-          <p className="text-xs text-lime-700 font-medium truncate">Signed inspection reports</p>
+          <p className="text-xs text-emerald-700 font-medium truncate">Signed inspection reports</p>
         </Card>
-        <Card className="rounded-2xl border-slate-200/90 shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
+        <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs p-4 sm:p-5 space-y-1 min-w-0">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider truncate block">Disbursement Channel</span>
           <p className="text-2xl font-bold text-slate-900 tabular-nums truncate">Direct NGN</p>
-          <p className="text-xs text-lime-700 font-medium truncate">Escrow-backed clearing</p>
+          <p className="text-xs text-emerald-700 font-medium truncate">Escrow-backed clearing</p>
         </Card>
       </div>
 
       {/* Financial Escrow Details Card */}
-      <Card className="rounded-2xl border-slate-200/90 shadow-xs">
+      <Card className="rounded-2xl border-slate-200/80 bg-white shadow-xs">
         <CardHeader>
           <CardTitle className="font-headline text-lg flex items-center gap-2">
-            <Banknote className="h-5 w-5 text-lime-700" />
+            <Banknote className="h-5 w-5 text-emerald-700" />
             Rent Disbursement & Tenancy Security
           </CardTitle>
           <CardDescription>
@@ -119,7 +119,7 @@ function FinancialsContent() {
         <CardContent className="space-y-4">
           <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-sm text-slate-700">
             <div className="flex items-center gap-2 font-semibold text-slate-900">
-              <ShieldCheck className="h-5 w-5 text-lime-600" />
+              <ShieldCheck className="h-5 w-5 text-emerald-600" />
               Automated Payment Clearing Timeline
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">

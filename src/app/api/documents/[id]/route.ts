@@ -18,13 +18,14 @@ export async function GET(
     }
 
     const { document, fileBuffer } = await documentService.getDocumentFile(user, id);
+    const isDownload = request.nextUrl.searchParams.get('download') === '1';
 
     return new NextResponse(new Uint8Array(fileBuffer), {
       status: 200,
       headers: {
         'Content-Type': document.mimeType || 'application/pdf',
         'Content-Length': fileBuffer.length.toString(),
-        'Content-Disposition': `inline; filename="${document.fileName}"`,
+        'Content-Disposition': `${isDownload ? 'attachment' : 'inline'}; filename="${document.fileName}"`,
         'Cache-Control': 'private, no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
         'Expires': '0',

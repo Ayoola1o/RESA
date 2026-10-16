@@ -28,9 +28,9 @@ const savedPropertiesIds = properties.slice(2, 3).map(p => p.id).join(', ');
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending}>
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-      Get Recommendations
+    <Button type="submit" disabled={pending} className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-xs">
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-emerald-400" /> : <Sparkles className="mr-2 h-4 w-4 text-emerald-400" />}
+      {pending ? 'Analyzing with AI...' : 'Get Recommendations'}
     </Button>
   );
 }
@@ -78,8 +78,8 @@ export default function AiRecommendations({
         {trigger ? (
           trigger
         ) : (
-          <Button variant="outline" size="sm">
-            <Sparkles className="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" className="rounded-xl text-xs font-semibold gap-1.5 border-slate-200">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
             AI Recommendations
           </Button>
         )}

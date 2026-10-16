@@ -1,10 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { User, PropertyDocument, DocumentType, DocumentStatus, Property } from '@/types/prophunta';
+import {
+  User,
+  PropertyDocument,
+  DocumentType,
+  DocumentStatus,
+  Property,
+  UserDocument,
+  UserDocumentType,
+  UserDocumentStatus,
+} from '@/types/prophunta';
 import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { staffAuthorizationService } from './staff-authorization-service';
+import { getDb, saveDb } from '../db/store';
 
 const VAULT_DIR = path.join(process.cwd(), '.data', 'vault', 'documents');
 
@@ -85,11 +95,13 @@ export class DocumentService {
 
   /**
    * Access-controlled retrieval: Only Admin, Owner, or Authorized Agent can download or inspect documents.
+   * Supports both PropertyDocument and UserDocument.
    */
   async getDocumentFile(
     user: User,
     documentId: string
-  ): Promise<{ document: PropertyDocument; fileBuffer: Buffer; property: Property }> {
+  ): Promise<{ document: PropertyDocument | UserDocument; fileBuffer: Buffer; property?: Property }> {
+    // 1. Check Property Documents
     const allProps = await propertyRepository.listAll();
     let foundProperty: Property | null = null;
     let foundDoc: PropertyDocument | null = null;
@@ -103,49 +115,216 @@ export class DocumentService {
       }
     }
 
-    if (!foundProperty || !foundDoc) {
-      throw new Error('Document record not found');
+    if (foundProperty && foundDoc) {
+      const isOwner = foundProperty.ownerId === user.id;
+      const isAgent = foundProperty.authorizedAgentId === user.id;
+      const isAdmin = user.role === 'ADMIN';
+
+      if (!isOwner && !isAgent && !isAdmin) {
+        throw new Error('Unauthorized: Confidential property document access denied');
+      }
+
+      if (isAdmin) {
+        await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+      }
+
+      const diskPath = path.join(VAULT_DIR, foundDoc.fileReference);
+      if (!fs.existsSync(diskPath)) {
+        throw new Error('Physical document file missing from secure vault');
+      }
+
+      const fileBuffer = fs.readFileSync(diskPath);
+
+      if (isAdmin) {
+        await auditRepository.create({
+          actorId: user.id,
+          actorEmail: user.email,
+          actorRole: user.role,
+          action: 'DOCUMENT_VIEWED',
+          objectType: 'DOCUMENT',
+          objectId: foundDoc.id,
+          result: 'SUCCESS',
+          metadata: {
+            propertyId: foundProperty.id,
+            fileName: foundDoc.fileName,
+            documentType: foundDoc.documentType,
+            sizeBytes: fileBuffer.length,
+          },
+        });
+      }
+
+      return { document: foundDoc, fileBuffer, property: foundProperty };
     }
 
-    // Access control: Not publicly accessible by default
-    const isOwner = foundProperty.ownerId === user.id;
-    const isAgent = foundProperty.authorizedAgentId === user.id;
-    const isAdmin = user.role === 'ADMIN';
+    // 2. Check User Credential Documents
+    const db = getDb();
+    const userDoc = (db.userDocuments || []).find((d) => d.id === documentId);
+    if (userDoc) {
+      const isOwner = userDoc.userId === user.id;
+      const isAdmin = user.role === 'ADMIN';
 
-    if (!isOwner && !isAgent && !isAdmin) {
-      throw new Error('Unauthorized: Confidential property document access denied');
-    }
+      if (!isOwner && !isAdmin) {
+        throw new Error('Unauthorized: Confidential user credential document access denied');
+      }
 
-    if (isAdmin) {
-      await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
-    }
+      const diskPath = path.join(VAULT_DIR, userDoc.fileReference);
+      if (!fs.existsSync(diskPath)) {
+        throw new Error('Physical credential document missing from secure vault');
+      }
 
-    const diskPath = path.join(VAULT_DIR, foundDoc.fileReference);
-    if (!fs.existsSync(diskPath)) {
-      throw new Error('Physical document file missing from secure vault');
-    }
+      const fileBuffer = fs.readFileSync(diskPath);
 
-    const fileBuffer = fs.readFileSync(diskPath);
-
-    if (isAdmin) {
       await auditRepository.create({
         actorId: user.id,
         actorEmail: user.email,
         actorRole: user.role,
         action: 'DOCUMENT_VIEWED',
         objectType: 'DOCUMENT',
-        objectId: foundDoc.id,
+        objectId: userDoc.id,
         result: 'SUCCESS',
         metadata: {
-          propertyId: foundProperty.id,
-          fileName: foundDoc.fileName,
-          documentType: foundDoc.documentType,
+          targetUserId: userDoc.userId,
+          fileName: userDoc.fileName,
+          documentType: userDoc.documentType,
           sizeBytes: fileBuffer.length,
         },
       });
+
+      return { document: userDoc, fileBuffer };
     }
 
-    return { document: foundDoc, fileBuffer, property: foundProperty };
+    throw new Error('Document record not found');
+  }
+
+  /**
+   * Uploads an authenticated user credential/identity document to private disk vault.
+   */
+  async uploadUserDocument(
+    user: User,
+    fileBuffer: Buffer,
+    originalName: string,
+    mimeType: string,
+    documentType: UserDocumentType,
+    title?: string
+  ): Promise<UserDocument> {
+    if (!fileBuffer || fileBuffer.length === 0) {
+      throw new Error('Empty file content');
+    }
+
+    const MAX_SIZE = 10 * 1024 * 1024;
+    if (fileBuffer.length > MAX_SIZE) {
+      throw new Error('File exceeds maximum allowable size of 10MB');
+    }
+
+    const ALLOWED_MIME_TYPES = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+    ];
+    if (!ALLOWED_MIME_TYPES.includes(mimeType.toLowerCase())) {
+      throw new Error('Unsupported format. Only PDF, JPG, and PNG are permitted.');
+    }
+
+    const ext = path.extname(originalName) || (mimeType.includes('pdf') ? '.pdf' : '.jpg');
+    const safeUUID = randomUUID().replace(/-/g, '');
+    const diskFileName = `usr_${user.id}_${Date.now()}_${safeUUID.slice(0, 8)}${ext}`;
+    const diskPath = path.join(VAULT_DIR, diskFileName);
+
+    fs.writeFileSync(diskPath, fileBuffer);
+
+    const docId = `udoc_${Date.now()}_${safeUUID.slice(0, 8)}`;
+    const newDoc: UserDocument = {
+      id: docId,
+      userId: user.id,
+      documentType,
+      title: title || originalName,
+      fileName: originalName,
+      fileReference: diskFileName,
+      fileSize: fileBuffer.length,
+      mimeType,
+      status: 'PENDING',
+      uploadedAt: new Date().toISOString(),
+    };
+
+    const db = getDb();
+    if (!db.userDocuments) {
+      db.userDocuments = [];
+    }
+    db.userDocuments.push(newDoc);
+    saveDb(db);
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'USER_DOCUMENT_UPLOADED' as any,
+      objectType: 'DOCUMENT',
+      objectId: docId,
+      result: 'SUCCESS',
+      metadata: {
+        documentType,
+        fileName: originalName,
+        sizeBytes: fileBuffer.length,
+      },
+    });
+
+    return newDoc;
+  }
+
+  /**
+   * Lists credential documents for the authenticated user, or for an admin reviewing a target user.
+   */
+  async listUserDocuments(user: User, targetUserId?: string): Promise<UserDocument[]> {
+    const db = getDb();
+    const target = targetUserId || user.id;
+
+    if (target !== user.id && user.role !== 'ADMIN') {
+      throw new Error('Unauthorized to inspect other users credential documents');
+    }
+
+    return (db.userDocuments || []).filter((d) => d.userId === target);
+  }
+
+  /**
+   * Deletes a user credential document and unlinks its physical file.
+   */
+  async deleteUserDocument(user: User, documentId: string): Promise<boolean> {
+    const db = getDb();
+    const doc = (db.userDocuments || []).find((d) => d.id === documentId);
+    if (!doc) return false;
+
+    const isOwner = doc.userId === user.id;
+    const isAdmin = user.role === 'ADMIN';
+
+    if (!isOwner && !isAdmin) {
+      throw new Error('Unauthorized to delete this credential document');
+    }
+
+    const diskPath = path.join(VAULT_DIR, doc.fileReference);
+    if (fs.existsSync(diskPath)) {
+      try {
+        fs.unlinkSync(diskPath);
+      } catch (err) {
+        console.error('Failed to unlink user vault file:', err);
+      }
+    }
+
+    db.userDocuments = (db.userDocuments || []).filter((d) => d.id !== documentId);
+    saveDb(db);
+
+    await auditRepository.create({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'USER_DOCUMENT_DELETED' as any,
+      objectType: 'DOCUMENT',
+      objectId: documentId,
+      result: 'SUCCESS',
+      metadata: { fileName: doc.fileName },
+    });
+
+    return true;
   }
 
   /**
