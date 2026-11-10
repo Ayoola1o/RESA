@@ -24,9 +24,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { StaffAccount, StaffRole, Property, User, ListingReport, InspectionRequest, ApprovalRequest, AuditLog } from '@/types/prophunta';
+import { AdminPermission, StaffAccount, StaffRole, Property, User, ListingReport, InspectionRequest, ApprovalRequest } from '@/types/prophunta';
 
 interface AdminKpiStripProps {
+  can: (permission: AdminPermission) => boolean;
   staffContext: {
     staffAccount: StaffAccount;
     activeRoles: StaffRole[];
@@ -41,12 +42,13 @@ interface AdminKpiStripProps {
   reports: ListingReport[];
   inspections: InspectionRequest[];
   approvalRequests: ApprovalRequest[];
-  auditLogs: AuditLog[];
+  auditCounts: { total: number; recent: number };
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
 
 export function AdminKpiStrip({
+  can,
   staffContext,
   currentUser,
   allStaffRoles,
@@ -57,7 +59,7 @@ export function AdminKpiStrip({
   reports,
   inspections,
   approvalRequests,
-  auditLogs,
+  auditCounts,
   searchQuery,
   onSearchChange,
 }: AdminKpiStripProps) {
@@ -70,15 +72,13 @@ export function AdminKpiStrip({
   });
 
   // Inspections metrics
-  const scheduledInspections = inspections.filter((i) => i.status === 'SCHEDULED' || i.status === 'REQUESTED');
+  const scheduledInspections = inspections.filter((i) => ['REQUESTED', 'ACCEPTED', 'SCHEDULED', 'RESCHEDULED'].includes(i.status));
   const completedInspections = inspections.filter((i) => i.status === 'COMPLETED');
 
   // Open reports
-  const openReports = reports.filter((r) => r.status === 'REPORTED' || r.status === 'UNDER_INVESTIGATION' || r.status === 'DOCUMENTATION_REQUESTED');
+  const openReports = reports.filter((r) => r.status !== 'RESOLVED' && r.status !== 'DISMISSED');
 
   // Audit events in the last 24h
-  const oneDayAgo = now - 24 * 60 * 60 * 1000;
-  const recentAuditLogs = auditLogs.filter((l) => new Date(l.timestamp).getTime() >= oneDayAgo);
 
   return (
     <div className="space-y-4">
@@ -173,7 +173,7 @@ export function AdminKpiStrip({
       {/* --- TOP ROW: 4 HIGH-CONTRAST KPI & SLA METRIC CARDS --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1: Pending Approvals */}
-        <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
+        {can('approvals.view_assigned') && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -197,10 +197,10 @@ export function AdminKpiStrip({
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Four-Eyes Dual-Custody Queue</p>
           </CardContent>
-        </Card>
+        </Card>}
 
         {/* Metric 2: Active Inspections Today */}
-        <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
+        {can('inspections.view') && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -220,10 +220,10 @@ export function AdminKpiStrip({
             </div>
             <p className="text-[11px] text-indigo-600 font-semibold mt-1">Certified Field Audits</p>
           </CardContent>
-        </Card>
+        </Card>}
 
         {/* Metric 3: Open Trust & Safety Flags */}
-        <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
+        {can('reports.view') && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -247,10 +247,10 @@ export function AdminKpiStrip({
             </div>
             <p className="text-[11px] text-rose-600 font-semibold mt-1">Fraud &amp; Incident Triage</p>
           </CardContent>
-        </Card>
+        </Card>}
 
         {/* Metric 4: Sensitive Data / Audit Events (24h) */}
-        <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
+        {can('audit_logs.view') && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white hover:border-slate-300 transition-colors">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
@@ -262,15 +262,15 @@ export function AdminKpiStrip({
             </div>
             <div className="flex items-baseline gap-2 mt-2">
               <span className="text-2xl font-bold tabular-nums text-slate-900">
-                {recentAuditLogs.length}
+                {auditCounts.recent}
               </span>
               <span className="text-xs text-emerald-700 font-semibold">
                 SHA-256 Chained
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">{auditLogs.length} Total Immutable Records</p>
+            <p className="text-[11px] text-slate-400 mt-1">{auditCounts.total} Total Records</p>
           </CardContent>
-        </Card>
+        </Card>}
       </div>
     </div>
   );

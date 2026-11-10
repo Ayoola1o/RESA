@@ -1,3 +1,4 @@
+import { staffAuthorizationService } from './staff-authorization-service';
 import { Property, PropertyMedia, ListingStatus, User, PropertyDocument, DocumentType } from '@/types/prophunta';
 import { propertyRepository, PropertyFilterOptions } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
@@ -342,11 +343,9 @@ export class PropertyService {
   }
 
   async suspendProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can suspend listings');
-    }
     const prop = await propertyRepository.findById(propertyId);
     if (!prop) throw new Error('Property not found');
+    await staffAuthorizationService.requirePermission(adminUser, 'properties.suspend', { resourceId: propertyId, region: prop.state });
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'SUSPENDED',
@@ -368,11 +367,9 @@ export class PropertyService {
   }
 
   async restoreProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can restore listings');
-    }
     const prop = await propertyRepository.findById(propertyId);
     if (!prop) throw new Error('Property not found');
+    await staffAuthorizationService.requirePermission(adminUser, 'properties.restore', { resourceId: propertyId, region: prop.state });
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'ACTIVE',

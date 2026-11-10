@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
-  getPropertiesAction,
   getSavedPropertiesAction,
   toggleSavedPropertyAction,
 } from '@/server/actions/prophunta-actions';
@@ -27,37 +26,18 @@ function SavedContent() {
   const [savedProperties, setSavedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [loadFailed, setLoadFailed] = useState(false);
+
   useEffect(() => {
     let mounted = true;
     async function loadSaved() {
       try {
-        // Query server saved properties first
-        const res = await getSavedPropertiesAction().catch(() => ({ success: false, properties: [] }));
-        if (mounted && res?.success && res.properties && res.properties.length > 0) {
-          setSavedProperties(res.properties);
-          setLoading(false);
-          return;
-        }
-
-        // Secondary check against localStorage if client-side session or guest
-        let savedIds: string[] = [];
-        try {
-          const raw = localStorage.getItem('prophunta_saved_properties');
-          if (raw) savedIds = JSON.parse(raw);
-        } catch {}
-
-        if (savedIds.length > 0) {
-          const allProps = await getPropertiesAction().catch(() => []);
-          if (mounted) {
-            setSavedProperties(allProps.filter((p) => savedIds.includes(p.id)));
-          }
-        } else if (mounted) {
-          // Honest empty state: 0 items, never fake sample listings
-          setSavedProperties([]);
-        }
+        const result = await getSavedPropertiesAction();
+        if (!result.success) throw new Error('Could not load saved listings.');
+        if (mounted) setSavedProperties(result.properties);
       } catch (err) {
         console.error('Failed to load saved properties', err);
-        if (mounted) setSavedProperties([]);
+        if (mounted) setLoadFailed(true);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -69,22 +49,14 @@ function SavedContent() {
   }, []);
 
   const handleRemoveSaved = async (propId: string) => {
-    setSavedProperties((prev) => prev.filter((p) => p.id !== propId));
-
     try {
-      // Sync with server action
-      await toggleSavedPropertyAction(propId).catch(() => null);
-
-      // Sync local storage
-      const raw = localStorage.getItem('prophunta_saved_properties');
-      if (raw) {
-        const ids: string[] = JSON.parse(raw);
-        localStorage.setItem(
-          'prophunta_saved_properties',
-          JSON.stringify(ids.filter((id) => id !== propId))
-        );
-      }
-    } catch {}
+      const result = await toggleSavedPropertyAction(propId, false);
+      if (!result.success) throw new Error(result.error);
+      setSavedProperties((prev) => prev.filter((property) => property.id !== propId));
+    } catch {
+      toast({ variant: 'destructive', title: 'Could not remove listing' });
+      return;
+    }
 
     toast({
       title: 'Listing Removed',
@@ -115,6 +87,8 @@ function SavedContent() {
           <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-emerald-600" />
           Loading your saved favorites...
         </div>
+      ) : loadFailed ? (
+        <p role="alert">Saved properties could not be loaded. Refresh to try again.</p>
       ) : savedProperties.length === 0 ? (
         <Card className="p-12 text-center rounded-2xl border-slate-200/80 bg-white">
           <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />

@@ -1,5 +1,7 @@
 'use client';
 
+import { getSavedPropertyIdsAction, toggleSavedPropertyAction } from '@/server/actions/prophunta-actions';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -86,18 +88,17 @@ export default function SeekerDashboard({
   } | null>(null);
   const [cancellingInspectionId, setCancellingInspectionId] = useState<string | null>(null);
 
-  // Initialize saved properties & recent searches from localStorage
+  useEffect(() => {
+    let active = true;
+    getSavedPropertyIdsAction().then((result) => {
+      if (active && result.success) setSavedPropertyIds(result.propertyIds);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  // Load recent searches for this browser
   useEffect(() => {
     try {
-      const storedSaved = localStorage.getItem('prophunta_saved_properties');
-      if (storedSaved) {
-        setSavedPropertyIds(JSON.parse(storedSaved));
-      } else {
-        // Default to first 3 verified properties for great initial experience
-        const defaultSaved = properties.slice(0, 3).map((p) => p.id);
-        setSavedPropertyIds(defaultSaved);
-      }
-
       const storedSearches = localStorage.getItem('prophunta_recent_searches');
       if (storedSearches) {
         setRecentSearches(JSON.parse(storedSearches));
@@ -105,15 +106,11 @@ export default function SeekerDashboard({
     } catch (e) {
       // Fallback gracefully
     }
-  }, [properties]);
+  }, []);
 
-  const handleRemoveSaved = (id: string) => {
-    const next = savedPropertyIds.filter((item) => item !== id);
-    setSavedPropertyIds(next);
-    try {
-      localStorage.setItem('prophunta_saved_properties', JSON.stringify(next));
-    } catch (e) {}
-    toast({ title: 'Removed from Saved', description: 'Property removed from your saved list.' });
+  const handleRemoveSaved = async (id: string) => {
+    const result = await toggleSavedPropertyAction(id, false).catch(() => null);
+    if (result?.success) setSavedPropertyIds((ids) => ids.filter((item) => item !== id));
   };
 
   const handleAddSearch = (e: React.FormEvent) => {

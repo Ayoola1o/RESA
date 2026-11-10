@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSavedProperty } from '@/hooks/use-saved-property';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Bath, BedDouble, Heart, Maximize2, ShieldCheck, MapPin } from 'lucide-react';
@@ -12,47 +12,11 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ property, className = '' }: PropertyCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('prophunta_saved_properties');
-      if (saved) {
-        const ids: string[] = JSON.parse(saved);
-        if (ids.includes(property.id)) {
-          setIsFavorite(true);
-        }
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
-  }, [property.id]);
-
-  const toggleFavorite = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const nextState = !isFavorite;
-    setIsFavorite(nextState);
-
-    try {
-      const saved = localStorage.getItem('prophunta_saved_properties');
-      let ids: string[] = saved ? JSON.parse(saved) : [];
-      if (!nextState) {
-        ids = ids.filter((id) => id !== property.id);
-      } else {
-        if (!ids.includes(property.id)) ids.push(property.id);
-      }
-      localStorage.setItem('prophunta_saved_properties', JSON.stringify(ids));
-    } catch {
-      // Ignore localStorage error
-    }
-
-    try {
-      const { toggleSavedPropertyAction } = await import('@/server/actions/prophunta-actions');
-      await toggleSavedPropertyAction(property.id);
-    } catch {
-      // User might not be authenticated, local state already set
-    }
+  const { saved: isFavorite, toggle, disabled } = useSavedProperty(property.id);
+  const toggleFavorite = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    void toggle();
   };
 
   const isRent =
@@ -124,6 +88,7 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
         <button
           type="button"
           onClick={toggleFavorite}
+              disabled={disabled}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           className="absolute top-2.5 right-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 backdrop-blur-md shadow-xs transition-all hover:bg-white hover:scale-110 shrink-0"
         >

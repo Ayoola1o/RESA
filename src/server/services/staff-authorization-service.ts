@@ -115,7 +115,7 @@ export class StaffAuthorizationService {
    * Fails closed if the user is not an active staff member.
    */
   async getStaffContext(user: User): Promise<StaffAuthContext | null> {
-    if (!user) return null;
+    if (!user || user.role !== 'ADMIN' || user.verificationStatus === 'SUSPENDED') return null;
 
     let staff = await staffRepository.findByUserId(user.id);
 

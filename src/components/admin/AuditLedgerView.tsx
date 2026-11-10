@@ -4,9 +4,7 @@ import React, { useState, useMemo } from 'react';
 import {
   History,
   Lock,
-  Unlock,
   Eye,
-  EyeOff,
   CheckCheck,
   Download,
   FileSpreadsheet,
@@ -15,8 +13,6 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
-  Shield,
-  ShieldAlert,
   Search,
   Filter,
   Layers,
@@ -35,7 +31,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { AuditLog, AdminPermission } from '@/types/prophunta';
-import { useToast } from '@/hooks/use-toast';
 
 interface AuditLedgerViewProps {
   auditLogs: AuditLog[];
@@ -56,16 +51,10 @@ export function AuditLedgerView({
   submittingAction,
   searchQuery,
 }: AuditLedgerViewProps) {
-  const { toast } = useToast();
 
   // Selected Log for Diff / Metadata Drawer
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [isDiffModalOpen, setIsDiffModalOpen] = useState(false);
-
-  // Sensitive PII Masking Toggle State (Phase 6)
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [revealReason, setRevealReason] = useState('');
-  const [isRevealDialogOpen, setIsRevealDialogOpen] = useState(false);
 
   // Filter by action category
   const [actionCategory, setActionCategory] = useState<string>('ALL');
@@ -90,126 +79,8 @@ export function AuditLedgerView({
     });
   }, [auditLogs, actionCategory, searchQuery]);
 
-  const handleToggleReveal = () => {
-    if (isRevealed) {
-      setIsRevealed(false);
-      toast({
-        title: 'Sensitive Data Masked',
-        description: 'All confidential PII fields have been masked.',
-      });
-      return;
-    }
-
-    if (!can('documents.view_sensitive')) {
-      toast({
-        variant: 'destructive',
-        title: 'Access Denied (Fail-Closed)',
-        description: 'Your staff account lacks [documents.view_sensitive] permission required to reveal unmasked PII.',
-      });
-      return;
-    }
-
-    setIsRevealDialogOpen(true);
-  };
-
-  const handleConfirmReveal = () => {
-    if (!revealReason.trim()) return;
-    setIsRevealed(true);
-    setIsRevealDialogOpen(false);
-    toast({
-      title: 'Sensitive Data Unmasked (Audited)',
-      description: `Access granted for verification review. Audit event logged with reason: "${revealReason}".`,
-    });
-    setRevealReason('');
-  };
-
-  const maskValue = (val: string) => {
-    if (!val) return '••••••••••';
-    if (isRevealed) return val;
-    if (val.length <= 4) return '••••';
-    return `••••••••${val.slice(-4)}`;
-  };
-
   return (
     <div className="space-y-6">
-      {/* --- SENSITIVE DATA GOVERNANCE & MASKING CONTROLS (PHASE 6) --- */}
-      <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
-        <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <CardTitle className="text-base sm:text-lg font-bold text-slate-900 font-headline">
-                  Sensitive PII Masking &amp; Data Protection
-                </CardTitle>
-                <Badge className="bg-slate-900 text-white font-bold text-[10px] px-2 py-0.5">
-                  Phase 6 Privacy Vault
-                </Badge>
-              </div>
-              <CardDescription className="text-xs text-slate-500 mt-0.5">
-                Bank verification numbers (BVN), National ID numbers (NIN), and land registry title codes are masked by default.
-              </CardDescription>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant={isRevealed ? 'destructive' : 'outline'}
-                onClick={handleToggleReveal}
-                className="h-8 rounded-xl text-xs font-semibold gap-1.5"
-              >
-                {isRevealed ? (
-                  <>
-                    <EyeOff className="h-3.5 w-3.5" />
-                    Mask PII Data
-                  </>
-                ) : (
-                  <>
-                    <Eye className="h-3.5 w-3.5 text-emerald-600" />
-                    Reveal Sensitive Data
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="p-4 sm:p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Example BVN Record</span>
-              <p className="font-mono text-sm font-bold text-slate-800">
-                {maskValue('22238491029')}
-              </p>
-              <span className="text-[10px] text-slate-400">Identity Verification</span>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Example NIN Record</span>
-              <p className="font-mono text-sm font-bold text-slate-800">
-                {maskValue('98492019481')}
-              </p>
-              <span className="text-[10px] text-slate-400">National Identification</span>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Segregated Bank Account</span>
-              <p className="font-mono text-sm font-bold text-slate-800">
-                {maskValue('0124810294')}
-              </p>
-              <span className="text-[10px] text-slate-400">Providus Trust Escrow</span>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">State Land Registry Ref</span>
-              <p className="font-mono text-sm font-bold text-slate-800">
-                {maskValue('LND-2024-C88192')}
-              </p>
-              <span className="text-[10px] text-slate-400">Governor&apos;s Consent ID</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* --- IMMUTABLE SYSTEM AUDIT TRAIL --- */}
       <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
         <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
@@ -431,49 +302,6 @@ export function AuditLedgerView({
         </DialogContent>
       </Dialog>
 
-      {/* --- CONFIRM REVEAL PII DIALOG (PHASE 6) --- */}
-      <Dialog open={isRevealDialogOpen} onOpenChange={setIsRevealDialogOpen}>
-        <DialogContent className="rounded-2xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold font-headline text-slate-900 flex items-center gap-1.5">
-              <ShieldAlert className="h-4 w-4 text-amber-600" />
-              Audited PII Access Request
-            </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
-              Access to unmasked BVN, NIN, and bank accounts is audited under Nigerian Data Protection Act (NDPA) regulations.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="py-2 space-y-2">
-            <Label className="text-xs font-bold text-slate-800">Operational Access Justification *</Label>
-            <Input
-              value={revealReason}
-              onChange={(e) => setRevealReason(e.target.value)}
-              placeholder="e.g. Mandatory KYC title match for Property Verification #LND-9928"
-              className="rounded-xl text-xs h-9"
-            />
-          </div>
-
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsRevealDialogOpen(false)}
-              className="rounded-xl text-xs"
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleConfirmReveal}
-              disabled={!revealReason.trim()}
-              className="rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white"
-            >
-              Confirm &amp; Log Access
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -38,11 +38,21 @@ export class ReportRepository {
     id: string,
     status: ReportStatus,
     adminId: string,
-    resolutionNotes?: string
+    resolutionNotes?: string,
+    listingAction?: 'suspend' | 'restore',
   ): Promise<ListingReport | null> {
     const db = getDb();
     const idx = db.reports.findIndex((r) => r.id === id);
     if (idx === -1) return null;
+
+    const property = listingAction ? db.properties.find((p) => p.id === db.reports[idx].propertyId) : undefined;
+    if (listingAction && !property) throw new Error('Property not found.');
+    if (listingAction === 'restore' && property?.listingStatus !== 'SUSPENDED') {
+      throw new Error('Only suspended properties can be restored.');
+    }
+    if (listingAction === 'suspend' && ['RESOLVED', 'DISMISSED'].includes(db.reports[idx].status)) {
+      throw new Error('Only open reports can freeze a listing.');
+    }
 
     db.reports[idx] = {
       ...db.reports[idx],
@@ -52,12 +62,9 @@ export class ReportRepository {
       resolutionNotes: resolutionNotes || db.reports[idx].resolutionNotes,
     };
 
-    // If report is suspended, update property status accordingly
-    if (status === 'SUSPENDED') {
-      const propIdx = db.properties.findIndex((p) => p.id === db.reports[idx].propertyId);
-      if (propIdx !== -1) {
-        db.properties[propIdx].listingStatus = 'SUSPENDED';
-      }
+    if (property) {
+      property.listingStatus = listingAction === 'suspend' ? 'SUSPENDED' : 'ACTIVE';
+      property.availabilityStatus = listingAction === 'suspend' ? 'UNAVAILABLE' : 'AVAILABLE';
     }
 
     saveDb(db);

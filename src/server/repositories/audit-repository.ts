@@ -120,6 +120,12 @@ export class AuditRepository {
     }
   }
 
+  getCounts(since: number): { total: number; recent: number } {
+    this.ensureInitialized();
+    const logs = getDb().auditLogs;
+    return { total: logs.length, recent: logs.filter((log) => Date.parse(log.timestamp) >= since).length };
+  }
+
   async listAll(limit = 100): Promise<AuditLog[]> {
     this.ensureInitialized();
     const db = getDb();

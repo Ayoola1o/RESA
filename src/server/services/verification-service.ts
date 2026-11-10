@@ -1,3 +1,4 @@
+import { staffAuthorizationService } from './staff-authorization-service';
 import { User, PropertyVerification, VerificationSubStatus, VerificationOverallStatus } from '@/types/prophunta';
 import { verificationRepository } from '../repositories/verification-repository';
 import { propertyRepository } from '../repositories/property-repository';
@@ -26,9 +27,7 @@ export class VerificationService {
       reviewNotes?: string;
     }
   ): Promise<PropertyVerification> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can perform verification reviews');
-    }
+    await staffAuthorizationService.requirePermission(adminUser, 'verification.review', { resourceId: propertyId });
 
     const current = (await verificationRepository.findByPropertyId(propertyId)) || {
       verificationId: `ver_${Date.now()}`,
@@ -69,9 +68,7 @@ export class VerificationService {
   }
 
   async approveVerification(adminUser: User, propertyId: string, notes: string): Promise<PropertyVerification> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can approve listings');
-    }
+    await staffAuthorizationService.requirePermission(adminUser, 'verification.approve', { resourceId: propertyId });
 
     if (!notes || notes.trim().length < 5) {
       throw new Error('Reviewer compliance notes (minimum 5 characters) are required for audit trail.');
@@ -152,9 +149,7 @@ export class VerificationService {
   }
 
   async rejectVerification(adminUser: User, propertyId: string, notes: string): Promise<PropertyVerification> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can reject listings');
-    }
+    await staffAuthorizationService.requirePermission(adminUser, 'verification.reject', { resourceId: propertyId });
 
     const res = await this.updateChecklist(adminUser, propertyId, {
       overallStatus: 'FAILED',
@@ -180,9 +175,7 @@ export class VerificationService {
   }
 
   async requestChanges(adminUser: User, propertyId: string, notes: string): Promise<PropertyVerification> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can request changes');
-    }
+    await staffAuthorizationService.requirePermission(adminUser, 'verification.review', { resourceId: propertyId });
 
     const res = await this.updateChecklist(adminUser, propertyId, {
       overallStatus: 'CHANGES_REQUIRED',

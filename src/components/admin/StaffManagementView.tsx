@@ -40,7 +40,7 @@ interface StaffManagementViewProps {
   grantablePermissions: { perm: AdminPermission; label: string; desc: string }[];
   can: (perm: AdminPermission) => boolean;
   isSuperAdmin?: boolean;
-  onInviteStaff: (name: string, email: string, roles: StaffRole[]) => Promise<void>;
+  onInviteStaff: (name: string, email: string, roles: StaffRole[], password: string) => Promise<boolean>;
   onUpdateRoles: (staffId: string, roles: StaffRole[]) => Promise<void>;
   onGrantCustomPerm: (staffId: string, perm: AdminPermission, reason: string, durationHours: string) => Promise<void>;
   onRevokeCustomPerm: (staffId: string, grantId: string) => Promise<void>;
@@ -69,6 +69,7 @@ export function StaffManagementView({
   // Modal states
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteName, setInviteName] = useState('');
+  const [invitePassword, setInvitePassword] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRoles, setInviteRoles] = useState<StaffRole[]>(['VERIFICATION_OFFICER']);
 
@@ -284,7 +285,10 @@ export function StaffManagementView({
       </Card>
 
       {/* --- MODAL 1: ONBOARD STAFF MEMBER --- */}
-      <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+      <Dialog open={isInviteOpen} onOpenChange={(open) => {
+        setIsInviteOpen(open);
+        if (!open) setInvitePassword('');
+      }}>
         <DialogContent className="rounded-2xl max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold font-headline text-slate-900">
@@ -313,6 +317,11 @@ export function StaffManagementView({
                 onChange={(e) => setInviteEmail(e.target.value)}
                 className="h-9 rounded-xl text-xs"
               />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="staff-initial-password">Unique initial password</Label>
+              <Input id="staff-initial-password" type="password" autoComplete="new-password" value={invitePassword} onChange={(e) => setInvitePassword(e.target.value)} />
+              <p className="text-xs text-slate-500">Use at least 16 characters. Share it privately with the staff member.</p>
             </div>
             <div className="space-y-1.5 pt-1">
               <Label className="text-xs font-bold text-slate-800">Assign Operational Roles *</Label>
@@ -347,19 +356,20 @@ export function StaffManagementView({
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setIsInviteOpen(false)} className="rounded-xl text-xs">
+            <Button variant="outline" size="sm" onClick={() => { setInvitePassword(''); setIsInviteOpen(false); }} className="rounded-xl text-xs">
               Cancel
             </Button>
             <Button
               size="sm"
               onClick={async () => {
-                await onInviteStaff(inviteName, inviteEmail, inviteRoles);
+                if (!await onInviteStaff(inviteName, inviteEmail, inviteRoles, invitePassword)) return;
+                setInvitePassword('');
                 setIsInviteOpen(false);
                 setInviteName('');
                 setInviteEmail('');
                 setInviteRoles(['VERIFICATION_OFFICER']);
               }}
-              disabled={!inviteName.trim() || !inviteEmail.trim() || inviteRoles.length === 0 || submittingAction}
+              disabled={!inviteName.trim() || !inviteEmail.trim() || inviteRoles.length === 0 || invitePassword.length < 16 || submittingAction}
               className="rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white"
             >
               Provision Account

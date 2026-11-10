@@ -280,7 +280,7 @@ export function TrustSafetyDesk({
                         </Button>
                       )}
 
-                      {can('properties.suspend') && !isSuspended && (
+                      {can('properties.suspend') && can('reports.investigate') && !isSuspended && !['RESOLVED', 'DISMISSED'].includes(rep.status) && (
                         <Button
                           size="sm"
                           variant="destructive"
@@ -293,7 +293,7 @@ export function TrustSafetyDesk({
                         </Button>
                       )}
 
-                      {can('properties.suspend') && isSuspended && (
+                      {can('properties.restore') && can('reports.resolve') && isSuspended && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -306,7 +306,7 @@ export function TrustSafetyDesk({
                         </Button>
                       )}
 
-                      {rep.status !== 'RESOLVED' && rep.status !== 'DISMISSED' && can('reports.investigate') && (
+                      {rep.status !== 'RESOLVED' && rep.status !== 'DISMISSED' && can('reports.resolve') && (
                         <Button
                           size="sm"
                           onClick={() => handleOpenResolveDialog(rep, 'RESOLVE')}
@@ -318,7 +318,7 @@ export function TrustSafetyDesk({
                         </Button>
                       )}
 
-                      {rep.status !== 'RESOLVED' && rep.status !== 'DISMISSED' && can('reports.investigate') && (
+                      {rep.status !== 'RESOLVED' && rep.status !== 'DISMISSED' && can('reports.resolve') && (
                         <Button
                           size="sm"
                           variant="ghost"

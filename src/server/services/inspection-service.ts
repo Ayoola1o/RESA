@@ -1,3 +1,4 @@
+import { staffAuthorizationService } from './staff-authorization-service';
 import { User, InspectionRequest, InspectionStatus, InspectionType, InspectionRecord } from '@/types/prophunta';
 import { inspectionRepository } from '../repositories/inspection-repository';
 import { propertyRepository } from '../repositories/property-repository';
@@ -315,9 +316,10 @@ export class InspectionService {
     inspectionId: string,
     resolutionNotes: string
   ): Promise<InspectionRequest> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only administrators can resolve inspection escalations.');
-    }
+    const inspection = await inspectionRepository.findById(inspectionId);
+    if (!inspection) throw new Error('Inspection not found');
+    const property = await propertyRepository.findById(inspection.propertyId);
+    await staffAuthorizationService.requirePermission(adminUser, 'inspections.update', { resourceId: inspectionId, region: property?.state });
 
     const updated = await inspectionRepository.update(inspectionId, {
       escalationStatus: 'RESOLVED',

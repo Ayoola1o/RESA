@@ -37,12 +37,10 @@ export default function ApplicationFormPage() {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [dob, setDob] = useState("1995-06-15");
+    const [moveInDate, setMoveInDate] = useState("");
     const [currentAddress, setCurrentAddress] = useState("Victoria Island, Lagos");
     const [employer, setEmployer] = useState("TechCorp Ltd");
     const [jobTitle, setJobTitle] = useState("Senior Professional");
-    const [idUploaded, setIdUploaded] = useState(false);
-    const [paystubUploaded, setPaystubUploaded] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [signature, setSignature] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,7 +98,7 @@ export default function ApplicationFormPage() {
             name: fullName.trim() || currentUser?.name || 'Verified Seeker',
             contact: phone.trim() || email.trim() || 'N/A',
             occupation: `${employer.trim()} - ${jobTitle.trim()}`,
-            moveInDate: dob,
+            moveInDate: moveInDate || undefined,
             offerAmount: property.price,
             message: `Official application signed by ${signature.trim()}. Background check authorized.`,
         });
@@ -212,12 +210,12 @@ export default function ApplicationFormPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="dob">Date of Birth</Label>
+                                    <Label htmlFor="move-in-date">Preferred Move-in Date</Label>
                                     <Input
-                                        id="dob"
+                                        id="move-in-date"
                                         type="date"
-                                        value={dob}
-                                        onChange={(e) => setDob(e.target.value)}
+                                        value={moveInDate}
+                                        onChange={(e) => setMoveInDate(e.target.value)}
                                         className="rounded-xl"
                                     />
                                 </div>
@@ -261,51 +259,10 @@ export default function ApplicationFormPage() {
                              </div>
                         </div>
 
-                        {/* Step 3: Document Upload */}
-                        <div className="space-y-4">
-                            <h3 className="font-headline text-base sm:text-lg border-b pb-2 font-bold text-slate-900">Step 3: Document Verification</h3>
-                            <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor="id-upload">National ID / Passport / Driver&apos;s License</Label>
-                                    <div
-                                        onClick={() => {
-                                            setIdUploaded(true);
-                                            toast({ title: "ID Attached", description: "Government ID document attached successfully." });
-                                        }}
-                                        className="flex items-center justify-between p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {idUploaded ? <CheckCircle2 className="h-5 w-5 text-lime-700" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
-                                            <span className="text-sm font-medium">
-                                                {idUploaded ? "NIN_Card_Verified.pdf" : "Upload Government ID"}
-                                            </span>
-                                        </div>
-                                        <Button type="button" variant="outline" size="sm" className="rounded-lg text-xs">
-                                            {idUploaded ? "Replace" : "Choose file"}
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="paystub-upload">Proof of Income (Bank Statement / Pay Slip)</Label>
-                                    <div
-                                        onClick={() => {
-                                            setPaystubUploaded(true);
-                                            toast({ title: "Document Attached", description: "Proof of income attached successfully." });
-                                        }}
-                                        className="flex items-center justify-between p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {paystubUploaded ? <CheckCircle2 className="h-5 w-5 text-lime-700" /> : <FileUp className="h-5 w-5 text-muted-foreground" />}
-                                            <span className="text-sm font-medium">
-                                                {paystubUploaded ? "Bank_Statement_3M.pdf" : "Upload Proof of Income"}
-                                            </span>
-                                        </div>
-                                        <Button type="button" variant="outline" size="sm" className="rounded-lg text-xs">
-                                            {paystubUploaded ? "Replace" : "Choose file"}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="space-y-2">
+                            <h3 className="font-headline text-lg font-bold">Supporting documents</h3>
+                            <p className="text-sm text-slate-600">Store identity and income documents in your profile. They are kept separate from this application.</p>
+                            <Link href="/profile?tab=verification">Open document vault</Link>
                         </div>
 
                         {/* Step 4: Transparent Fee Schedule & Escrow Notice */}

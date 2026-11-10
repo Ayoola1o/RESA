@@ -15,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { getEnquiryAction, replyEnquiryAction, markEnquiryAsReadAction } from '@/server/actions/prophunta-actions';
 import { useUserRole } from '@/context/UserRoleContext';
 import { PropertyEnquiry } from '@/types/prophunta';
-import { conversations as mockConversations } from '@/lib/mock-data';
 
 export default function ChatRoomPage() {
   const { toast } = useToast();
@@ -40,34 +39,7 @@ export default function ChatRoomPage() {
           setLoading(false);
           markEnquiryAsReadAction(convId).catch(() => {});
         } else {
-          // Check mock fallback if it's a numeric mock id
-          const numericId = Number(convId);
-          const mock = mockConversations.find((c) => c.id === numericId);
-          if (mock) {
-            setEnquiry({
-              id: String(mock.id),
-              propertyId: 'prop-1',
-              propertyTitle: mock.property,
-              propertyImage: mock.avatar,
-              seekerId: 'seeker-1',
-              seekerName: mock.name,
-              hostId: 'owner-1',
-              hostName: 'Property Representative',
-              lastMessageText: mock.messages[mock.messages.length - 1]?.text || '',
-              lastMessageAt: new Date().toISOString(),
-              unreadCountForSeeker: 0,
-              unreadCountForHost: 0,
-              messages: mock.messages.map((m, idx) => ({
-                id: `mock-msg-${idx}`,
-                senderId: m.from === 'John Doe' ? (currentUser?.id || 'seeker-1') : 'other-user',
-                senderName: m.from,
-                senderRole: 'SEEKER',
-                text: m.text,
-                timestamp: new Date().toISOString(),
-                read: true,
-              })),
-            });
-          }
+          setEnquiry(null);
           setLoading(false);
         }
       })

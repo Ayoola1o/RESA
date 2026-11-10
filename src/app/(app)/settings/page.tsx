@@ -22,7 +22,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/context/UserRoleContext';
-import { updateProfileDetailsAction, resetPasswordAction } from '@/server/actions/prophunta-actions';
+import { updateProfileDetailsAction, changePasswordAction } from '@/server/actions/prophunta-actions';
 import { Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const [name, setName] = useState(currentUser?.name || 'PropHunta Member');
   const [email, setEmail] = useState(currentUser?.email || 'user@prophunta.ai');
   const [phone, setPhone] = useState(currentUser?.phone || '+234 800 000 0000');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -71,13 +72,7 @@ export default function SettingsPage() {
   };
 
   const handleSaveSecurity = async () => {
-    if (!newPassword) {
-      toast({
-        title: 'Preferences Saved',
-        description: 'Multi-factor authentication preferences updated.',
-      });
-      return;
-    }
+    if (!currentPassword || !newPassword) return;
 
     if (newPassword.length < 6) {
       toast({
@@ -98,7 +93,7 @@ export default function SettingsPage() {
     }
 
     setSavingSecurity(true);
-    const res = await resetPasswordAction(currentUser?.email || email, newPassword);
+    const res = await changePasswordAction(currentPassword, newPassword);
     setSavingSecurity(false);
 
     if (res.success) {
@@ -106,6 +101,7 @@ export default function SettingsPage() {
         title: 'Password Updated',
         description: 'Your account password has been updated securely.',
       });
+      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } else {
@@ -117,12 +113,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveNotifications = () => {
-    toast({
-      title: 'Preferences Saved',
-      description: 'Your notification preferences are up to date.',
-    });
-  };
 
   const roleLabel =
     role === 'SEEKER'
@@ -245,11 +235,11 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" placeholder="••••••••••••" className="rounded-xl" />
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label htmlFor="current-password">Current password</Label>
+                    <Input id="current-password" type="password" autoComplete="current-password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="rounded-xl" />
                     <Label htmlFor="new-password">New Password</Label>
                     <Input
                       id="new-password"
@@ -281,11 +271,11 @@ export default function SettingsPage() {
                       Protect high-value property agreements and inspections with dual confirmation.
                     </p>
                   </div>
-                  <Switch id="mfa" defaultChecked aria-label="Toggle two-factor authentication" />
+                  <Switch id="mfa" disabled aria-label="Two-factor authentication unavailable" />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveSecurity} disabled={savingSecurity} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
+                <Button onClick={handleSaveSecurity} disabled={savingSecurity || !currentPassword || !newPassword} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
                   {savingSecurity ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Update Security Settings
                 </Button>
@@ -311,7 +301,7 @@ export default function SettingsPage() {
                       Immediate confirmation when an on-site or virtual walkthrough is requested or confirmed.
                     </p>
                   </div>
-                  <Switch id="inspection-alerts" defaultChecked />
+                  <Switch id="inspection-alerts" disabled />
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
@@ -323,7 +313,7 @@ export default function SettingsPage() {
                       Notifications when expressions of interest are approved, reviewed, or submitted.
                     </p>
                   </div>
-                  <Switch id="application-alerts" defaultChecked />
+                  <Switch id="application-alerts" disabled />
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
@@ -335,7 +325,7 @@ export default function SettingsPage() {
                       Alerts when property seekers or hosts send verified messages.
                     </p>
                   </div>
-                  <Switch id="message-alerts" defaultChecked />
+                  <Switch id="message-alerts" disabled />
                 </div>
 
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4 bg-slate-50/50">
@@ -347,13 +337,11 @@ export default function SettingsPage() {
                       Status reports when title documents or listings pass verification checklist audits.
                     </p>
                   </div>
-                  <Switch id="trust-alerts" defaultChecked />
+                  <Switch id="trust-alerts" disabled />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleSaveNotifications} className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
-                  Save Preferences
-                </Button>
+                <p className="text-sm text-slate-600">Notification preferences are currently unavailable.</p>
               </CardFooter>
             </Card>
           </TabsContent>

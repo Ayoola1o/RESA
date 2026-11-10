@@ -1,6 +1,7 @@
 import { AuthService } from '../src/server/services/auth-service';
+import { getDb } from '../src/server/db/store';
 import { userRepository } from '../src/server/repositories/user-repository';
-import { switchDemoRoleAction } from '../src/server/actions/prophunta-actions';
+import { changePasswordAction, switchDemoRoleAction } from '../src/server/actions/prophunta-actions';
 
 const authService = new AuthService();
 
@@ -90,6 +91,16 @@ async function runAuthTests() {
   );
 
   console.log('\n====================================================');
+  const unauthenticatedChange = await changePasswordAction('Password123!', 'FixtureReplacement2026!');
+  assert(!unauthenticatedChange.success, 'Password change requires a signed-in user');
+  const newUser = legitimateSignup.user!;
+  const oldSession = await authService.createSession(newUser);
+  const rejected = await authService.changePassword(newUser, 'WrongPassword!', 'FixtureReplacement2026!');
+  assert(!rejected.success && Boolean(getDb().sessions[oldSession]), 'Incorrect current password leaves credentials and session intact');
+  const changed = await authService.changePassword(newUser, 'Password123!', 'FixtureReplacement2026!');
+  assert(changed.success && !getDb().sessions[oldSession], 'Password change revokes prior sessions');
+  assert(!await userRepository.verifyPassword(newUser.id, 'Password123!'), 'Old password can no longer sign in');
+
   console.log('🎉 ALL AUTHENTICATION & ROLE DETECTION TESTS PASSED!');
   console.log('====================================================');
 }

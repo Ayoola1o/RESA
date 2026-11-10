@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
@@ -69,15 +69,19 @@ const VERIFICATION_STATUS_OPTIONS: { value: VerificationSubStatus; label: string
 ];
 
 interface ApprovalWorkbenchProps {
+  mode: 'verification' | 'approvals';
+  isSuperAdmin?: boolean;
+  reviewProperty?: Property | null;
+  onReviewOpened?: () => void;
   properties: Property[];
   users: User[];
   approvalRequests: ApprovalRequest[];
   can: (perm: AdminPermission) => boolean;
   currentUser: any;
   submittingAction: boolean;
-  onApproveProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<void>;
-  onRejectProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<void>;
-  onRequestChangesProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<void>;
+  onApproveProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<boolean>;
+  onRejectProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<boolean>;
+  onRequestChangesProperty: (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>) => Promise<boolean>;
   onApproveDualCustody: (requestId: string) => Promise<void>;
   onRejectDualCustody: (requestId: string, reason: string) => Promise<void>;
   onCancelDualCustody: (requestId: string) => Promise<void>;
@@ -86,6 +90,10 @@ interface ApprovalWorkbenchProps {
 }
 
 export function ApprovalWorkbench({
+  mode,
+  isSuperAdmin = false,
+  reviewProperty,
+  onReviewOpened,
   properties,
   users,
   approvalRequests,
@@ -152,6 +160,13 @@ export function ApprovalWorkbench({
     setIsInspectorOpen(true);
   };
 
+  useEffect(() => {
+    if (reviewProperty) {
+      handleOpenInspector(reviewProperty);
+      onReviewOpened?.();
+    }
+  }, [reviewProperty, onReviewOpened]);
+
   const getChecklistPayload = () => ({
     ownerIdentityStatus: ownerIdStatus,
     locationStatus: locStatus,
@@ -163,20 +178,17 @@ export function ApprovalWorkbench({
 
   const handleApproveFromSheet = async () => {
     if (!selectedProperty) return;
-    await onApproveProperty(selectedProperty, inspectorNotes, getChecklistPayload());
-    setIsInspectorOpen(false);
+    if (await onApproveProperty(selectedProperty, inspectorNotes, getChecklistPayload())) setIsInspectorOpen(false);
   };
 
   const handleRejectFromSheet = async () => {
     if (!selectedProperty) return;
-    await onRejectProperty(selectedProperty, inspectorNotes, getChecklistPayload());
-    setIsInspectorOpen(false);
+    if (await onRejectProperty(selectedProperty, inspectorNotes, getChecklistPayload())) setIsInspectorOpen(false);
   };
 
   const handleRequestChangesFromSheet = async () => {
     if (!selectedProperty) return;
-    await onRequestChangesProperty(selectedProperty, inspectorNotes, getChecklistPayload());
-    setIsInspectorOpen(false);
+    if (await onRequestChangesProperty(selectedProperty, inspectorNotes, getChecklistPayload())) setIsInspectorOpen(false);
   };
 
   // Filtered properties
@@ -232,7 +244,7 @@ export function ApprovalWorkbench({
       {/* =========================================================================
           SECTION 1: PROPERTY VERIFICATION & APPROVAL QUEUE
          ========================================================================= */}
-      <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
+      {mode === 'verification' && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
         <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -408,12 +420,12 @@ export function ApprovalWorkbench({
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* =========================================================================
           SECTION 2: FOUR-EYES DUAL-CUSTODY APPROVAL QUEUE (PHASE 5)
          ========================================================================= */}
-      <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
+      {mode === 'approvals' && <Card className="rounded-2xl border-slate-200/90 shadow-2xs bg-white overflow-hidden">
         <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -431,7 +443,7 @@ export function ApprovalWorkbench({
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
+              {isSuperAdmin && <Button
                 size="sm"
                 variant="destructive"
                 onClick={() => setIsEmergencyOverrideOpen(true)}
@@ -439,7 +451,7 @@ export function ApprovalWorkbench({
               >
                 <AlertTriangle className="h-3.5 w-3.5 mr-1.5" />
                 Emergency Override
-              </Button>
+              </Button>}
             </div>
           </div>
 
@@ -573,7 +585,7 @@ export function ApprovalWorkbench({
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card>}
 
       {/* =========================================================================
           SLIDE-OVER INSPECTION SHEET (DRAWER)
@@ -854,7 +866,7 @@ export function ApprovalWorkbench({
               type="button"
               variant="outline"
               onClick={handleRequestChangesFromSheet}
-              disabled={submittingAction}
+              disabled={submittingAction || !can('verification.review')}
               className="rounded-xl text-xs font-semibold border-amber-300 text-amber-800 hover:bg-amber-50 h-10 flex-1"
             >
               <FileSignature className="h-3.5 w-3.5 mr-1.5" />
@@ -865,7 +877,7 @@ export function ApprovalWorkbench({
               type="button"
               variant="destructive"
               onClick={handleRejectFromSheet}
-              disabled={submittingAction}
+              disabled={submittingAction || !can('verification.review') || !can('verification.reject')}
               className="rounded-xl text-xs font-semibold h-10 flex-1"
             >
               <X className="h-3.5 w-3.5 mr-1.5" />
@@ -875,7 +887,7 @@ export function ApprovalWorkbench({
             <Button
               type="button"
               onClick={handleApproveFromSheet}
-              disabled={submittingAction}
+              disabled={submittingAction || !can('verification.review') || !can('verification.approve')}
               className="rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white h-10 flex-1 shadow-xs"
             >
               {submittingAction ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Check className="h-3.5 w-3.5 mr-1.5" />}
@@ -930,7 +942,7 @@ export function ApprovalWorkbench({
       </Dialog>
 
       {/* Emergency Override Dialog */}
-      <Dialog open={isEmergencyOverrideOpen} onOpenChange={setIsEmergencyOverrideOpen}>
+      <Dialog open={isSuperAdmin && isEmergencyOverrideOpen} onOpenChange={setIsEmergencyOverrideOpen}>
         <DialogContent className="rounded-2xl max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold font-headline text-rose-700 flex items-center gap-1.5">

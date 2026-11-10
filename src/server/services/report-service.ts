@@ -1,3 +1,4 @@
+import { staffAuthorizationService } from './staff-authorization-service';
 import { User, ListingReport, ReportReason, ReportStatus, AuditAction } from '@/types/prophunta';
 import { reportRepository } from '../repositories/report-repository';
 import { propertyRepository } from '../repositories/property-repository';
@@ -10,9 +11,7 @@ export class ReportService {
   }
 
   async getAllReports(adminUser: User): Promise<ListingReport[]> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can view trust reports');
-    }
+    await staffAuthorizationService.requirePermission(adminUser, 'reports.view');
     return reportRepository.listAll();
   }
 
@@ -67,16 +66,24 @@ export class ReportService {
     adminUser: User,
     reportId: string,
     status: ReportStatus,
-    resolutionNotes?: string
+    resolutionNotes?: string,
+    listingAction?: 'suspend' | 'restore',
+    expectedPropertyId?: string,
   ): Promise<ListingReport> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrator / Verification Officers can moderate reports');
-    }
-
     const existing = await reportRepository.findById(reportId);
-    if (!existing) throw new Error('Report not found');
-
-    const updated = await reportRepository.updateStatus(reportId, status, adminUser.id, resolutionNotes);
+    if (!existing || (expectedPropertyId && existing.propertyId !== expectedPropertyId)) {
+      throw new Error('Report does not match the listing.');
+    }
+    const property = await propertyRepository.findById(existing.propertyId);
+    const resource = { resourceId: existing.propertyId, region: property?.state };
+    const permission = status === 'RESOLVED' || status === 'DISMISSED' ? 'reports.resolve'
+      : status === 'ESCALATED' ? 'reports.escalate' : 'reports.investigate';
+    await staffAuthorizationService.requirePermission(adminUser, permission, resource);
+    const propertyAction = listingAction ?? (status === 'SUSPENDED' ? 'suspend' : undefined);
+    if (propertyAction) {
+      await staffAuthorizationService.requirePermission(adminUser, propertyAction === 'suspend' ? 'properties.suspend' : 'properties.restore', resource);
+    }
+    const updated = await reportRepository.updateStatus(reportId, status, adminUser.id, resolutionNotes, propertyAction);
     if (!updated) throw new Error('Failed to update report status');
 
     // Map each status to specific audit action
@@ -113,24 +120,18 @@ export class ReportService {
       },
     });
 
-    // If report outcome is SUSPENDED, automatically suspend the flagged listing
-    if (status === 'SUSPENDED') {
-      await propertyRepository.update(updated.propertyId, {
-        listingStatus: 'SUSPENDED',
-        availabilityStatus: 'UNAVAILABLE',
-      });
-
+    if (propertyAction) {
       await auditRepository.create({
         actorId: adminUser.id,
         actorEmail: adminUser.email,
         actorRole: adminUser.role,
-        action: 'LISTING_SUSPENDED',
+        action: propertyAction === 'suspend' ? 'LISTING_SUSPENDED' : 'LISTING_RESTORED',
         objectType: 'PROPERTY',
         objectId: updated.propertyId,
         result: 'SUCCESS',
         metadata: {
           triggerReportId: reportId,
-          reason: resolutionNotes || 'Listing suspended due to verified non-compliance report.',
+          reason: resolutionNotes || 'Listing status changed following report review.',
         },
       });
     }

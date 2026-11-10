@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+import { staffRepository } from '../src/server/repositories/staff-repository';
 import { reportService } from '../src/server/services/report-service';
 import { propertyService } from '../src/server/services/property-service';
 import { notificationService } from '../src/server/services/notification-service';
@@ -44,6 +46,25 @@ async function runPhase10Tests() {
     'SuperSecret2026!'
   );
 
+  await staffRepository.create({
+    userId: complianceAdmin.id,
+    email: complianceAdmin.email,
+    name: complianceAdmin.name,
+    roles: ['SUPER_ADMIN'],
+    status: 'ACTIVE',
+    scope: { scopeType: 'GLOBAL' },
+    customGrants: [],
+  });
+
+  const unassignedAdmin = await userRepository.create({
+    name: 'Unassigned admin',
+    phone: '+2348000000000',
+    email: 'unassigned.phase10.' + timestamp + '@test.com',
+    role: 'ADMIN',
+    verificationStatus: 'VERIFIED',
+  }, 'FixtureOnlyPassword2026!');
+  await assert.rejects(reportService.getAllReports(unassignedAdmin), /active administrative staff account/);
+
   // 2. Create and publish property
   const property = await propertyService.createDraft(owner, {
     title: 'Waterfront Duplex in Victoria Island',
@@ -79,6 +100,17 @@ async function runPhase10Tests() {
   });
 
   if (!report || !report.id) throw new Error('Failed to file listing report');
+  await assert.rejects(
+    reportService.updateReportStatus(unassignedAdmin, report.id, 'RESOLVED'),
+    /active administrative staff account/,
+  );
+  await assert.rejects(
+    reportService.updateReportStatus(complianceAdmin, report.id, 'SUSPENDED', 'Wrong property', 'suspend', 'other-property'),
+    /does not match/,
+  );
+  assert.equal((await reportService.getReport(report.id))?.status, 'REPORTED');
+  assert.equal((await propertyRepository.findById(property.id))?.listingStatus, 'ACTIVE');
+
   if (report.propertyId !== property.id) throw new Error('Report property ID mismatch');
   if (report.reporterId !== seeker.id) throw new Error('Reporter ID mismatch');
   if (report.status !== 'REPORTED') throw new Error(`Initial report status must be REPORTED, got ${report.status}`);
@@ -133,6 +165,10 @@ async function runPhase10Tests() {
   if (suspendedProp.availabilityStatus !== 'UNAVAILABLE') {
     throw new Error(`Property availabilityStatus must be UNAVAILABLE, got ${suspendedProp.availabilityStatus}`);
   }
+
+  await reportService.updateReportStatus(complianceAdmin, report.id, 'RESOLVED', 'Cleared for restore', 'restore', property.id);
+  assert.equal((await reportService.getReport(report.id))?.status, 'RESOLVED');
+  assert.equal((await propertyRepository.findById(property.id))?.listingStatus, 'ACTIVE');
 
   // Verify LISTING_SUSPENDED audit event
   const suspAudit = await auditRepository.query({ action: 'LISTING_SUSPENDED', objectId: property.id });

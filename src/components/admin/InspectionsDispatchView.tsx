@@ -195,7 +195,7 @@ export function InspectionsDispatchView({
                       </Button>
                     )}
 
-                    {(insp.escalationStatus === 'ESCALATED_FRAUD_INVESTIGATION' || insp.escalationStatus === 'DISCREPANCY_FLAGGED') && can('reports.investigate') && (
+                    {(insp.escalationStatus === 'ESCALATED_FRAUD_INVESTIGATION' || insp.escalationStatus === 'DISCREPANCY_FLAGGED') && can('inspections.update') && (
                       <Button
                         size="sm"
                         onClick={() => handleOpenEscalation(insp)}

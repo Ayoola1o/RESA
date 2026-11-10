@@ -46,7 +46,6 @@ import {
   RefreshCw,
   Sparkles,
 } from 'lucide-react';
-import { leases as mockLeases, properties as mockProperties } from '@/lib/mock-data';
 import { formatCurrency, formatNaira, getStatusVariant } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/context/UserRoleContext';
@@ -101,30 +100,18 @@ function LeaseContent() {
         if (appIdParam) {
           foundApp = userApps.find((a) => a.id === appIdParam) || null;
         }
-        if (!foundApp) {
+        if (!appIdParam) {
           foundApp =
             userApps.find(
               (a) => a.id === targetId || a.propertyId === targetId
             ) || null;
         }
 
-        const propId = foundApp ? foundApp.propertyId : targetId;
-        const prop = await getPropertyAction(propId).catch(() => null);
+        const prop = foundApp ? await getPropertyAction(foundApp.propertyId) : null;
 
         if (mounted) {
           setApplication(foundApp);
-          if (prop) {
-            setProperty(prop);
-          } else {
-            // Fallback to mock data if static mock property is passed
-            const mockL = mockLeases.find((l) => l.id === targetId);
-            const mockP = mockProperties.find(
-              (p) => p.id === (mockL ? mockL.propertyId : targetId)
-            );
-            if (mockP) {
-              setProperty(mockP as unknown as Property);
-            }
-          }
+          setProperty(prop);
         }
       } catch (err) {
         console.error('Failed to load lease detail', err);
@@ -145,14 +132,7 @@ function LeaseContent() {
   };
 
   const handleExecuteSignature = async () => {
-    if (!application) {
-      toast({
-        title: 'Agreement Signed',
-        description: `Tenancy agreement signed as ${signatureName}.`,
-      });
-      setIsSignModalOpen(false);
-      return;
-    }
+    if (!application) return;
 
     if (!signatureName.trim()) {
       toast({
@@ -170,23 +150,10 @@ function LeaseContent() {
     if (res.success) {
       toast({
         title: 'Tenancy Agreement Digitally Signed!',
-        description: 'Your bilateral legal signature has been recorded with a cryptographic timestamp.',
+        description: 'Your signature has been recorded.',
       });
-      setApplication((prev) =>
-        prev
-          ? {
-              ...prev,
-              status: 'LEASE_SIGNED',
-              tenantSignature: {
-                signature: signatureName.trim(),
-                signedAt: new Date().toISOString(),
-                signerName: signatureName.trim(),
-                signerRole: (currentUser?.role || 'SEEKER') as any,
-                checksum: `SIG_${Date.now()}_NGN`,
-              },
-            }
-          : prev
-      );
+      const refreshed = await getUserApplicationsAction();
+      setApplication(refreshed.find((item) => item.id === application.id) ?? null);
       setIsSignModalOpen(false);
     } else {
       toast({
@@ -206,7 +173,7 @@ function LeaseContent() {
     if (res.success) {
       toast({
         title: 'Handover Completed!',
-        description: 'Physical keys received. Net rent disbursed from escrow to landlord.',
+        description: 'Physical key receipt recorded.',
       });
       setApplication((prev) =>
         prev
@@ -294,7 +261,7 @@ function LeaseContent() {
                   <Check className="h-3 w-3" /> Agreement Legally Signed
                 </Badge>
                 <Badge variant="outline" className="text-xs border-lime-600 text-lime-900 bg-white">
-                  Funds Held in Escrow
+                  Escrow Recorded
                 </Badge>
               </div>
               <h3 className="font-bold text-base text-slate-900">Move-In Handover & Key Collection Pending</h3>
@@ -407,7 +374,7 @@ function LeaseContent() {
                   Caution Deposit <Lock className="h-3 w-3" />
                 </span>
                 <p className="font-bold text-slate-900 text-sm font-mono">{formatNaira(cautionDeposit)}</p>
-                <p className="text-[10px] text-lime-800">Held in Escrow Vault</p>
+                <p className="text-[10px] text-lime-800">Recorded escrow amount</p>
               </div>
 
               <div className="p-3.5 rounded-xl border bg-slate-50 space-y-1">
@@ -560,7 +527,7 @@ function LeaseContent() {
             <div className="p-3 rounded-xl bg-lime-50 border border-lime-200 text-lime-900 text-xs flex items-start gap-2">
               <ShieldCheck className="h-4 w-4 text-lime-600 shrink-0 mt-0.5" />
               <span>
-                Your funds are currently locked in escrow. Key handover walkthrough takes place next before any rent is disbursed to the landlord.
+                After both parties sign, the applicant can confirm receipt of the keys.
               </span>
             </div>
           </div>
@@ -611,8 +578,7 @@ function LeaseContent() {
             <div className="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 space-y-1">
               <p className="font-bold">What occurs upon confirmation:</p>
               <ul className="list-disc list-inside space-y-0.5 text-[11px] text-emerald-800">
-                <li>Net rent is released from escrow to {landlordName}.</li>
-                <li>Caution deposit remains secured in escrow for the lease duration.</li>
+                <li>Your key receipt is recorded on the application.</li>
                 <li>Tenant portal for maintenance tickets and rent renewals is activated.</li>
               </ul>
             </div>

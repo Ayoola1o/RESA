@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { User, UserRole } from '@/types/prophunta';
-import { getCurrentUserAction, switchDemoRoleAction } from '@/server/actions/prophunta-actions';
+import { getCurrentUserAction } from '@/server/actions/prophunta-actions';
 
 interface UserRoleContextType {
   userRole: UserRole;

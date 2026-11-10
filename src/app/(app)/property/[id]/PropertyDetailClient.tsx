@@ -1,5 +1,7 @@
 'use client';
 
+import { useSavedProperty } from '@/hooks/use-saved-property';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -85,7 +87,7 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
   const { toast } = useToast();
   const [property] = useState<Property>(initialProperty);
 
-  const [isLiked, setIsLiked] = useState(false);
+  const { saved: isLiked, toggle: toggleSaved, disabled: saveDisabled } = useSavedProperty(property.id);
   const [isTourDialogOpen, setIsTourDialogOpen] = useState(false);
   const [isOfferDialogOpen, setIsOfferDialogOpen] = useState(false);
   const [isEnquiryDialogOpen, setIsEnquiryDialogOpen] = useState(false);
@@ -334,7 +336,8 @@ export default function PropertyDetailClient({ initialProperty, authorizedParty 
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={toggleSaved}
+            disabled={saveDisabled}
             className={`h-8 sm:h-9 px-2 sm:px-3 text-xs ${isLiked ? 'text-red-500 border-red-200' : ''}`}
           >
             <Heart className={`h-3.5 w-3.5 sm:mr-1.5 ${isLiked ? 'fill-red-500' : ''}`} />

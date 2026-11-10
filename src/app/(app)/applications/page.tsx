@@ -41,7 +41,6 @@ import { useUserRole } from '@/context/UserRoleContext';
 import {
   getUserApplicationsAction,
   updateApplicationStatusAction,
-  fundEscrowAction,
   confirmKeyHandoverAction,
 } from '@/server/actions/prophunta-actions';
 import {
@@ -69,9 +68,6 @@ function ApplicationsContent() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Escrow payment modal state
-  const [escrowApp, setEscrowApp] = useState<Application | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'TRANSFER' | 'CARD'>('TRANSFER');
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [copiedAccount, setCopiedAccount] = useState(false);
 
   // Key handover modal state
@@ -118,51 +114,6 @@ function ApplicationsContent() {
     }
   };
 
-  const handleConfirmEscrowPayment = async () => {
-    if (!escrowApp) return;
-    setIsProcessingPayment(true);
-    const generatedRef = `ESC_${Date.now()}_NGN`;
-    const methodLabel =
-      paymentMethod === 'TRANSFER'
-        ? 'Providus Bank Segregated Trust Transfer'
-        : 'Direct Instant Debit Card Clearing';
-
-    const res = await fundEscrowAction(escrowApp.id, methodLabel, generatedRef);
-    setIsProcessingPayment(false);
-
-    if (res.success) {
-      toast({
-        title: 'Escrow Payment Confirmed!',
-        description: `₦${(escrowApp.feeBreakdown?.totalInitialOutlay || escrowApp.propertyPrice * 1.3).toLocaleString()} has been secured in the Segregated Trust Escrow Account.`,
-      });
-      setApplications((prev) =>
-        prev.map((a) =>
-          a.id === escrowApp.id
-            ? {
-                ...a,
-                status: 'ESCROW_FUNDED',
-                escrowPayment: {
-                  paymentRef: generatedRef,
-                  paymentMethod: methodLabel,
-                  amountPaid: escrowApp.feeBreakdown?.totalInitialOutlay || escrowApp.propertyPrice * 1.3,
-                  paidAt: new Date().toISOString(),
-                  escrowStatus: 'HELD_IN_ESCROW',
-                  cautionDepositHeld: escrowApp.feeBreakdown?.cautionFee || 0,
-                },
-              }
-            : a
-        )
-      );
-      setEscrowApp(null);
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Escrow Funding Failed',
-        description: res.error || 'Could not complete escrow deposit.',
-      });
-    }
-  };
-
   const handleConfirmHandover = async () => {
     if (!handoverApp) return;
     setIsProcessingHandover(true);
@@ -172,7 +123,7 @@ function ApplicationsContent() {
     if (res.success) {
       toast({
         title: 'Welcome to Your Home!',
-        description: 'Key handover confirmed. Net rent released to host and tenant portal activated.',
+        description: 'Key handover confirmed.',
       });
       setApplications((prev) =>
         prev.map((a) =>
@@ -375,13 +326,7 @@ function ApplicationsContent() {
 
                     {/* Seeker Actions on APPROVED (Proceed to Escrow Payment) */}
                     {!isHost && app.status === 'APPROVED' && (
-                      <Button
-                        size="sm"
-                        onClick={() => setEscrowApp(app)}
-                        className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs gap-1.5 rounded-xl shadow-xs"
-                      >
-                        <CreditCard className="h-3.5 w-3.5" /> Pay into Escrow
-                      </Button>
+                      <p className="text-sm text-slate-600">Online escrow payment is currently unavailable.</p>
                     )}
 
                     {/* Seeker Actions on ESCROW_FUNDED (Sign Lease) */}
@@ -491,182 +436,7 @@ function ApplicationsContent() {
         </div>
       )}
 
-      {/* ESCROW PAYMENT CHECKOUT DIALOG */}
-      <Dialog open={!!escrowApp} onOpenChange={(open) => !open && setEscrowApp(null)}>
-        <DialogContent className="sm:max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto">
-          {escrowApp && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="font-headline text-lg flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-lime-600" />
-                  Segregated Escrow Trust Payment
-                </DialogTitle>
-                <DialogDescription>
-                  Your payment is protected under Nigerian real estate trust regulations. Funds remain locked in escrow until bilateral lease execution and physical key handover sign-off.
-                </DialogDescription>
-              </DialogHeader>
 
-              <div className="space-y-4 py-2">
-                {/* Itemized Nigerian Real Estate Outlay */}
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2.5">
-                  <h4 className="font-bold text-xs text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <Receipt className="h-4 w-4 text-lime-700" /> Transparent Fee Itemization
-                  </h4>
-
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between text-slate-600">
-                      <span>Annual Rent (1 Year)</span>
-                      <span className="font-semibold text-slate-900 font-mono">
-                        {formatNaira(escrowApp.offerAmount || escrowApp.propertyPrice)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-slate-600">
-                      <span>Tenancy Agreement & Legal Fee (10% capped)</span>
-                      <span className="font-semibold text-slate-900 font-mono">
-                        {formatNaira(Math.round((escrowApp.offerAmount || escrowApp.propertyPrice) * 0.1))}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-slate-600">
-                      <span className="flex items-center gap-1">
-                        Refundable Caution Deposit (Escrow Protected)
-                        <Lock className="h-3 w-3 text-lime-600" />
-                      </span>
-                      <span className="font-semibold text-slate-900 font-mono">
-                        {formatNaira(Math.round((escrowApp.offerAmount || escrowApp.propertyPrice) * 0.1))}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-slate-600">
-                      <span>Estate Service Charge & Facility Dues</span>
-                      <span className="font-semibold text-slate-900 font-mono">
-                        {formatNaira(escrowApp.feeBreakdown?.serviceCharge || 0)}
-                      </span>
-                    </div>
-
-                    <Separator className="my-2" />
-
-                    <div className="flex justify-between text-sm font-bold text-slate-950 pt-1">
-                      <span>Total Initial Outlay to Escrow</span>
-                      <span className="text-base text-lime-800 font-mono">
-                        {formatNaira(
-                          escrowApp.feeBreakdown?.totalInitialOutlay ||
-                          Math.round((escrowApp.offerAmount || escrowApp.propertyPrice) * 1.2)
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Method Selector */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-slate-800">Select Secure Escrow Payment Method</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('TRANSFER')}
-                      className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all ${
-                        paymentMethod === 'TRANSFER'
-                          ? 'border-lime-600 bg-lime-50/50 text-lime-950 shadow-xs'
-                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <Building2 className="h-4 w-4 mb-1.5 text-lime-700" />
-                      <p className="font-bold">Virtual Trust Transfer</p>
-                      <p className="text-[10px] text-muted-foreground font-normal">Providus / Zenith Segregated</p>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('CARD')}
-                      className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all ${
-                        paymentMethod === 'CARD'
-                          ? 'border-lime-600 bg-lime-50/50 text-lime-950 shadow-xs'
-                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      <CreditCard className="h-4 w-4 mb-1.5 text-lime-700" />
-                      <p className="font-bold">Instant Card Checkout</p>
-                      <p className="text-[10px] text-muted-foreground font-normal">Visa, Mastercard, Verve</p>
-                    </button>
-                  </div>
-                </div>
-
-                {paymentMethod === 'TRANSFER' ? (
-                  <div className="p-3.5 rounded-xl border border-lime-200 bg-lime-50/60 space-y-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">Bank: Providus Bank Escrow</span>
-                      <Badge className="bg-lime-600 text-white text-[10px]">Active Dedicated</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Account Number: <strong className="font-mono text-sm text-slate-900">9938204912</strong></span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (navigator.clipboard) navigator.clipboard.writeText('9938204912');
-                          setCopiedAccount(true);
-                          setTimeout(() => setCopiedAccount(false), 2000);
-                        }}
-                        className="h-7 text-[11px] gap-1 text-lime-800"
-                      >
-                        {copiedAccount ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                        {copiedAccount ? 'Copied' : 'Copy'}
-                      </Button>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">
-                      Beneficiary: <strong>PropHunta Escrow - {escrowApp.propertyTitle.slice(0, 20)}</strong>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
-                    <p className="text-slate-700">
-                      Card payment will process instant 3D-Secure biometric clearing with automatic escrow segregation.
-                    </p>
-                  </div>
-                )}
-
-                <div className="p-3 rounded-xl bg-slate-900 text-white flex items-start gap-2.5 text-xs">
-                  <ShieldCheck className="h-4 w-4 text-lime-400 shrink-0 mt-0.5" />
-                  <p className="text-slate-300 text-[11px] leading-relaxed">
-                    Anti-Extortion Guarantee: The landlord cannot access rent until you physically move in. If key handover fails, your entire payment is refunded via escrow.
-                  </p>
-                </div>
-              </div>
-
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setEscrowApp(null)}
-                  disabled={isProcessingPayment}
-                  className="rounded-xl text-xs"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleConfirmEscrowPayment}
-                  disabled={isProcessingPayment}
-                  className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl text-xs gap-1.5"
-                >
-                  {isProcessingPayment ? (
-                    <>
-                      <RefreshCw className="h-3.5 w-3.5 animate-spin" /> Verifying Escrow Deposit...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-3.5 w-3.5" /> Confirm & Deposit to Escrow
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* MOVE-IN KEY HANDOVER VERIFICATION DIALOG */}
       <Dialog open={!!handoverApp} onOpenChange={(open) => !open && setHandoverApp(null)}>
@@ -687,7 +457,7 @@ function ApplicationsContent() {
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
                   <p className="font-bold">What happens next upon confirmation:</p>
                   <ul className="list-disc list-inside space-y-0.5 text-[11px] text-emerald-800">
-                    <li>Net rent is released from escrow to the landlord.</li>
+                    <li>Your key receipt is recorded on the application.</li>
                     <li>Caution deposit remains safely locked in ongoing escrow hold.</li>
                     <li>Your active Tenant Portal is unlocked for maintenance requests.</li>
                   </ul>

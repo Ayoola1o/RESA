@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { User } from '@/types/prophunta';
 import {
   AdminPermission,
@@ -68,23 +69,24 @@ export class StaffManagementService {
       throw new Error(`A staff account with email "${email}" already exists.`);
     }
 
-    // Provision or link corresponding platform user
-    let user = await userRepository.findByEmail(email);
-    if (!user) {
-      user = await userRepository.create(
-        {
-          name: data.name.trim(),
-          email,
-          phone: data.phone || '+234 800 000 0000',
-          role: 'ADMIN',
-          verificationStatus: 'VERIFIED',
-          kycStatus: 'VERIFIED',
-        },
-        data.initialPassword || 'TemporaryStaffPass123!'
-      );
-    } else if (user.role !== 'ADMIN') {
-      await userRepository.update(user.id, { role: 'ADMIN' });
+    if (data.initialPassword !== undefined && (data.initialPassword.length < 16 || data.initialPassword === 'TemporaryStaffPass123!')) {
+      throw new Error('Choose a unique staff password of at least 16 characters.');
     }
+
+    if (await userRepository.findByEmail(email)) {
+      throw new Error('Use a staff email that is separate from existing platform accounts.');
+    }
+    const user = await userRepository.create(
+      {
+        name: data.name.trim(),
+        email,
+        phone: data.phone || '+234 800 000 0000',
+        role: 'ADMIN',
+        verificationStatus: 'VERIFIED',
+        kycStatus: 'VERIFIED',
+      },
+      data.initialPassword || randomBytes(32).toString('base64url')
+    );
 
     const newStaff = await staffRepository.create({
       userId: user.id,

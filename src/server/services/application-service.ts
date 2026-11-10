@@ -190,6 +190,10 @@ export class ApplicationService {
       );
     }
 
+    const decisionStatuses: ApplicationStatus[] = ['UNDER_REVIEW', 'APPROVED', 'REJECTED'];
+    if (!decisionStatuses.includes(status) || ['ESCROW_FUNDED', 'LEASE_SIGNED', 'HANDOVER_COMPLETED'].includes(existing.status)) {
+      throw new Error('This status cannot be set from the application decision workflow.');
+    }
     const updated = await applicationRepository.updateStatus(applicationId, status, notes);
     if (!updated) throw new Error('Application not found');
 
@@ -215,85 +219,13 @@ export class ApplicationService {
     return this.attachAliases(updated);
   }
 
-  /**
-   * Seeker funds the initial outlay (Rent, Legal/Agreement fee, Caution deposit, Service charge)
-   * into PropHunta's Segregated Escrow Trust Account.
-   */
   async fundEscrow(
-    user: User,
-    applicationId: string,
-    paymentMethod: string,
-    paymentRef?: string
+    _user: User,
+    _applicationId: string,
+    _paymentMethod: string,
+    _paymentRef?: string,
   ): Promise<Application> {
-    const app = await applicationRepository.findById(applicationId);
-    if (!app) throw new Error('Application not found');
-
-    if (app.seekerId !== user.id && user.role !== 'ADMIN') {
-      throw new Error('Unauthorized: Only the applicant seeker can fund the escrow account.');
-    }
-
-    const property = await propertyRepository.findById(app.propertyId);
-    const feeBreakdown = app.feeBreakdown || (property ? this.calculateFeeBreakdown(property, app.offerAmount) : {
-      basePrice: app.propertyPrice,
-      agreementFee: Math.round(app.propertyPrice * 0.1),
-      cautionFee: Math.round(app.propertyPrice * 0.1),
-      serviceCharge: 0,
-      agencyFee: Math.round(app.propertyPrice * 0.1),
-      otherCharges: 0,
-      totalInitialOutlay: Math.round(app.propertyPrice * 1.3),
-      currency: 'NGN',
-      escrowNotice: 'Funds held in Segregated Escrow Trust Account under Lagos State real estate guidelines.',
-    });
-
-    const now = new Date().toISOString();
-    const ref = paymentRef || `ESC_${Date.now()}_${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
-
-    const updated = await applicationRepository.update(applicationId, {
-      status: 'ESCROW_FUNDED',
-      feeBreakdown,
-      escrowPayment: {
-        paymentRef: ref,
-        paymentMethod: paymentMethod || 'Providus Virtual Escrow Account Transfer',
-        amountPaid: feeBreakdown.totalInitialOutlay,
-        paidAt: now,
-        escrowStatus: 'HELD_IN_ESCROW',
-        cautionDepositHeld: feeBreakdown.cautionFee,
-      },
-    });
-
-    if (!updated) throw new Error('Failed to update escrow state');
-
-    await auditRepository.create({
-      actorId: user.id,
-      actorEmail: user.email,
-      actorRole: user.role,
-      action: 'APPLICATION_STATUS_UPDATED',
-      objectType: 'APPLICATION',
-      objectId: applicationId,
-      result: 'SUCCESS',
-      metadata: {
-        action: 'ESCROW_FUNDED',
-        paymentRef: ref,
-        amountPaid: feeBreakdown.totalInitialOutlay,
-        cautionDepositHeld: feeBreakdown.cautionFee,
-      },
-    });
-
-    // Notify Host (Owner and/or Authorized Agent)
-    const hostRecipients = new Set<string>();
-    if (property?.ownerId) hostRecipients.add(property.ownerId);
-    if (property?.authorizedAgentId) hostRecipients.add(property.authorizedAgentId);
-
-    for (const hostId of hostRecipients) {
-      await notificationService.createNotification(hostId, {
-        title: 'Escrow Payment Confirmed',
-        message: `${app.applicantName} has successfully funded ₦${feeBreakdown.totalInitialOutlay.toLocaleString()} into the Segregated Escrow Account for "${app.propertyTitle}". Tenancy Agreement is ready for bilateral digital signing.`,
-        type: 'APPLICATION',
-        link: `/lease/${app.propertyId}?appId=${app.id}`,
-      });
-    }
-
-    return this.attachAliases(updated);
+    throw new Error('Online escrow payment is currently unavailable.');
   }
 
   /**
@@ -306,33 +238,42 @@ export class ApplicationService {
   ): Promise<Application> {
     const app = await applicationRepository.findById(applicationId);
     if (!app) throw new Error('Application not found');
+    const property = await propertyRepository.findById(app.propertyId);
+    const isTenant = app.seekerId === user.id;
+    if (!isTenant && property?.ownerId !== user.id && property?.authorizedAgentId !== user.id) {
+      throw new Error('Only the applicant or authorized host can sign this lease.');
+    }
+    if (!['ESCROW_FUNDED', 'LEASE_SIGNED'].includes(app.status) || !signature.trim()) {
+      throw new Error('A funded application and signature are required.');
+    }
+    if (isTenant ? app.tenantSignature : app.landlordSignature) return this.attachAliases(app);
+
 
     const now = new Date().toISOString();
     const checksum = `SIG_${Date.now()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
     const sigRecord = {
-      signature: signature.trim() || user.name,
+      signature: signature.trim(),
       signedAt: now,
       signerName: user.name,
       signerRole: user.role,
       checksum,
     };
 
-    let updated: Application | null = null;
-
-    if (user.role === 'SEEKER' || app.seekerId === user.id) {
-      updated = await applicationRepository.update(applicationId, {
-        tenantSignature: sigRecord,
-        status: 'LEASE_SIGNED',
-      });
-    } else {
-      updated = await applicationRepository.update(applicationId, {
-        landlordSignature: sigRecord,
-        status: 'LEASE_SIGNED',
-      });
-    }
+    let signatureAdded = false;
+    const updated = await applicationRepository.update(applicationId, (current) => {
+      if (isTenant ? current.tenantSignature : current.landlordSignature) return {};
+      if (!['ESCROW_FUNDED', 'LEASE_SIGNED'].includes(current.status)) {
+        throw new Error('This application is no longer ready for signatures.');
+      }
+      signatureAdded = true;
+      return isTenant
+        ? { tenantSignature: sigRecord, status: current.landlordSignature ? 'LEASE_SIGNED' : 'ESCROW_FUNDED' }
+        : { landlordSignature: sigRecord, status: current.tenantSignature ? 'LEASE_SIGNED' : 'ESCROW_FUNDED' };
+    });
 
     if (!updated) throw new Error('Failed to update lease signature');
+    if (!signatureAdded) return this.attachAliases(updated);
 
     await auditRepository.create({
       actorId: user.id,
@@ -350,12 +291,12 @@ export class ApplicationService {
     });
 
     // Notify other party
-    const targetUserId = (user.role === 'SEEKER' || app.seekerId === user.id)
-      ? (app as any).ownerId || 'admin'
+    const targetUserId = (isTenant)
+      ? property?.ownerId
       : app.seekerId;
 
     if (targetUserId) {
-      await notificationService.createNotification(targetUserId, {
+      if (targetUserId) await notificationService.createNotification(targetUserId, {
         title: 'Tenancy Agreement Signed',
         message: `${user.name} has digitally signed the tenancy agreement for "${app.propertyTitle}". Checksum: ${checksum}.`,
         type: 'APPLICATION',
@@ -377,6 +318,12 @@ export class ApplicationService {
   ): Promise<Application> {
     const app = await applicationRepository.findById(applicationId);
     if (!app) throw new Error('Application not found');
+    if (app.seekerId !== user.id) throw new Error('Only the applicant can confirm receipt of the keys.');
+    if (app.status === 'HANDOVER_COMPLETED') return this.attachAliases(app);
+    if (app.status !== 'LEASE_SIGNED' || !app.tenantSignature || !app.landlordSignature) {
+      throw new Error('Both parties must sign the lease before handover.');
+    }
+
 
     const property = await propertyRepository.findById(app.propertyId);
     const now = new Date().toISOString();
@@ -388,10 +335,6 @@ export class ApplicationService {
         confirmedBy: user.name,
         notes: notes || 'Physical key handover and pre-occupancy condition sign-off completed.',
       },
-      escrowPayment: app.escrowPayment ? {
-        ...app.escrowPayment,
-        escrowStatus: 'RELEASED_TO_HOST',
-      } : undefined,
     });
 
     if (!updated) throw new Error('Failed to update handover status');
@@ -414,7 +357,6 @@ export class ApplicationService {
       result: 'SUCCESS',
       metadata: {
         action: 'HANDOVER_COMPLETED',
-        escrowRelease: 'NET_RENT_RELEASED_TO_HOST',
         cautionDepositStatus: 'SECURED_IN_ESCROW',
       },
     });
@@ -422,8 +364,8 @@ export class ApplicationService {
     // Notify Landlord
     if (property?.ownerId) {
       await notificationService.createNotification(property.ownerId, {
-        title: 'Move-in Complete • Rent Disbursed',
-        message: `Tenant ${app.applicantName} confirmed key handover for "${app.propertyTitle}". Net annual rent has been disbursed to your account. Caution deposit remains secured in escrow.`,
+        title: 'Key Handover Confirmed',
+        message: `Tenant ${app.applicantName} confirmed key handover for "${app.propertyTitle}".`,
         type: 'APPLICATION',
         link: `/lease/${app.propertyId}?appId=${app.id}`,
       });

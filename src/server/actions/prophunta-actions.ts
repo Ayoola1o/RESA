@@ -45,6 +45,7 @@ import {
 } from '@/types/prophunta';
 import { getDb, saveDb } from '../db/store';
 import { userRepository } from '../repositories/user-repository';
+import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { authService } from '../services/auth-service';
 import { propertyService } from '../services/property-service';
@@ -124,9 +125,9 @@ export async function logoutAction(): Promise<{ success: boolean }> {
 }
 
 export async function switchDemoRoleAction(role: UserRole): Promise<{ success: boolean; user?: User; error?: string }> {
-  // Security: Disallow arbitrary privilege escalation to ADMIN
+  // Demo sessions are restricted to the existing administrator in development.
   const current = await authService.getCurrentUser();
-  if (role === 'ADMIN' && current?.role !== 'ADMIN') {
+  if (process.env.NODE_ENV !== 'development' || !current || !await staffAuthorizationService.hasPermission(current, 'platform.settings.manage')) {
     return { success: false, error: 'Access denied: Cannot switch to Administrator role without authorization.' };
   }
   const user = await authService.switchDemoRole(role);
@@ -137,8 +138,10 @@ export async function switchDemoRoleAction(role: UserRole): Promise<{ success: b
   return { success: true, user };
 }
 
-export async function resetPasswordAction(email: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
-  return authService.resetPassword(email, newPassword);
+export async function changePasswordAction(currentPassword: string, newPassword: string) {
+  const user = await authService.getCurrentUser();
+  if (!user) return { success: false, error: 'Sign in to change your password.' };
+  return authService.changePassword(user, currentPassword, newPassword);
 }
 
 export async function updateProfileDetailsAction(data: {
@@ -347,6 +350,7 @@ export async function submitPropertyAction(propertyId: string): Promise<{ succes
 
 export async function getVerificationQueueAction() {
   const user = await authService.requireRole(['ADMIN']);
+  await staffAuthorizationService.requirePermission(user, 'verification.queue.view');
   return verificationService.listQueue();
 }
 
@@ -443,6 +447,7 @@ export async function requestInspectionAction(data: {
 
 export async function getUserInspectionsAction() {
   const user = await authService.requireUser();
+  if (user.role === 'ADMIN') await staffAuthorizationService.requirePermission(user, 'inspections.view');
   return inspectionService.getUserInspections(user);
 }
 
@@ -599,7 +604,13 @@ export async function updateApplicationStatusAction(
 }
 
 export async function getApplicationAction(applicationId: string) {
-  return applicationService.getApplication(applicationId);
+  const user = await authService.getCurrentUser();
+  if (!user) return null;
+  const application = await applicationService.getApplication(applicationId);
+  if (!application) return null;
+  if (application.seekerId === user.id) return application;
+  const property = await propertyRepository.findById(application.propertyId);
+  return property && (property.ownerId === user.id || property.authorizedAgentId === user.id) ? application : null;
 }
 
 export async function fundEscrowAction(
@@ -688,6 +699,31 @@ export async function updateReportStatusAction(
 }
 
 // --- AUDIT LOG ACTIONS ---
+
+export async function moderateReportedListingAction(propertyId: string, reportId: string, action: 'suspend' | 'restore') {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    if (action !== 'suspend' && action !== 'restore') throw new Error('Invalid moderation action.');
+    await reportService.updateReportStatus(
+      admin, reportId, action === 'suspend' ? 'SUSPENDED' : 'RESOLVED',
+      action === 'suspend' ? 'Listing frozen pending investigation outcome.' : 'Listing restored following legal clearance.',
+      action, propertyId,
+    );
+    revalidatePath('/admin');
+    revalidatePath('/marketplace');
+    revalidatePath('/property/' + propertyId);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to moderate listing.' };
+  }
+}
+
+export async function getAdminAuditSnapshotAction() {
+  const admin = await authService.requireRole(['ADMIN']);
+  const logs = await auditService.getRecentLogs(admin);
+  const counts = auditRepository.getCounts(Date.now() - 24 * 60 * 60 * 1000);
+  return { logs, counts };
+}
 
 export async function getAuditLogsAction(limit = 50) {
   const admin = await authService.requireRole(['ADMIN']);
@@ -1182,10 +1218,11 @@ export async function inviteStaffAction(data: {
   roles: StaffRole[];
   scope?: DataScope;
   delegation?: DelegationCeiling;
-  initialPassword?: string;
+  initialPassword: string;
 }): Promise<{ success: boolean; staff?: StaffAccount; error?: string }> {
   try {
     const user = await authService.requireUser();
+    if (typeof data.initialPassword !== 'string') return { success: false, error: 'A unique initial password is required.' };
     const staff = await staffManagementService.inviteStaff(user, data);
     revalidatePath('/admin');
     return { success: true, staff };
@@ -1508,7 +1545,7 @@ export async function getSavedPropertyIdsAction(): Promise<{
     const ids = db.savedPropertyIds?.[user.id] || [];
     return { success: true, propertyIds: ids };
   } catch {
-    return { success: true, propertyIds: [] };
+    return { success: false, propertyIds: [] };
   }
 }
 
@@ -1530,11 +1567,11 @@ export async function getSavedPropertiesAction(): Promise<{
     const saved = allProps.filter((p: Property) => ids.includes(p.id));
     return { success: true, properties: saved };
   } catch {
-    return { success: true, properties: [] };
+    return { success: false, properties: [] };
   }
 }
 
-export async function toggleSavedPropertyAction(propertyId: string): Promise<{
+export async function toggleSavedPropertyAction(propertyId: string, desiredState?: boolean): Promise<{
   success: boolean;
   isSaved?: boolean;
   count?: number;
@@ -1548,11 +1585,13 @@ export async function toggleSavedPropertyAction(propertyId: string): Promise<{
     }
     let userSaved = db.savedPropertyIds[user.id] || [];
     const isSaved = userSaved.includes(propertyId);
+    const nextState = desiredState ?? !isSaved;
 
-    if (isSaved) {
+    if (!nextState) {
       userSaved = userSaved.filter((id) => id !== propertyId);
-    } else {
-      userSaved.push(propertyId);
+    } else if (!isSaved) {
+      if (!await propertyRepository.findById(propertyId)) throw new Error('Listing not found.');
+      userSaved = [...(db.savedPropertyIds[user.id] || []).filter((id) => id !== propertyId), propertyId];
     }
 
     db.savedPropertyIds[user.id] = userSaved;
@@ -1561,7 +1600,7 @@ export async function toggleSavedPropertyAction(propertyId: string): Promise<{
     revalidatePath('/saved');
     revalidatePath('/profile');
 
-    return { success: true, isSaved: !isSaved, count: userSaved.length };
+    return { success: true, isSaved: nextState, count: userSaved.length };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to update saved properties.' };
   }

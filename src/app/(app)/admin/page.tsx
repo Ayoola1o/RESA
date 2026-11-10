@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, useTransition } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import {
   ShieldCheck,
@@ -65,13 +65,14 @@ import {
   getPropertiesAction,
   getReportsAction,
   getUserInspectionsAction,
-  getAuditLogsAction,
+  getAdminAuditSnapshotAction,
   approveVerificationAction,
   rejectVerificationAction,
   requestVerificationChangesAction,
   updateVerificationChecklistAction,
   reviewPropertyDocumentAction,
   updateReportStatusAction,
+  moderateReportedListingAction,
   updateInspectionStatusAction,
   completeInspectionAction,
   resolveInspectionEscalationAction,
@@ -145,25 +146,16 @@ const GRANTABLE_PERMISSIONS: { perm: AdminPermission; label: string; desc: strin
 ];
 
 function AdminPortalContent() {
-  const { userRole, currentUser, isLoading } = useUserRole();
+  const { currentUser, isLoading } = useUserRole();
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const tabParam = searchParams.get('tab');
-  const initialTab = tabParam || 'verification';
-  const [activeTab, setActiveTab] = useState(initialTab);
-
-  // Sync state if URL search param changes
-  useEffect(() => {
-    if (tabParam && tabParam !== activeTab) {
-      setActiveTab(tabParam);
-    }
-  }, [tabParam]);
+  const [reviewProperty, setReviewProperty] = useState<Property | null>(null);
 
   const handleTabChange = (newTab: string) => {
-    setActiveTab(newTab);
     const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('tab', newTab);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -174,7 +166,9 @@ function AdminPortalContent() {
   const [reports, setReports] = useState<ListingReport[]>([]);
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditCounts, setAuditCounts] = useState({ total: 0, recent: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Staff Governance & Approval States
@@ -195,48 +189,54 @@ function AdminPortalContent() {
   const [inspectedUser, setInspectedUser] = useState<User | null>(null);
   const [isUserInspectOpen, setIsUserInspectOpen] = useState(false);
 
-  const isSuperAdmin = Boolean(
-    staffContext?.activeRoles.includes('SUPER_ADMIN') ||
-    (!staffContext && currentUser?.email === 'admin@prophunta.ai')
-  );
-
-  const can = (perm: AdminPermission): boolean => {
-    if (!staffContext) {
-      // Fail-closed security: Only system fallback administrator holds access prior to staff context load
-      return currentUser?.email === 'admin@prophunta.ai';
-    }
-    return staffContext.effectivePermissions.includes(perm);
-  };
+  const isSuperAdmin = staffContext?.activeRoles.includes('SUPER_ADMIN') ?? false;
+  const can = (permission: AdminPermission) => staffContext?.effectivePermissions.includes(permission) ?? false;
+  const tabPermissions: [string, AdminPermission][] = [
+    ['verification', 'verification.queue.view'],
+    ['approvals', 'approvals.view_assigned'],
+    ['inspections', 'inspections.view'],
+    ['staff', 'admin.staff.view'],
+    ['reports', 'reports.view'],
+    ['audit', 'audit_logs.view'],
+    ['properties', 'properties.moderate'],
+    ['users', 'users.view_limited'],
+  ];
+  const availableTabs = tabPermissions.filter(([, permission]) => can(permission)).map(([tab]) => tab);
+  const activeTab = tabParam && availableTabs.includes(tabParam) ? tabParam : availableTabs[0];
 
   const loadData = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
-      const [props, reps, insps, auds, usrs, staffCtxRes, staffDirRes, approvalsRes] = await Promise.all([
-        getPropertiesAction(),
-        getReportsAction().catch(() => []),
-        getUserInspectionsAction().catch(() => []),
-        getAuditLogsAction().catch(() => []),
-        getUsersAction().catch(() => []),
-        getCurrentStaffContextAction().catch(() => ({ success: false, context: null })),
-        getStaffDirectoryAction().catch(() => ({ success: false, staff: [] })),
-        getAllApprovalsAction().catch(() => ({ success: false, requests: [] })),
+      const { success, context } = await getCurrentStaffContextAction();
+      if (!success) throw new Error('Could not verify staff access.');
+      if (!context?.effectivePermissions.includes('admin.dashboard.view')) {
+        setStaffContext(null);
+        return;
+      }
+
+      const allowed = (permission: AdminPermission) => context.effectivePermissions.includes(permission);
+      const [props, reps, insps, auds, usrs, staffDir, approvals] = await Promise.all([
+        allowed('properties.moderate') || allowed('verification.queue.view') || allowed('inspections.view') || allowed('reports.view') ? getPropertiesAction() : [],
+        allowed('reports.view') ? getReportsAction() : [],
+        allowed('inspections.view') ? getUserInspectionsAction() : [],
+        allowed('audit_logs.view') ? getAdminAuditSnapshotAction() : null,
+        allowed('users.view_limited') ? getUsersAction() : [],
+        allowed('admin.staff.view') ? getStaffDirectoryAction() : { success: true, staff: [] },
+        allowed('approvals.view_assigned') ? getAllApprovalsAction() : { success: true, requests: [] },
       ]);
+      if (!staffDir.success || !approvals.success) throw new Error('Some admin records could not be loaded.');
+      setStaffContext(context);
       setProperties(props);
       setReports(reps);
       setInspections(insps);
-      setAuditLogs(auds);
+      setAuditLogs(auds?.logs ?? []);
+      setAuditCounts(auds?.counts ?? { total: 0, recent: 0 });
       setUsers(usrs);
-      if (staffCtxRes?.success && staffCtxRes.context) {
-        setStaffContext(staffCtxRes.context);
-      }
-      if (staffDirRes?.success && staffDirRes.staff) {
-        setStaffDirectory(staffDirRes.staff);
-      }
-      if (approvalsRes?.success && approvalsRes.requests) {
-        setApprovalRequests(approvalsRes.requests);
-      }
-    } catch (err) {
-      console.warn('Error loading admin portal data:', err);
+      setStaffDirectory(staffDir.staff ?? []);
+      setApprovalRequests(approvals.requests ?? []);
+    } catch {
+      setLoadError('Admin records could not be loaded. Refresh to try again.');
     } finally {
       setLoading(false);
     }
@@ -253,16 +253,16 @@ function AdminPortalContent() {
     checklist: Record<string, VerificationSubStatus>
   ) => {
     setSubmittingAction(true);
-    await updateVerificationChecklistAction(prop.id, {
-      ownerIdentityStatus: checklist.ownerIdentityStatus === 'PENDING' ? 'PASSED' : checklist.ownerIdentityStatus,
-      locationStatus: checklist.locationStatus === 'PENDING' ? 'PASSED' : checklist.locationStatus,
-      authorityDocumentStatus: checklist.authorityDocumentStatus === 'PENDING' ? 'PASSED' : checklist.authorityDocumentStatus,
-      availabilityStatus: checklist.availabilityStatus === 'PENDING' ? 'PASSED' : checklist.availabilityStatus,
-      mediaStatus: checklist.mediaStatus === 'PENDING' ? 'PASSED' : checklist.mediaStatus,
-      inspectionStatus: checklist.inspectionStatus === 'PENDING' ? 'PASSED' : checklist.inspectionStatus,
+    const saved = await updateVerificationChecklistAction(prop.id, {
+      ownerIdentityStatus: checklist.ownerIdentityStatus,
+      locationStatus: checklist.locationStatus,
+      authorityDocumentStatus: checklist.authorityDocumentStatus,
+      availabilityStatus: checklist.availabilityStatus,
+      mediaStatus: checklist.mediaStatus,
+      inspectionStatus: checklist.inspectionStatus,
       reviewNotes: notes,
     });
-    const res = await approveVerificationAction(prop.id, notes);
+    const res = saved.success ? await approveVerificationAction(prop.id, notes) : saved;
     setSubmittingAction(false);
 
     if (res.success) {
@@ -274,6 +274,7 @@ function AdminPortalContent() {
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to approve.' });
     }
+    return res.success;
   };
 
   const handleRejectProperty = async (
@@ -282,7 +283,7 @@ function AdminPortalContent() {
     checklist: Record<string, VerificationSubStatus>
   ) => {
     setSubmittingAction(true);
-    await updateVerificationChecklistAction(prop.id, {
+    const saved = await updateVerificationChecklistAction(prop.id, {
       ownerIdentityStatus: checklist.ownerIdentityStatus,
       locationStatus: checklist.locationStatus,
       authorityDocumentStatus: checklist.authorityDocumentStatus,
@@ -291,7 +292,7 @@ function AdminPortalContent() {
       inspectionStatus: checklist.inspectionStatus,
       reviewNotes: notes,
     });
-    const res = await rejectVerificationAction(prop.id, notes);
+    const res = saved.success ? await rejectVerificationAction(prop.id, notes) : saved;
     setSubmittingAction(false);
 
     if (res.success) {
@@ -303,6 +304,7 @@ function AdminPortalContent() {
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to reject.' });
     }
+    return res.success;
   };
 
   const handleRequestChangesProperty = async (
@@ -311,7 +313,7 @@ function AdminPortalContent() {
     checklist: Record<string, VerificationSubStatus>
   ) => {
     setSubmittingAction(true);
-    await updateVerificationChecklistAction(prop.id, {
+    const saved = await updateVerificationChecklistAction(prop.id, {
       ownerIdentityStatus: checklist.ownerIdentityStatus,
       locationStatus: checklist.locationStatus,
       authorityDocumentStatus: checklist.authorityDocumentStatus,
@@ -320,7 +322,7 @@ function AdminPortalContent() {
       inspectionStatus: checklist.inspectionStatus,
       reviewNotes: notes,
     });
-    const res = await requestVerificationChangesAction(prop.id, notes);
+    const res = saved.success ? await requestVerificationChangesAction(prop.id, notes) : saved;
     setSubmittingAction(false);
 
     if (res.success) {
@@ -332,6 +334,7 @@ function AdminPortalContent() {
     } else {
       toast({ variant: 'destructive', title: 'Error', description: res.error || 'Failed to request changes.' });
     }
+    return res.success;
   };
 
   // --- FOUR-EYES APPROVAL ACTIONS ---
@@ -437,9 +440,9 @@ function AdminPortalContent() {
   };
 
   // --- STAFF ACTIONS ---
-  const handleInviteStaff = async (name: string, email: string, roles: StaffRole[]) => {
+  const handleInviteStaff = async (name: string, email: string, roles: StaffRole[], initialPassword: string) => {
     setSubmittingAction(true);
-    const res = await inviteStaffAction({ name, email, roles });
+    const res = await inviteStaffAction({ name, email, roles, initialPassword });
     setSubmittingAction(false);
     if (res.success) {
       toast({ title: 'Staff Onboarded', description: `Account created for ${email} with assigned roles.` });
@@ -447,6 +450,7 @@ function AdminPortalContent() {
     } else {
       toast({ variant: 'destructive', title: 'Onboarding Blocked', description: res.error || 'Failed to onboard staff.' });
     }
+    return res.success;
   };
 
   const handleUpdateRoles = async (staffId: string, roles: StaffRole[]) => {
@@ -539,8 +543,7 @@ function AdminPortalContent() {
 
   const handleSuspendListingFromReport = async (propId: string, repId: string) => {
     setSubmittingAction(true);
-    await updateReportStatusAction(repId, 'UNDER_INVESTIGATION', 'Listing frozen pending investigation outcome.');
-    const res = await suspendPropertyAction(propId, `Frozen due to active fraud report ${repId}`);
+    const res = await moderateReportedListingAction(propId, repId, 'suspend');
     setSubmittingAction(false);
     if (res.success) {
       toast({ title: 'Listing Frozen', description: 'Property suspended from public marketplace immediately.' });
@@ -552,8 +555,7 @@ function AdminPortalContent() {
 
   const handleRestoreListingFromReport = async (propId: string, repId: string) => {
     setSubmittingAction(true);
-    await updateReportStatusAction(repId, 'RESOLVED', 'Listing restored following legal clearance.');
-    const res = await restorePropertyAction(propId);
+    const res = await moderateReportedListingAction(propId, repId, 'restore');
     setSubmittingAction(false);
     if (res.success) {
       toast({ title: 'Listing Restored', description: 'Property restored to active marketplace.' });
@@ -603,7 +605,9 @@ function AdminPortalContent() {
   // --- USER DIRECTORY ACTIONS ---
   const handleToggleUserStatus = async (user: User) => {
     setSubmittingAction(true);
-    const nextStatus: UserVerificationStatus = user.verificationStatus === 'SUSPENDED' ? 'VERIFIED' : 'SUSPENDED';
+    const nextStatus: UserVerificationStatus = user.verificationStatus === 'SUSPENDED'
+      ? (user.kycStatus === 'VERIFIED' ? 'VERIFIED' : 'UNVERIFIED')
+      : 'SUSPENDED';
     const res = await updateUserStatusAction(user.id, nextStatus);
     setSubmittingAction(false);
     if (res.success) {
@@ -642,6 +646,14 @@ function AdminPortalContent() {
     }
   };
 
+  if (loadError) {
+    return <div role="alert" className="space-y-3"><p>{loadError}</p><Button onClick={loadData}>Retry loading records</Button></div>;
+  }
+  if ((loading && !staffContext) || isLoading) {
+    return <p role="status">Loading admin records…</p>;
+  }
+  if (!can('admin.dashboard.view')) return <p role="alert">This workspace requires an active staff account.</p>;
+
   const pendingVerificationList = properties.filter(
     (p) => p.listingStatus === 'SUBMITTED' || p.listingStatus === 'UNDER_REVIEW'
   );
@@ -651,6 +663,7 @@ function AdminPortalContent() {
       {/* --- EXECUTIVE COMMAND BAR & 4-METRIC KPI ROW --- */}
       <AdminKpiStrip
         staffContext={staffContext}
+        can={can}
         currentUser={currentUser}
         allStaffRoles={ALL_STAFF_ROLES}
         loading={loading}
@@ -660,13 +673,13 @@ function AdminPortalContent() {
         reports={reports}
         inspections={inspections}
         approvalRequests={approvalRequests}
-        auditLogs={auditLogs}
+        auditCounts={auditCounts}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
 
       {/* --- URL-SYNCED SEGMENTED WORKSPACE NAVIGATION --- */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+      {activeTab && <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-slate-100/90 p-1.5 rounded-2xl flex overflow-x-auto no-scrollbar whitespace-nowrap gap-1 w-full max-w-full">
           {(can('verification.queue.view') || isSuperAdmin) && (
             <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
@@ -675,7 +688,7 @@ function AdminPortalContent() {
             </TabsTrigger>
           )}
 
-          {(can('approvals.view_assigned') || can('approvals.approve') || isSuperAdmin) && (
+          {can('approvals.view_assigned') && (
             <TabsTrigger value="approvals" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
               <FileCheck2 className="h-3.5 w-3.5" />
               Dual-Custody Approvals ({approvalRequests.filter((a) => a.status === 'PENDING').length})
@@ -726,8 +739,11 @@ function AdminPortalContent() {
         </TabsList>
 
         {/* --- TAB 1: PROPERTY VERIFICATION QUEUE & DUAL CUSTODY WORKBENCH --- */}
-        <TabsContent value="verification" className="space-y-4">
+        {can('verification.queue.view') && <TabsContent value="verification" className="space-y-4">
           <ApprovalWorkbench
+            mode="verification"
+            reviewProperty={reviewProperty}
+            onReviewOpened={() => setReviewProperty(null)}
             properties={properties}
             users={users}
             approvalRequests={approvalRequests}
@@ -743,11 +759,13 @@ function AdminPortalContent() {
             onEmergencyOverride={handleEmergencyOverride}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 2: FOUR-EYES APPROVALS --- */}
-        <TabsContent value="approvals" className="space-y-4">
+        {can('approvals.view_assigned') && <TabsContent value="approvals" className="space-y-4">
           <ApprovalWorkbench
+            mode="approvals"
+            isSuperAdmin={isSuperAdmin}
             properties={properties}
             users={users}
             approvalRequests={approvalRequests}
@@ -763,10 +781,10 @@ function AdminPortalContent() {
             onEmergencyOverride={handleEmergencyOverride}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 3: INSPECTIONS DISPATCH --- */}
-        <TabsContent value="inspections" className="space-y-4">
+        {can('inspections.view') && <TabsContent value="inspections" className="space-y-4">
           <InspectionsDispatchView
             inspections={inspections}
             properties={properties}
@@ -775,7 +793,7 @@ function AdminPortalContent() {
             submittingAction={submittingAction}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 4: STAFF & RBAC GOVERNANCE --- */}
         <TabsContent value="staff" className="space-y-4">
@@ -806,7 +824,7 @@ function AdminPortalContent() {
         </TabsContent>
 
         {/* --- TAB 5: TRUST & SAFETY INCIDENT DESK --- */}
-        <TabsContent value="reports" className="space-y-4">
+        {can('reports.view') && <TabsContent value="reports" className="space-y-4">
           <TrustSafetyDesk
             reports={reports}
             properties={properties}
@@ -820,10 +838,10 @@ function AdminPortalContent() {
             submittingAction={submittingAction}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 6: IMMUTABLE AUDIT LEDGER & SENSITIVE DATA VAULT --- */}
-        <TabsContent value="audit" className="space-y-4">
+        {can('audit_logs.view') && <TabsContent value="audit" className="space-y-4">
           <AuditLedgerView
             auditLogs={auditLogs}
             can={can}
@@ -833,15 +851,16 @@ function AdminPortalContent() {
             submittingAction={submittingAction}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 7: PROPERTY MODERATION --- */}
-        <TabsContent value="properties" className="space-y-4">
+        {can('properties.moderate') && <TabsContent value="properties" className="space-y-4">
           <PropertyModerationView
             properties={properties}
             reports={reports}
             can={can}
             onOpenReviewDialog={(p) => {
+              setReviewProperty(p);
               handleTabChange('verification');
             }}
             onOpenDocsDialog={(p) => {
@@ -854,7 +873,7 @@ function AdminPortalContent() {
             submittingAction={submittingAction}
             searchQuery={searchQuery}
           />
-        </TabsContent>
+        </TabsContent>}
 
         {/* --- TAB 8: USER DIRECTORY --- */}
         <TabsContent value="users" className="space-y-4">
@@ -880,7 +899,7 @@ function AdminPortalContent() {
             </Card>
           )}
         </TabsContent>
-      </Tabs>
+      </Tabs>}
 
       {/* --- STANDALONE USER INSPECTION DIALOG --- */}
       <Dialog open={isUserInspectOpen} onOpenChange={setIsUserInspectOpen}>

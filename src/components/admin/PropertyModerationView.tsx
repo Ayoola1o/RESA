@@ -160,6 +160,7 @@ export function PropertyModerationView({
                     variant="outline"
                     size="sm"
                     onClick={() => onOpenDocsDialog(p)}
+                    disabled={!can('documents.view_metadata')}
                     className="h-8 text-xs font-semibold rounded-xl text-emerald-800 border-emerald-200 hover:bg-emerald-50"
                   >
                     <FileText className="h-3.5 w-3.5 mr-1 text-emerald-600" />
@@ -182,6 +183,7 @@ export function PropertyModerationView({
                     variant="secondary"
                     size="sm"
                     onClick={() => onOpenReviewDialog(p)}
+                    disabled={!can('verification.queue.view')}
                     className="h-8 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200"
                   >
                     Checklist
@@ -191,7 +193,7 @@ export function PropertyModerationView({
                     <Button
                       size="sm"
                       onClick={() => onRestoreProperty(p.id)}
-                      disabled={submittingAction}
+                      disabled={submittingAction || !can('properties.restore')}
                       className="h-8 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"
                     >
                       Restore Listing
@@ -201,7 +203,7 @@ export function PropertyModerationView({
                       variant="destructive"
                       size="sm"
                       onClick={() => onSuspendProperty(p.id)}
-                      disabled={submittingAction}
+                      disabled={submittingAction || !can('properties.suspend')}
                       className="h-8 text-xs font-bold rounded-xl"
                     >
                       Suspend Listing

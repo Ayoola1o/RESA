@@ -62,6 +62,7 @@ function InspectionsContent() {
 
   const [inspections, setInspections] = useState<InspectionRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Load inspections
@@ -69,10 +70,10 @@ function InspectionsContent() {
     let mounted = true;
     async function loadInspections() {
       try {
-        const data = await getUserInspectionsAction().catch(() => []);
+        const data = await getUserInspectionsAction();
         if (mounted) setInspections(data || []);
-      } catch (err) {
-        console.error('Failed to load inspections', err);
+      } catch {
+        if (mounted) setLoadFailed(true);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -313,6 +314,8 @@ function InspectionsContent() {
           <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-emerald-600" />
           Loading inspection schedules...
         </div>
+      ) : loadFailed ? (
+        <p role="alert">Inspections could not be loaded. Refresh the page to try again.</p>
       ) : inspections.length === 0 ? (
         <Card className="p-12 text-center rounded-2xl border-slate-200/80 bg-white">
           <Calendar className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />

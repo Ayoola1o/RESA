@@ -1,16 +1,16 @@
+import { staffAuthorizationService } from './staff-authorization-service';
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { User, UserRole } from '@/types/prophunta';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { getDb, saveDb } from '../db/store';
-import { SEED_USERS } from '../seed/initial-data';
 
 const SESSION_COOKIE_NAME = 'prophunta_session';
 const SESSION_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 const SESSION_SECRET = process.env.SESSION_SECRET || 'prophunta_secret_hmac_auth_2026_super_secure';
 
-function createSignedSessionToken(payload: { userId: string; role: UserRole; email: string; expiresAt: string }): string {
+function createSignedSessionToken(payload: { userId: string; role: UserRole; email: string; expiresAt: string; nonce: string }): string {
   const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const signature = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('hex');
   return `${data}.${signature}`;
@@ -96,7 +96,10 @@ export class AuthService {
       return { user: null, error: 'Invalid email or password.' };
     }
 
-    const isValid = await userRepository.verifyPassword(user.id, plainPassword);
+    const isValid = user.verificationStatus !== 'SUSPENDED'
+      && !(user.role === 'ADMIN' && plainPassword === 'TemporaryStaffPass123!')
+      && await userRepository.verifyPassword(user.id, plainPassword)
+      && (user.role !== 'ADMIN' || Boolean(await staffAuthorizationService.getStaffContext(user)));
     if (!isValid) {
       await auditRepository.create({
         actorId: user.id,
@@ -126,18 +129,19 @@ export class AuthService {
     return { user };
   }
 
-  async resetPassword(email: string, newPlainPassword: string): Promise<{ success: boolean; error?: string }> {
-    const user = await userRepository.findByEmail(email);
-    if (!user) {
-      return { success: false, error: 'No account found with this email address.' };
+  async changePassword(user: User, currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> {
+    if (user.role === 'ADMIN' && (newPassword.length < 16 || newPassword === 'TemporaryStaffPass123!')) {
+      return { success: false, error: 'Choose a unique staff password of at least 16 characters.' };
     }
-
-    if (newPlainPassword.length < 6) {
+    if (newPassword.length < 6) {
       return { success: false, error: 'Password must be at least 6 characters.' };
     }
-
-    await userRepository.updatePassword(user.id, newPlainPassword);
-
+    if (!await userRepository.verifyPassword(user.id, currentPassword)) {
+      return { success: false, error: 'The current password is incorrect.' };
+    }
+    await userRepository.updatePassword(user.id, newPassword);
+    this.revokeSessions(user.id);
+    await this.createSession(user);
     await auditRepository.create({
       actorId: user.id,
       actorEmail: user.email,
@@ -147,7 +151,6 @@ export class AuthService {
       objectId: user.id,
       result: 'SUCCESS',
     });
-
     return { success: true };
   }
 
@@ -173,6 +176,7 @@ export class AuthService {
       role: user.role,
       email: user.email,
       expiresAt,
+      nonce: crypto.randomUUID(),
     });
 
     const db = getDb();
@@ -215,24 +219,6 @@ export class AuthService {
       return null;
     }
 
-    // 1. Verify cryptographic HMAC signed session token
-    const verified = verifySignedSessionToken(token);
-    if (verified) {
-      const user = await userRepository.findById(verified.userId);
-      if (user) {
-        return user;
-      }
-      // Resilient fallback for seed accounts in case of fresh DB initialization in serverless
-      const dbUsers = getDb().users || [];
-      const matched =
-        dbUsers.find((u) => u.id === verified.userId || u.email === verified.email) ||
-        SEED_USERS.find((u) => u.id === verified.userId || u.email === verified.email);
-      if (matched) {
-        return matched;
-      }
-    }
-
-    // 2. Check legacy db.sessions
     const db = getDb();
     const session = db.sessions[token];
     if (!session) {
@@ -246,7 +232,23 @@ export class AuthService {
       return null;
     }
 
-    return (await userRepository.findById(session.userId)) || null;
+    const verified = token.includes('.') ? verifySignedSessionToken(token) : null;
+    if (token.includes('.') && verified?.userId !== session.userId) return null;
+    const user = await userRepository.findById(session.userId);
+    if (!user || user.verificationStatus === 'SUSPENDED') return null;
+    if (user.role === 'ADMIN') {
+      if (await userRepository.verifyPassword(user.id, 'TemporaryStaffPass123!')) return null;
+      if (!await staffAuthorizationService.getStaffContext(user)) return null;
+    }
+    return user;
+  }
+
+  private revokeSessions(userId: string) {
+    const db = getDb();
+    for (const [token, session] of Object.entries(db.sessions)) {
+      if (session.userId === userId) delete db.sessions[token];
+    }
+    saveDb(db);
   }
 
   async switchDemoRole(targetRole: UserRole): Promise<User | null> {
@@ -380,10 +382,24 @@ export class AuthService {
   }
 
   async getAllUsers(adminUser: User): Promise<User[]> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can view all platform users.');
-    }
-    return userRepository.listAll();
+    const context = await staffAuthorizationService.requirePermission(adminUser, 'users.view_limited');
+    const users = await userRepository.listAll();
+    if (context.activeRoles.includes('SUPER_ADMIN')) return users;
+    return users.filter((user) => user.role !== 'ADMIN').map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      verificationStatus: user.verificationStatus,
+      kycStatus: user.kycStatus,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      profilePhoto: user.profilePhoto,
+      location: user.location,
+      agencyName: user.agencyName,
+      licenseNumber: user.licenseNumber,
+    }));
   }
 
   async updateUserVerificationStatus(
@@ -391,11 +407,16 @@ export class AuthService {
     targetUserId: string,
     status: import('@/types/prophunta').UserVerificationStatus
   ): Promise<User> {
-    if (adminUser.role !== 'ADMIN') {
-      throw new Error('Only Administrators can modify user verification status.');
+    await staffAuthorizationService.requirePermission(adminUser, 'users.suspend', { resourceId: targetUserId });
+    const target = await userRepository.findById(targetUserId);
+    if (!target || target.role === 'ADMIN') throw new Error('Manage staff status through Staff & RBAC.');
+    const restoredStatus = target.kycStatus === 'VERIFIED' ? 'VERIFIED' : 'UNVERIFIED';
+    if (status !== 'SUSPENDED' && (target.verificationStatus !== 'SUSPENDED' || status !== restoredStatus)) {
+      throw new Error('Only suspended accounts can be reactivated at their existing verification level.');
     }
     const updated = await userRepository.update(targetUserId, { verificationStatus: status });
     if (!updated) throw new Error('User not found');
+    if (status === 'SUSPENDED') this.revokeSessions(targetUserId);
 
     await auditRepository.create({
       actorId: adminUser.id,
