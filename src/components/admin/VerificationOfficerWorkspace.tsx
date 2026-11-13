@@ -123,8 +123,6 @@ export function VerificationOfficerWorkspace({
     locationStatus: checklist.locationStatus,
     authorityDocumentStatus: checklist.authorityDocumentStatus,
     availabilityStatus: checklist.availabilityStatus,
-    mediaStatus: checklist.mediaStatus,
-    inspectionStatus: checklist.inspectionStatus,
     reviewNotes: notes,
   });
   const decideProperty = async (property: Property, notes: string, checklist: Record<string, VerificationSubStatus>, outcome: 'APPROVE' | 'REJECT' | 'CHANGES'): Promise<boolean> => {

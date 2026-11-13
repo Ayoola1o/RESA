@@ -1,4 +1,5 @@
 import { staffAuthorizationService } from './staff-authorization-service';
+import { verificationAssignmentService } from './verification-assignment-service';
 import { User, InspectionRequest, InspectionStatus, InspectionType, InspectionRecord } from '@/types/prophunta';
 import { inspectionRepository } from '../repositories/inspection-repository';
 import { propertyRepository } from '../repositories/property-repository';
@@ -232,6 +233,7 @@ export class InspectionService {
           currentVerification.reviewedAt = now;
           await verificationRepository.upsert(currentVerification);
         }
+        await verificationAssignmentService.completeTask(user, property.id, 'INSPECTION', fullRecord.observations);
       } catch (err) {
         console.warn('Failed to auto-update verification inspection status', err);
       }

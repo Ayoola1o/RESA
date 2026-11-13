@@ -15,6 +15,26 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 }
 
 export class MediaService {
+  private async assertListingOwner(user: User, property: { ownerId: string; authorizedAgentId?: string; id: string; listingStatus: string }) {
+    if (!await propertyService.canManageListing(user.id, property as any)) {
+      throw new Error('Only the property owner or authorized agent can change listing media.');
+    }
+    if (['REJECTED', 'SUSPENDED', 'SOLD'].includes(property.listingStatus)) {
+      throw new Error(`Media cannot be changed while the listing is ${property.listingStatus.toLowerCase()}.`);
+    }
+  }
+
+  private async invalidateModerationAfterMediaChange(user: User, property: Awaited<ReturnType<typeof propertyRepository.findById>>) {
+    if (!property || ['DRAFT', 'CHANGES_REQUIRED'].includes(property.listingStatus)) return;
+    await propertyRepository.update(property.id, {
+      listingStatus: 'CHANGES_REQUIRED',
+      moderationStatus: 'PENDING',
+      verification: property.verification ? { ...property.verification, mediaStatus: 'PENDING', overallStatus: 'IN_REVIEW' } : property.verification,
+    });
+    const { verificationAssignmentService } = await import('./verification-assignment-service');
+    await verificationAssignmentService.createPropertyTasks({ id: property.id, ownerId: property.ownerId, state: property.state }, user);
+  }
+
   /**
    * Uploads a real file (image or video) and registers it as a persistent PropertyMedia record.
    */
@@ -40,13 +60,7 @@ export class MediaService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    // Authorization check
-    if (
-      user.role !== 'ADMIN' &&
-      !await propertyService.canManageListing(user.id, property)
-    ) {
-      throw new Error('Unauthorized to manage media for this property');
-    }
+    await this.assertListingOwner(user, property);
 
     // Determine type
     const isVideo = videoTypes.has(normalizedMimeType);
@@ -84,6 +98,7 @@ export class MediaService {
     };
 
     await propertyRepository.addMedia(propertyId, mediaItem);
+    await this.invalidateModerationAfterMediaChange(user, property);
 
     await auditRepository.create({
       actorId: user.id,
@@ -121,12 +136,7 @@ export class MediaService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (
-      user.role !== 'ADMIN' &&
-      !await propertyService.canManageListing(user.id, property)
-    ) {
-      throw new Error('Unauthorized to manage media for this property');
-    }
+    await this.assertListingOwner(user, property);
 
     const type: MediaType = data.type || (data.url.match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image');
     const mediaId = `med_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -144,6 +154,7 @@ export class MediaService {
     };
 
     await propertyRepository.addMedia(propertyId, mediaItem);
+    await this.invalidateModerationAfterMediaChange(user, property);
 
     await auditRepository.create({
       actorId: user.id,
@@ -175,18 +186,14 @@ export class MediaService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (
-      user.role !== 'ADMIN' &&
-      !await propertyService.canManageListing(user.id, property)
-    ) {
-      throw new Error('Unauthorized to update media for this property');
-    }
+    await this.assertListingOwner(user, property);
 
     const updatedProperty = await propertyRepository.updateMedia(propertyId, mediaId, updates);
     if (!updatedProperty) throw new Error('Failed to update media item');
 
     const updatedItem = updatedProperty.media.find((m) => m.id === mediaId);
     if (!updatedItem) throw new Error('Updated media item not found');
+    await this.invalidateModerationAfterMediaChange(user, property);
 
     return updatedItem;
   }
@@ -198,12 +205,7 @@ export class MediaService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (
-      user.role !== 'ADMIN' &&
-      !await propertyService.canManageListing(user.id, property)
-    ) {
-      throw new Error('Unauthorized to delete media for this property');
-    }
+    await this.assertListingOwner(user, property);
 
     const item = property.media.find((m) => m.id === mediaId);
     if (item?.fileReference) {
@@ -222,6 +224,7 @@ export class MediaService {
     }
 
     await propertyRepository.deleteMedia(propertyId, mediaId);
+    await this.invalidateModerationAfterMediaChange(user, property);
 
     await auditRepository.create({
       actorId: user.id,
@@ -244,15 +247,11 @@ export class MediaService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (
-      user.role !== 'ADMIN' &&
-      !await propertyService.canManageListing(user.id, property)
-    ) {
-      throw new Error('Unauthorized to reorder media for this property');
-    }
+    await this.assertListingOwner(user, property);
 
     const updated = await propertyRepository.reorderMedia(propertyId, orderedIds);
     if (!updated) throw new Error('Failed to reorder media');
+    await this.invalidateModerationAfterMediaChange(user, property);
 
     await auditRepository.create({
       actorId: user.id,

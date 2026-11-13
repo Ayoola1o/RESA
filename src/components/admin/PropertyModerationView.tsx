@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Property, ListingReport, AdminPermission } from '@/types/prophunta';
 import { formatCurrency } from '@/lib/utils';
@@ -29,6 +30,7 @@ interface PropertyModerationViewProps {
   onOpenDocsDialog: (prop: Property) => void;
   onSuspendProperty: (propertyId: string) => Promise<void>;
   onRestoreProperty: (propertyId: string) => Promise<void>;
+  onModerationReview: (propertyId: string, outcome: 'APPROVED' | 'CHANGES_REQUIRED', notes: string) => Promise<void>;
   onSwitchToReports: () => void;
   submittingAction: boolean;
   searchQuery: string;
@@ -42,10 +44,12 @@ export function PropertyModerationView({
   onOpenDocsDialog,
   onSuspendProperty,
   onRestoreProperty,
+  onModerationReview,
   onSwitchToReports,
   submittingAction,
   searchQuery,
 }: PropertyModerationViewProps) {
+  const [moderationNotes, setModerationNotes] = useState<Record<string, string>>({});
   const getReportsForProperty = (propId: string) => {
     return reports.filter((r) => r.propertyId === propId && r.status !== 'RESOLVED' && r.status !== 'DISMISSED');
   };
@@ -143,6 +147,7 @@ export function PropertyModerationView({
                   <div className="flex items-center gap-3 text-[11px] text-slate-400 pt-0.5">
                     <span>Docs Attached: <strong>{p.documents?.length || 0}</strong></span>
                     <span>Open Reports: <strong>{propReports.length}</strong></span>
+                    <span>Content Review: <strong>{p.moderationStatus || 'PENDING'}</strong></span>
                     <span>Created: {new Date(p.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -188,6 +193,16 @@ export function PropertyModerationView({
                   >
                     Checklist
                   </Button>
+
+                  {can('properties.moderate') && ['SUBMITTED', 'UNDER_REVIEW', 'CHANGES_REQUIRED'].includes(p.listingStatus) && p.moderationStatus !== 'APPROVED' && (
+                    <div className="flex min-w-56 flex-col gap-1.5">
+                      <Input aria-label={`Moderation notes for ${p.title}`} placeholder="Add review notes (required)" value={moderationNotes[p.id] || ''} onChange={(event) => setModerationNotes((current) => ({ ...current, [p.id]: event.target.value }))} className="h-8 text-xs" />
+                      <div className="flex gap-1.5">
+                        <Button size="sm" disabled={submittingAction || (moderationNotes[p.id] || '').trim().length < 5} onClick={() => void onModerationReview(p.id, 'APPROVED', moderationNotes[p.id])} className="h-8 flex-1 bg-[#25D366] text-slate-950 hover:bg-[#20bd5b]">Approve content</Button>
+                        <Button size="sm" variant="outline" disabled={submittingAction || (moderationNotes[p.id] || '').trim().length < 5} onClick={() => void onModerationReview(p.id, 'CHANGES_REQUIRED', moderationNotes[p.id])} className="h-8 flex-1">Request changes</Button>
+                      </div>
+                    </div>
+                  )}
 
                   {p.listingStatus === 'SUSPENDED' ? (
                     <Button

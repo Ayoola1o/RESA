@@ -17,6 +17,7 @@ import { auditRepository } from '../repositories/audit-repository';
 import { staffAuthorizationService } from './staff-authorization-service';
 import { getDb, saveDb } from '../db/store';
 import { supabaseStorageService } from './supabase-storage-service';
+import { verificationAssignmentService } from './verification-assignment-service';
 
 const VAULT_DIR = path.join(process.cwd(), '.data', 'vault', 'documents');
 
@@ -43,9 +44,7 @@ export class DocumentService {
     // Access control check
     const isOwner = property.ownerId === user.id;
     const isAgent = await propertyService.canManageListing(user.id, property);
-    const isAdmin = user.role === 'ADMIN';
-
-    if (!isOwner && !isAgent && !isAdmin) {
+    if (!isOwner && !isAgent) {
       throw new Error('Unauthorized to upload confidential documentation for this property');
     }
 
@@ -139,6 +138,7 @@ export class DocumentService {
 
       if (isAdmin) {
         await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+        await verificationAssignmentService.assertAssigned(user, foundProperty.id, ['OWNERSHIP']);
       }
 
       const fileBuffer = await supabaseStorageService.download(foundDoc.fileReference)
@@ -179,7 +179,10 @@ export class DocumentService {
         throw new Error('Unauthorized: Confidential user credential document access denied');
       }
 
-      if (isAdmin) await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+      if (isAdmin) {
+        await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+        await verificationAssignmentService.assertUserAssigned(user, userDoc.userId);
+      }
       const fileBuffer = await supabaseStorageService.download(userDoc.fileReference)
         ?? (fs.existsSync(path.join(VAULT_DIR, userDoc.fileReference))
           ? fs.readFileSync(path.join(VAULT_DIR, userDoc.fileReference))
@@ -275,6 +278,7 @@ export class DocumentService {
     }
     db.userDocuments.push(newDoc);
     saveDb(db);
+    await verificationAssignmentService.createUserIdentityTask(user.id, user);
 
     await auditRepository.create({
       actorId: user.id,
@@ -304,6 +308,7 @@ export class DocumentService {
     if (target !== user.id && user.role !== 'ADMIN') {
       throw new Error('Unauthorized to inspect other users credential documents');
     }
+    if (target !== user.id && user.role === 'ADMIN') await verificationAssignmentService.assertUserAssigned(user, target);
 
     return (db.userDocuments || []).filter((d) => d.userId === target);
   }
@@ -311,7 +316,7 @@ export class DocumentService {
   async reviewUserDocument(
     adminUser: User,
     documentId: string,
-    status: Extract<UserDocumentStatus, 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED'>,
+    status: Extract<UserDocumentStatus, 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'CHANGES_REQUIRED'>,
     reviewNotes?: string
   ): Promise<UserDocument> {
     if (adminUser.role !== 'ADMIN') throw new Error('Only administrators can review verification files.');
@@ -321,6 +326,10 @@ export class DocumentService {
     const db = getDb();
     const document = (db.userDocuments || []).find((item) => item.id === documentId);
     if (!document) throw new Error('User verification document not found.');
+    await verificationAssignmentService.assertUserAssigned(adminUser, document.userId);
+    if ((status === 'REJECTED' || status === 'CHANGES_REQUIRED') && !reviewNotes?.trim()) {
+      throw new Error('A reason is required when rejecting a document or requesting changes.');
+    }
 
     const reviewed = {
       ...document,
@@ -331,6 +340,7 @@ export class DocumentService {
     };
     db.userDocuments = db.userDocuments.map((item) => item.id === documentId ? reviewed : item);
     saveDb(db);
+    await verificationAssignmentService.recordDocumentReview({ documentId, subjectType: 'USER', subjectId: document.userId, reviewerId: adminUser.id, previousStatus: document.status, newStatus: status, reason: reviewNotes });
 
     await auditRepository.create({
       actorId: adminUser.id,
@@ -354,9 +364,7 @@ export class DocumentService {
     if (!doc) return false;
 
     const isOwner = doc.userId === user.id;
-    const isAdmin = user.role === 'ADMIN';
-
-    if (!isOwner && !isAdmin) {
+    if (!isOwner) {
       throw new Error('Unauthorized to delete this credential document');
     }
 
@@ -405,6 +413,10 @@ export class DocumentService {
     }
 
     await staffAuthorizationService.assertPermission(adminUser.id, 'documents.review');
+    await verificationAssignmentService.assertAssigned(adminUser, propertyId, ['OWNERSHIP']);
+    if ((status === 'REJECTED' || status === 'CHANGES_REQUIRED') && !reviewNotes?.trim()) {
+      throw new Error('A reason is required when rejecting a document or requesting changes.');
+    }
 
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
@@ -413,6 +425,7 @@ export class DocumentService {
     const docIdx = docs.findIndex((d) => d.id === documentId);
     if (docIdx === -1) throw new Error('Document not found on this property');
 
+    const priorStatus = docs[docIdx].status;
     docs[docIdx] = {
       ...docs[docIdx],
       status,
@@ -422,6 +435,7 @@ export class DocumentService {
     };
 
     await propertyRepository.update(propertyId, { documents: docs });
+    await verificationAssignmentService.recordDocumentReview({ documentId, subjectType: 'PROPERTY', subjectId: propertyId, reviewerId: adminUser.id, previousStatus: priorStatus, newStatus: status, reason: reviewNotes });
 
     await auditRepository.create({
       actorId: adminUser.id,
@@ -446,9 +460,7 @@ export class DocumentService {
 
     const isOwner = property.ownerId === user.id;
     const isAgent = await propertyService.canManageListing(user.id, property);
-    const isAdmin = user.role === 'ADMIN';
-
-    if (!isOwner && !isAgent && !isAdmin) {
+    if (!isOwner && !isAgent) {
       throw new Error('Unauthorized to delete documentation for this property');
     }
 
@@ -504,6 +516,7 @@ export class DocumentService {
 
     if (isAdmin) {
       await staffAuthorizationService.assertPermission(user.id, 'documents.view_metadata');
+      await verificationAssignmentService.assertAssigned(user, propertyId, ['OWNERSHIP']);
     }
 
     return property.documents || [];

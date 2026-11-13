@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { User, UserRole } from '@/types/prophunta';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { notificationService } from './notification-service';
 import { getDb, saveDb } from '../db/store';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -429,6 +430,9 @@ export class AuthService {
       metadata: { documentType: data.documentType, documentNumber: data.documentNumber },
     });
 
+    const { verificationAssignmentService } = await import('./verification-assignment-service');
+    await verificationAssignmentService.createUserIdentityTask(user.id, user);
+
     return updated;
   }
 
@@ -447,9 +451,11 @@ export class AuthService {
 
     await staffAuthorizationService.requirePermission(
       adminUser,
-      outcome === 'VERIFIED' ? 'verification.approve' : 'verification.reject',
-      { resourceId: targetUserId }
+      outcome === 'VERIFIED' ? 'verification.approve' : 'verification.reject'
     );
+    const { verificationAssignmentService } = await import('./verification-assignment-service');
+    await verificationAssignmentService.assertUserAssigned(adminUser, targetUserId);
+    if (outcome !== 'VERIFIED' && !notes?.trim()) throw new Error('A reason is required when rejecting identity verification or requesting changes.');
 
     const now = new Date().toISOString();
     const targetUser = await userRepository.findById(targetUserId);
@@ -465,6 +471,7 @@ export class AuthService {
       kycRejectionReason: outcome !== 'VERIFIED' ? notes : undefined,
     });
     if (!updated) throw new Error('Failed to update KYC status');
+    await verificationAssignmentService.completeUserIdentityTask(adminUser, targetUserId, notes?.trim() || `Identity review marked ${outcome}.`);
 
     await auditRepository.create({
       actorId: adminUser.id,
@@ -475,6 +482,11 @@ export class AuthService {
       objectId: targetUserId,
       result: 'SUCCESS',
       metadata: { outcome, notes },
+    });
+    await notificationService.createNotification(targetUserId, {
+      title: outcome === 'VERIFIED' ? 'Identity verified' : outcome === 'REJECTED' ? 'Identity verification rejected' : 'Identity changes requested',
+      message: outcome === 'VERIFIED' ? 'Your identity verification has been approved.' : notes?.trim() || 'Please update your identity submission.',
+      type: 'VERIFICATION', link: '/profile',
     });
 
     return updated;

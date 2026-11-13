@@ -82,6 +82,7 @@ import {
   updateUserStatusAction,
   suspendPropertyAction,
   restorePropertyAction,
+  reviewPropertyModerationAction,
   getCurrentStaffContextAction,
   getStaffDirectoryAction,
   inviteStaffAction,
@@ -670,6 +671,18 @@ function AdminPortalContent() {
     }
   };
 
+  const handlePropertyModerationReview = async (propertyId: string, outcome: 'APPROVED' | 'CHANGES_REQUIRED', notes: string) => {
+    setSubmittingAction(true);
+    const result = await reviewPropertyModerationAction(propertyId, outcome, notes);
+    setSubmittingAction(false);
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Moderation review failed', description: result.error || 'Could not save the listing review.' });
+      return;
+    }
+    toast({ title: 'Listing content reviewed', description: `Moderation marked ${outcome.toLowerCase().replaceAll('_', ' ')}.` });
+    loadData();
+  };
+
   if (loadError) {
     return <div role="alert" className="space-y-3"><p>{loadError}</p><Button onClick={loadData}>Retry loading records</Button></div>;
   }
@@ -905,6 +918,7 @@ function AdminPortalContent() {
             }}
             onSuspendProperty={handleSuspendProperty}
             onRestoreProperty={handleRestoreProperty}
+            onModerationReview={handlePropertyModerationReview}
             onSwitchToReports={() => handleTabChange('reports')}
             submittingAction={submittingAction}
             searchQuery={searchQuery}

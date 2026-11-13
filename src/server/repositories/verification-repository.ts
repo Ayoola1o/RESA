@@ -14,11 +14,9 @@ export class VerificationRepository {
 
     if (propIdx !== -1) {
       db.properties[propIdx].verification = verification;
-      // Synchronize property listing status with verification
-      if (verification.overallStatus === 'PASSED') {
-        db.properties[propIdx].listingStatus = 'VERIFIED';
-        db.properties[propIdx].publishedAt = db.properties[propIdx].publishedAt || new Date().toISOString();
-      } else if (verification.overallStatus === 'FAILED') {
+      // Passing checklist data is only a recommendation. The final approval
+      // service owns the publication transition after all other gates pass.
+      if (verification.overallStatus === 'FAILED') {
         db.properties[propIdx].listingStatus = 'REJECTED';
       } else if (verification.overallStatus === 'CHANGES_REQUIRED') {
         db.properties[propIdx].listingStatus = 'CHANGES_REQUIRED';

@@ -67,7 +67,7 @@ export type UserDocumentType =
   | 'EMPLOYMENT_REFERENCE'
   | 'OTHER';
 
-export type UserDocumentStatus = 'PENDING' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED';
+export type UserDocumentStatus = 'PENDING' | 'ASSIGNED' | 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED' | 'CHANGES_REQUIRED';
 
 export interface UserDocument {
   id: string;
@@ -289,6 +289,10 @@ export interface Property {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+  moderationStatus?: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CHANGES_REQUIRED';
+  moderationReviewedAt?: string;
+  moderationReviewedBy?: string;
+  moderationNotes?: string;
 
   // View & insight metrics
   viewsCount?: number;

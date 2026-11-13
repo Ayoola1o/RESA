@@ -25,6 +25,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, AdminPermission[]> = {
     'verification.review',
     'verification.approve',
     'verification.reject',
+    'verification.assign',
     'documents.view_metadata',
     'documents.view_sensitive',
     'documents.review',
@@ -107,6 +108,8 @@ export const ROLE_PERMISSIONS: Record<StaffRole, AdminPermission[]> = {
     'admin.staff.invite',
     'admin.staff.update_role',
     'admin.staff.deactivate',
+    'verification.assign',
+    'verification.assign',
   ],
 };
 

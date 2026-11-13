@@ -4,6 +4,8 @@ import { staffAuthorizationService } from './staff-authorization-service';
 import { Property, PropertyMedia, ListingStatus, User, PropertyDocument, DocumentType } from '@/types/prophunta';
 import { propertyRepository, PropertyFilterOptions } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { verificationAssignmentService } from './verification-assignment-service';
+import { isEligibleMarketplaceListing } from '@/lib/property-publication-eligibility';
 
 export class PropertyService {
   async getProperty(id: string): Promise<Property | null> {
@@ -35,8 +37,13 @@ export class PropertyService {
     return property.authorizedAgentId === userId && await relationshipService.validateAgentAuthority(userId, property);
   }
 
+  private async canStaffManageProperty(user: User, property: Property): Promise<boolean> {
+    const context = await staffAuthorizationService.requirePermission(user, 'properties.moderate');
+    return context.activeRoles.includes('SUPER_ADMIN');
+  }
+
   isPublicListing(property: Property): boolean {
-    return ['VERIFIED', 'ACTIVE', 'RESERVED', 'OCCUPIED', 'SOLD'].includes(property.listingStatus);
+    return isEligibleMarketplaceListing(property);
   }
 
   async createDraft(
@@ -70,8 +77,8 @@ export class PropertyService {
       isDirectListing?: boolean;
     }
   ): Promise<Property> {
-    // Role check: Only OWNER, AGENT, or ADMIN can create listings
-    if (!['OWNER', 'AGENT', 'ADMIN'].includes(user.role)) {
+    // Staff review listings but do not create marketplace inventory.
+    if (!['OWNER', 'AGENT'].includes(user.role)) {
       throw new Error('Only Property Owners and Verified Agents can create property listings');
     }
 
@@ -100,9 +107,7 @@ export class PropertyService {
       }
     }
 
-    const media: PropertyMedia[] = (data.images.length > 0 ? data.images : [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
-    ]).map((url, idx) => ({
+    const media: PropertyMedia[] = data.images.map((url, idx) => ({
       id: `med_${Date.now()}_${idx}`,
       propertyId: '',
       url,
@@ -142,6 +147,7 @@ export class PropertyService {
       availabilityStatus: 'AVAILABLE',
       intendedUse: data.intendedUse || 'Residential',
       listingStatus: 'DRAFT',
+      moderationStatus: 'PENDING',
       media,
       documents: [],
       verification: {
@@ -208,13 +214,13 @@ export class PropertyService {
     if (!property) throw new Error('Property not found');
 
     const canManage = await this.canManageListing(user.id, property);
-    const isAdmin = user.role === 'ADMIN';
+    const staffCanManage = user.role === 'ADMIN' && await this.canStaffManageProperty(user, property);
 
-    if (!canManage && !isAdmin) {
+    if (!canManage && !staffCanManage) {
       throw new Error('Unauthorized to edit this property draft');
     }
 
-    if (property.listingStatus !== 'DRAFT' && property.listingStatus !== 'CHANGES_REQUIRED' && !isAdmin) {
+    if (property.listingStatus !== 'DRAFT' && property.listingStatus !== 'CHANGES_REQUIRED' && !staffCanManage) {
       throw new Error(`Cannot edit listing while in status: ${property.listingStatus}`);
     }
 
@@ -259,14 +265,15 @@ export class PropertyService {
     if (!property) throw new Error('Property not found');
 
     const canManage = await this.canManageListing(user.id, property);
-    const isAdmin = user.role === 'ADMIN';
+    const staffCanManage = user.role === 'ADMIN' && await this.canStaffManageProperty(user, property);
 
-    if (!canManage && !isAdmin) {
+    if (!canManage && !staffCanManage) {
       throw new Error('Unauthorized to edit this property');
     }
 
+    const editableKeys = ['title', 'propertyType', 'listingType', 'description', 'state', 'city', 'area', 'address', 'price', 'priceUnit', 'agreementFee', 'cautionFee', 'serviceCharge', 'otherCharges', 'bedrooms', 'bathrooms', 'sqft', 'features', 'latitude', 'longitude', 'intendedUse'];
     const updated = await propertyRepository.update(propertyId, {
-      ...data,
+      ...Object.fromEntries(Object.entries(data).filter(([key]) => editableKeys.includes(key))),
       updatedAt: new Date().toISOString(),
     });
 
@@ -293,7 +300,7 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (user.role !== 'ADMIN' && !await this.canManageListing(user.id, property)) {
+    if (!await this.canManageListing(user.id, property)) {
       throw new Error('Unauthorized to modify this property documentation');
     }
 
@@ -329,17 +336,26 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (user.role !== 'ADMIN' && !await this.canManageListing(user.id, property)) {
+    if (!await this.canManageListing(user.id, property)) {
       throw new Error('Unauthorized to submit this property');
     }
 
     // Security: Require identity KYC verification before submitting listing for compliance audit
-    if (user.role !== 'ADMIN' && user.verificationStatus !== 'VERIFIED') {
+    if (user.verificationStatus !== 'VERIFIED') {
       throw new Error('Identity KYC verification required before submitting listings for compliance audit.');
+    }
+    if (!(property.media || []).some((media) => media.type === 'image' && media.uploadStatus === 'COMPLETED' && Boolean(media.url))) {
+      throw new Error('Add at least one uploaded property photo before submitting this listing.');
+    }
+    if (!(property.documents || []).some((document) => [
+      'DEED_OF_ASSIGNMENT', 'CERTIFICATE_OF_OCCUPANCY', 'GOVERNORS_CONSENT', 'LETTER_OF_AUTHORITY', 'RECEIPT_OF_PURCHASE',
+    ].includes(document.documentType))) {
+      throw new Error('Upload at least one ownership or authority document before submitting this listing.');
     }
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'SUBMITTED',
+      moderationStatus: 'PENDING',
       verification: {
         ...(property.verification || {
           verificationId: `ver_${Date.now()}`,
@@ -368,13 +384,37 @@ export class PropertyService {
       metadata: { title: property.title },
     });
 
+    await verificationAssignmentService.createPropertyTasks({ id: property.id, ownerId: property.ownerId, state: property.state }, user);
+
+    return updated!;
+  }
+
+  async reviewModeration(user: User, propertyId: string, outcome: 'APPROVED' | 'REJECTED' | 'CHANGES_REQUIRED', notes: string): Promise<Property> {
+    if (notes.trim().length < 5) throw new Error('Moderation notes (minimum 5 characters) are required.');
+    const property = await propertyRepository.findById(propertyId);
+    if (!property) throw new Error('Property not found.');
+    await verificationAssignmentService.assertTaskAssigned(user, 'properties.moderate', 'PROPERTY', propertyId, ['MODERATION']);
+    const now = new Date().toISOString();
+    const updated = await propertyRepository.update(propertyId, {
+      moderationStatus: outcome,
+      moderationReviewedAt: now,
+      moderationReviewedBy: user.id,
+      moderationNotes: notes.trim(),
+      ...(outcome === 'APPROVED' && property.verification ? {
+        verification: { ...property.verification, mediaStatus: 'PASSED', reviewedAt: now, reviewerId: user.id },
+      } : {}),
+      ...(outcome === 'REJECTED' ? { listingStatus: 'REJECTED' as const } : outcome === 'CHANGES_REQUIRED' ? { listingStatus: 'CHANGES_REQUIRED' as const } : {}),
+    });
+    await verificationAssignmentService.completeTask(user, propertyId, 'MODERATION', notes);
+    await auditRepository.create({ actorId: user.id, actorEmail: user.email, actorRole: user.role, action: 'PROPERTY_MODERATION_REVIEWED' as any, objectType: 'PROPERTY', objectId: propertyId, result: 'SUCCESS', metadata: { outcome, notes: notes.trim() } });
     return updated!;
   }
 
   async suspendProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
     const prop = await propertyRepository.findById(propertyId);
     if (!prop) throw new Error('Property not found');
-    await staffAuthorizationService.requirePermission(adminUser, 'properties.suspend', { resourceId: propertyId, region: prop.state });
+    const context = await staffAuthorizationService.requirePermission(adminUser, 'properties.suspend', { resourceId: propertyId, region: prop.state });
+    if (!context.activeRoles.includes('SUPER_ADMIN')) await verificationAssignmentService.assertTaskAssigned(adminUser, 'properties.suspend', 'PROPERTY', propertyId, ['MODERATION', 'TRUST_SAFETY']);
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'SUSPENDED',
@@ -398,7 +438,8 @@ export class PropertyService {
   async restoreProperty(adminUser: User, propertyId: string, reason?: string): Promise<Property> {
     const prop = await propertyRepository.findById(propertyId);
     if (!prop) throw new Error('Property not found');
-    await staffAuthorizationService.requirePermission(adminUser, 'properties.restore', { resourceId: propertyId, region: prop.state });
+    const context = await staffAuthorizationService.requirePermission(adminUser, 'properties.restore', { resourceId: propertyId, region: prop.state });
+    if (!context.activeRoles.includes('SUPER_ADMIN')) await verificationAssignmentService.assertTaskAssigned(adminUser, 'properties.restore', 'PROPERTY', propertyId, ['MODERATION', 'TRUST_SAFETY']);
 
     const updated = await propertyRepository.update(propertyId, {
       listingStatus: 'ACTIVE',
@@ -441,16 +482,17 @@ export class PropertyService {
     if (!property) throw new Error('Property not found');
 
     const canManage = await this.canManageListing(user.id, property);
-    const isAdmin = user.role === 'ADMIN';
+    if (user.role === 'ADMIN') {
+      throw new Error('Administrative status changes must use the authorized suspend, restore, or verification workflow.');
+    }
 
-    if (!canManage && !isAdmin) {
+    if (!canManage) {
       throw new Error('Unauthorized: You do not have permission to change the status of this property');
     }
 
     // Role-specific transition rules
-    if (!isAdmin) {
-      // Owners / Agents can only perform operational transitions
-      const allowedOwnerTransitions: Record<ListingStatus, ListingStatus[]> = {
+    // Owners / Agents can only perform operational transitions.
+    const allowedOwnerTransitions: Record<ListingStatus, ListingStatus[]> = {
         DRAFT: ['SUBMITTED'],
         CHANGES_REQUIRED: ['SUBMITTED'],
         SUBMITTED: [], // Waiting for review
@@ -462,14 +504,13 @@ export class PropertyService {
         SOLD: [],
         REJECTED: [],
         SUSPENDED: [],
-      };
+    };
 
-      const allowed = allowedOwnerTransitions[property.listingStatus] || [];
-      if (!allowed.includes(newStatus)) {
-        throw new Error(
-          `Cannot transition listing from ${property.listingStatus} to ${newStatus}. Owners/agents cannot bypass verification or compliance actions.`
-        );
-      }
+    const allowed = allowedOwnerTransitions[property.listingStatus] || [];
+    if (!allowed.includes(newStatus)) {
+      throw new Error(
+        `Cannot transition listing from ${property.listingStatus} to ${newStatus}. Owners/agents cannot bypass verification or compliance actions.`
+      );
     }
 
     // Security: VERIFIED status can ONLY be awarded through the formal audit approval workflow

@@ -15,6 +15,7 @@ export type AdminPermission =
   | 'verification.review'
   | 'verification.approve'
   | 'verification.reject'
+  | 'verification.assign'
   | 'verification.audit.view'
   | 'documents.view_metadata'
   | 'documents.view_sensitive'

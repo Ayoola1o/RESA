@@ -63,6 +63,7 @@ import { agentCredentialService } from '../services/agent-credential-service';
 import { staffManagementService } from '../services/staff-management-service';
 import { staffAuthorizationService } from '../services/staff-authorization-service';
 import { approvalService } from '../services/approval-service';
+import { verificationAssignmentService } from '../services/verification-assignment-service';
 
 // --- AUTHENTICATION ACTIONS ---
 
@@ -186,7 +187,9 @@ export async function getAdminPropertiesAction(): Promise<Property[]> {
   if (!permissions || !(['properties.moderate', 'verification.queue.view', 'inspections.view', 'reports.view'] as const)
     .some((permission) => permissions.has(permission))) throw new Error('Property workspace access required.');
   const properties = await propertyService.getAllProperties();
-  return permissions.has('documents.view_metadata') ? properties : properties.map((property) => ({ ...property, documents: [] }));
+  const assignedIds = await verificationAssignmentService.getAssignedPropertyIds(user);
+  const visible = assignedIds === null ? properties : properties.filter((property) => assignedIds.includes(property.id));
+  return permissions.has('documents.view_metadata') ? visible : visible.map((property) => ({ ...property, documents: [] }));
 }
 
 export async function getPropertyAction(id: string): Promise<Property | null> {
@@ -194,7 +197,17 @@ export async function getPropertyAction(id: string): Promise<Property | null> {
   if (!property) return null;
   const user = await authService.getCurrentUser();
   if (user && await propertyService.canManageListing(user.id, property)) return property;
-  if (user && await staffAuthorizationService.hasPermission(user, 'properties.moderate')) return { ...property, documents: [] };
+  if (user?.role === 'ADMIN') {
+    const context = await staffAuthorizationService.getStaffContext(user);
+    const canView = context && ['properties.moderate', 'verification.queue.view', 'inspections.view', 'reports.view']
+      .some((permission) => context.effectivePermissions.has(permission as AdminPermission));
+    if (canView) {
+      const assigned = await verificationAssignmentService.getAssignedPropertyIds(user);
+      if (assigned === null || assigned.includes(property.id)) {
+        return context.effectivePermissions.has('documents.view_metadata') ? property : { ...property, documents: [] };
+      }
+    }
+  }
   return propertyService.isPublicListing(property) ? { ...property, documents: [] } : null;
 }
 
@@ -340,8 +353,22 @@ export async function getPropertyDraftAction(
     const property = await propertyService.getProperty(propertyId);
     if (!property) return { success: false, error: 'Property not found.' };
 
-    if (user.role !== 'ADMIN' && !await propertyService.canManageListing(user.id, property)) {
+    const isOwnerOrAgent = await propertyService.canManageListing(user.id, property);
+    if (!isOwnerOrAgent && user.role !== 'ADMIN') {
       return { success: false, error: 'Unauthorized to view this draft.' };
+    }
+
+    if (user.role === 'ADMIN') {
+      const context = await staffAuthorizationService.getStaffContext(user);
+      const assigned = await verificationAssignmentService.getAssignedPropertyIds(user);
+      if (!context || (assigned !== null && !assigned.includes(property.id))) {
+        return { success: false, error: 'This property is outside your assigned case access.' };
+      }
+      if (!context.effectivePermissions.has('properties.moderate') && !context.effectivePermissions.has('verification.queue.view') && !context.effectivePermissions.has('inspections.view')) {
+        return { success: false, error: 'Property review permission required.' };
+      }
+      const scopedProperty = context.effectivePermissions.has('documents.view_metadata') ? property : { ...property, documents: [] };
+      return { success: true, property: scopedProperty };
     }
 
     return { success: true, property };
@@ -368,7 +395,30 @@ export async function submitPropertyAction(propertyId: string): Promise<{ succes
 export async function getVerificationQueueAction() {
   const user = await authService.requireRole(['ADMIN']);
   await staffAuthorizationService.requirePermission(user, 'verification.queue.view');
-  return verificationService.listQueue();
+  const [queue, assignedIds] = await Promise.all([verificationService.listQueue(), verificationAssignmentService.getAssignedPropertyIds(user)]);
+  return assignedIds === null ? queue : queue.filter((item) => assignedIds.includes(item.propertyId));
+}
+
+export async function assignVerificationTaskAction(taskId: string, targetUserId: string | null, reason: string) {
+  try {
+    const actor = await authService.requireRole(['ADMIN']);
+    await verificationAssignmentService.reassignTask(actor, taskId, targetUserId, reason);
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Could not update assignment.' };
+  }
+}
+
+export async function reviewPropertyModerationAction(propertyId: string, outcome: 'APPROVED' | 'REJECTED' | 'CHANGES_REQUIRED', notes: string) {
+  try {
+    const moderator = await authService.requireRole(['ADMIN']);
+    await propertyService.reviewModeration(moderator, propertyId, outcome, notes);
+    revalidatePath('/admin'); revalidatePath('/marketplace');
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Could not review listing moderation.' };
+  }
 }
 
 export async function updateVerificationChecklistAction(
@@ -750,8 +800,9 @@ export async function getVerificationOfficerUsersAction(): Promise<Pick<User,
   const officer = await authService.requireRole(['ADMIN']);
   await staffAuthorizationService.requirePermission(officer, 'verification.queue.view');
   await staffAuthorizationService.requirePermission(officer, 'documents.view_sensitive');
+  const assigned = await verificationAssignmentService.getAssignedUserIds(officer);
   return (await userRepository.listAll())
-    .filter((user) => user.role !== 'ADMIN' && Boolean(user.kycStatus && user.kycStatus !== 'NOT_SUBMITTED'))
+    .filter((user) => user.role !== 'ADMIN' && Boolean(user.kycStatus && user.kycStatus !== 'NOT_SUBMITTED') && (assigned === null || assigned.includes(user.id)))
     .map((user) => ({
       id: user.id,
       name: user.name,
@@ -776,10 +827,11 @@ export async function getVerificationOfficerDocumentsAction(): Promise<{
   const officer = await authService.requireRole(['ADMIN']);
   await staffAuthorizationService.requirePermission(officer, 'verification.queue.view');
   await staffAuthorizationService.requirePermission(officer, 'documents.view_sensitive');
+  const assigned = await verificationAssignmentService.getAssignedUserIds(officer);
   const records = getDb().userDocuments || [];
   const users = await userRepository.listAll();
-  const usersById = new Map(users.filter((user) => user.role !== 'ADMIN').map((user) => [user.id, user]));
-  return records.filter((document) => usersById.has(document.userId)).map((document) => {
+  const usersById = new Map(users.filter((user) => user.role !== 'ADMIN' && (assigned === null || assigned.includes(user.id))).map((user) => [user.id, user]));
+  return records.filter((document) => usersById.has(document.userId) && (assigned === null || assigned.includes(document.userId))).map((document) => {
     const user = usersById.get(document.userId);
     return { document, user: user ? { id: user.id, name: user.name, email: user.email, role: user.role } : null };
   });
@@ -1032,6 +1084,7 @@ export async function reviewKycAction(
 ) {
   try {
     const reviewer = await authService.requireUser();
+    await verificationAssignmentService.assertUserAssigned(reviewer, targetUserId);
     const updated = await authService.reviewKyc(reviewer, targetUserId, outcome, notes);
     revalidatePath('/admin');
     return { success: true, user: updated };
