@@ -1,3 +1,4 @@
+import { documentService } from '../src/server/services/document-service';
 import { propertyService } from '../src/server/services/property-service';
 import { verificationService } from '../src/server/services/verification-service';
 import { userRepository } from '../src/server/repositories/user-repository';
@@ -45,14 +46,12 @@ async function runSection6PropertyModelTests() {
     features: ['Swimming Pool', '24/7 Security', 'Solar Inverter', 'Fitted Kitchen'],
     images: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'],
     intendedUse: 'Residential',
-    authorizedAgentId: agent.id,
   });
 
-  // Verify all 26 required fields are present
+  // Verify required fields are present
   const requiredFields: (keyof Property)[] = [
     'id',
     'ownerId',
-    'authorizedAgentId',
     'title',
     'propertyType',
     'listingType',
@@ -158,7 +157,18 @@ async function runSection6PropertyModelTests() {
   console.log(`  ✓ Resubmitted amended draft.`);
 
   // Transition 5: SUBMITTED -> VERIFIED (by Admin audit pass)
-  current = await propertyService.transitionListingStatus(admin, newProperty.id, 'VERIFIED', 'All titles confirmed clean');
+  const titleDocument = await propertyService.addDocument(owner, newProperty.id, 'DEED_OF_ASSIGNMENT', 'test-deed.pdf');
+  await documentService.reviewDocument(admin, newProperty.id, titleDocument.id, 'APPROVED');
+  await verificationService.updateChecklist(admin, newProperty.id, {
+    ownerIdentityStatus: 'PASSED',
+    locationStatus: 'PASSED',
+    authorityDocumentStatus: 'PASSED',
+    availabilityStatus: 'PASSED',
+    mediaStatus: 'PASSED',
+    inspectionStatus: 'PASSED',
+  });
+  await verificationService.approveVerification(admin, newProperty.id, 'All titles confirmed clean');
+  current = (await propertyService.getProperty(newProperty.id))!;
   if (current.listingStatus !== 'VERIFIED') throw new Error('Expected status VERIFIED');
   console.log(`  ✓ 4/11 [VERIFIED]: Verification passed with clean legal title.`);
 

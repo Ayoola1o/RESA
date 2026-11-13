@@ -1,6 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import type { OwnerAgentRelationship } from '@/types/prophunta';
+import { getAgentRelationshipsAction, respondToInvitationAction } from '@/server/actions/prophunta-actions';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -60,59 +63,6 @@ interface AgentDashboardProps {
   userName: string;
 }
 
-// Sample representations representing landlord-agent relationships
-interface PropertyRelationship {
-  id: string;
-  landlordName: string;
-  landlordPhone: string;
-  landlordEmail: string;
-  propertyTitle: string;
-  propertyId: string;
-  mandateType: 'Exclusive Agency' | 'Joint Mandate' | 'Facility Management';
-  commissionRate: string;
-  status: 'ACTIVE' | 'PENDING_DOCUMENTATION' | 'EXPIRED';
-  expiryDate: string;
-}
-
-const DEFAULT_RELATIONSHIPS: PropertyRelationship[] = [
-  {
-    id: 'rel_1',
-    landlordName: 'Chief Adebayo Alabi',
-    landlordPhone: '+234 803 234 5678',
-    landlordEmail: 'adebayo.alabi@investment.ng',
-    propertyTitle: 'Luxury 4-Bedroom Semi-Detached Duplex',
-    propertyId: 'prop_lekki_001',
-    mandateType: 'Exclusive Agency',
-    commissionRate: '10% Legal & Agency',
-    status: 'ACTIVE',
-    expiryDate: '15 Dec 2026',
-  },
-  {
-    id: 'rel_2',
-    landlordName: 'Engr. Emeka Okonkwo',
-    landlordPhone: '+234 802 888 1234',
-    landlordEmail: 'emeka.okonkwo@holding.ng',
-    propertyTitle: 'Modern Serviced 2-Bedroom Apartment',
-    propertyId: 'prop_ikoyi_002',
-    mandateType: 'Facility Management',
-    commissionRate: '10% Annual Management',
-    status: 'ACTIVE',
-    expiryDate: '30 Oct 2026',
-  },
-  {
-    id: 'rel_3',
-    landlordName: 'Dr. (Mrs) Amina Bello',
-    landlordPhone: '+234 809 555 9012',
-    landlordEmail: 'amina.bello@abuja.ng',
-    propertyTitle: 'Contemporary 3-Bedroom Penthouse',
-    propertyId: 'prop_vi_003',
-    mandateType: 'Joint Mandate',
-    commissionRate: '5% Sales Commission',
-    status: 'PENDING_DOCUMENTATION',
-    expiryDate: '20 Nov 2026',
-  },
-];
-
 export default function AgentDashboard({
   properties,
   inspections: initialInspections,
@@ -122,9 +72,40 @@ export default function AgentDashboard({
 }: AgentDashboardProps) {
   const { toast } = useToast();
   const [inspections, setInspections] = useState<InspectionRequest[]>(initialInspections);
-  const [relationships, setRelationships] = useState<PropertyRelationship[]>(DEFAULT_RELATIONSHIPS);
+  const [relationships, setRelationships] = useState<OwnerAgentRelationship[]>([]);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
-  const [selectedRelationship, setSelectedRelationship] = useState<PropertyRelationship | null>(null);
+  const [selectedRelationship, setSelectedRelationship] = useState<OwnerAgentRelationship | null>(null);
+
+  const [mandatesLoading, setMandatesLoading] = useState(true);
+  const [mandatesError, setMandatesError] = useState(false);
+  const [responding, setResponding] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setMandatesLoading(true);
+    setMandatesError(false);
+    getAgentRelationshipsAction().then((records) => {
+      if (active) setRelationships(records);
+    }).catch(() => {
+      if (active) setMandatesError(true);
+    }).finally(() => {
+      if (active) setMandatesLoading(false);
+    });
+    return () => { active = false; };
+  }, [userName]);
+
+  async function respond(id: string, decision: 'ACCEPT' | 'REJECT') {
+    setResponding(true);
+    try {
+      const result = await respondToInvitationAction(id, decision);
+      if (!result.success || !result.relationship) throw new Error(result.error);
+      setRelationships((records) => records.map((record) => record.id === id ? result.relationship! : record));
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Could not update mandate', description: error instanceof Error ? error.message : undefined });
+    } finally {
+      setResponding(false);
+    }
+  }
 
   // Verification pipeline stats
   const submittedListings = properties.filter(
@@ -254,7 +235,7 @@ export default function AgentDashboard({
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate ml-1">Mandates</span>
           </div>
           <div className="mt-2.5 min-w-0">
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{relationships.length}</div>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums truncate">{mandatesError ? 'Unavailable' : mandatesLoading ? 'Loading…' : relationships.length}</div>
             <span className="text-[11px] text-slate-500 font-medium truncate block">Landlord Mandates</span>
           </div>
         </div>
@@ -494,23 +475,14 @@ export default function AgentDashboard({
                 Authorizations, agency mandates, and commission agreements governed under PropHunta verification rules.
               </CardDescription>
             </div>
-            <Button
-              size="sm"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8 gap-1.5 self-start sm:self-auto"
-              onClick={() => {
-                toast({
-                  title: 'New Mandate Agreement',
-                  description: 'Mandate registration workflow opened. Upload authorization letter and owner ID to verify authority.',
-                });
-              }}
-            >
-              <PlusCircle className="h-3.5 w-3.5" />
-              Register Landlord Mandate
-            </Button>
+            <p className="text-xs text-slate-500">Landlords send mandate invitations from their dashboard.</p>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="divide-y divide-slate-100">
+            {mandatesError && <p role="alert" className="py-4">Mandates could not be loaded. Refresh to try again.</p>}
+            {mandatesLoading && <p role="status" className="py-4">Loading mandates…</p>}
+            {!mandatesLoading && !mandatesError && relationships.length === 0 && <p className="py-4">No mandate invitations or agreements yet.</p>}
             {relationships.map((rel) => (
               <div
                 key={rel.id}
@@ -518,7 +490,7 @@ export default function AgentDashboard({
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-bold text-slate-900 text-sm">{rel.landlordName}</p>
+                    <p className="font-bold text-slate-900 text-sm">{rel.ownerName}</p>
                     <Badge variant="outline" className="text-[10px] bg-slate-50 font-semibold">
                       {rel.mandateType}
                     </Badge>
@@ -532,11 +504,11 @@ export default function AgentDashboard({
                       {rel.status}
                     </Badge>
                   </div>
-                  <p className="text-slate-600 font-medium mt-1">Property: {rel.propertyTitle}</p>
+                  <p className="text-slate-600 font-medium mt-1">Property: {rel.scope || (rel.propertyIds?.length ? 'Selected listings' : 'All listings')}</p>
                   <div className="flex flex-wrap items-center gap-3 text-slate-500 mt-1">
-                    <span>Phone: {rel.landlordPhone}</span>
+                    <span>Phone: {rel.ownerPhone}</span>
                     <span>&bull;</span>
-                    <span>Email: {rel.landlordEmail}</span>
+                    <span>Email: {rel.ownerEmail}</span>
                     <span>&bull;</span>
                     <span className="font-semibold text-slate-900">Terms: {rel.commissionRate}</span>
                   </div>
@@ -551,6 +523,12 @@ export default function AgentDashboard({
                   >
                     View Mandate Details
                   </Button>
+                  {rel.status === 'INVITED' && (
+                    <>
+                      <Button size="sm" disabled={responding} onClick={() => respond(rel.id, 'ACCEPT')}>Accept</Button>
+                      <Button size="sm" variant="outline" disabled={responding} onClick={() => respond(rel.id, 'REJECT')}>Decline</Button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
@@ -568,17 +546,17 @@ export default function AgentDashboard({
                 Landlord Representation Mandate
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
-                {selectedRelationship.propertyTitle}
+                {selectedRelationship.scope || 'Landlord representation'}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 py-2 text-xs text-slate-700">
               <div className="flex justify-between border-b pb-1.5">
                 <span className="text-slate-500">Landlord / Principal:</span>
-                <span className="font-semibold">{selectedRelationship.landlordName}</span>
+                <span className="font-semibold">{selectedRelationship.ownerName}</span>
               </div>
               <div className="flex justify-between border-b pb-1.5">
                 <span className="text-slate-500">Contact:</span>
-                <span className="font-semibold">{selectedRelationship.landlordPhone}</span>
+                <span className="font-semibold">{selectedRelationship.ownerPhone}</span>
               </div>
               <div className="flex justify-between border-b pb-1.5">
                 <span className="text-slate-500">Mandate Type:</span>
@@ -590,7 +568,7 @@ export default function AgentDashboard({
               </div>
               <div className="flex justify-between border-b pb-1.5">
                 <span className="text-slate-500">Expiry Date:</span>
-                <span className="font-semibold">{selectedRelationship.expiryDate}</span>
+                <span className="font-semibold">{selectedRelationship.expiresAt ? new Date(selectedRelationship.expiresAt).toLocaleDateString() : 'No expiry set'}</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <p className="font-bold text-slate-900 mb-1">Authority Verification Shield:</p>

@@ -26,7 +26,7 @@ export class RelationshipRepository {
     const db = getDb();
     return (
       db.relationships.find(
-        (r) => r.ownerId === ownerId && r.agentId === agentId && r.status === 'ACTIVE'
+        (r) => r.ownerId === ownerId && r.agentId === agentId && r.status === 'ACTIVE' && (!r.expiresAt || Date.parse(r.expiresAt) > Date.now())
       ) || null
     );
   }

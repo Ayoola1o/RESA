@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import Link from 'next/link';
+import { getValidCoordinates } from '@/lib/maps/property-coordinates';
 import { Property } from '@/types/prophunta';
 import {
   loadGoogleMapsScript,
@@ -15,10 +15,6 @@ import {
   AlertCircle,
   Key,
   RefreshCw,
-  ExternalLink,
-  ShieldCheck,
-  Building,
-  Info,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -77,25 +73,7 @@ const MAP_STYLES = [
   },
 ];
 
-// Helper to validate actual numeric coordinates
-export function getValidCoordinates(property: Property): { lat: number; lng: number } | null {
-  const lat = property.coordinates?.lat ?? property.latitude;
-  const lng = property.coordinates?.lng ?? property.longitude;
-
-  if (
-    typeof lat === 'number' &&
-    typeof lng === 'number' &&
-    !isNaN(lat) &&
-    !isNaN(lng) &&
-    lat >= -90 &&
-    lat <= 90 &&
-    lng >= -180 &&
-    lng <= 180
-  ) {
-    return { lat, lng };
-  }
-  return null;
-}
+export { getValidCoordinates } from '@/lib/maps/property-coordinates';
 
 export default function GooglePropertyMap({
   properties,
@@ -111,6 +89,7 @@ export default function GooglePropertyMap({
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<Map<string, any>>(new Map());
   const infoWindowRef = useRef<any>(null);
+  const fittedPositions = useRef('');
 
   const [status, setStatus] = useState<GoogleMapsStatus>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -120,6 +99,9 @@ export default function GooglePropertyMap({
     return properties.filter((p) => getValidCoordinates(p) !== null);
   }, [properties]);
 
+  const canRenderMap = status === 'ready' && mappableProperties.length > 0;
+  const currentSelectionHandler = useRef(onSelectProperty);
+  useEffect(() => { currentSelectionHandler.current = onSelectProperty; }, [onSelectProperty]);
   const unmappableCount = properties.length - mappableProperties.length;
 
   // Initialize or re-load the Google Maps API
@@ -135,9 +117,11 @@ export default function GooglePropertyMap({
 
     try {
       await loadGoogleMapsScript(apiKey);
-      setStatus('ready');
+      setStatus(window.__propHuntaGoogleMapsAuthFailed ? 'auth-failure' : 'ready');
     } catch (err: any) {
-      if (err.message === 'MISSING_API_KEY') {
+      if (err.message === 'MAPS_AUTH_FAILURE') {
+        setStatus('auth-failure');
+      } else if (err.message === 'MISSING_API_KEY') {
         setStatus('missing-key');
       } else {
         setStatus('error');
@@ -159,57 +143,26 @@ export default function GooglePropertyMap({
     initMapScript();
   }, [initMapScript]);
 
-  // Build Marker HTML info window content
-  const createInfoWindowContent = useCallback((property: Property): string => {
-    const coords = getValidCoordinates(property);
-    const latStr = coords ? `${coords.lat.toFixed(4)}° N` : '';
-    const lngStr = coords ? `${coords.lng.toFixed(4)}° E` : '';
-    const priceStr = formatCurrency(
-      property.price,
-      property.listingType === 'RENT' ? 'For Rent' : 'For Sale',
-      property.priceUnit
-    );
+  const createInfoWindowContent = useCallback((property: Property): HTMLElement => {
+    const content = document.createElement('div');
+    content.className = 'max-w-64 space-y-1 p-1 text-slate-900';
 
-    const imageHtml = property.media?.[0]?.url
-      ? `<div style="width: 100%; height: 110px; overflow: hidden; border-radius: 8px; margin-bottom: 8px; background-color: #f1f5f9;">
-          <img src="${property.media[0].url}" alt="${property.title}" style="width: 100%; height: 100%; object-fit: cover;" />
-         </div>`
-      : '';
-
-    return `
-      <div style="font-family: inherit; max-width: 260px; padding: 4px; color: #0f172a;">
-        ${imageHtml}
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-          <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: ${
-            property.listingType === 'RENT' ? '#4d7c0f' : '#0f172a'
-          }; background-color: ${
-      property.listingType === 'RENT' ? '#ecfccb' : '#f1f5f9'
-    }; padding: 2px 6px; border-radius: 4px;">
-            ${property.listingType === 'RENT' ? 'For Rent' : 'For Sale'}
-          </span>
-          <span style="font-size: 10px; color: #64748b; font-family: monospace;">
-            ${latStr}, ${lngStr}
-          </span>
-        </div>
-        <h4 style="font-size: 13px; font-weight: 700; line-height: 1.3; margin: 0 0 4px 0; color: #0f172a;">
-          ${property.title}
-        </h4>
-        <p style="font-size: 11px; color: #64748b; margin: 0 0 6px 0;">
-          ${property.area ? `${property.area}, ` : ''}${property.city}, ${property.state}
-        </p>
-        <div style="font-size: 14px; font-weight: 800; color: #15803d; margin-bottom: 8px;">
-          ${priceStr}
-        </div>
-        <a href="/property/${property.id}" style="display: block; text-align: center; background-color: #65a30d; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px;">
-          View Verified Property →
-        </a>
-      </div>
-    `;
+    const title = document.createElement('strong');
+    title.textContent = property.title;
+    const location = document.createElement('p');
+    location.textContent = [property.area, property.city, property.state].filter(Boolean).join(', ');
+    const price = document.createElement('p');
+    price.textContent = formatCurrency(property.price, property.listingType === 'RENT' ? 'For Rent' : 'For Sale', property.priceUnit);
+    const link = document.createElement('a');
+    link.href = '/property/' + encodeURIComponent(property.id);
+    link.textContent = 'View property details';
+    content.append(title, location, price, link);
+    return content;
   }, []);
 
   // Initialize the Map instance once status is 'ready'
   useEffect(() => {
-    if (status !== 'ready' || !mapContainerRef.current || !window.google?.maps) return;
+    if (!canRenderMap || !mapContainerRef.current || !window.google?.maps) return;
 
     if (!mapInstanceRef.current) {
       const initialCenter = mappableProperties[0]
@@ -221,10 +174,13 @@ export default function GooglePropertyMap({
         zoom: singlePropertyMode ? 15 : defaultZoom,
         styles: MAP_STYLES,
         mapTypeControl: true,
-        mapTypeControlOptions: {
-          style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-          position: window.google.maps.ControlPosition.TOP_RIGHT,
-        },
+        mapTypeControlOptions:
+          window.google.maps.MapTypeControlStyle && window.google.maps.ControlPosition
+            ? {
+                style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: window.google.maps.ControlPosition.TOP_RIGHT,
+              }
+            : undefined,
         streetViewControl: false,
         fullscreenControl: true,
         zoomControl: true,
@@ -235,13 +191,25 @@ export default function GooglePropertyMap({
       mapInstanceRef.current = map;
 
       // Close info window on background click
-      map.addListener('click', () => {
+      const clickListener = map.addListener('click', () => {
         if (infoWindowRef.current) {
           infoWindowRef.current.close();
         }
       });
+      return () => {
+        clickListener.remove();
+        markersRef.current.forEach((marker) => {
+          window.google.maps.event.clearInstanceListeners(marker);
+          marker.setMap(null);
+        });
+        markersRef.current.clear();
+        infoWindowRef.current?.close();
+        infoWindowRef.current = null;
+        mapInstanceRef.current = null;
+        fittedPositions.current = '';
+      };
     }
-  }, [status, center, defaultZoom, singlePropertyMode, mappableProperties]);
+  }, [canRenderMap, center.lat, center.lng, defaultZoom, singlePropertyMode]);
 
   // Synchronize Markers with mappableProperties
   useEffect(() => {
@@ -254,12 +222,20 @@ export default function GooglePropertyMap({
     // Remove markers that are no longer in the filtered list
     currentMarkers.forEach((marker, id) => {
       if (!activePropertyIds.has(id)) {
+        window.google.maps.event.clearInstanceListeners(marker);
         marker.setMap(null);
         currentMarkers.delete(id);
+        infoWindowRef.current?.close();
       }
     });
 
     const bounds = new window.google.maps.LatLngBounds();
+
+    function selectMarker(property: Property, marker: any) {
+      infoWindowRef.current?.setContent(createInfoWindowContent(property));
+      infoWindowRef.current?.open(map, marker);
+      currentSelectionHandler.current?.(property);
+    }
 
     mappableProperties.forEach((property) => {
       const coords = getValidCoordinates(property);
@@ -289,6 +265,9 @@ export default function GooglePropertyMap({
         // Update existing marker
         const marker = currentMarkers.get(property.id);
         marker.setPosition(latLng);
+        marker.setTitle(property.title);
+        window.google.maps.event.clearListeners(marker, 'click');
+        marker.addListener('click', () => selectMarker(property, marker));
         marker.setIcon(pinSvg);
         marker.setZIndex(isSelected ? 999 : 1);
       } else {
@@ -301,21 +280,17 @@ export default function GooglePropertyMap({
           zIndex: isSelected ? 999 : 1,
         });
 
-        marker.addListener('click', () => {
-          if (infoWindowRef.current) {
-            infoWindowRef.current.setContent(createInfoWindowContent(property));
-            infoWindowRef.current.open(map, marker);
-          }
-          if (onSelectProperty) {
-            onSelectProperty(property);
-          }
-        });
+        marker.addListener('click', () => selectMarker(property, marker));
 
         currentMarkers.set(property.id, marker);
       }
     });
 
-    // Auto-fit bounds if we have mappable properties
+    const positionKey = JSON.stringify(mappableProperties.map((property) => [property.id, getValidCoordinates(property)]).sort(([a], [b]) => String(a).localeCompare(String(b))));
+    if (fittedPositions.current === positionKey) return;
+    fittedPositions.current = positionKey;
+
+    // Fit only when the marker positions change, preserving manual zoom on selection.
     if (mappableProperties.length > 1 && !singlePropertyMode) {
       map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
     } else if (mappableProperties.length === 1) {
@@ -331,14 +306,19 @@ export default function GooglePropertyMap({
     selectedPropertyId,
     singlePropertyMode,
     createInfoWindowContent,
-    onSelectProperty,
+    center.lat,
+    center.lng,
+    defaultZoom,
   ]);
 
   // Center on selected property if changed externally
   useEffect(() => {
-    if (!selectedPropertyId || !mapInstanceRef.current || status !== 'ready') return;
+    if (!mapInstanceRef.current || status !== 'ready') return;
     const selectedProp = mappableProperties.find((p) => p.id === selectedPropertyId);
-    if (!selectedProp) return;
+    if (!selectedProp) {
+      infoWindowRef.current?.close();
+      return;
+    }
 
     const coords = getValidCoordinates(selectedProp);
     if (coords) {
@@ -349,18 +329,7 @@ export default function GooglePropertyMap({
         infoWindowRef.current.open(mapInstanceRef.current, marker);
       }
     }
-  }, [selectedPropertyId, mappableProperties, status, createInfoWindowContent]);
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      markersRef.current.forEach((marker) => marker.setMap(null));
-      markersRef.current.clear();
-      if (infoWindowRef.current) {
-        infoWindowRef.current.close();
-      }
-    };
-  }, []);
+  }, [selectedPropertyId, mappableProperties, status, createInfoWindowContent, center.lat, center.lng, defaultZoom, singlePropertyMode]);
 
   // -------------------------------------------------------------
   // RENDER FALLBACK: Missing Google Maps API Key
@@ -412,7 +381,7 @@ export default function GooglePropertyMap({
         <div className="mt-6 pt-4 border-t border-slate-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-700">
-              Mappable Listings Ready ({mappableProperties.length} with verified GPS)
+              Mappable Listings ({mappableProperties.length} with coordinates)
             </span>
             {unmappableCount > 0 && (
               <span className="text-[11px] text-amber-700">
@@ -424,28 +393,29 @@ export default function GooglePropertyMap({
             {mappableProperties.slice(0, 3).map((prop) => {
               const coords = getValidCoordinates(prop);
               return (
-                <div
+                <button
                   key={prop.id}
+                  type="button"
                   onClick={() => onSelectProperty?.(prop)}
-                  className={`p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                  className={`p-2.5 text-left rounded-xl border text-xs cursor-pointer transition-all ${
                     selectedPropertyId === prop.id
                       ? 'border-lime-500 bg-lime-50/60 ring-2 ring-lime-200'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <p className="font-bold text-slate-900 truncate">{prop.title}</p>
-                  <p className="text-[11px] text-slate-500 truncate">
+                  <span className="block font-bold text-slate-900 truncate">{prop.title}</span>
+                  <span className="block text-[11px] text-slate-500 truncate">
                     {prop.area}, {prop.city}
-                  </p>
-                  <div className="mt-1 flex items-center justify-between text-[11px]">
+                  </span>
+                  <span className="mt-1 flex items-center justify-between text-[11px]">
                     <span className="font-bold text-lime-700">
                       {formatCurrency(prop.price, undefined, prop.priceUnit)}
                     </span>
                     <span className="text-slate-400 font-mono text-[10px]">
                       {coords ? `${coords.lat.toFixed(2)}°, ${coords.lng.toFixed(2)}°` : ''}
                     </span>
-                  </div>
-                </div>
+                  </span>
+                </button>
               );
             })}
           </div>
@@ -477,11 +447,11 @@ export default function GooglePropertyMap({
             type="button"
             variant="outline"
             size="sm"
-            onClick={initMapScript}
+            onClick={() => window.location.reload()}
             className="text-xs font-bold"
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-            Retry Connection
+            Reload Page
           </Button>
         </div>
       </div>
@@ -532,7 +502,7 @@ export default function GooglePropertyMap({
         <p className="text-xs text-slate-500 mt-1 max-w-md">
           {properties.length === 0
             ? 'No properties match your current search filters. Clear your filters to explore listings across Nigeria.'
-            : `None of the ${properties.length} filtered properties currently have verified GPS coordinates recorded.`}
+            : `None of the ${properties.length} filtered properties currently have valid coordinates recorded.`}
         </p>
         {properties.length > 0 && (
           <p className="text-[11px] text-lime-700 font-semibold mt-2">

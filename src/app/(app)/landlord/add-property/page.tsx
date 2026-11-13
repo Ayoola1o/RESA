@@ -1,5 +1,7 @@
 'use client';
 
+import { getValidCoordinates } from '@/lib/maps/property-coordinates';
+
 import Link from 'next/link';
 import { useState, useTransition, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -48,9 +50,11 @@ import {
   Info,
 } from 'lucide-react';
 import { getGeneratedDescription } from '@/app/actions';
+import { useUserRole } from '@/context/UserRoleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
   createPropertyDraftAction,
+  getAgentRelationshipsAction,
   updatePropertyDraftAction,
   getPropertyDraftAction,
   submitPropertyAction,
@@ -122,6 +126,20 @@ const DOCUMENT_CATEGORIES: { type: DocumentType; label: string; desc: string }[]
 ];
 
 function AddPropertyWizard() {
+  const { currentUser } = useUserRole();
+  const [mandates, setMandates] = useState<{ ownerId: string; ownerName: string }[]>([]);
+  const [mandatesFailed, setMandatesFailed] = useState(false);
+  const [principal, setPrincipal] = useState('self');
+
+  useEffect(() => {
+    if (currentUser?.role !== 'AGENT') return;
+    let active = true;
+    getAgentRelationshipsAction().then((records) => {
+      if (active) setMandates(records.filter((record) => record.status === 'ACTIVE'
+        && !record.propertyIds?.length && (!record.expiresAt || Date.parse(record.expiresAt) > Date.now())));
+    }).catch(() => { if (active) setMandatesFailed(true); });
+    return () => { active = false; };
+  }, [currentUser?.id, currentUser?.role]);
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,6 +164,21 @@ function AddPropertyWizard() {
   const [state, setState] = useState('Lagos');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const hasCoordinateInput = Boolean(latitude.trim() || longitude.trim());
+  const pinCoordinates = getValidCoordinates({
+    latitude: latitude.trim() ? Number(latitude) : undefined,
+    longitude: longitude.trim() ? Number(longitude) : undefined,
+  });
+  const pinReadiness = (
+    <p role="status" aria-live="polite" className={`text-sm ${pinCoordinates ? 'text-emerald-700' : 'text-amber-800'}`}>
+      {pinCoordinates
+        ? 'Map pin ready. This listing can appear on the map after publication.'
+        : hasCoordinateInput
+        ? 'Map pin needs attention. Enter both latitude (−90 to 90) and longitude (−180 to 180).'
+        : 'Map pin missing. Add the property coordinates to show it on the map after publication.'}
+    </p>
+  );
+
 
   // Step 3: Pricing & Charges
   const [price, setPrice] = useState('');
@@ -213,8 +246,9 @@ function AddPropertyWizard() {
           setArea(p.area);
           setCity(p.city);
           setState(p.state);
-          if (p.latitude) setLatitude(p.latitude.toString());
-          if (p.longitude) setLongitude(p.longitude.toString());
+          const coordinates = getValidCoordinates(p);
+          setLatitude(coordinates?.lat.toString() ?? '');
+          setLongitude(coordinates?.lng.toString() ?? '');
           setPrice(p.price.toString());
           if (p.priceUnit) setPriceUnit(p.priceUnit);
           if (p.agreementFee) setAgreementFee(p.agreementFee.toString());
@@ -463,6 +497,15 @@ function AddPropertyWizard() {
       return;
     }
 
+    if (hasCoordinateInput && !pinCoordinates) {
+      toast({
+        variant: 'destructive',
+        title: 'Check map coordinates',
+        description: 'Enter both valid coordinates, or clear both fields to save without a map pin.',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -477,8 +520,8 @@ function AddPropertyWizard() {
         city,
         area: area.trim(),
         address: address.trim(),
-        latitude: latitude ? Number(latitude) : undefined,
-        longitude: longitude ? Number(longitude) : undefined,
+        latitude: latitude.trim() ? Number(latitude) : undefined,
+        longitude: longitude.trim() ? Number(longitude) : undefined,
         price: Number(price),
         priceUnit,
         agreementFee: agreementFee ? Number(agreementFee) : 0,
@@ -503,7 +546,7 @@ function AddPropertyWizard() {
         }
       } else {
         // Create new draft
-        const res = await createPropertyDraftAction(payload);
+        const res = await createPropertyDraftAction({ ...payload, ownerId: principal === 'self' ? undefined : principal });
         if (!res.success || !res.property) {
           throw new Error(res.error || 'Failed to create draft');
         }
@@ -688,6 +731,16 @@ function AddPropertyWizard() {
           </div>
 
           <div className="space-y-4">
+            {currentUser?.role === 'AGENT' && !activeDraftId && (
+              <div className="space-y-1.5">
+                <Label htmlFor="listing-principal">List on behalf of</Label>
+                <select id="listing-principal" className="block rounded-lg border p-2" value={principal} onChange={(event) => setPrincipal(event.target.value)}>
+                  <option value="self">Myself</option>
+                  {mandates.map((mandate) => <option key={mandate.ownerId} value={mandate.ownerId}>{mandate.ownerName}</option>)}
+                </select>
+                {mandatesFailed && <p role="alert">Could not load landlord mandates.</p>}
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="title" className="text-xs font-bold">
                 Property Title <span className="text-rose-500">*</span>
@@ -843,11 +896,14 @@ function AddPropertyWizard() {
                 <MapPin className="h-4 w-4 text-emerald-600" />
                 <span className="text-xs font-bold text-slate-800">Cadastral Coordinates (Optional / Highly Recommended)</span>
               </div>
+              <div id="map-pin-readiness">{pinReadiness}</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="latitude" className="text-[11px] font-semibold text-slate-600">Latitude</Label>
                   <Input
                     id="latitude"
+                    inputMode="decimal"
+                    aria-describedby="map-pin-readiness"
                     placeholder="e.g. 6.4485"
                     value={latitude}
                     onChange={(e) => setLatitude(e.target.value)}
@@ -858,6 +914,8 @@ function AddPropertyWizard() {
                   <Label htmlFor="longitude" className="text-[11px] font-semibold text-slate-600">Longitude</Label>
                   <Input
                     id="longitude"
+                    inputMode="decimal"
+                    aria-describedby="map-pin-readiness"
                     placeholder="e.g. 3.4735"
                     value={longitude}
                     onChange={(e) => setLongitude(e.target.value)}
@@ -1407,6 +1465,7 @@ function AddPropertyWizard() {
           <div className="border-b border-slate-100 pb-3">
             <h2 className="text-lg font-bold text-slate-900">Submission & Verification Protocol</h2>
             <p className="text-xs text-slate-500 mt-0.5">Choose between keeping this property in draft or dispatching to the audit queue.</p>
+            {pinReadiness}
           </div>
 
           <div className="space-y-6">

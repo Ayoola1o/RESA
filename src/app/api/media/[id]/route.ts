@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
+import { authService } from '@/server/services/auth-service';
+import { propertyService } from '@/server/services/property-service';
+import { staffAuthorizationService } from '@/server/services/staff-authorization-service';
 import { mediaService } from '@/server/services/media-service';
 
 export async function GET(
@@ -14,7 +17,15 @@ export async function GET(
       return new NextResponse('Media not found', { status: 404 });
     }
 
-    const { media } = item;
+    const { media, property } = item;
+    if (!propertyService.isPublicListing(property)) {
+      const user = await authService.getCurrentUser();
+      if (!user || (!await propertyService.canManageListing(user.id, property)
+        && !await staffAuthorizationService.hasPermission(user, 'verification.queue.view')
+        && !await staffAuthorizationService.hasPermission(user, 'properties.moderate'))) {
+        return new NextResponse('Media not found', { status: 404 });
+      }
+    }
 
     // If locally stored file exists
     if (media.fileReference) {
@@ -30,7 +41,7 @@ export async function GET(
           headers: {
             'Content-Type': mimeType,
             'Content-Length': fileBuffer.length.toString(),
-            'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+            'Cache-Control': 'private, no-store',
           },
         });
       }
@@ -38,7 +49,7 @@ export async function GET(
 
     // Fallback: If media has a remote URL (e.g. CDN or initial seed), redirect to it
     if (media.url && !media.url.startsWith('/api/media/')) {
-      return NextResponse.redirect(media.url);
+      return NextResponse.redirect(media.url, { headers: { 'Cache-Control': 'private, no-store' } });
     }
 
     return new NextResponse('Media file content not available', { status: 404 });

@@ -1,5 +1,7 @@
 'use client';
 
+import OwnerMandates from './OwnerMandates';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -245,6 +247,8 @@ export default function OwnerDashboard({
       </div>
 
       {/* 2. Portfolio Occupancy & Availability KPI Row */}
+      <OwnerMandates />
+
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         <div className="rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between">

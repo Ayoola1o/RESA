@@ -1,3 +1,5 @@
+import { getValidCoordinates, isCoordinatePair } from '@/lib/maps/property-coordinates';
+import { relationshipService } from './relationship-service';
 import { staffAuthorizationService } from './staff-authorization-service';
 import { Property, PropertyMedia, ListingStatus, User, PropertyDocument, DocumentType } from '@/types/prophunta';
 import { propertyRepository, PropertyFilterOptions } from '../repositories/property-repository';
@@ -21,7 +23,20 @@ export class PropertyService {
   }
 
   async getUserProperties(userId: string): Promise<Property[]> {
-    return propertyRepository.findByOwner(userId);
+    const properties = await propertyRepository.findByOwner(userId);
+    const visible = await Promise.all(properties.map(async (property) =>
+      await this.canManageListing(userId, property) ? property : null,
+    ));
+    return visible.filter((property): property is Property => property !== null);
+  }
+
+  async canManageListing(userId: string, property: Property): Promise<boolean> {
+    if (property.ownerId === userId) return true;
+    return property.authorizedAgentId === userId && await relationshipService.validateAgentAuthority(userId, property);
+  }
+
+  isPublicListing(property: Property): boolean {
+    return ['VERIFIED', 'ACTIVE', 'RESERVED', 'OCCUPIED', 'SOLD'].includes(property.listingStatus);
   }
 
   async createDraft(
@@ -60,9 +75,13 @@ export class PropertyService {
       throw new Error('Only Property Owners and Verified Agents can create property listings');
     }
 
+    if ((data.latitude !== undefined || data.longitude !== undefined) && !isCoordinatePair(data.latitude, data.longitude)) {
+      throw new Error('Enter a latitude from −90 to 90 and a longitude from −180 to 180.');
+    }
+
     let ownerId = user.id;
-    let authorizedAgentId = data.authorizedAgentId;
-    let relationshipId = data.relationshipId;
+    let authorizedAgentId: string | undefined;
+    let relationshipId: string | undefined;
     const isDirectListing = data.isDirectListing ?? (user.role === 'OWNER' || !data.ownerId);
 
     if (user.role === 'AGENT') {
@@ -71,7 +90,7 @@ export class PropertyService {
         // Enforce active relationship
         const { relationshipRepository } = await import('../repositories/relationship-repository');
         const activeRel = await relationshipRepository.findActiveRelationship(data.ownerId, user.id);
-        if (!activeRel) {
+        if (!activeRel || activeRel.propertyIds?.length) {
           throw new Error('Cannot create listing on behalf of owner without an active representation mandate.');
         }
         ownerId = data.ownerId;
@@ -183,17 +202,15 @@ export class PropertyService {
       latitude?: number;
       longitude?: number;
       intendedUse?: 'Residential' | 'Commercial' | 'Mixed';
-      authorizedAgentId?: string;
     }>
   ): Promise<Property> {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const canManage = await this.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
-    if (!isOwner && !isAgent && !isAdmin) {
+    if (!canManage && !isAdmin) {
       throw new Error('Unauthorized to edit this property draft');
     }
 
@@ -201,8 +218,21 @@ export class PropertyService {
       throw new Error(`Cannot edit listing while in status: ${property.listingStatus}`);
     }
 
+    const coordinatesEdited = Object.hasOwn(data, 'latitude') || Object.hasOwn(data, 'longitude');
+    const previousCoordinates = getValidCoordinates(property);
+    const latitude = Object.hasOwn(data, 'latitude') ? data.latitude : previousCoordinates?.lat;
+    const longitude = Object.hasOwn(data, 'longitude') ? data.longitude : previousCoordinates?.lng;
+    if (coordinatesEdited && (latitude !== undefined || longitude !== undefined) && !isCoordinatePair(latitude, longitude)) {
+      throw new Error('Enter both valid coordinates, or clear both.');
+    }
+
     const updated = await propertyRepository.update(propertyId, {
-      ...data,
+      ...Object.fromEntries(Object.entries(data).filter(([key]) => [
+        'title', 'propertyType', 'listingType', 'description', 'state', 'city', 'area', 'address',
+        'price', 'priceUnit', 'agreementFee', 'cautionFee', 'serviceCharge', 'otherCharges',
+        'bedrooms', 'bathrooms', 'sqft', 'features', 'latitude', 'longitude', 'intendedUse',
+      ].includes(key))),
+      ...(coordinatesEdited ? { latitude, longitude, coordinates: undefined } : {}),
       updatedAt: new Date().toISOString(),
     });
 
@@ -228,11 +258,10 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const canManage = await this.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
-    if (!isOwner && !isAgent && !isAdmin) {
+    if (!canManage && !isAdmin) {
       throw new Error('Unauthorized to edit this property');
     }
 
@@ -264,7 +293,7 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (property.ownerId !== user.id && property.authorizedAgentId !== user.id && user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && !await this.canManageListing(user.id, property)) {
       throw new Error('Unauthorized to modify this property documentation');
     }
 
@@ -300,7 +329,7 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    if (property.ownerId !== user.id && property.authorizedAgentId !== user.id && user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && !await this.canManageListing(user.id, property)) {
       throw new Error('Unauthorized to submit this property');
     }
 
@@ -411,11 +440,10 @@ export class PropertyService {
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
-    const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const canManage = await this.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
-    if (!isOwner && !isAgent && !isAdmin) {
+    if (!canManage && !isAdmin) {
       throw new Error('Unauthorized: You do not have permission to change the status of this property');
     }
 

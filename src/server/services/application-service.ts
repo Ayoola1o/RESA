@@ -1,3 +1,4 @@
+import { propertyService } from './property-service';
 import { User, Application, ApplicationType, ApplicationStatus, Property, FeeBreakdown } from '@/types/prophunta';
 import { applicationRepository } from '../repositories/application-repository';
 import { propertyRepository } from '../repositories/property-repository';
@@ -75,10 +76,7 @@ export class ApplicationService {
       list = await applicationRepository.findBySeeker(user.id);
     } else {
       // For owner or authorized agent, retrieve applications for properties they own or manage
-      const allProps = await propertyRepository.listAll();
-      const relevantProps = allProps.filter(
-        (p) => p.ownerId === user.id || p.authorizedAgentId === user.id
-      );
+      const relevantProps = await propertyService.getUserProperties(user.id);
       const propIds = new Set(relevantProps.map((p) => p.id));
       const all = await applicationRepository.listAll();
       list = all.filter((a) => propIds.has(a.propertyId));
@@ -181,7 +179,7 @@ export class ApplicationService {
 
     const property = await propertyRepository.findById(existing.propertyId);
     const isOwnerOrAgent = property
-      ? property.ownerId === user.id || property.authorizedAgentId === user.id
+      ? await propertyService.canManageListing(user.id, property)
       : false;
 
     if (!isOwnerOrAgent && user.role !== 'ADMIN') {
@@ -240,7 +238,7 @@ export class ApplicationService {
     if (!app) throw new Error('Application not found');
     const property = await propertyRepository.findById(app.propertyId);
     const isTenant = app.seekerId === user.id;
-    if (!isTenant && property?.ownerId !== user.id && property?.authorizedAgentId !== user.id) {
+    if (!isTenant && (!property || !await propertyService.canManageListing(user.id, property))) {
       throw new Error('Only the applicant or authorized host can sign this lease.');
     }
     if (!['ESCROW_FUNDED', 'LEASE_SIGNED'].includes(app.status) || !signature.trim()) {

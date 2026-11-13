@@ -62,7 +62,7 @@ import { Label } from '@/components/ui/label';
 import { useUserRole } from '@/context/UserRoleContext';
 import { useToast } from '@/hooks/use-toast';
 import {
-  getPropertiesAction,
+  getAdminPropertiesAction,
   getReportsAction,
   getUserInspectionsAction,
   getAdminAuditSnapshotAction,
@@ -217,7 +217,7 @@ function AdminPortalContent() {
 
       const allowed = (permission: AdminPermission) => context.effectivePermissions.includes(permission);
       const [props, reps, insps, auds, usrs, staffDir, approvals] = await Promise.all([
-        allowed('properties.moderate') || allowed('verification.queue.view') || allowed('inspections.view') || allowed('reports.view') ? getPropertiesAction() : [],
+        allowed('properties.moderate') || allowed('verification.queue.view') || allowed('inspections.view') || allowed('reports.view') ? getAdminPropertiesAction() : [],
         allowed('reports.view') ? getReportsAction() : [],
         allowed('inspections.view') ? getUserInspectionsAction() : [],
         allowed('audit_logs.view') ? getAdminAuditSnapshotAction() : null,

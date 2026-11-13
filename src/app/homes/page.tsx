@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { propertyService } from '@/server/services/property-service';
+import { getPropertiesAction } from '@/server/actions/prophunta-actions';
 import PublicHeader from '@/components/public/PublicHeader';
 import PublicFooter from '@/components/public/PublicFooter';
 import HomesSearchClient from '@/components/homes/HomesSearchClient';
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomesPage() {
-  const allProperties = await propertyService.getAllProperties().catch(() => []);
+  const allProperties = await getPropertiesAction().catch(() => []);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-lime-500 selection:text-white">

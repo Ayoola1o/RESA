@@ -1,3 +1,4 @@
+import { propertyService } from './property-service';
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
@@ -40,7 +41,7 @@ export class DocumentService {
 
     // Access control check
     const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const isAgent = await propertyService.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
     if (!isOwner && !isAgent && !isAdmin) {
@@ -117,7 +118,7 @@ export class DocumentService {
 
     if (foundProperty && foundDoc) {
       const isOwner = foundProperty.ownerId === user.id;
-      const isAgent = foundProperty.authorizedAgentId === user.id;
+      const isAgent = await propertyService.canManageListing(user.id, foundProperty);
       const isAdmin = user.role === 'ADMIN';
 
       if (!isOwner && !isAgent && !isAdmin) {
@@ -382,7 +383,7 @@ export class DocumentService {
     if (!property) throw new Error('Property not found');
 
     const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const isAgent = await propertyService.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
     if (!isOwner && !isAgent && !isAdmin) {
@@ -428,7 +429,7 @@ export class DocumentService {
     if (!property) throw new Error('Property not found');
 
     const isOwner = property.ownerId === user.id;
-    const isAgent = property.authorizedAgentId === user.id;
+    const isAgent = await propertyService.canManageListing(user.id, property);
     const isAdmin = user.role === 'ADMIN';
 
     if (!isOwner && !isAgent && !isAdmin) {

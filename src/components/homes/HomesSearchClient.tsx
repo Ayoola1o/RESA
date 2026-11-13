@@ -40,7 +40,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
-import GooglePropertyMap from '@/components/maps/GooglePropertyMap';
+import GooglePropertyMap, { getValidCoordinates } from '@/components/maps/GooglePropertyMap';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -120,7 +120,7 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [selectedMapPropertyId, setSelectedMapPropertyId] = useState<string | null>(
-    initialProperties[0]?.id || null
+    null
   );
 
   // Sync state when URL params change externally (back/forward navigation)
@@ -335,8 +335,7 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
 
   const selectedMapProperty = useMemo(() => {
     return (
-      filteredProperties.find((p) => p.id === selectedMapPropertyId) ||
-      filteredProperties[0] ||
+      filteredProperties.find((p) => p.id === selectedMapPropertyId && getValidCoordinates(p)) ||
       null
     );
   }, [filteredProperties, selectedMapPropertyId]);
@@ -848,7 +847,9 @@ export default function HomesSearchClient({ initialProperties }: HomesSearchClie
                 </div>
               ) : (
                 <div className="p-8 text-center text-slate-400 border border-slate-200 rounded-3xl bg-white">
-                  Select a pin on the map to preview details.
+                  {filteredProperties.some(getValidCoordinates)
+                    ? 'Select a pin to preview its listing.'
+                    : 'No listings with mappable coordinates match these filters.'}
                 </div>
               )}
             </div>

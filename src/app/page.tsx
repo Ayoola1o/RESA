@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { propertyService } from '@/server/services/property-service';
+import { getPropertiesAction } from '@/server/actions/prophunta-actions';
 import PublicHeader from '@/components/public/PublicHeader';
 import HeroSearch from '@/components/public/HeroSearch';
 import FeaturedProperties from '@/components/public/FeaturedProperties';
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const allProperties = await propertyService.getAllProperties().catch(() => []);
+  const allProperties = await getPropertiesAction().catch(() => []);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-lime-500 selection:text-white">

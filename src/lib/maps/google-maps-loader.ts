@@ -11,6 +11,7 @@ declare global {
   interface Window {
     google?: any;
     gm_authFailure?: () => void;
+    __propHuntaGoogleMapsReady?: () => void;
     __propHuntaGoogleMapsPromise?: Promise<any>;
     __propHuntaGoogleMapsAuthFailed?: boolean;
     __propHuntaAuthFailureListeners?: Array<() => void>;
@@ -20,7 +21,7 @@ declare global {
 export type GoogleMapsStatus = 'idle' | 'loading' | 'ready' | 'error' | 'missing-key' | 'auth-failure';
 
 export function getGoogleMapsApiKey(): string {
-  return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+  return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() || '';
 }
 
 /**
@@ -56,8 +57,10 @@ export function loadGoogleMapsScript(customApiKey?: string): Promise<any> {
     return Promise.reject(new Error('Google Maps can only be loaded in a browser environment'));
   }
 
+  if (window.__propHuntaGoogleMapsAuthFailed) return Promise.reject(new Error('MAPS_AUTH_FAILURE'));
+
   // Already loaded and ready
-  if (window.google?.maps) {
+  if (typeof window.google?.maps?.Map === 'function') {
     return Promise.resolve(window.google.maps);
   }
 
@@ -73,81 +76,50 @@ export function loadGoogleMapsScript(customApiKey?: string): Promise<any> {
     return Promise.reject(missingKeyError);
   }
 
-  // Hook gm_authFailure once
+  const script = document.createElement('script');
   const previousAuthFailure = window.gm_authFailure;
-  window.gm_authFailure = () => {
-    window.__propHuntaGoogleMapsAuthFailed = true;
-    if (previousAuthFailure && typeof previousAuthFailure === 'function') {
-      previousAuthFailure();
-    }
-    if (window.__propHuntaAuthFailureListeners) {
-      window.__propHuntaAuthFailureListeners.forEach((listener) => {
-        try {
-          listener();
-        } catch (e) {
-          console.error('[GoogleMaps] Error in authFailure listener:', e);
-        }
-      });
-    }
-  };
-
-  const scriptId = 'prophunta-google-maps-script';
-  const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
-
-  window.__propHuntaGoogleMapsPromise = new Promise((resolve, reject) => {
-    if (existingScript) {
-      // Script tag exists, wait for google.maps
-      const checkInterval = setInterval(() => {
-        if (window.google?.maps) {
-          clearInterval(checkInterval);
-          resolve(window.google.maps);
-        }
-      }, 50);
-
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        if (window.google?.maps) {
-          resolve(window.google.maps);
-        } else {
-          reject(new Error('Google Maps script loading timed out'));
-        }
-      }, 10000);
-      return;
+  let authHandler: () => void;
+  const pending = new Promise((resolve, reject) => {
+    function finish(error?: Error) {
+      clearTimeout(timeout);
+      delete window.__propHuntaGoogleMapsReady;
+      script.onerror = null;
+      if (!error) {
+        resolve(window.google.maps);
+        return;
+      }
+      script.remove();
+      if (window.gm_authFailure === authHandler) window.gm_authFailure = previousAuthFailure;
+      reject(error);
     }
 
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.type = 'text/javascript';
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&v=weekly&loading=async`;
+    const timeout = setTimeout(() => finish(new Error('Google Maps script loading timed out.')), 10000);
+    window.__propHuntaGoogleMapsReady = () => finish(
+      typeof window.google?.maps?.Map === 'function' ? undefined : new Error('Google Maps could not initialize.'),
+    );
+    authHandler = () => {
+      window.__propHuntaGoogleMapsAuthFailed = true;
+      if (window.__propHuntaGoogleMapsReady) finish(new Error('MAPS_AUTH_FAILURE'));
+      for (const listener of window.__propHuntaAuthFailureListeners ?? []) listener();
+      previousAuthFailure?.();
+    };
+    window.gm_authFailure = authHandler;
+    script.id = 'prophunta-google-maps-script';
+    const params = new URLSearchParams({
+      key: apiKey,
+      v: 'weekly',
+      loading: 'async',
+      callback: '__propHuntaGoogleMapsReady',
+    });
+    script.src = 'https://maps.googleapis.com/maps/api/js?' + params;
     script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
-      // Poll briefly for maps object to attach
-      const interval = setInterval(() => {
-        if (window.google?.maps) {
-          clearInterval(interval);
-          resolve(window.google.maps);
-        }
-      }, 30);
-
-      setTimeout(() => {
-        clearInterval(interval);
-        if (window.google?.maps) {
-          resolve(window.google.maps);
-        } else {
-          reject(new Error('Google Maps loaded but google.maps was not initialized'));
-        }
-      }, 5000);
-    };
-
-    script.onerror = (err) => {
-      window.__propHuntaGoogleMapsPromise = undefined;
-      reject(new Error('Failed to load Google Maps script. Check network connection or API Key.'));
-    };
-
+    script.onerror = () => finish(new Error('Failed to load Google Maps. Check your connection.'));
     document.head.appendChild(script);
   });
 
+  window.__propHuntaGoogleMapsPromise = pending.catch((error) => {
+    window.__propHuntaGoogleMapsPromise = undefined;
+    throw error;
+  });
   return window.__propHuntaGoogleMapsPromise;
 }

@@ -36,8 +36,8 @@ PropHunta AI is built on a clean service/repository layer:
 
 $$\text{UI (Client Components / Server Components)} \longrightarrow \text{Server Actions} \longrightarrow \text{Domain Services} \longrightarrow \text{Repositories} \longrightarrow \text{Durable Store}$$
 
-- **Persistence**: Durable local store in `.data/prophunta-db.json` with memory caching and atomic writes.
-- **Auth & Session**: HTTP-only session cookies with role verification enforced on the server.
+- **Persistence**: Local development currently uses `.data/prophunta-db.json`. Supabase migrations and request-scoped clients are provided for the hosted PostgreSQL backend; app repositories still need to be migrated before production data uses Supabase.
+- **Auth & Session**: The current app still uses its existing HTTP-only session cookies. Supabase Auth clients are scaffolded for the migration, but are not yet the active sign-in provider.
 - **Audit Logging**: Sensitive actions (document uploads, status updates, review approvals, reports) are recorded in an immutable audit ledger.
 
 ---
@@ -59,6 +59,17 @@ npm run build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view PropHunta AI.
+
+## Supabase Backend Setup
+
+The initial PostgreSQL schema and Supabase SSR clients are in `supabase/` and `src/lib/supabase/`.
+
+1. Create a Supabase project and enable email/password sign-in.
+2. In the Supabase SQL Editor, run `supabase/migrations/202611130001_initial_marketplace.sql`.
+3. Copy the project URL and publishable key from **Project Settings → API** into `.env.local` using the names in `.env.example`.
+4. Restart the Next.js server after changing environment variables.
+
+This migration lays down secured tables for profiles, properties, media, mandates, enquiries, and applications. It is the first backend migration: the current app authentication and repositories still use the local JSON store. Do not point production traffic at this schema until the remaining repositories and existing accounts are migrated; the project URL and key alone do not switch the app's data store.
 
 ### Demo Seed Accounts
 

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { propertyService } from '@/server/services/property-service';
+import { getPropertyAction } from '@/server/actions/prophunta-actions';
 import PropertyDetailClient from './PropertyDetailClient';
 import { formatCurrency } from '@/lib/utils';
 import { notFound } from 'next/navigation';
@@ -10,7 +10,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const property = await propertyService.getProperty(id);
+  const property = await getPropertyAction(id);
 
   if (!property) {
     return {
@@ -45,7 +45,7 @@ import { userRepository } from '@/server/repositories/user-repository';
 
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const property = await propertyService.getProperty(id);
+  const property = await getPropertyAction(id);
 
   if (!property) {
     notFound();
@@ -55,5 +55,5 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ? await userRepository.findById(property.authorizedAgentId)
     : await userRepository.findById(property.ownerId);
 
-  return <PropertyDetailClient initialProperty={property} authorizedParty={hostUser || undefined} />;
+  return <PropertyDetailClient initialProperty={property} authorizedParty={hostUser ? { name: hostUser.name, role: hostUser.role, agencyName: hostUser.agencyName, verificationStatus: hostUser.verificationStatus } : undefined} />;
 }

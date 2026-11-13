@@ -175,11 +175,27 @@ export async function getPropertiesAction(filters: {
   bedrooms?: number;
   verifiedOnly?: boolean;
 } = {}): Promise<Property[]> {
-  return propertyService.searchProperties(filters);
+  const properties = await propertyService.searchProperties(filters);
+  return properties.filter((property) => propertyService.isPublicListing(property))
+    .map((property) => ({ ...property, documents: [] }));
+}
+
+export async function getAdminPropertiesAction(): Promise<Property[]> {
+  const user = await authService.requireRole(['ADMIN']);
+  const permissions = (await staffAuthorizationService.getStaffContext(user))?.effectivePermissions;
+  if (!permissions || !(['properties.moderate', 'verification.queue.view', 'inspections.view', 'reports.view'] as const)
+    .some((permission) => permissions.has(permission))) throw new Error('Property workspace access required.');
+  const properties = await propertyService.getAllProperties();
+  return permissions.has('documents.view_metadata') ? properties : properties.map((property) => ({ ...property, documents: [] }));
 }
 
 export async function getPropertyAction(id: string): Promise<Property | null> {
-  return propertyService.getProperty(id);
+  const property = await propertyService.getProperty(id);
+  if (!property) return null;
+  const user = await authService.getCurrentUser();
+  if (user && await propertyService.canManageListing(user.id, property)) return property;
+  if (user && await staffAuthorizationService.hasPermission(user, 'properties.moderate')) return { ...property, documents: [] };
+  return propertyService.isPublicListing(property) ? { ...property, documents: [] } : null;
 }
 
 export async function getUserPropertiesAction(): Promise<Property[]> {
@@ -207,6 +223,7 @@ export async function createPropertyDraftAction(data: {
   sqft?: number;
   features: string[];
   images: string[];
+  ownerId?: string;
 }): Promise<{ success: boolean; property?: Property; error?: string }> {
   try {
     const user = await authService.requireRole(['OWNER', 'AGENT', 'ADMIN']);
@@ -323,7 +340,7 @@ export async function getPropertyDraftAction(
     const property = await propertyService.getProperty(propertyId);
     if (!property) return { success: false, error: 'Property not found.' };
 
-    if (property.ownerId !== user.id && property.authorizedAgentId !== user.id && user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && !await propertyService.canManageListing(user.id, property)) {
       return { success: false, error: 'Unauthorized to view this draft.' };
     }
 
@@ -610,7 +627,7 @@ export async function getApplicationAction(applicationId: string) {
   if (!application) return null;
   if (application.seekerId === user.id) return application;
   const property = await propertyRepository.findById(application.propertyId);
-  return property && (property.ownerId === user.id || property.authorizedAgentId === user.id) ? application : null;
+  return property && await propertyService.canManageListing(user.id, property) ? application : null;
 }
 
 export async function fundEscrowAction(
@@ -946,8 +963,7 @@ export async function submitKycAction(data: {
     const user = await authService.requireUser();
     const updated = await authService.submitKyc(user, data);
     revalidatePath('/profile');
-    revalidatePath('/landlord/dashboard');
-    revalidatePath('/agent/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, user: updated };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to submit KYC.' };
@@ -994,7 +1010,7 @@ export async function inviteAgentAction(data: {
   try {
     const owner = await authService.requireUser();
     const relationship = await relationshipService.inviteAgent(owner, data);
-    revalidatePath('/landlord/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, relationship };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to send agent invitation.' };
@@ -1009,8 +1025,7 @@ export async function respondToInvitationAction(
   try {
     const agent = await authService.requireUser();
     const relationship = await relationshipService.respondToInvitation(agent, relationshipId, action, notes);
-    revalidatePath('/agent/dashboard');
-    revalidatePath('/landlord/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, relationship };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to respond to invitation.' };
@@ -1021,8 +1036,7 @@ export async function revokeRelationshipAction(relationshipId: string, reason?: 
   try {
     const actor = await authService.requireUser();
     const relationship = await relationshipService.revokeRelationship(actor, relationshipId, reason);
-    revalidatePath('/landlord/dashboard');
-    revalidatePath('/agent/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, relationship };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to revoke mandate.' };
@@ -1030,12 +1044,12 @@ export async function revokeRelationshipAction(relationshipId: string, reason?: 
 }
 
 export async function getOwnerRelationshipsAction() {
-  const owner = await authService.requireUser();
+  const owner = await authService.requireRole(['OWNER']);
   return relationshipService.getOwnerRelationships(owner.id);
 }
 
 export async function getAgentRelationshipsAction() {
-  const agent = await authService.requireUser();
+  const agent = await authService.requireRole(['AGENT']);
   return relationshipService.getAgentRelationships(agent.id);
 }
 
@@ -1055,7 +1069,7 @@ export async function submitAgentCredentialAction(data: {
   try {
     const agent = await authService.requireUser();
     const credential = await agentCredentialService.submitCredential(agent, data);
-    revalidatePath('/agent/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, credential };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to submit agent credential.' };
@@ -1069,9 +1083,10 @@ export async function reviewAgentCredentialAction(
 ) {
   try {
     const reviewer = await authService.requireUser();
+    await staffAuthorizationService.requirePermission(reviewer, 'documents.review');
     const result = await agentCredentialService.reviewCredential(reviewer, credentialId, status, reviewNotes);
     revalidatePath('/admin');
-    revalidatePath('/agent/dashboard');
+    revalidatePath('/dashboard');
     return { success: true, ...result };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to review credential.' };
@@ -1081,6 +1096,7 @@ export async function reviewAgentCredentialAction(
 export async function getAgentCredentialsAction(agentId?: string) {
   const user = await authService.requireUser();
   const targetId = agentId || user.id;
+  if (targetId !== user.id) await staffAuthorizationService.requirePermission(user, 'documents.review');
   return agentCredentialService.getAgentCredentials(targetId);
 }
 
@@ -1564,7 +1580,8 @@ export async function getSavedPropertiesAction(): Promise<{
       return { success: true, properties: [] };
     }
     const allProps: Property[] = db.properties || [];
-    const saved = allProps.filter((p: Property) => ids.includes(p.id));
+    const saved = allProps.filter((property) => ids.includes(property.id) && propertyService.isPublicListing(property))
+      .map((property) => ({ ...property, documents: [] }));
     return { success: true, properties: saved };
   } catch {
     return { success: false, properties: [] };
@@ -1590,7 +1607,8 @@ export async function toggleSavedPropertyAction(propertyId: string, desiredState
     if (!nextState) {
       userSaved = userSaved.filter((id) => id !== propertyId);
     } else if (!isSaved) {
-      if (!await propertyRepository.findById(propertyId)) throw new Error('Listing not found.');
+      const listing = await propertyRepository.findById(propertyId);
+      if (!listing || !propertyService.isPublicListing(listing)) throw new Error('Listing not found.');
       userSaved = [...(db.savedPropertyIds[user.id] || []).filter((id) => id !== propertyId), propertyId];
     }
 

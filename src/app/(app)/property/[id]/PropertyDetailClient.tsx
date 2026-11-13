@@ -78,7 +78,7 @@ import {
 
 interface PropertyDetailClientProps {
   initialProperty: Property;
-  authorizedParty?: User;
+  authorizedParty?: Pick<User, 'name' | 'role' | 'agencyName' | 'verificationStatus'>;
 }
 
 export default function PropertyDetailClient({ initialProperty, authorizedParty }: PropertyDetailClientProps) {

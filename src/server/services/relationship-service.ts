@@ -1,5 +1,6 @@
 import { User, OwnerAgentRelationship, Property } from '@/types/prophunta';
 import { relationshipRepository } from '../repositories/relationship-repository';
+import { propertyRepository } from '../repositories/property-repository';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { notificationService } from './notification-service';
@@ -36,6 +37,13 @@ export class RelationshipService {
       throw new Error('Only Property Owners or Administrators can invite an agent.');
     }
 
+    if (data.expiresAt && !(Date.parse(data.expiresAt) > Date.now())) {
+      throw new Error('The mandate expiry must be in the future.');
+    }
+    for (const propertyId of data.propertyIds ?? []) {
+      const property = await propertyRepository.findById(propertyId);
+      if (property?.ownerId !== owner.id) throw new Error('A mandate can only include your own listings.');
+    }
     const agent = await userRepository.findByEmail(data.agentEmail.toLowerCase().trim());
     if (!agent) {
       throw new Error(`No registered agent found with email "${data.agentEmail}".`);
@@ -49,6 +57,7 @@ export class RelationshipService {
     const existing = await relationshipRepository.findByOwner(owner.id);
     const duplicate = existing.find(
       (r) => r.agentId === agent.id && (r.status === 'ACTIVE' || r.status === 'INVITED')
+        && (!r.expiresAt || Date.parse(r.expiresAt) > Date.now())
     );
     if (duplicate) {
       throw new Error(
@@ -119,6 +128,7 @@ export class RelationshipService {
       throw new Error('Unauthorized: You are not the invited agent for this mandate.');
     }
 
+    if (rel.expiresAt && !(Date.parse(rel.expiresAt) > Date.now())) throw new Error('The invitation has expired.');
     if (rel.status !== 'INVITED') {
       throw new Error(`Cannot respond to relationship in status: ${rel.status}`);
     }
@@ -247,7 +257,6 @@ export class RelationshipService {
       throw new Error('Unauthorized: Only property owners or administrators can view agent management history.');
     }
 
-    const { propertyRepository } = await import('../repositories/property-repository');
     const { inspectionRepository } = await import('../repositories/inspection-repository');
     const { enquiryRepository } = await import('../repositories/enquiry-repository');
 

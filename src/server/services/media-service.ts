@@ -1,3 +1,4 @@
+import { propertyService } from './property-service';
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
@@ -31,8 +32,7 @@ export class MediaService {
     // Authorization check
     if (
       user.role !== 'ADMIN' &&
-      property.ownerId !== user.id &&
-      property.authorizedAgentId !== user.id
+      !await propertyService.canManageListing(user.id, property)
     ) {
       throw new Error('Unauthorized to manage media for this property');
     }
@@ -107,8 +107,7 @@ export class MediaService {
 
     if (
       user.role !== 'ADMIN' &&
-      property.ownerId !== user.id &&
-      property.authorizedAgentId !== user.id
+      !await propertyService.canManageListing(user.id, property)
     ) {
       throw new Error('Unauthorized to manage media for this property');
     }
@@ -162,8 +161,7 @@ export class MediaService {
 
     if (
       user.role !== 'ADMIN' &&
-      property.ownerId !== user.id &&
-      property.authorizedAgentId !== user.id
+      !await propertyService.canManageListing(user.id, property)
     ) {
       throw new Error('Unauthorized to update media for this property');
     }
@@ -186,8 +184,7 @@ export class MediaService {
 
     if (
       user.role !== 'ADMIN' &&
-      property.ownerId !== user.id &&
-      property.authorizedAgentId !== user.id
+      !await propertyService.canManageListing(user.id, property)
     ) {
       throw new Error('Unauthorized to delete media for this property');
     }
@@ -229,8 +226,7 @@ export class MediaService {
 
     if (
       user.role !== 'ADMIN' &&
-      property.ownerId !== user.id &&
-      property.authorizedAgentId !== user.id
+      !await propertyService.canManageListing(user.id, property)
     ) {
       throw new Error('Unauthorized to reorder media for this property');
     }

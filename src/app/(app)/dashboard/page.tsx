@@ -55,18 +55,20 @@ export default function DashboardPage() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [allUsers, setAllUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     async function loadData() {
       setLoading(true);
+      setLoadFailed(false);
       try {
         const [allProps, userProps, inspData, appData, enqData] = await Promise.all([
-          getPropertiesAction().catch(() => []),
-          getUserPropertiesAction().catch(() => []),
-          getUserInspectionsAction().catch(() => []),
-          getUserApplicationsAction().catch(() => []),
-          getUserEnquiriesAction().catch(() => []),
+          getPropertiesAction(),
+          (currentUser ? getUserPropertiesAction() : []),
+          (currentUser ? getUserInspectionsAction() : []),
+          (currentUser ? getUserApplicationsAction() : []),
+          (currentUser ? getUserEnquiriesAction() : []),
         ]);
 
         if (!mounted) return;
@@ -90,7 +92,7 @@ export default function DashboardPage() {
           }
         }
       } catch (err) {
-        console.error('Failed to load dashboard data', err);
+        if (mounted) setLoadFailed(true);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -101,6 +103,10 @@ export default function DashboardPage() {
       mounted = false;
     };
   }, [currentUser?.id, activeRole]);
+
+  if (loadFailed) {
+    return <p role="alert">Dashboard records could not be loaded. Refresh the page to try again.</p>;
+  }
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { resetDatabase, getDb } from '../src/server/db/store';
 import { authService } from '../src/server/services/auth-service';
 import { userRepository } from '../src/server/repositories/user-repository';
@@ -227,8 +228,7 @@ async function runGovernanceAuditTests() {
     mandateType: 'EXCLUSIVE',
     commissionRate: '10%',
     scope: 'Sole marketing and tenant vetting rights for Ikoyi estate',
-    propertyIds: ['prop-1'],
-    notes: 'Exclusive mandate for 12 months',
+    notes: 'Exclusive mandate covering current and future listings',
   });
   if (invite.status !== 'INVITED' || invite.agentId !== testAgent.id) {
     console.error('❌ FAILED: Relationship invitation failed', invite);
@@ -286,6 +286,12 @@ async function runGovernanceAuditTests() {
     process.exit(1);
   }
   console.log('✅ C5 PASSED: Owner successfully revoked agent mandate.');
+
+  await assert.rejects(
+    propertyService.updateDraft(testAgent, agentManagedListing.id, { title: 'Unauthorized edit' }),
+    /Unauthorized/,
+  );
+  assert.equal(await propertyService.canManageListing(verifiedOwner.id, agentManagedListing), true);
 
   // C6: Negative test: Agent cannot create managed listing after mandate revocation
   try {
