@@ -137,7 +137,7 @@ export class DocumentService {
       }
 
       if (isAdmin) {
-        await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+        await staffAuthorizationService.assertPermission(user, 'documents.view_sensitive');
         await verificationAssignmentService.assertAssigned(user, foundProperty.id, ['OWNERSHIP']);
       }
 
@@ -180,7 +180,7 @@ export class DocumentService {
       }
 
       if (isAdmin) {
-        await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+        await staffAuthorizationService.assertPermission(user, 'documents.view_sensitive');
         await verificationAssignmentService.assertUserAssigned(user, userDoc.userId);
       }
       const fileBuffer = await supabaseStorageService.download(userDoc.fileReference)
@@ -320,8 +320,8 @@ export class DocumentService {
     reviewNotes?: string
   ): Promise<UserDocument> {
     if (adminUser.role !== 'ADMIN') throw new Error('Only administrators can review verification files.');
-    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.review');
-    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.view_sensitive');
+    await staffAuthorizationService.assertPermission(adminUser, 'documents.review');
+    await staffAuthorizationService.assertPermission(adminUser, 'documents.view_sensitive');
 
     const db = getDb();
     const document = (db.userDocuments || []).find((item) => item.id === documentId);
@@ -412,7 +412,7 @@ export class DocumentService {
       throw new Error('Only Verification Officers can audit property documentation');
     }
 
-    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.review');
+    await staffAuthorizationService.assertPermission(adminUser, 'documents.review');
     await verificationAssignmentService.assertAssigned(adminUser, propertyId, ['OWNERSHIP']);
     if ((status === 'REJECTED' || status === 'CHANGES_REQUIRED') && !reviewNotes?.trim()) {
       throw new Error('A reason is required when rejecting a document or requesting changes.');
@@ -515,7 +515,7 @@ export class DocumentService {
     }
 
     if (isAdmin) {
-      await staffAuthorizationService.assertPermission(user.id, 'documents.view_metadata');
+      await staffAuthorizationService.assertPermission(user, 'documents.view_metadata');
       await verificationAssignmentService.assertAssigned(user, propertyId, ['OWNERSHIP']);
     }
 

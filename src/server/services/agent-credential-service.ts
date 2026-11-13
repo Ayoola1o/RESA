@@ -13,7 +13,7 @@ export class AgentCredentialService {
     if (admin.role !== 'ADMIN') {
       throw new Error('Unauthorized: Only administrators can view credential review queues.');
     }
-    await staffAuthorizationService.assertPermission(admin.id, 'verification.queue.view');
+    await staffAuthorizationService.assertPermission(admin, 'verification.queue.view');
     return agentCredentialRepository.listAll();
   }
 
@@ -82,7 +82,7 @@ export class AgentCredentialService {
     if (admin.role !== 'ADMIN') {
       throw new Error('Unauthorized: Only administrators can audit agent credentials.');
     }
-    await staffAuthorizationService.assertPermission(admin.id, 'verification.review');
+    await staffAuthorizationService.assertPermission(admin, 'verification.review');
 
     const credential = await agentCredentialRepository.findById(credentialId);
     if (!credential) throw new Error('Credential record not found.');

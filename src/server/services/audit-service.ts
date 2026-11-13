@@ -17,7 +17,7 @@ export class AuditService {
    * Retrieves recent audit logs, verifying staff audit view permission.
    */
   async getRecentLogs(adminUser: User, limit = 50): Promise<AuditLog[]> {
-    await staffAuthorizationService.assertPermission(adminUser.id, 'audit_logs.view');
+    await staffAuthorizationService.assertPermission(adminUser, 'audit_logs.view');
     return auditRepository.listAll(limit);
   }
 
@@ -29,7 +29,7 @@ export class AuditService {
     filters?: AuditLogFilters,
     limit = 100
   ): Promise<AuditLog[]> {
-    await staffAuthorizationService.assertPermission(actor.id, 'audit_logs.view');
+    await staffAuthorizationService.assertPermission(actor, 'audit_logs.view');
     return auditRepository.query(filters, limit);
   }
 
@@ -42,7 +42,7 @@ export class AuditService {
     brokenAtIndex?: number;
     error?: string;
   }> {
-    await staffAuthorizationService.assertPermission(actor.id, 'audit_logs.view');
+    await staffAuthorizationService.assertPermission(actor, 'audit_logs.view');
     const verification = await auditRepository.verifyIntegrity();
 
     // Audit the verification check itself
@@ -78,7 +78,7 @@ export class AuditService {
     content: string;
     recordCount: number;
   }> {
-    await staffAuthorizationService.assertPermission(actor.id, 'audit_logs.export');
+    await staffAuthorizationService.assertPermission(actor, 'audit_logs.export');
 
     const logs = await auditRepository.query(filters, 5000);
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');

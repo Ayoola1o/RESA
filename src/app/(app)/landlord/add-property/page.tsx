@@ -563,15 +563,17 @@ function AddPropertyWizard() {
             formData.append('file', m.file);
             if (m.caption) formData.append('caption', m.caption);
             formData.append('isPrimary', m.isPrimary ? 'true' : 'false');
-            await uploadPropertyMediaAction(formData);
+            const uploaded = await uploadPropertyMediaAction(formData);
+            if (!uploaded.success) throw new Error(uploaded.error || `Could not upload ${m.fileName || 'property media'}.`);
           } else if (m.type === 'video' || m.caption || m.isPrimary) {
-            await addPropertyMediaRecordAction(targetPropertyId, {
+            const savedMedia = await addPropertyMediaRecordAction(targetPropertyId, {
               url: m.url,
               type: m.type,
               caption: m.caption,
               isPrimary: m.isPrimary,
               fileName: m.fileName,
             });
+            if (!savedMedia.success) throw new Error(savedMedia.error || 'Could not save property media details.');
           }
         }
 
@@ -582,15 +584,18 @@ function AddPropertyWizard() {
             formData.append('propertyId', targetPropertyId);
             formData.append('documentType', d.type);
             formData.append('file', d.file);
-            await uploadPropertyDocumentAction(formData);
+            const uploaded = await uploadPropertyDocumentAction(formData);
+            if (!uploaded.success) throw new Error(uploaded.error || `Could not upload ${d.fileName}.`);
           } else if (d.id.startsWith('doc_pre_') || d.id.startsWith('doc_manual_')) {
-            await addPropertyDocumentAction(targetPropertyId, d.type, d.fileName);
+            const savedDocument = await addPropertyDocumentAction(targetPropertyId, d.type, d.fileName);
+            if (!savedDocument.success) throw new Error(savedDocument.error || `Could not save ${d.fileName}.`);
           }
         }
 
         if (shouldSubmitForReview) {
           // Transitions listingStatus strictly to SUBMITTED (does NOT mark VERIFIED)
-          await submitPropertyAction(targetPropertyId);
+          const submitted = await submitPropertyAction(targetPropertyId);
+          if (!submitted.success) throw new Error(submitted.error || 'The listing could not be submitted for review.');
           toast({
             title: 'Submitted for Verification Review! 🛡️',
             description: `"${title}" has been submitted. Status changed to SUBMITTED. A verification officer will review the title documents.`,
