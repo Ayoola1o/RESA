@@ -69,7 +69,7 @@ The initial PostgreSQL schema and Supabase SSR clients are in `supabase/` and `s
 3. Copy the project URL and publishable key from **Project Settings → API** into `.env.local` using the names in `.env.example`.
 4. Restart the Next.js server after changing environment variables.
 
-This migration lays down secured tables for profiles, properties, media, mandates, enquiries, and applications. It is the first backend migration: the current app authentication and repositories still use the local JSON store. Do not point production traffic at this schema until the remaining repositories and existing accounts are migrated; the project URL and key alone do not switch the app's data store.
+This migration lays down secured tables for profiles, properties, media, mandates, enquiries, and applications. It is the first backend migration: the current app authentication and repositories still use the local JSON store. Do not point production traffic at this schema until the remaining repositories and existing accounts are migrated; the project URL and publishable key alone do not switch the app's data store. Applying migrations needs database-owner access, and importing existing accounts needs a server-only Supabase secret key.
 
 ### Demo Seed Accounts
 
