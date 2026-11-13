@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { User, PropertyMedia, MediaType, MediaUploadStatus } from '@/types/prophunta';
 import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
+import { supabaseStorageService } from './supabase-storage-service';
 
 const UPLOAD_DIR = path.join(process.cwd(), '.data', 'uploads', 'media');
 
@@ -26,6 +27,16 @@ export class MediaService {
     caption?: string,
     isPrimary?: boolean
   ): Promise<PropertyMedia> {
+    if (!fileBuffer?.length) throw new Error('Please choose a non-empty media file.');
+    if (fileBuffer.length > 25 * 1024 * 1024) throw new Error('Media files must be 25 MB or smaller.');
+
+    const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
+    const videoTypes = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
+    const normalizedMimeType = mimeType.toLowerCase();
+    if (!imageTypes.has(normalizedMimeType) && !videoTypes.has(normalizedMimeType)) {
+      throw new Error('Supported media formats are JPG, PNG, WEBP, AVIF, MP4, WEBM, and MOV.');
+    }
+
     const property = await propertyRepository.findById(propertyId);
     if (!property) throw new Error('Property not found');
 
@@ -38,19 +49,24 @@ export class MediaService {
     }
 
     // Determine type
-    const isVideo = mimeType.startsWith('video/') || /\.(mp4|webm|mov|ogg)$/i.test(originalName);
+    const isVideo = videoTypes.has(normalizedMimeType);
     const type: MediaType = isVideo ? 'video' : 'image';
 
-    // File extension sanitize
-    const ext = path.extname(originalName) || (isVideo ? '.mp4' : '.jpg');
     const safeUUID = randomUUID().replace(/-/g, '');
-    const diskFileName = `${type}_${Date.now()}_${safeUUID}${ext}`;
-    const diskPath = path.join(UPLOAD_DIR, diskFileName);
-
-    // Write file to secure storage
-    await fs.promises.writeFile(diskPath, fileBuffer);
-
     const mediaId = `med_${Date.now()}_${safeUUID.slice(0, 8)}`;
+    const extensionByMime: Record<string, string> = {
+      'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/avif': '.avif',
+      'video/mp4': '.mp4', 'video/webm': '.webm', 'video/quicktime': '.mov',
+    };
+    const diskFileName = `${type}_${Date.now()}_${safeUUID}${extensionByMime[normalizedMimeType]}`;
+    const storageReference = await supabaseStorageService.upload(
+      'property-media', `${propertyId}/${mediaId}${extensionByMime[normalizedMimeType]}`,
+      fileBuffer, normalizedMimeType
+    );
+    if (!storageReference) {
+      await fs.promises.writeFile(path.join(UPLOAD_DIR, diskFileName), fileBuffer);
+    }
+
     const mediaItem: PropertyMedia = {
       id: mediaId,
       propertyId,
@@ -60,7 +76,7 @@ export class MediaService {
       isPrimary: !!isPrimary,
       order: (property.media || []).length + 1,
       uploadStatus: 'COMPLETED',
-      fileReference: diskFileName,
+      fileReference: storageReference || diskFileName,
       fileName: originalName,
       mimeType,
       sizeBytes: fileBuffer.length,
@@ -191,12 +207,16 @@ export class MediaService {
 
     const item = property.media.find((m) => m.id === mediaId);
     if (item?.fileReference) {
-      const diskPath = path.join(UPLOAD_DIR, item.fileReference);
-      if (fs.existsSync(diskPath)) {
-        try {
-          await fs.promises.unlink(diskPath);
-        } catch (err) {
-          console.warn('Could not remove file from disk:', diskPath, err);
+      if (supabaseStorageService.isSupabaseReference(item.fileReference)) {
+        await supabaseStorageService.remove(item.fileReference);
+      } else {
+        const diskPath = path.join(UPLOAD_DIR, item.fileReference);
+        if (fs.existsSync(diskPath)) {
+          try {
+            await fs.promises.unlink(diskPath);
+          } catch (err) {
+            console.warn('Could not remove file from disk:', diskPath, err);
+          }
         }
       }
     }

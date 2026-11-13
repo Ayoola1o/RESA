@@ -1162,7 +1162,7 @@ function AddPropertyWizard() {
                 <input
                   type="file"
                   multiple
-                  accept="image/*,video/*"
+                  accept=".jpg,.jpeg,.png,.webp,.avif,.mp4,.webm,.mov"
                   className="hidden"
                   onChange={handleMediaFileUpload}
                 />
@@ -1346,7 +1346,7 @@ function AddPropertyWizard() {
                     Browse Confidential File
                     <input
                       type="file"
-                      accept=".pdf,image/*"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp"
                       className="hidden"
                       onChange={handleDocFileUpload}
                     />

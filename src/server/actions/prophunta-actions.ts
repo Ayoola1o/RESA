@@ -1486,14 +1486,17 @@ export async function exportAuditLogsAction(
 
 // --- USER CREDENTIAL DOCUMENTS, SAVED PROPERTIES & VERIFICATION OVERVIEW ACTIONS ---
 
-export async function getUserDocumentsAction(): Promise<{
+export async function getUserDocumentsAction(targetUserId?: string): Promise<{
   success: boolean;
   documents?: UserDocument[];
   error?: string;
 }> {
   try {
     const user = await authService.requireUser();
-    const documents = await documentService.listUserDocuments(user);
+    if (targetUserId && targetUserId !== user.id) {
+      await staffAuthorizationService.requirePermission(user, 'documents.view_metadata', { resourceId: targetUserId });
+    }
+    const documents = await documentService.listUserDocuments(user, targetUserId);
     return { success: true, documents };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to retrieve documents.' };
@@ -1545,6 +1548,22 @@ export async function deleteUserDocumentAction(documentId: string): Promise<{
     return { success };
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to delete document.' };
+  }
+}
+
+export async function reviewUserDocumentAction(
+  documentId: string,
+  status: Extract<UserDocumentStatus, 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED'>,
+  reviewNotes?: string
+): Promise<{ success: boolean; document?: UserDocument; error?: string }> {
+  try {
+    const admin = await authService.requireRole(['ADMIN']);
+    const document = await documentService.reviewUserDocument(admin, documentId, status, reviewNotes);
+    revalidatePath('/admin');
+    revalidatePath('/profile');
+    return { success: true, document };
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Failed to review verification document.' };
   }
 }
 

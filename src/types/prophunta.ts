@@ -61,6 +61,7 @@ export interface User {
 
 export type UserDocumentType =
   | 'GOVERNMENT_ID'
+  | 'AGENT_CREDENTIAL'
   | 'PROOF_OF_INCOME'
   | 'PROOF_OF_RESIDENCE'
   | 'EMPLOYMENT_REFERENCE'

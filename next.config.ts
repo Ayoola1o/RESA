@@ -2,6 +2,12 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    serverActions: {
+      // The largest supported property video is 25 MB; leave room for multipart overhead.
+      bodySizeLimit: '27mb',
+    },
+  },
   images: {
     dangerouslyAllowSVG: true,
     remotePatterns: [

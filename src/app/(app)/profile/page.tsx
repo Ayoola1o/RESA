@@ -645,7 +645,9 @@ function ProfileContent() {
                   Your Account Trust & Verification Passport
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Verified Seekers gain priority review from property owners and licensed agents. Vault your identity credentials securely to unlock fast-track inspection bookings and rental offer processing.
+                  {activeRole === 'AGENT'
+                    ? 'Upload your government ID, professional license, or agency registration for private verification review.'
+                    : 'Upload identity, ownership, income, or residence evidence for private verification review.'}
                 </p>
               </div>
 
@@ -662,7 +664,9 @@ function ProfileContent() {
                         <ShieldCheck className="h-5 w-5 text-lime-600" /> Add Verification Credential
                       </DialogTitle>
                       <DialogDescription>
-                        Upload genuine government-issued identification or tenancy eligibility documents for encrypted vaulting and compliance review.
+                        {activeRole === 'AGENT'
+                          ? 'Upload professional licensing, CAC registration, or identity evidence. Files are private and visible only to you and authorized verification staff.'
+                          : 'Upload identity, ownership, income, or residence evidence. Files are private and visible only to you and authorized verification staff.'}
                       </DialogDescription>
                     </DialogHeader>
 
@@ -676,9 +680,10 @@ function ProfileContent() {
                           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-lime-500"
                         >
                           <option value="GOVERNMENT_ID">Government Identity (NIN / Passport / Voter Card)</option>
+                          {activeRole === 'AGENT' && <option value="AGENT_CREDENTIAL">Professional License / Agency Registration</option>}
                           <option value="PROOF_OF_INCOME">Proof of Employment / Income (Work ID / Pay Slip)</option>
-                          <option value="PROOF_OF_ADDRESS">Proof of Current Residence (Utility / Tenancy Receipt)</option>
-                          <option value="EMPLOYMENT_LETTER">Employer Reference / Guarantor Letter</option>
+                          <option value="PROOF_OF_RESIDENCE">Proof of Current Residence (Utility / Tenancy Receipt)</option>
+                          <option value="EMPLOYMENT_REFERENCE">Employer Reference / Guarantor Letter</option>
                           <option value="OTHER">Other Supporting Credential</option>
                         </select>
                       </div>
@@ -718,7 +723,7 @@ function ProfileContent() {
                             </>
                           )}
                         </div>
-                        <p className="text-[10px] text-muted-foreground">PDF, PNG, JPG up to 10MB</p>
+                        <p className="text-[10px] text-muted-foreground">PDF, PNG, JPG, WEBP up to 10MB</p>
                       </div>
                     </div>
 

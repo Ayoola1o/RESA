@@ -4,6 +4,7 @@ import { authService } from '@/server/services/auth-service';
 import { propertyService } from '@/server/services/property-service';
 import { staffAuthorizationService } from '@/server/services/staff-authorization-service';
 import { mediaService } from '@/server/services/media-service';
+import { supabaseStorageService } from '@/server/services/supabase-storage-service';
 
 export async function GET(
   request: NextRequest,
@@ -25,6 +26,14 @@ export async function GET(
         && !await staffAuthorizationService.hasPermission(user, 'properties.moderate'))) {
         return new NextResponse('Media not found', { status: 404 });
       }
+    }
+
+    if (supabaseStorageService.isSupabaseReference(media.fileReference)) {
+      const signedUrl = await supabaseStorageService.createSignedUrl(media.fileReference!, 300);
+      if (!signedUrl) return new NextResponse('Media file content not available', { status: 404 });
+      return NextResponse.redirect(signedUrl, {
+        headers: { 'Cache-Control': 'private, no-store' },
+      });
     }
 
     // If locally stored file exists

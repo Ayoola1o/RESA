@@ -77,6 +77,8 @@ import {
   completeInspectionAction,
   resolveInspectionEscalationAction,
   getUsersAction,
+  getUserDocumentsAction,
+  reviewUserDocumentAction,
   updateUserStatusAction,
   suspendPropertyAction,
   restorePropertyAction,
@@ -112,6 +114,8 @@ import {
   AdminPermission,
   ApprovalRequest,
   ApprovalActionType,
+  UserDocument,
+  UserDocumentStatus,
 } from '@/types/prophunta';
 import Link from 'next/link';
 
@@ -188,6 +192,8 @@ function AdminPortalContent() {
   const [isDocsDialogOpen, setIsDocsDialogOpen] = useState(false);
   const [inspectedUser, setInspectedUser] = useState<User | null>(null);
   const [isUserInspectOpen, setIsUserInspectOpen] = useState(false);
+  const [inspectedUserDocuments, setInspectedUserDocuments] = useState<UserDocument[]>([]);
+  const [loadingUserDocuments, setLoadingUserDocuments] = useState(false);
 
   const isSuperAdmin = staffContext?.activeRoles.includes('SUPER_ADMIN') ?? false;
   const can = (permission: AdminPermission) => staffContext?.effectivePermissions.includes(permission) ?? false;
@@ -621,6 +627,22 @@ function AdminPortalContent() {
     }
   };
 
+  const handleReviewUserDocument = async (
+    document: UserDocument,
+    status: Extract<UserDocumentStatus, 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED'>
+  ) => {
+    const result = await reviewUserDocumentAction(document.id, status);
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Review failed', description: result.error || 'Could not update document.' });
+      return;
+    }
+    if (inspectedUser) {
+      const refreshed = await getUserDocumentsAction(inspectedUser.id);
+      if (refreshed.success) setInspectedUserDocuments(refreshed.documents || []);
+    }
+    toast({ title: 'Verification document reviewed', description: `${document.fileName} marked ${status.toLowerCase().replace('_', ' ')}.` });
+  };
+
   // --- PROPERTY MODERATION ACTIONS ---
   const handleSuspendProperty = async (propertyId: string) => {
     setSubmittingAction(true);
@@ -883,10 +905,19 @@ function AdminPortalContent() {
               properties={properties}
               can={can}
               isSuperAdmin={isSuperAdmin}
-              onInspectUser={(u) => {
-                setInspectedUser(u);
-                setIsUserInspectOpen(true);
-              }}
+                onInspectUser={async (u) => {
+                  setInspectedUser(u);
+                  setInspectedUserDocuments([]);
+                  setIsUserInspectOpen(true);
+                  if (can('documents.view_metadata')) {
+                    setLoadingUserDocuments(true);
+                    const result = await getUserDocumentsAction(u.id);
+                    if (result.success) setInspectedUserDocuments(result.documents || []);
+                    setLoadingUserDocuments(false);
+                  } else {
+                    setLoadingUserDocuments(false);
+                  }
+                }}
               onToggleStatus={handleToggleUserStatus}
               submittingAction={submittingAction}
               searchQuery={searchQuery}
@@ -974,6 +1005,48 @@ function AdminPortalContent() {
                       </span>
                     </div>
                   </div>
+
+                  {can('documents.view_metadata') && (
+                    <div className="space-y-2 border-t border-slate-100 pt-3">
+                      <p className="font-bold text-slate-800">Verification Documents</p>
+                      {loadingUserDocuments ? (
+                        <p className="text-slate-500">Loading verification files…</p>
+                      ) : inspectedUserDocuments.length === 0 ? (
+                        <p className="text-slate-500">No identity or verification files on this account.</p>
+                      ) : inspectedUserDocuments.map((doc) => (
+                        <div key={doc.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-2.5">
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold text-slate-800">{doc.title || doc.fileName}</p>
+                            <p className="text-[10px] text-slate-500">
+                              {doc.documentType.replace(/_/g, ' ')} · {doc.status}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {can('documents.view_sensitive') && (
+                              <a href={`/api/documents/${doc.id}`} target="_blank" rel="noreferrer"
+                                className="shrink-0 font-semibold text-emerald-700 hover:underline">
+                                Open file
+                              </a>
+                            )}
+                            {can('documents.review') && can('documents.view_sensitive')
+                              && doc.status !== 'VERIFIED' && doc.status !== 'REJECTED' && (
+                              <>
+                                <Button size="sm" variant="outline" className="h-7 text-[10px]"
+                                  onClick={() => handleReviewUserDocument(doc, 'UNDER_REVIEW')}>Review</Button>
+                                <Button size="sm" className="h-7 text-[10px] bg-emerald-700 hover:bg-emerald-800"
+                                  onClick={() => handleReviewUserDocument(doc, 'VERIFIED')}>Approve</Button>
+                                <Button size="sm" variant="destructive" className="h-7 text-[10px]"
+                                  onClick={() => handleReviewUserDocument(doc, 'REJECTED')}>Reject</Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {!can('documents.view_sensitive') && inspectedUserDocuments.length > 0 && (
+                        <p className="text-[10px] text-slate-500">Your staff role can view document metadata but not the private files.</p>
+                      )}
+                    </div>
+                  )}
 
                   {inspectedUser.role !== 'ADMIN' && can('users.suspend') && (
                     <div className="pt-2">

@@ -16,6 +16,7 @@ import { propertyRepository } from '../repositories/property-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { staffAuthorizationService } from './staff-authorization-service';
 import { getDb, saveDb } from '../db/store';
+import { supabaseStorageService } from './supabase-storage-service';
 
 const VAULT_DIR = path.join(process.cwd(), '.data', 'vault', 'documents');
 
@@ -48,26 +49,37 @@ export class DocumentService {
       throw new Error('Unauthorized to upload confidential documentation for this property');
     }
 
-    // Sanitize extension and generate collision-resistant fileReference
-    const ext = path.extname(originalName) || '.pdf';
+    if (!fileBuffer?.length || fileBuffer.length > 10 * 1024 * 1024) {
+      throw new Error('Verification documents must be between 1 byte and 10 MB.');
+    }
+    const allowedMimeTypes = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
+    const normalizedMimeType = mimeType.toLowerCase();
+    if (!allowedMimeTypes.has(normalizedMimeType)) {
+      throw new Error('Supported verification documents are PDF, JPG, PNG, and WEBP.');
+    }
+
     const safeUUID = randomUUID().replace(/-/g, '');
-    const diskFileName = `doc_${Date.now()}_${safeUUID}${ext}`;
-    const diskPath = path.join(VAULT_DIR, diskFileName);
-
-    // Save physical file
-    fs.writeFileSync(diskPath, fileBuffer);
-
     const docId = `doc_${Date.now()}_${safeUUID.slice(0, 8)}`;
+    const extensionByMime: Record<string, string> = {
+      'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp',
+    };
+    const diskFileName = `doc_${Date.now()}_${safeUUID}${extensionByMime[normalizedMimeType]}`;
+    const storageReference = await supabaseStorageService.upload(
+      'verification-files', `properties/${propertyId}/${docId}${extensionByMime[normalizedMimeType]}`,
+      fileBuffer, normalizedMimeType
+    );
+    if (!storageReference) fs.writeFileSync(path.join(VAULT_DIR, diskFileName), fileBuffer);
+
     const newDoc: PropertyDocument = {
       id: docId,
       propertyId,
       uploadedBy: user.id,
       documentType,
       fileName: originalName,
-      fileReference: diskFileName,
+      fileReference: storageReference || diskFileName,
       status: 'PENDING',
       uploadedAt: new Date().toISOString(),
-      mimeType: mimeType || 'application/pdf',
+      mimeType: normalizedMimeType,
       sizeBytes: fileBuffer.length,
     };
 
@@ -129,12 +141,11 @@ export class DocumentService {
         await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
       }
 
-      const diskPath = path.join(VAULT_DIR, foundDoc.fileReference);
-      if (!fs.existsSync(diskPath)) {
-        throw new Error('Physical document file missing from secure vault');
-      }
-
-      const fileBuffer = fs.readFileSync(diskPath);
+      const fileBuffer = await supabaseStorageService.download(foundDoc.fileReference)
+        ?? (fs.existsSync(path.join(VAULT_DIR, foundDoc.fileReference))
+          ? fs.readFileSync(path.join(VAULT_DIR, foundDoc.fileReference))
+          : null);
+      if (!fileBuffer) throw new Error('Document file missing from secure vault');
 
       if (isAdmin) {
         await auditRepository.create({
@@ -168,12 +179,12 @@ export class DocumentService {
         throw new Error('Unauthorized: Confidential user credential document access denied');
       }
 
-      const diskPath = path.join(VAULT_DIR, userDoc.fileReference);
-      if (!fs.existsSync(diskPath)) {
-        throw new Error('Physical credential document missing from secure vault');
-      }
-
-      const fileBuffer = fs.readFileSync(diskPath);
+      if (isAdmin) await staffAuthorizationService.assertPermission(user.id, 'documents.view_sensitive');
+      const fileBuffer = await supabaseStorageService.download(userDoc.fileReference)
+        ?? (fs.existsSync(path.join(VAULT_DIR, userDoc.fileReference))
+          ? fs.readFileSync(path.join(VAULT_DIR, userDoc.fileReference))
+          : null);
+      if (!fileBuffer) throw new Error('Credential document missing from secure vault');
 
       await auditRepository.create({
         actorId: user.id,
@@ -208,6 +219,11 @@ export class DocumentService {
     documentType: UserDocumentType,
     title?: string
   ): Promise<UserDocument> {
+    const supportedDocumentTypes = new Set<UserDocumentType>([
+      'GOVERNMENT_ID', 'AGENT_CREDENTIAL', 'PROOF_OF_INCOME',
+      'PROOF_OF_RESIDENCE', 'EMPLOYMENT_REFERENCE', 'OTHER',
+    ]);
+    if (!supportedDocumentTypes.has(documentType)) throw new Error('Unsupported verification document type.');
     if (!fileBuffer || fileBuffer.length === 0) {
       throw new Error('Empty file content');
     }
@@ -227,23 +243,28 @@ export class DocumentService {
       throw new Error('Unsupported format. Only PDF, JPG, and PNG are permitted.');
     }
 
-    const ext = path.extname(originalName) || (mimeType.includes('pdf') ? '.pdf' : '.jpg');
     const safeUUID = randomUUID().replace(/-/g, '');
-    const diskFileName = `usr_${user.id}_${Date.now()}_${safeUUID.slice(0, 8)}${ext}`;
-    const diskPath = path.join(VAULT_DIR, diskFileName);
-
-    fs.writeFileSync(diskPath, fileBuffer);
-
     const docId = `udoc_${Date.now()}_${safeUUID.slice(0, 8)}`;
+    const normalizedMimeType = mimeType.toLowerCase();
+    const extensionByMime: Record<string, string> = {
+      'application/pdf': '.pdf', 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp',
+    };
+    const diskFileName = `usr_${user.id}_${Date.now()}_${safeUUID.slice(0, 8)}${extensionByMime[normalizedMimeType]}`;
+    const storageReference = await supabaseStorageService.upload(
+      'verification-files', `users/${user.id}/${docId}${extensionByMime[normalizedMimeType]}`,
+      fileBuffer, normalizedMimeType
+    );
+    if (!storageReference) fs.writeFileSync(path.join(VAULT_DIR, diskFileName), fileBuffer);
+
     const newDoc: UserDocument = {
       id: docId,
       userId: user.id,
       documentType,
       title: title || originalName,
       fileName: originalName,
-      fileReference: diskFileName,
+      fileReference: storageReference || diskFileName,
       fileSize: fileBuffer.length,
-      mimeType,
+      mimeType: normalizedMimeType,
       status: 'PENDING',
       uploadedAt: new Date().toISOString(),
     };
@@ -287,6 +308,43 @@ export class DocumentService {
     return (db.userDocuments || []).filter((d) => d.userId === target);
   }
 
+  async reviewUserDocument(
+    adminUser: User,
+    documentId: string,
+    status: Extract<UserDocumentStatus, 'UNDER_REVIEW' | 'VERIFIED' | 'REJECTED'>,
+    reviewNotes?: string
+  ): Promise<UserDocument> {
+    if (adminUser.role !== 'ADMIN') throw new Error('Only administrators can review verification files.');
+    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.review');
+    await staffAuthorizationService.assertPermission(adminUser.id, 'documents.view_sensitive');
+
+    const db = getDb();
+    const document = (db.userDocuments || []).find((item) => item.id === documentId);
+    if (!document) throw new Error('User verification document not found.');
+
+    const reviewed = {
+      ...document,
+      status,
+      reviewedAt: new Date().toISOString(),
+      reviewedBy: adminUser.id,
+      reviewNotes: reviewNotes?.trim() || undefined,
+    };
+    db.userDocuments = db.userDocuments.map((item) => item.id === documentId ? reviewed : item);
+    saveDb(db);
+
+    await auditRepository.create({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: adminUser.role,
+      action: 'DOCUMENT_REVIEWED',
+      objectType: 'DOCUMENT',
+      objectId: documentId,
+      result: 'SUCCESS',
+      metadata: { targetUserId: document.userId, documentType: document.documentType, status, reviewNotes },
+    });
+    return reviewed;
+  }
+
   /**
    * Deletes a user credential document and unlinks its physical file.
    */
@@ -302,12 +360,16 @@ export class DocumentService {
       throw new Error('Unauthorized to delete this credential document');
     }
 
-    const diskPath = path.join(VAULT_DIR, doc.fileReference);
-    if (fs.existsSync(diskPath)) {
-      try {
-        fs.unlinkSync(diskPath);
-      } catch (err) {
-        console.error('Failed to unlink user vault file:', err);
+    if (supabaseStorageService.isSupabaseReference(doc.fileReference)) {
+      await supabaseStorageService.remove(doc.fileReference);
+    } else {
+      const diskPath = path.join(VAULT_DIR, doc.fileReference);
+      if (fs.existsSync(diskPath)) {
+        try {
+          fs.unlinkSync(diskPath);
+        } catch (err) {
+          console.error('Failed to unlink user vault file:', err);
+        }
       }
     }
 
@@ -395,12 +457,16 @@ export class DocumentService {
     if (!doc) return false;
 
     // Delete disk file
-    const diskPath = path.join(VAULT_DIR, doc.fileReference);
-    if (fs.existsSync(diskPath)) {
-      try {
-        fs.unlinkSync(diskPath);
-      } catch (err) {
-        console.error('Failed to unlink vault file:', err);
+    if (supabaseStorageService.isSupabaseReference(doc.fileReference)) {
+      await supabaseStorageService.remove(doc.fileReference);
+    } else {
+      const diskPath = path.join(VAULT_DIR, doc.fileReference);
+      if (fs.existsSync(diskPath)) {
+        try {
+          fs.unlinkSync(diskPath);
+        } catch (err) {
+          console.error('Failed to unlink vault file:', err);
+        }
       }
     }
 
