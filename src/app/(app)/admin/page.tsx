@@ -131,6 +131,7 @@ import { PropertyModerationView } from '@/components/admin/PropertyModerationVie
 import { UserManagementView } from '@/components/admin/UserManagementView';
 import { AdminOverviewPanel } from '@/components/admin/AdminOverviewPanel';
 import { VerificationOfficerWorkspace } from '@/components/admin/VerificationOfficerWorkspace';
+import { RoleOperationsOverview } from '@/components/admin/RoleOperationsOverview';
 
 const ALL_STAFF_ROLES: { role: StaffRole; label: string; desc: string; badgeClass: string }[] = [
   { role: 'SUPER_ADMIN', label: 'Super Admin', desc: 'Full administrative authority', badgeClass: 'bg-red-100 text-red-800 border-red-200' },
@@ -199,6 +200,8 @@ function AdminPortalContent() {
   const [loadingUserDocuments, setLoadingUserDocuments] = useState(false);
 
   const isSuperAdmin = staffContext?.activeRoles.includes('SUPER_ADMIN') ?? false;
+  const isPropertyModerator = staffContext?.activeRoles.length === 1 && staffContext.activeRoles[0] === 'PROPERTY_MODERATOR';
+  const isTrustSafetyInvestigator = staffContext?.activeRoles.length === 1 && staffContext.activeRoles[0] === 'TRUST_SAFETY_INVESTIGATOR';
   const can = (permission: AdminPermission) => staffContext?.effectivePermissions.includes(permission) ?? false;
   const tabPermissions: [string, AdminPermission][] = [
     ['verification', 'verification.queue.view'],
@@ -211,7 +214,10 @@ function AdminPortalContent() {
     ['users', 'users.view_limited'],
   ];
   const availableTabs = tabPermissions.filter(([, permission]) => can(permission)).map(([tab]) => tab);
-  const activeTab = tabParam && availableTabs.includes(tabParam) ? tabParam : availableTabs[0];
+  const requestedTab = tabParam === 'investigations' ? 'reports' : tabParam === 'content' ? 'properties' : tabParam;
+  const activeTab = requestedTab && availableTabs.includes(requestedTab) ? requestedTab : availableTabs[0];
+  const activePage = tabParam || 'dashboard';
+  const dashboardVisible = activePage === 'dashboard';
 
   const loadData = async () => {
     setLoading(true);
@@ -698,7 +704,8 @@ function AdminPortalContent() {
   const pendingVerificationList = properties.filter(
     (p) => p.listingStatus === 'SUBMITTED' || p.listingStatus === 'UNDER_REVIEW'
   );
-  const adminNavigation: { id: string; label: string; icon: typeof Home; count: number }[] = [
+  const allAdminNavigation: { id: string; label: string; icon: typeof Home; count: number }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: Home, count: 0 },
     { id: 'users', label: 'User Management', icon: Users, count: users.length },
     { id: 'staff', label: 'Staff Management', icon: Briefcase, count: staffDirectory.length },
     { id: 'approvals', label: 'Permissions & Approvals', icon: Lock, count: approvalRequests.filter((item) => item.status === 'PENDING').length },
@@ -707,15 +714,22 @@ function AdminPortalContent() {
     { id: 'reports', label: 'Trust & Safety', icon: BadgeAlert, count: reports.filter((item) => !['RESOLVED', 'DISMISSED'].includes(item.status)).length },
     { id: 'audit', label: 'Audit Logs', icon: History, count: auditCounts.total },
     { id: 'inspections', label: 'Inspections', icon: CalendarCheck2, count: inspections.length },
-  ].filter((item) => availableTabs.includes(item.id));
-  const activeAdminLabel = adminNavigation.find((item) => item.id === activeTab)?.label || 'Admin Dashboard';
+  ];
+  const roleNavigation = isPropertyModerator
+    ? [allAdminNavigation[0], { ...allAdminNavigation.find((item) => item.id === 'properties')!, label: 'Listing Reviews' }, ...allAdminNavigation.filter((item) => ['reports', 'audit'].includes(item.id))]
+    : isTrustSafetyInvestigator
+      ? [allAdminNavigation[0], { ...allAdminNavigation.find((item) => item.id === 'reports')!, label: 'Reports' }, { ...allAdminNavigation.find((item) => item.id === 'reports')!, id: 'investigations', label: 'User Investigations' }, ...(can('properties.moderate') ? [{ ...allAdminNavigation.find((item) => item.id === 'properties')!, id: 'content', label: 'Content Moderation' }] : []), ...allAdminNavigation.filter((item) => item.id === 'audit')]
+      : allAdminNavigation;
+  const adminNavigation = roleNavigation.filter((item) => item.id === 'dashboard' || item.id === 'settings' || availableTabs.includes(item.id) || (item.id === 'investigations' && availableTabs.includes('reports')) || (item.id === 'content' && availableTabs.includes('properties')));
+  if ((isPropertyModerator || isTrustSafetyInvestigator) && !adminNavigation.some((item) => item.id === 'settings')) adminNavigation.push({ id: 'settings', label: 'Settings', icon: Lock, count: 0 });
+  const activeAdminLabel = adminNavigation.find((item) => item.id === activePage)?.label || 'Admin Dashboard';
 
   return (
     <div className="min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-slate-200 bg-[#f5f7fb] shadow-sm lg:flex">
       <aside className="flex shrink-0 flex-col bg-[#111d32] p-3 text-white lg:w-60 lg:p-4">
         <div className="mb-5 flex items-center gap-3 px-2 py-2"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#25D366] text-sm font-black text-[#102033]">P</span><span><strong className="block text-sm">PropHunta AI</strong><small className="text-[10px] text-slate-300">Find. Verify. Own.</small></span></div>
         <div className="mb-3 rounded-xl bg-[#25D366] px-3 py-2 text-xs font-bold text-slate-950"><ShieldCheck className="mr-2 inline h-4 w-4" />{isSuperAdmin ? 'Super Admin' : ALL_STAFF_ROLES.find((role) => staffContext?.activeRoles.includes(role.role))?.label || 'Admin Staff'}</div>
-        <nav aria-label="Admin navigation" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">{adminNavigation.map((item) => { const Icon = item.icon; return <button key={item.id} type="button" onClick={() => handleTabChange(item.id)} aria-current={activeTab === item.id ? 'page' : undefined} className={`flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition-colors ${activeTab === item.id ? 'bg-white/15 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}><Icon className="h-4 w-4" />{item.label}{item.count > 0 && <span className="ml-auto rounded-full bg-[#25D366] px-1.5 py-0.5 text-[10px] font-bold text-slate-950">{item.count}</span>}</button>; })}</nav>
+        <nav aria-label="Admin navigation" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">{adminNavigation.map((item) => { const Icon = item.icon; return <button key={`${item.id}-${item.label}`} type="button" onClick={() => item.id === 'dashboard' ? router.replace(pathname, { scroll: false }) : handleTabChange(item.id)} aria-current={activePage === item.id || (activePage === 'properties' && item.id === 'content') ? 'page' : undefined} className={`flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition-colors ${activePage === item.id || (activePage === 'properties' && item.id === 'content') ? 'bg-white/15 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}><Icon className="h-4 w-4" />{item.label}{item.count > 0 && <span className="ml-auto rounded-full bg-[#25D366] px-1.5 py-0.5 text-[10px] font-bold text-slate-950">{item.count}</span>}</button>; })}</nav>
         <div className="mt-auto hidden rounded-xl border border-white/10 bg-white/5 p-3 text-[11px] text-slate-300 lg:block"><ShieldCheck className="mb-2 h-6 w-6 text-[#25D366]"/><strong className="block text-white">Platform status</strong>Live records are shown from your permitted workspace.</div>
       </aside>
       <div className="min-w-0 flex-1 px-3 py-4 sm:px-5 lg:px-6">
@@ -724,6 +738,12 @@ function AdminPortalContent() {
         <div className="flex items-center gap-3"><div className="hidden rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500 md:block">Search users, properties, or actions…</div><div className="grid h-9 w-9 place-items-center rounded-full bg-[#25D366] text-xs font-bold text-slate-950">{currentUser?.name?.slice(0, 1) || 'A'}</div><div className="hidden sm:block"><p className="text-xs font-semibold text-slate-900">{currentUser?.name || 'Admin'}</p><p className="text-[10px] text-slate-500">{isSuperAdmin ? 'Super Admin' : 'Admin Staff'}</p></div></div>
       </header>
       <div className="space-y-6 pb-20">
+      {dashboardVisible ? <>
+        <div className="mb-2"><h2 className="text-2xl font-bold tracking-tight text-slate-900">{isPropertyModerator ? 'Property Moderator Dashboard' : isTrustSafetyInvestigator ? 'Trust & Safety Investigator Dashboard' : 'Admin Dashboard'}</h2><p className="mt-1 text-sm text-slate-500">{isPropertyModerator ? 'Review and moderate property listings using current listing records.' : isTrustSafetyInvestigator ? 'Investigate reports and keep the marketplace safe using current case records.' : 'Platform oversight from records available to your role.'}</p></div>
+        {(isPropertyModerator || isTrustSafetyInvestigator) ? <RoleOperationsOverview role={isPropertyModerator ? 'PROPERTY_MODERATOR' : 'TRUST_SAFETY_INVESTIGATOR'} properties={properties} reports={reports} auditLogs={auditLogs} /> : <><AdminKpiStrip
+          staffContext={staffContext} can={can} currentUser={currentUser} allStaffRoles={ALL_STAFF_ROLES} loading={loading} onRefresh={loadData} properties={properties} users={users} reports={reports} inspections={inspections} approvalRequests={approvalRequests} auditCounts={auditCounts} searchQuery={searchQuery} onSearchChange={setSearchQuery}
+        /><AdminOverviewPanel properties={properties} users={users} reports={reports} auditLogs={auditLogs} can={can} /></>}
+      </> : activePage === 'settings' ? <Card className="rounded-2xl border-slate-200"><CardHeader><CardTitle>Role access settings</CardTitle><p className="text-sm text-slate-500">Read-only account and permission details for this workspace.</p></CardHeader><CardContent><p className="text-sm font-semibold text-slate-900">{currentUser?.name}</p><p className="text-xs text-slate-500">{currentUser?.email}</p><div className="mt-4 flex flex-wrap gap-2">{staffContext?.activeRoles.map((role) => <Badge key={role} variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-800">{ALL_STAFF_ROLES.find((item) => item.role === role)?.label || role}</Badge>)}</div><h3 className="mb-2 mt-5 text-xs font-semibold text-slate-700">Granted permissions</h3><div className="flex flex-wrap gap-2">{staffContext?.effectivePermissions.map((permission) => <Badge key={permission} variant="outline" className="text-[10px]">{permission}</Badge>)}</div></CardContent></Card> : null}
       {/* --- EXECUTIVE COMMAND BAR & 4-METRIC KPI ROW --- */}
       <AdminKpiStrip
         staffContext={staffContext}
@@ -751,7 +771,7 @@ function AdminPortalContent() {
       />
 
       {/* --- URL-SYNCED SEGMENTED WORKSPACE NAVIGATION --- */}
-      {activeTab && <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+      {!dashboardVisible && activePage !== 'settings' && activeTab && <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="sr-only">
           {(can('verification.queue.view') || isSuperAdmin) && (
             <TabsTrigger value="verification" className="rounded-xl text-xs font-bold gap-1.5 shrink-0">
@@ -898,6 +918,7 @@ function AdminPortalContent() {
         {/* --- TAB 5: TRUST & SAFETY INCIDENT DESK --- */}
         {can('reports.view') && <TabsContent value="reports" className="space-y-4">
           <TrustSafetyDesk
+            key={activePage}
             reports={reports}
             properties={properties}
             can={can}
@@ -909,6 +930,7 @@ function AdminPortalContent() {
             onDismissReport={handleDismissReport}
             submittingAction={submittingAction}
             searchQuery={searchQuery}
+            defaultStatusFilter={activePage === 'investigations' ? 'UNDER_INVESTIGATION' : 'ALL'}
           />
         </TabsContent>}
 

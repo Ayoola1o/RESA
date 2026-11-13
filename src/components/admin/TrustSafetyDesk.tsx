@@ -49,6 +49,7 @@ interface TrustSafetyDeskProps {
   onDismissReport: (reportId: string, notes: string) => Promise<void>;
   submittingAction: boolean;
   searchQuery: string;
+  defaultStatusFilter?: 'ALL' | 'REPORTED' | 'UNDER_INVESTIGATION' | 'RESOLVED';
 }
 
 export function TrustSafetyDesk({
@@ -63,8 +64,9 @@ export function TrustSafetyDesk({
   onDismissReport,
   submittingAction,
   searchQuery,
+  defaultStatusFilter = 'ALL',
 }: TrustSafetyDeskProps) {
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'REPORTED' | 'UNDER_INVESTIGATION' | 'RESOLVED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'REPORTED' | 'UNDER_INVESTIGATION' | 'RESOLVED'>(defaultStatusFilter);
 
   // Resolve / Dismiss Dialog States
   const [activeReportForResolution, setActiveReportForResolution] = useState<ListingReport | null>(null);
