@@ -55,6 +55,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, AdminPermission[]> = {
     'verification.review',
     'verification.approve',
     'verification.reject',
+    'verification.audit.view',
     'documents.view_metadata',
     'documents.view_sensitive',
     'documents.review',

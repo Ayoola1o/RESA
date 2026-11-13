@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -28,6 +29,8 @@ import { useUserRole } from '@/context/UserRoleContext';
 import { useAppSidebar } from '@/context/SidebarContext';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/types/prophunta';
+import { StaffRole } from '@/types/admin-governance';
+import { getCurrentStaffContextAction } from '@/server/actions/prophunta-actions';
 import Logo from '@/components/logo';
 
 export interface NavItem {
@@ -160,9 +163,21 @@ export function isNavigationItemActive(
   return true;
 }
 
-export function getNavItemsForRole(role: UserRole): NavItem[] {
+export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = []): NavItem[] {
   switch (role) {
     case 'ADMIN':
+      if (staffRoles.length === 1 && staffRoles[0] === 'VERIFICATION_OFFICER') {
+        return [
+          { label: 'Dashboard', href: '/admin?tab=overview', icon: LayoutDashboard },
+          { label: 'Verification Queue', href: '/admin?tab=queue', icon: ShieldCheck },
+          { label: 'Document Reviews', href: '/admin?tab=documents', icon: FileText },
+          { label: 'Identity Checks', href: '/admin?tab=identity', icon: ShieldCheck },
+          { label: 'Compliance Monitor', href: '/admin?tab=compliance', icon: BarChart3 },
+          { label: 'Reports', href: '/admin?tab=reports', icon: FileCheck2 },
+          { label: 'Audit Logs', href: '/admin?tab=audit', icon: BarChart3 },
+          { label: 'Settings', href: '/admin?tab=settings', icon: Settings },
+        ];
+      }
       return [
         { label: 'Platform Overview', href: '/admin', icon: LayoutDashboard },
         { label: 'Verification Queue', href: '/admin?tab=verification', icon: ShieldCheck, badge: 2 },
@@ -226,10 +241,29 @@ export default function AppSidebar() {
   const searchParams = useSearchParams();
   const { userRole, setUserRole, currentUser } = useUserRole();
   const { isDesktopOpen, closeDesktopSidebar } = useAppSidebar();
+  const [staffRoles, setStaffRoles] = useState<StaffRole[]>([]);
+  const [staffContextLoaded, setStaffContextLoaded] = useState(false);
+
+  useEffect(() => {
+    if (currentUser?.role !== 'ADMIN') {
+      setStaffRoles([]);
+      setStaffContextLoaded(true);
+      return;
+    }
+    setStaffContextLoaded(false);
+    let active = true;
+    getCurrentStaffContextAction().then((result) => {
+      if (active) {
+        setStaffRoles(result.context?.activeRoles || []);
+        setStaffContextLoaded(true);
+      }
+    }).catch(() => { if (active) { setStaffRoles([]); setStaffContextLoaded(true); } });
+    return () => { active = false; };
+  }, [currentUser?.id, currentUser?.role]);
 
   // Determine role strictly from the authenticated account
   const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
-  const allNavItems = getNavItemsForRole(activeRole);
+  const allNavItems = activeRole === 'ADMIN' && !staffContextLoaded ? [] : getNavItemsForRole(activeRole, staffRoles);
 
   // Group items into clean operational sections
   const discoveryHrefs = ['/marketplace', '/saved', '/marketplace?view=map'];

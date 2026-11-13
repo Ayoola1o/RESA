@@ -74,7 +74,7 @@ interface ApprovalWorkbenchProps {
   reviewProperty?: Property | null;
   onReviewOpened?: () => void;
   properties: Property[];
-  users: User[];
+  users: Pick<User, 'id' | 'name' | 'email' | 'role'>[];
   approvalRequests: ApprovalRequest[];
   can: (perm: AdminPermission) => boolean;
   currentUser: any;
@@ -141,7 +141,7 @@ export function ApprovalWorkbench({
   const [overrideIncidentRef, setOverrideIncidentRef] = useState('');
   const [overrideJustification, setOverrideJustification] = useState('');
 
-  const getHostForProperty = (prop: Property): User | undefined => {
+  const getHostForProperty = (prop: Property): Pick<User, 'id' | 'name' | 'email' | 'role'> | undefined => {
     return users.find((u) => u.id === prop.ownerId || u.id === prop.authorizedAgentId);
   };
 
@@ -319,14 +319,13 @@ export function ApprovalWorkbench({
                     {/* Left: Thumbnail & Details */}
                     <div className="flex items-start gap-4 min-w-0 flex-1">
                       <div className="relative h-20 w-24 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                        <img
-                          src={
-                            p.media[0]?.url ||
-                            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80'
-                          }
-                          alt={p.title}
-                          className="h-full w-full object-cover"
-                        />
+                        {p.media[0]?.url ? (
+                          <img src={p.media[0].url} alt={p.title} className="h-full w-full object-cover" />
+                        ) : (
+                          <div aria-label="No property image available" className="grid h-full w-full place-items-center text-slate-400">
+                            <Home className="h-7 w-7" />
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-1 min-w-0 flex-1">

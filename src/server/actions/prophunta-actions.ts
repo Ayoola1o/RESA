@@ -742,6 +742,61 @@ export async function getAdminAuditSnapshotAction() {
   return { logs, counts };
 }
 
+/** Verification-only identity records, deliberately omitting account and staff controls. */
+export async function getVerificationOfficerUsersAction(): Promise<Pick<User,
+  'id' | 'name' | 'email' | 'role' | 'verificationStatus' | 'kycStatus' |
+  'kycDocumentType' | 'kycSubmittedAt' | 'kycReviewedAt' | 'kycRejectionReason' | 'createdAt' | 'updatedAt'
+>[]> {
+  const officer = await authService.requireRole(['ADMIN']);
+  await staffAuthorizationService.requirePermission(officer, 'verification.queue.view');
+  await staffAuthorizationService.requirePermission(officer, 'documents.view_sensitive');
+  return (await userRepository.listAll())
+    .filter((user) => user.role !== 'ADMIN' && Boolean(user.kycStatus && user.kycStatus !== 'NOT_SUBMITTED'))
+    .map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      verificationStatus: user.verificationStatus,
+      kycStatus: user.kycStatus,
+      kycDocumentType: user.kycDocumentType,
+      kycSubmittedAt: user.kycSubmittedAt,
+      kycReviewedAt: user.kycReviewedAt,
+      kycRejectionReason: user.kycRejectionReason,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }));
+}
+
+/** Identity documents in the existing user-document store, with minimal submitter fields. */
+export async function getVerificationOfficerDocumentsAction(): Promise<{
+  document: UserDocument;
+  user: Pick<User, 'id' | 'name' | 'email' | 'role'> | null;
+}[]> {
+  const officer = await authService.requireRole(['ADMIN']);
+  await staffAuthorizationService.requirePermission(officer, 'verification.queue.view');
+  await staffAuthorizationService.requirePermission(officer, 'documents.view_sensitive');
+  const records = getDb().userDocuments || [];
+  const users = await userRepository.listAll();
+  const usersById = new Map(users.filter((user) => user.role !== 'ADMIN').map((user) => [user.id, user]));
+  return records.filter((document) => usersById.has(document.userId)).map((document) => {
+    const user = usersById.get(document.userId);
+    return { document, user: user ? { id: user.id, name: user.name, email: user.email, role: user.role } : null };
+  });
+}
+
+/** Restricts the officer's audit view to verification and document review events. */
+export async function getVerificationAuditAction(limit = 100): Promise<AuditLog[]> {
+  const officer = await authService.requireRole(['ADMIN']);
+  await staffAuthorizationService.requirePermission(officer, 'verification.audit.view');
+  const actions: AuditLog['action'][] = [
+    'KYC_APPROVED', 'KYC_REJECTED', 'DOCUMENT_REVIEWED', 'VERIFICATION_UPDATED',
+    'VERIFICATION_APPROVED', 'VERIFICATION_REJECTED', 'VERIFICATION_CHANGES_REQUESTED',
+  ];
+  const events = await Promise.all(actions.map((action) => auditRepository.query({ action }, limit)));
+  return events.flat().sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)).slice(0, limit);
+}
+
 export async function getAuditLogsAction(limit = 50) {
   const admin = await authService.requireRole(['ADMIN']);
   return auditService.getRecentLogs(admin, limit);

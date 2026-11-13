@@ -445,6 +445,12 @@ export class AuthService {
       throw new Error('Only Administrators can review KYC identity submissions.');
     }
 
+    await staffAuthorizationService.requirePermission(
+      adminUser,
+      outcome === 'VERIFIED' ? 'verification.approve' : 'verification.reject',
+      { resourceId: targetUserId }
+    );
+
     const now = new Date().toISOString();
     const targetUser = await userRepository.findById(targetUserId);
     if (!targetUser) throw new Error('Target user not found');

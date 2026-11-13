@@ -129,6 +129,7 @@ import { InspectionsDispatchView } from '@/components/admin/InspectionsDispatchV
 import { PropertyModerationView } from '@/components/admin/PropertyModerationView';
 import { UserManagementView } from '@/components/admin/UserManagementView';
 import { AdminOverviewPanel } from '@/components/admin/AdminOverviewPanel';
+import { VerificationOfficerWorkspace } from '@/components/admin/VerificationOfficerWorkspace';
 
 const ALL_STAFF_ROLES: { role: StaffRole; label: string; desc: string; badgeClass: string }[] = [
   { role: 'SUPER_ADMIN', label: 'Super Admin', desc: 'Full administrative authority', badgeClass: 'bg-red-100 text-red-800 border-red-200' },
@@ -676,6 +677,10 @@ function AdminPortalContent() {
     return <p role="status">Loading admin records…</p>;
   }
   if (!can('admin.dashboard.view')) return <p role="alert">This workspace requires an active staff account.</p>;
+
+  if (staffContext?.activeRoles.length === 1 && staffContext.activeRoles[0] === 'VERIFICATION_OFFICER') {
+    return <VerificationOfficerWorkspace staffContext={staffContext} currentUser={currentUser} can={can} />;
+  }
 
   const pendingVerificationList = properties.filter(
     (p) => p.listingStatus === 'SUBMITTED' || p.listingStatus === 'UNDER_REVIEW'
