@@ -5,6 +5,30 @@ import { User, UserRole } from '@/types/prophunta';
 import { userRepository } from '../repositories/user-repository';
 import { auditRepository } from '../repositories/audit-repository';
 import { getDb, saveDb } from '../db/store';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
+
+function supabaseConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY));
+}
+
+function mapSupabaseProfile(authUser: { id: string; email?: string; user_metadata?: Record<string, unknown>; created_at: string }, profile: Record<string, unknown>, agent?: Record<string, unknown> | null): User {
+  const metadata = authUser.user_metadata || {};
+  const role = (profile.role === 'OWNER' || profile.role === 'AGENT' || profile.role === 'ADMIN' ? profile.role : 'SEEKER') as UserRole;
+  const profileData = (profile.profile_data && typeof profile.profile_data === 'object' ? profile.profile_data : {}) as Record<string, unknown>;
+  return {
+    id: authUser.id,
+    name: String(profile.name || metadata.name || authUser.email || ''),
+    email: String(authUser.email || ''),
+    phone: String(profile.phone || metadata.phone || ''),
+    role,
+    verificationStatus: (profile.verification_status as User['verificationStatus']) || 'UNVERIFIED',
+    kycStatus: (profileData.kycStatus as User['kycStatus']) || 'NOT_SUBMITTED',
+    agencyName: String(agent?.agency_name || metadata.agencyName || '') || undefined,
+    licenseNumber: String(agent?.license_number || metadata.licenseNumber || '') || undefined,
+    createdAt: String(profile.created_at || authUser.created_at),
+    updatedAt: String(profile.updated_at || profile.created_at || authUser.created_at),
+  };
+}
 
 const SESSION_COOKIE_NAME = 'prophunta_session';
 const SESSION_DURATION_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
@@ -40,15 +64,15 @@ export class AuthService {
     role: UserRole;
     agencyName?: string;
     licenseNumber?: string;
-  }): Promise<{ user: User | null; error?: string }> {
+  }): Promise<{ user: User | null; error?: string; needsEmailConfirmation?: boolean }> {
     // Security: Prevent public registration from granting the ADMIN role
     if (data.role === 'ADMIN') {
       return { user: null, error: 'Administrator role cannot be assigned through public registration.' };
     }
 
-    const existing = await userRepository.findByEmail(data.email);
-    if (existing) {
-      return { user: null, error: 'An account with this email already exists.' };
+    if (!supabaseConfigured()) {
+      const existing = await userRepository.findByEmail(data.email);
+      if (existing) return { user: null, error: 'An account with this email already exists.' };
     }
 
     if (data.password && data.password.length < 6) {
@@ -56,6 +80,31 @@ export class AuthService {
     }
 
     const assignedRole: UserRole = ['SEEKER', 'OWNER', 'AGENT'].includes(data.role) ? data.role : 'SEEKER';
+
+    if (supabaseConfigured()) {
+      const supabase = await getSupabaseServerClient();
+      if (!supabase) return { user: null, error: 'Authentication is temporarily unavailable.' };
+      const { data: result, error } = await supabase.auth.signUp({
+        email: data.email.trim().toLowerCase(),
+        password: data.password || '',
+        options: { data: {
+          name: data.name.trim(), phone: data.phone.trim(), role: assignedRole,
+          agencyName: data.agencyName?.trim() || '', licenseNumber: data.licenseNumber?.trim() || '',
+        } },
+      });
+      if (error) return { user: null, error: /already registered|already exists/i.test(error.message) ? 'An account with this email already exists.' : error.message };
+      if (!result.user) return { user: null, error: 'Could not create your account.' };
+      const user: User = {
+        id: result.user.id, name: data.name.trim(), email: result.user.email || data.email.trim().toLowerCase(),
+        phone: data.phone.trim(), role: assignedRole, verificationStatus: 'UNVERIFIED', kycStatus: 'NOT_SUBMITTED',
+        agencyName: data.agencyName?.trim() || undefined, licenseNumber: data.licenseNumber?.trim() || undefined,
+        createdAt: result.user.created_at, updatedAt: result.user.created_at,
+      };
+      if (result.session) {
+        await auditRepository.create({ actorId: user.id, actorEmail: user.email, actorRole: user.role, action: 'USER_REGISTERED', objectType: 'USER', objectId: user.id, result: 'SUCCESS', metadata: { role: user.role, verificationStatus: 'UNVERIFIED' } });
+      }
+      return result.session ? { user } : { user: null, needsEmailConfirmation: true };
+    }
 
     // Security: Do not automatically mark any user (including seekers) as KYC verified
     const user = await userRepository.create(
@@ -91,6 +140,26 @@ export class AuthService {
   }
 
   async login(email: string, plainPassword: string): Promise<{ user: User | null; error?: string }> {
+    if (supabaseConfigured()) {
+      const supabase = await getSupabaseServerClient();
+      if (!supabase) return { user: null, error: 'Authentication is temporarily unavailable.' };
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: plainPassword });
+      if (error || !data.user) return { user: null, error: 'Invalid email or password.' };
+      const { data: profile, error: profileError } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
+      if (profileError || !profile) {
+        await supabase.auth.signOut();
+        return { user: null, error: 'Your account profile is not ready. Please contact support.' };
+      }
+      const { data: agent } = profile.role === 'AGENT' ? await supabase.from('agent_profiles').select('agency_name,license_number').eq('user_id', data.user.id).maybeSingle() : { data: null };
+      const user = mapSupabaseProfile(data.user, profile as Record<string, unknown>, agent as Record<string, unknown> | null);
+      if (user.verificationStatus === 'SUSPENDED' || (user.role === 'ADMIN' && !await staffAuthorizationService.getStaffContext(user))) {
+        await supabase.auth.signOut();
+        return { user: null, error: 'This account is inactive or not authorized for staff access.' };
+      }
+      await auditRepository.create({ actorId: user.id, actorEmail: user.email, actorRole: user.role, action: 'USER_LOGIN', objectType: 'USER', objectId: user.id, result: 'SUCCESS' });
+      return { user };
+    }
+
     const user = await userRepository.findByEmail(email);
     if (!user) {
       return { user: null, error: 'Invalid email or password.' };
@@ -136,6 +205,14 @@ export class AuthService {
     if (newPassword.length < 6) {
       return { success: false, error: 'Password must be at least 6 characters.' };
     }
+    if (supabaseConfigured()) {
+      const supabase = await getSupabaseServerClient();
+      if (!supabase) return { success: false, error: 'Authentication is temporarily unavailable.' };
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) return { success: false, error: error.message };
+      await auditRepository.create({ actorId: user.id, actorEmail: user.email, actorRole: user.role, action: 'USER_PASSWORD_RESET', objectType: 'USER', objectId: user.id, result: 'SUCCESS' });
+      return { success: true };
+    }
     if (!await userRepository.verifyPassword(user.id, currentPassword)) {
       return { success: false, error: 'The current password is incorrect.' };
     }
@@ -155,6 +232,10 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
+    if (supabaseConfigured()) {
+      const supabase = await getSupabaseServerClient();
+      await supabase?.auth.signOut();
+    }
     try {
       const cookieStore = await cookies();
       const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
@@ -207,6 +288,18 @@ export class AuthService {
    * Derive current user and role strictly from the authenticated session
    */
   async getCurrentUser(): Promise<User | null> {
+    if (supabaseConfigured()) {
+      const supabase = await getSupabaseServerClient();
+      if (!supabase) return null;
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) return null;
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', authData.user.id).maybeSingle();
+      if (error || !profile) return null;
+      const { data: agent } = profile.role === 'AGENT' ? await supabase.from('agent_profiles').select('agency_name,license_number').eq('user_id', authData.user.id).maybeSingle() : { data: null };
+      const user = mapSupabaseProfile(authData.user, profile as Record<string, unknown>, agent as Record<string, unknown> | null);
+      if (user.verificationStatus === 'SUSPENDED' || (user.role === 'ADMIN' && !await staffAuthorizationService.getStaffContext(user))) return null;
+      return user;
+    }
     let token: string | undefined;
     try {
       const cookieStore = await cookies();

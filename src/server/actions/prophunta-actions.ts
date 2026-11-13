@@ -87,7 +87,7 @@ export async function loginAction(formData: FormData): Promise<{ success: boolea
   return { success: true, user: res.user };
 }
 
-export async function registerAction(formData: FormData): Promise<{ success: boolean; user?: User; error?: string }> {
+export async function registerAction(formData: FormData): Promise<{ success: boolean; user?: User; error?: string; needsEmailConfirmation?: boolean }> {
   const name = (formData.get('name') as string) || '';
   const email = (formData.get('email') as string) || '';
   const password = (formData.get('password') as string) || '';
@@ -110,12 +110,12 @@ export async function registerAction(formData: FormData): Promise<{ success: boo
     licenseNumber,
   });
 
-  if (res.error || !res.user) {
+  if (res.error || (!res.user && !res.needsEmailConfirmation)) {
     return { success: false, error: res.error || 'Registration failed.' };
   }
 
   revalidatePath('/', 'layout');
-  return { success: true, user: res.user };
+  return { success: true, user: res.user || undefined, needsEmailConfirmation: res.needsEmailConfirmation };
 }
 
 export async function logoutAction(): Promise<{ success: boolean }> {

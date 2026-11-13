@@ -57,9 +57,15 @@ function SignupContent() {
       return;
     }
 
+    if (res.needsEmailConfirmation) {
+      toast({ title: 'Confirm your email', description: 'We sent a confirmation link. Confirm your email, then sign in.' });
+      router.push('/login?checkEmail=1');
+      return;
+    }
+
     toast({
       title: 'Account Created',
-      description: `Welcome to PropHunta AI, ${res.user?.name}!`,
+      description: `Welcome to PropHunta AI, ${res.user?.name || 'your new account'}!`,
     });
 
     router.push('/dashboard');
