@@ -163,21 +163,11 @@ export function VerificationOfficerWorkspace({
   };
 
   return (
-    <div className="min-h-[calc(100vh-7rem)] overflow-hidden rounded-3xl border border-slate-200 bg-[#f5f7fb] shadow-sm lg:flex">
-      <aside className="flex shrink-0 flex-col bg-[#111d32] p-3 text-white lg:w-60 lg:p-4">
-        <div className="mb-5 flex items-center gap-3 px-2 py-2"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#25D366] text-sm font-black text-[#102033]">P</span><span><strong className="block text-sm">PropHunta AI</strong><small className="text-[10px] text-slate-300">Find. Verify. Own.</small></span></div>
-        <div className="mb-3 rounded-xl bg-[#25D366] px-3 py-2 text-xs font-bold text-slate-950"><ShieldCheck className="mr-2 inline h-4 w-4" />Verification Officer</div>
-        <nav aria-label="Verification navigation" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">{navigation.map((item) => { const Icon = item.icon; return <button key={item.id} type="button" onClick={() => setScreen(item.id)} aria-current={screen === item.id ? 'page' : undefined} className={`flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition-colors ${screen === item.id ? 'bg-white/15 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}><Icon className="h-4 w-4" />{item.label}{item.id === 'queue' && openQueueCount > 0 && <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px]">{openQueueCount}</span>}</button>; })}</nav>
-        <div className="mt-auto hidden rounded-xl border border-white/10 bg-white/5 p-3 text-[11px] text-slate-300 lg:block"><ShieldCheck className="mb-2 h-6 w-6 text-[#25D366]"/><strong className="block text-white">Secure verification</strong>Access is limited to verification tasks.</div>
-      </aside>
-      <div className="min-w-0 flex-1">
-       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
-         <div className="min-w-0 flex-1 text-xs text-slate-500 sm:max-w-lg">Verification records assigned to your role</div>
-         <div className="flex items-center gap-3"><div className="grid h-8 w-8 place-items-center rounded-full bg-slate-900 text-xs font-bold text-white">{currentUser?.name?.slice(0, 1) || 'V'}</div><div className="hidden sm:block"><p className="text-xs font-semibold text-slate-900">{currentUser?.name}</p><p className="text-[10px] text-slate-500">Verification Officer</p></div><Button variant="outline" size="sm" onClick={() => void load()} disabled={loading} className="rounded-xl"><RefreshCw className={`mr-2 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />Refresh</Button></div>
-       </div>
-       <main className="min-w-0 p-4 sm:p-6 lg:p-7">
+    <div className="w-full min-w-0">
+       <main className="min-w-0">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div><p className="text-xs font-semibold text-[#159447]">PropHunta AI · Verification</p><h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">{screen === 'overview' ? 'Verification Officer Dashboard' : navigation.find((item) => item.id === screen)?.label}</h1><p className="mt-1 text-xs text-slate-500">Review submitted identity and property verification records.</p></div>
+          <Button variant="outline" size="sm" onClick={() => void load()} disabled={loading} className="rounded-xl"><RefreshCw className={`mr-2 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />Refresh</Button>
         </header>
 
         {error && <div role="alert" className="mb-4 flex items-center justify-between rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}<Button size="sm" variant="outline" onClick={() => void load()}>Retry</Button></div>}
@@ -214,7 +204,6 @@ export function VerificationOfficerWorkspace({
           </>
         )}
        </main>
-      </div>
     </div>
   );
 }

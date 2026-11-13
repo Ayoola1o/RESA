@@ -28,7 +28,7 @@ import {
 import { useUserRole } from '@/context/UserRoleContext';
 import { useAppSidebar } from '@/context/SidebarContext';
 import { cn } from '@/lib/utils';
-import { UserRole } from '@/types/prophunta';
+import { AdminPermission, UserRole } from '@/types/prophunta';
 import { StaffRole } from '@/types/admin-governance';
 import { getCurrentStaffContextAction } from '@/server/actions/prophunta-actions';
 import Logo from '@/components/logo';
@@ -163,7 +163,7 @@ export function isNavigationItemActive(
   return true;
 }
 
-export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = []): NavItem[] {
+export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [], permissions: AdminPermission[] = []): NavItem[] {
   switch (role) {
     case 'ADMIN':
       if (staffRoles.length === 1 && staffRoles[0] === 'VERIFICATION_OFFICER') {
@@ -178,11 +178,30 @@ export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [])
           { label: 'Settings', href: '/admin?tab=settings', icon: Settings },
         ];
       }
+      if (staffRoles.length === 1 && staffRoles[0] === 'PROPERTY_MODERATOR') {
+        return [
+          { label: 'Dashboard', href: '/admin?tab=dashboard', icon: LayoutDashboard },
+          ...(permissions.includes('properties.moderate') ? [{ label: 'Listing Reviews', href: '/admin?tab=properties', icon: Home }] : []),
+          ...(permissions.includes('reports.view') ? [{ label: 'Moderation Reports', href: '/admin?tab=reports', icon: FileText }] : []),
+          ...(permissions.includes('audit_logs.view') ? [{ label: 'Audit Logs', href: '/admin?tab=audit', icon: BarChart3 }] : []),
+          { label: 'Settings', href: '/admin?tab=settings', icon: Settings },
+        ];
+      }
+      if (staffRoles.length === 1 && staffRoles[0] === 'TRUST_SAFETY_INVESTIGATOR') {
+        return [
+          { label: 'Dashboard', href: '/admin?tab=dashboard', icon: LayoutDashboard },
+          ...(permissions.includes('reports.view') ? [{ label: 'Reports', href: '/admin?tab=reports', icon: FileText }] : []),
+          ...(permissions.includes('reports.investigate') ? [{ label: 'User Investigations', href: '/admin?tab=investigations', icon: ShieldCheck }] : []),
+          ...(permissions.includes('properties.moderate') ? [{ label: 'Content Moderation', href: '/admin?tab=content', icon: Home }] : []),
+          ...(permissions.includes('audit_logs.view') ? [{ label: 'Audit Logs', href: '/admin?tab=audit', icon: BarChart3 }] : []),
+          { label: 'Settings', href: '/admin?tab=settings', icon: Settings },
+        ];
+      }
       return [
         { label: 'Platform Overview', href: '/admin', icon: LayoutDashboard },
-        { label: 'Verification Queue', href: '/admin?tab=verification', icon: ShieldCheck, badge: 2 },
+        { label: 'Verification Queue', href: '/admin?tab=verification', icon: ShieldCheck },
         { label: 'Property Moderation', href: '/admin?tab=properties', icon: Home },
-        { label: 'Trust & Safety Reports', href: '/admin?tab=reports', icon: FileText, badge: 1 },
+        { label: 'Trust & Safety Reports', href: '/admin?tab=reports', icon: FileText },
         { label: 'Inspections Audit', href: '/admin?tab=inspections', icon: CalendarCheck2 },
         { label: 'User Management', href: '/admin?tab=users', icon: User },
         { label: 'Staff & Governance', href: '/admin?tab=staff', icon: Briefcase },
@@ -242,11 +261,13 @@ export default function AppSidebar() {
   const { userRole, setUserRole, currentUser } = useUserRole();
   const { isDesktopOpen, closeDesktopSidebar } = useAppSidebar();
   const [staffRoles, setStaffRoles] = useState<StaffRole[]>([]);
+  const [staffPermissions, setStaffPermissions] = useState<AdminPermission[]>([]);
   const [staffContextLoaded, setStaffContextLoaded] = useState(false);
 
   useEffect(() => {
     if (currentUser?.role !== 'ADMIN') {
       setStaffRoles([]);
+      setStaffPermissions([]);
       setStaffContextLoaded(true);
       return;
     }
@@ -255,15 +276,16 @@ export default function AppSidebar() {
     getCurrentStaffContextAction().then((result) => {
       if (active) {
         setStaffRoles(result.context?.activeRoles || []);
+        setStaffPermissions(result.context?.effectivePermissions || []);
         setStaffContextLoaded(true);
       }
-    }).catch(() => { if (active) { setStaffRoles([]); setStaffContextLoaded(true); } });
+    }).catch(() => { if (active) { setStaffRoles([]); setStaffPermissions([]); setStaffContextLoaded(true); } });
     return () => { active = false; };
   }, [currentUser?.id, currentUser?.role]);
 
   // Determine role strictly from the authenticated account
   const activeRole: UserRole = currentUser?.role || userRole || 'SEEKER';
-  const allNavItems = activeRole === 'ADMIN' && !staffContextLoaded ? [] : getNavItemsForRole(activeRole, staffRoles);
+  const allNavItems = activeRole === 'ADMIN' && !staffContextLoaded ? [] : getNavItemsForRole(activeRole, staffRoles, staffPermissions);
 
   // Group items into clean operational sections
   const discoveryHrefs = ['/marketplace', '/saved', '/marketplace?view=map'];
