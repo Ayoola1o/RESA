@@ -93,7 +93,7 @@ export function AdminKpiStrip({
               </span>
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 <Activity className="h-3 w-3 animate-pulse text-emerald-600" />
-                System Active &amp; Protected
+                {loading ? 'Loading admin records' : 'Admin records loaded'}
               </span>
             </div>
 
@@ -218,7 +218,7 @@ export function AdminKpiStrip({
                 ({completedInspections.length} Completed)
               </span>
             </div>
-            <p className="text-[11px] text-indigo-600 font-semibold mt-1">Certified Field Audits</p>
+            <p className="text-[11px] text-indigo-600 font-semibold mt-1">Scheduled and completed inspections</p>
           </CardContent>
         </Card>}
 
@@ -265,7 +265,7 @@ export function AdminKpiStrip({
                 {auditCounts.recent}
               </span>
               <span className="text-xs text-emerald-700 font-semibold">
-                SHA-256 Chained
+                Recorded events
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">{auditCounts.total} Total Records</p>

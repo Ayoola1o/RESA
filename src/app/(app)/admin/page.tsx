@@ -128,6 +128,7 @@ import { TrustSafetyDesk } from '@/components/admin/TrustSafetyDesk';
 import { InspectionsDispatchView } from '@/components/admin/InspectionsDispatchView';
 import { PropertyModerationView } from '@/components/admin/PropertyModerationView';
 import { UserManagementView } from '@/components/admin/UserManagementView';
+import { AdminOverviewPanel } from '@/components/admin/AdminOverviewPanel';
 
 const ALL_STAFF_ROLES: { role: StaffRole; label: string; desc: string; badgeClass: string }[] = [
   { role: 'SUPER_ADMIN', label: 'Super Admin', desc: 'Full administrative authority', badgeClass: 'bg-red-100 text-red-800 border-red-200' },
@@ -698,6 +699,14 @@ function AdminPortalContent() {
         auditCounts={auditCounts}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+      />
+
+      <AdminOverviewPanel
+        properties={properties}
+        users={users}
+        reports={reports}
+        auditLogs={auditLogs}
+        can={can}
       />
 
       {/* --- URL-SYNCED SEGMENTED WORKSPACE NAVIGATION --- */}
