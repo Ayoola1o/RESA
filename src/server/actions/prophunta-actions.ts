@@ -831,7 +831,10 @@ export async function getVerificationOfficerDocumentsAction(): Promise<{
   const records = getDb().userDocuments || [];
   const users = await userRepository.listAll();
   const usersById = new Map(users.filter((user) => user.role !== 'ADMIN' && (assigned === null || assigned.includes(user.id))).map((user) => [user.id, user]));
-  return records.filter((document) => usersById.has(document.userId) && (assigned === null || assigned.includes(document.userId))).map((document) => {
+  const documents = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? (await Promise.all([...usersById.keys()].map((userId) => documentService.listUserDocuments(officer, userId)))).flat()
+    : records.filter((document) => usersById.has(document.userId) && (assigned === null || assigned.includes(document.userId)));
+  return documents.map((document) => {
     const user = usersById.get(document.userId);
     return { document, user: user ? { id: user.id, name: user.name, email: user.email, role: user.role } : null };
   });

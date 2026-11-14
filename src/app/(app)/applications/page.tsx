@@ -64,6 +64,7 @@ function ApplicationsContent() {
   const { toast } = useToast();
 
   const [applications, setApplications] = useState<Application[]>([]);
+  const [applicationFilter, setApplicationFilter] = useState<'ALL' | 'PENDING' | 'PROCESSING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -187,18 +188,35 @@ function ApplicationsContent() {
     }
   };
 
+  const isHost = activeRole === 'OWNER' || activeRole === 'AGENT';
+  const processingStatuses: ApplicationStatus[] = ['UNDER_REVIEW', 'ESCROW_FUNDED', 'LEASE_SIGNED'];
+  const approvedStatuses: ApplicationStatus[] = ['APPROVED', 'HANDOVER_COMPLETED'];
+  const counts = {
+    pending: applications.filter((application) => application.status === 'SUBMITTED').length,
+    processing: applications.filter((application) => processingStatuses.includes(application.status)).length,
+    approved: applications.filter((application) => approvedStatuses.includes(application.status)).length,
+    rejected: applications.filter((application) => application.status === 'REJECTED').length,
+  };
+  const visibleApplications = applications.filter((application) => {
+    if (applicationFilter === 'PENDING') return application.status === 'SUBMITTED';
+    if (applicationFilter === 'PROCESSING') return processingStatuses.includes(application.status);
+    if (applicationFilter === 'APPROVED') return approvedStatuses.includes(application.status);
+    if (applicationFilter === 'REJECTED') return application.status === 'REJECTED';
+    return true;
+  });
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Standalone Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold font-headline text-slate-900 tracking-tight">
-            {activeRole === 'SEEKER' ? 'My Applications & Tenancy Offers' : 'Received Offers & Tenancy Applications'}
+            {activeRole === 'SEEKER' ? 'My Applications & Tenancy Offers' : 'Property Applications'}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {activeRole === 'SEEKER'
               ? 'Track post-inspection applications, fund escrow safely, sign tenancy agreements, and confirm key handover.'
-              : 'Review verified seeker credentials, accept expressions of interest, and track escrow settlements.'}
+              : 'Track applications across your listings, review new requests, and follow each decision through to handover.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -210,6 +228,36 @@ function ApplicationsContent() {
           </Button>
         </div>
       </div>
+
+      {isHost && !loading && (
+        <section aria-label="Application status summary" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[
+            { key: 'PENDING' as const, label: 'Pending', value: counts.pending, color: 'text-amber-700', icon: <Clock className="h-4 w-4" /> },
+            { key: 'PROCESSING' as const, label: 'Processing', value: counts.processing, color: 'text-blue-700', icon: <RefreshCw className="h-4 w-4" /> },
+            { key: 'APPROVED' as const, label: 'Approved', value: counts.approved, color: 'text-emerald-700', icon: <CheckCircle2 className="h-4 w-4" /> },
+            { key: 'REJECTED' as const, label: 'Declined', value: counts.rejected, color: 'text-rose-700', icon: <XCircle className="h-4 w-4" /> },
+          ].map((item) => (
+            <button key={item.key} type="button" onClick={() => setApplicationFilter(item.key)} aria-pressed={applicationFilter === item.key} className={`rounded-2xl border bg-white p-4 text-left shadow-xs transition hover:border-emerald-300 ${applicationFilter === item.key ? 'border-emerald-500 ring-1 ring-emerald-200' : 'border-slate-200'}`}>
+              <span className={`flex items-center gap-2 text-xs font-semibold ${item.color}`}>{item.icon}{item.label}</span>
+              <span className="mt-2 block text-2xl font-bold text-slate-900">{item.value}</span>
+            </button>
+          ))}
+        </section>
+      )}
+
+      {isHost && !loading && applications.length > 0 && (
+        <nav aria-label="Filter property applications" className="flex flex-wrap gap-2">
+          {([
+            ['ALL', `All (${applications.length})`], ['PENDING', `Pending (${counts.pending})`],
+            ['PROCESSING', `Processing (${counts.processing})`], ['APPROVED', `Approved (${counts.approved})`],
+            ['REJECTED', `Declined (${counts.rejected})`],
+          ] as const).map(([key, label]) => (
+            <Button key={key} type="button" size="sm" variant={applicationFilter === key ? 'default' : 'outline'} onClick={() => setApplicationFilter(key)} className={applicationFilter === key ? 'bg-[#25D366] text-slate-950 hover:bg-[#20bd5b]' : ''}>
+              {label}
+            </Button>
+          ))}
+        </nav>
+      )}
 
       {/* Main Applications Feed */}
       {loading ? (
@@ -235,9 +283,13 @@ function ApplicationsContent() {
           )}
         </Card>
       ) : (
-        <div className="space-y-4">
-          {applications.map((app) => {
-            const isHost = activeRole === 'OWNER' || activeRole === 'AGENT';
+        visibleApplications.length === 0 ? (
+          <Card className="p-10 text-center border-dashed rounded-2xl bg-white">
+            <p className="text-sm font-semibold text-slate-800">No {applicationFilter.toLowerCase()} applications</p>
+            <p className="mt-1 text-xs text-muted-foreground">Applications in this status will appear here.</p>
+          </Card>
+        ) : <div className="space-y-4">
+          {visibleApplications.map((app) => {
             const dateFormatted = new Date(app.createdAt).toLocaleDateString('en-GB', {
               day: 'numeric',
               month: 'short',
@@ -306,6 +358,15 @@ function ApplicationsContent() {
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
+                          variant="outline"
+                          className="rounded-xl text-xs font-semibold"
+                          disabled={updatingId === app.id}
+                          onClick={() => handleApplicationStatus(app.id, 'UNDER_REVIEW')}
+                        >
+                          {updatingId === app.id ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}Start review
+                        </Button>
+                        <Button
+                          size="sm"
                           className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold"
                           disabled={updatingId === app.id}
                           onClick={() => handleApplicationStatus(app.id, 'APPROVED')}
@@ -321,6 +382,12 @@ function ApplicationsContent() {
                         >
                           Decline
                         </Button>
+                      </div>
+                    )}
+                    {isHost && app.status === 'UNDER_REVIEW' && (
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" className="rounded-xl bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-700" disabled={updatingId === app.id} onClick={() => handleApplicationStatus(app.id, 'APPROVED')}>Approve</Button>
+                        <Button size="sm" variant="outline" className="rounded-xl border-rose-200 text-xs text-rose-600 hover:bg-rose-50" disabled={updatingId === app.id} onClick={() => handleApplicationStatus(app.id, 'REJECTED')}>Decline</Button>
                       </div>
                     )}
 

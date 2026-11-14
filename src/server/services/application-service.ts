@@ -75,8 +75,9 @@ export class ApplicationService {
     } else if (user.role === 'SEEKER') {
       list = await applicationRepository.findBySeeker(user.id);
     } else {
-      // For owner or authorized agent, retrieve applications for properties they own or manage
-      const relevantProps = await propertyService.getUserProperties(user.id);
+      // The persisted authorized_agent_id is the Supabase access grant for agent-managed listings.
+      // Do not rely on the legacy local relationship store to filter Supabase property rows.
+      const relevantProps = await propertyRepository.findByOwner(user.id);
       const propIds = new Set(relevantProps.map((p) => p.id));
       const all = await applicationRepository.listAll();
       list = all.filter((a) => propIds.has(a.propertyId));
@@ -179,7 +180,7 @@ export class ApplicationService {
 
     const property = await propertyRepository.findById(existing.propertyId);
     const isOwnerOrAgent = property
-      ? await propertyService.canManageListing(user.id, property)
+      ? property.ownerId === user.id || property.authorizedAgentId === user.id
       : false;
 
     if (!isOwnerOrAgent && user.role !== 'ADMIN') {

@@ -18,8 +18,37 @@ import { staffAuthorizationService } from './staff-authorization-service';
 import { getDb, saveDb } from '../db/store';
 import { supabaseStorageService } from './supabase-storage-service';
 import { verificationAssignmentService } from './verification-assignment-service';
+import { getSupabaseAdminClient } from '@/lib/supabase/admin';
+import { userRepository } from '../repositories/user-repository';
 
 const VAULT_DIR = path.join(process.cwd(), '.data', 'vault', 'documents');
+
+function documentClient() {
+  const client = getSupabaseAdminClient();
+  if (!client && process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('Supabase server credentials are missing; refusing to use temporary local document storage.');
+  }
+  return client;
+}
+
+function mapUserDocument(row: Record<string, any>): UserDocument {
+  const review = row.review_data && typeof row.review_data === 'object' ? row.review_data : {};
+  return {
+    id: row.id, userId: row.user_id, documentType: row.document_type, title: row.title,
+    fileName: row.file_name, fileReference: row.file_reference, fileSize: Number(row.file_size),
+    mimeType: row.mime_type, status: row.status, uploadedAt: row.uploaded_at,
+    reviewedAt: review.reviewedAt, reviewedBy: review.reviewedBy, reviewNotes: review.reviewNotes,
+  } as UserDocument;
+}
+
+function userDocumentRow(document: UserDocument) {
+  return {
+    id: document.id, user_id: document.userId, document_type: document.documentType,
+    title: document.title, file_name: document.fileName, file_reference: document.fileReference,
+    file_size: document.fileSize, mime_type: document.mimeType, status: document.status,
+    review_data: {}, uploaded_at: document.uploadedAt,
+  };
+}
 
 // Ensure vault directory exists
 if (!fs.existsSync(VAULT_DIR)) {
@@ -169,8 +198,16 @@ export class DocumentService {
     }
 
     // 2. Check User Credential Documents
-    const db = getDb();
-    const userDoc = (db.userDocuments || []).find((d) => d.id === documentId);
+    const client = documentClient();
+    let userDoc: UserDocument | undefined;
+    if (client) {
+      const { data, error } = await client.from('user_documents').select('*').eq('id', documentId).maybeSingle();
+      if (error) throw new Error(`Could not load credential document: ${error.message}`);
+      userDoc = data ? mapUserDocument(data) : undefined;
+    } else {
+      const db = getDb();
+      userDoc = (db.userDocuments || []).find((d) => d.id === documentId);
+    }
     if (userDoc) {
       const isOwner = userDoc.userId === user.id;
       const isAdmin = user.role === 'ADMIN';
@@ -272,12 +309,23 @@ export class DocumentService {
       uploadedAt: new Date().toISOString(),
     };
 
-    const db = getDb();
-    if (!db.userDocuments) {
-      db.userDocuments = [];
+    const client = documentClient();
+    if (client) {
+      const { error } = await client.from('user_documents').insert(userDocumentRow(newDoc));
+      if (error) {
+        if (storageReference) await supabaseStorageService.remove(storageReference).catch(() => undefined);
+        throw new Error(`Could not save verification document: ${error.message}`);
+      }
+    } else {
+      const db = getDb();
+      db.userDocuments ||= [];
+      db.userDocuments.push(newDoc);
+      saveDb(db);
     }
-    db.userDocuments.push(newDoc);
-    saveDb(db);
+    const current = await userRepository.findById(user.id);
+    if (current && current.kycStatus === 'NOT_SUBMITTED') {
+      await userRepository.update(user.id, { kycStatus: 'PENDING', verificationStatus: 'PENDING', kycSubmittedAt: newDoc.uploadedAt });
+    }
     await verificationAssignmentService.createUserIdentityTask(user.id, user);
 
     await auditRepository.create({
@@ -302,14 +350,19 @@ export class DocumentService {
    * Lists credential documents for the authenticated user, or for an admin reviewing a target user.
    */
   async listUserDocuments(user: User, targetUserId?: string): Promise<UserDocument[]> {
-    const db = getDb();
     const target = targetUserId || user.id;
 
     if (target !== user.id && user.role !== 'ADMIN') {
       throw new Error('Unauthorized to inspect other users credential documents');
     }
-    if (target !== user.id && user.role === 'ADMIN') await verificationAssignmentService.assertUserAssigned(user, target);
-
+    const client = documentClient();
+    if (client) {
+      if (target !== user.id) await verificationAssignmentService.assertUserAssigned(user, target);
+      const { data, error } = await client.from('user_documents').select('*').eq('user_id', target).order('uploaded_at', { ascending: false });
+      if (error) throw new Error(`Could not load verification documents: ${error.message}`);
+      return (data || []).map(mapUserDocument);
+    }
+    const db = getDb();
     return (db.userDocuments || []).filter((d) => d.userId === target);
   }
 
@@ -323,8 +376,16 @@ export class DocumentService {
     await staffAuthorizationService.assertPermission(adminUser, 'documents.review');
     await staffAuthorizationService.assertPermission(adminUser, 'documents.view_sensitive');
 
-    const db = getDb();
-    const document = (db.userDocuments || []).find((item) => item.id === documentId);
+    const client = documentClient();
+    let document: UserDocument | undefined;
+    if (client) {
+      const { data, error } = await client.from('user_documents').select('*').eq('id', documentId).maybeSingle();
+      if (error) throw new Error(`Could not load verification document: ${error.message}`);
+      document = data ? mapUserDocument(data) : undefined;
+    } else {
+      const db = getDb();
+      document = (db.userDocuments || []).find((item) => item.id === documentId);
+    }
     if (!document) throw new Error('User verification document not found.');
     await verificationAssignmentService.assertUserAssigned(adminUser, document.userId);
     if ((status === 'REJECTED' || status === 'CHANGES_REQUIRED') && !reviewNotes?.trim()) {
@@ -338,8 +399,16 @@ export class DocumentService {
       reviewedBy: adminUser.id,
       reviewNotes: reviewNotes?.trim() || undefined,
     };
-    db.userDocuments = db.userDocuments.map((item) => item.id === documentId ? reviewed : item);
-    saveDb(db);
+    if (client) {
+      const { error } = await client.from('user_documents').update({
+        status, review_data: { reviewedAt: reviewed.reviewedAt, reviewedBy: reviewed.reviewedBy, reviewNotes: reviewed.reviewNotes },
+      }).eq('id', documentId);
+      if (error) throw new Error(`Could not save document review: ${error.message}`);
+    } else {
+      const db = getDb();
+      db.userDocuments = (db.userDocuments || []).map((item) => item.id === documentId ? reviewed : item);
+      saveDb(db);
+    }
     await verificationAssignmentService.recordDocumentReview({ documentId, subjectType: 'USER', subjectId: document.userId, reviewerId: adminUser.id, previousStatus: document.status, newStatus: status, reason: reviewNotes });
 
     await auditRepository.create({
@@ -359,8 +428,16 @@ export class DocumentService {
    * Deletes a user credential document and unlinks its physical file.
    */
   async deleteUserDocument(user: User, documentId: string): Promise<boolean> {
-    const db = getDb();
-    const doc = (db.userDocuments || []).find((d) => d.id === documentId);
+    const client = documentClient();
+    let doc: UserDocument | undefined;
+    if (client) {
+      const { data, error } = await client.from('user_documents').select('*').eq('id', documentId).maybeSingle();
+      if (error) throw new Error(`Could not load verification document: ${error.message}`);
+      doc = data ? mapUserDocument(data) : undefined;
+    } else {
+      const db = getDb();
+      doc = (db.userDocuments || []).find((d) => d.id === documentId);
+    }
     if (!doc) return false;
 
     const isOwner = doc.userId === user.id;
@@ -381,8 +458,14 @@ export class DocumentService {
       }
     }
 
-    db.userDocuments = (db.userDocuments || []).filter((d) => d.id !== documentId);
-    saveDb(db);
+    if (client) {
+      const { error } = await client.from('user_documents').delete().eq('id', documentId);
+      if (error) throw new Error(`Could not delete verification document: ${error.message}`);
+    } else {
+      const db = getDb();
+      db.userDocuments = (db.userDocuments || []).filter((d) => d.id !== documentId);
+      saveDb(db);
+    }
 
     await auditRepository.create({
       actorId: user.id,
