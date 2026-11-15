@@ -376,7 +376,7 @@ export default function Header() {
               </div>
               <div className="hidden sm:flex flex-col text-left">
                 <span className="text-xs font-bold text-slate-900 leading-tight">
-                  {currentUser?.name || 'Chidi Okonkwo'}
+                  {currentUser?.name || 'Your account'}
                 </span>
                 <span className="text-[10px] font-semibold text-lime-700 flex items-center gap-1">
                   <span>{userRole}</span>
@@ -387,8 +387,8 @@ export default function Header() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64 rounded-2xl p-2 shadow-2xl border-slate-200">
             <DropdownMenuLabel className="font-normal px-3 py-2">
-              <p className="text-xs font-bold text-slate-900">{currentUser?.name || 'Chidi Okonkwo'}</p>
-              <p className="text-[11px] text-slate-500">{currentUser?.email || 'seeker@prophunta.ai'}</p>
+              <p className="text-xs font-bold text-slate-900">{currentUser?.name || 'Your account'}</p>
+              {currentUser?.email && <p className="text-[11px] text-slate-500">{currentUser.email}</p>}
               <div className="mt-1 flex items-center gap-1 text-[10px] text-lime-700 font-bold">
                 <ShieldCheck className="h-3 w-3" />
                 <span>Verified {activeRole} Account</span>

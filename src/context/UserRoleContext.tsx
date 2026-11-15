@@ -17,19 +17,9 @@ const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined
 
 export function UserRoleProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [userRole, setUserRoleState] = useState<UserRole>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('prophunta_user_role') as UserRole | null;
-        if (cached && ['ADMIN', 'OWNER', 'AGENT', 'SEEKER'].includes(cached)) {
-          return cached;
-        }
-      } catch {
-        // Ignore localStorage error
-      }
-    }
-    return 'SEEKER';
-  });
+  // Never infer an account role from browser storage. It can belong to the
+  // previous session and also differs between server render and hydration.
+  const [userRole, setUserRoleState] = useState<UserRole>('SEEKER');
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {

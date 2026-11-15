@@ -677,7 +677,7 @@ function AdminPortalContent() {
     }
   };
 
-  const handlePropertyModerationReview = async (propertyId: string, outcome: 'APPROVED' | 'CHANGES_REQUIRED', notes: string) => {
+  const handlePropertyModerationReview = async (propertyId: string, outcome: 'APPROVED' | 'REJECTED' | 'CHANGES_REQUIRED', notes: string) => {
     setSubmittingAction(true);
     const result = await reviewPropertyModerationAction(propertyId, outcome, notes);
     setSubmittingAction(false);

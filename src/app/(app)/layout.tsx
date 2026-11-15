@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, type ReactNode } from "react";
-import { UserRoleProvider } from "@/context/UserRoleContext";
+import { UserRoleProvider, useUserRole } from "@/context/UserRoleContext";
 import { SidebarProvider, useAppSidebar } from "@/context/SidebarContext";
 import AppSidebar from "@/components/app-sidebar";
 import Header from "@/components/header";
@@ -13,6 +13,11 @@ export type { UserRole };
 
 function AppLayoutShell({ children }: { children: ReactNode }) {
   const { isDesktopOpen } = useAppSidebar();
+  const { isLoading } = useUserRole();
+
+  if (isLoading) {
+    return <div role="status" aria-live="polite" className="grid min-h-screen place-items-center bg-[#f8fafc] text-sm text-slate-500">Loading your account…</div>;
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-[#f8fafc] text-slate-900 overflow-x-hidden">
