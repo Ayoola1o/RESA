@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useUserRole } from '@/context/UserRoleContext';
 import { getUserPropertiesAction } from '@/server/actions/prophunta-actions';
-import { Property, UserRole } from '@/types/prophunta';
+import { Property } from '@/types/prophunta';
 import PropertyCard from '@/components/property-card';
 
 export default function PropertiesPage() {
@@ -20,20 +20,26 @@ export default function PropertiesPage() {
 }
 
 function PropertiesContent() {
-  const { currentUser, role } = useUserRole();
-  const activeRole: UserRole = currentUser?.role || role || 'SEEKER';
+  const { currentUser } = useUserRole();
+  const isAgent = currentUser?.role === 'AGENT';
+  const isListingManager = isAgent || currentUser?.role === 'OWNER';
 
   const [userProperties, setUserProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    if (!isListingManager) return;
     let mounted = true;
     async function loadProperties() {
+      setLoading(true);
+      setLoadFailed(false);
       try {
-        const data = await getUserPropertiesAction().catch(() => []);
-        if (mounted) setUserProperties(data || []);
-      } catch (err) {
-        console.error('Failed to load user properties', err);
+        const data = await getUserPropertiesAction();
+        if (mounted) setUserProperties(data);
+      } catch {
+        if (mounted) setLoadFailed(true);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -42,7 +48,17 @@ function PropertiesContent() {
     return () => {
       mounted = false;
     };
-  }, [currentUser?.id]);
+  }, [currentUser?.id, isListingManager, retryCount]);
+
+  if (!isListingManager) {
+    return (
+      <Card className="mx-auto max-w-lg p-8 text-center">
+        <h1 className="text-xl font-bold">Property Listings</h1>
+        <p className="mb-4 mt-2 text-sm text-slate-600">Explore available properties in the Marketplace.</p>
+        <Button asChild><Link href="/marketplace">Browse Marketplace</Link></Button>
+      </Card>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -51,12 +67,10 @@ function PropertiesContent() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold font-headline text-slate-900 tracking-tight flex items-center gap-2">
             <Building2 className="h-7 w-7 text-lime-600" />
-            {activeRole === 'SEEKER' ? 'My Properties' : 'My Managed Listings'}
+            {isAgent ? 'Authorized Listings' : 'My Properties'}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {activeRole === 'SEEKER'
-              ? 'Properties you have submitted or managed on PropHunta AI.'
-              : 'Properties currently assigned to your ownership or agency portfolio.'}
+            {isAgent ? 'Manage listings you’re authorized to represent.' : 'Manage your properties and track their review status.'}
           </p>
         </div>
         <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs">
@@ -71,6 +85,11 @@ function PropertiesContent() {
           <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2 text-lime-600" />
           Loading your property listings...
         </div>
+      ) : loadFailed ? (
+        <Card className="p-8 text-center">
+          <p role="alert" className="mb-4 text-sm text-slate-600">Your listings could not be loaded.</p>
+          <Button variant="outline" onClick={() => setRetryCount((count) => count + 1)}>Retry</Button>
+        </Card>
       ) : userProperties.length === 0 ? (
         <Card className="p-12 text-center rounded-2xl border-slate-200">
           <Home className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
@@ -82,11 +101,6 @@ function PropertiesContent() {
             <Button asChild className="bg-lime-600 hover:bg-lime-500 text-white font-bold rounded-xl shadow-xs">
               <Link href="/landlord/add-property">Create Listing</Link>
             </Button>
-            {activeRole === 'SEEKER' && (
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link href="/marketplace">Explore Marketplace</Link>
-              </Button>
-            )}
           </div>
         </Card>
       ) : (

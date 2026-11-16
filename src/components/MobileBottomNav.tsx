@@ -45,7 +45,7 @@ export default function MobileBottomNav() {
         return [
           { label: 'Dashboard', href: '/dashboard', icon: Home },
           { label: 'Listings', href: '/properties', icon: Building },
-          { label: 'Add Client', href: '/landlord/add-property', icon: PlusCircle, isPrimaryAction: true },
+          { label: 'Add Listing', href: '/landlord/add-property', icon: PlusCircle, isPrimaryAction: true },
           { label: 'Leads', href: '/messages', icon: MessageSquare },
           { label: 'Profile', href: '/profile', icon: User },
         ];

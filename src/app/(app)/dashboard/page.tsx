@@ -4,14 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
-  User,
-  Building,
-  Briefcase,
-  Shield,
   Loader2,
-  RefreshCw,
-  Sparkles,
-  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +21,6 @@ import {
   ListingReport,
   AuditLog,
   User as UserType,
-  UserRole,
 } from '@/types/prophunta';
 import {
   getPropertiesAction,
@@ -42,8 +34,10 @@ import {
 } from '@/server/actions/prophunta-actions';
 
 export default function DashboardPage() {
-  const { currentUser, role, userRole, setUserRole, isLoading: isRoleLoading } = useUserRole();
-  const activeRole = role || userRole || 'SEEKER';
+  const { currentUser, role } = useUserRole();
+  const activeRole = role;
+  const isListingManager = activeRole === 'AGENT' || activeRole === 'OWNER';
+  const verificationStatus = currentUser?.verificationStatus;
   const userName = currentUser?.name ? currentUser.name.split(' ')[0] : 'User';
 
   const [properties, setProperties] = useState<Property[]>([]);
@@ -64,8 +58,8 @@ export default function DashboardPage() {
       setLoadFailed(false);
       try {
         const [allProps, userProps, inspData, appData, enqData] = await Promise.all([
-          getPropertiesAction(),
-          (currentUser ? getUserPropertiesAction() : []),
+          (isListingManager ? [] : getPropertiesAction()),
+          (currentUser && isListingManager ? getUserPropertiesAction() : []),
           (currentUser ? getUserInspectionsAction() : []),
           (currentUser ? getUserApplicationsAction() : []),
           (currentUser ? getUserEnquiriesAction() : []),
@@ -102,7 +96,7 @@ export default function DashboardPage() {
     return () => {
       mounted = false;
     };
-  }, [currentUser?.id, activeRole]);
+  }, [currentUser?.id, activeRole, isListingManager]);
 
   if (loadFailed) {
     return <p role="alert">Dashboard records could not be loaded. Refresh the page to try again.</p>;
@@ -138,11 +132,18 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-          <Badge variant="outline" className="border-lime-500 text-lime-800 bg-lime-50 gap-1.5 py-1 px-2.5 text-xs font-semibold">
-            <ShieldCheck className="h-3.5 w-3.5 text-lime-600" />
-            Verified Account
-          </Badge>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+          {isListingManager && <Button size="sm" variant="outline" asChild><Link href="/marketplace">Marketplace</Link></Button>}
+          {verificationStatus === 'VERIFIED' && (
+            <Badge variant="outline" className="gap-1.5 border-lime-500 bg-lime-50 text-lime-800">
+              <ShieldCheck className="h-3.5 w-3.5 text-lime-600" /> Verified Account
+            </Badge>
+          )}
+          {verificationStatus === 'PENDING' && <Badge variant="outline">Verification pending</Badge>}
+          {verificationStatus === 'UNVERIFIED' && activeRole !== 'ADMIN' && (
+            <Button size="sm" variant="outline" asChild><Link href="/verification">Verify account</Link></Button>
+          )}
+          {verificationStatus === 'SUSPENDED' && <Badge variant="destructive">Account suspended</Badge>}
         </div>
       </div>
 
@@ -167,7 +168,7 @@ export default function DashboardPage() {
 
           {activeRole === 'OWNER' && (
             <OwnerDashboard
-              properties={userProperties.length > 0 ? userProperties : properties.slice(0, 3)}
+              properties={userProperties}
               inspections={inspections}
               applications={applications}
               enquiries={enquiries}
@@ -177,7 +178,7 @@ export default function DashboardPage() {
 
           {activeRole === 'AGENT' && (
             <AgentDashboard
-              properties={userProperties.length > 0 ? userProperties : properties}
+              properties={userProperties}
               inspections={inspections}
               applications={applications}
               enquiries={enquiries}

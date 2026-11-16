@@ -78,7 +78,7 @@ function SavedContent() {
           </p>
         </div>
         <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs sm:text-sm rounded-xl shadow-xs">
-          <Link href="/homes">Explore Homes</Link>
+          <Link href="/marketplace">Explore Homes</Link>
         </Button>
       </div>
 
@@ -97,7 +97,7 @@ function SavedContent() {
             Click the heart icon on any property in the listings grid to save it here for easy reference.
           </p>
           <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-xs">
-            <Link href="/homes">Browse Verified Homes</Link>
+            <Link href="/marketplace">Browse Verified Homes</Link>
           </Button>
         </Card>
       ) : (

@@ -414,7 +414,7 @@ export async function reviewPropertyModerationAction(propertyId: string, outcome
   try {
     const moderator = await authService.requireRole(['ADMIN']);
     await propertyService.reviewModeration(moderator, propertyId, outcome, notes);
-    revalidatePath('/admin'); revalidatePath('/marketplace');
+    revalidatePath('/admin'); revalidatePath('/marketplace'); revalidatePath('/homes');
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message || 'Could not review listing moderation.' };
@@ -454,6 +454,7 @@ export async function approveVerificationAction(
     await verificationService.approveVerification(admin, propertyId, notes);
     revalidatePath(`/property/${propertyId}`);
     revalidatePath('/marketplace');
+    revalidatePath('/homes');
     revalidatePath('/admin');
     return { success: true };
   } catch (err: any) {

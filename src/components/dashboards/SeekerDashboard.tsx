@@ -603,7 +603,7 @@ export default function SeekerDashboard({
             </p>
           </div>
           <Link
-            href="/marketplace?verifiedOnly=true"
+            href="/marketplace"
             className="text-xs font-bold text-lime-700 hover:text-lime-800 flex items-center gap-1 group"
           >
             <span>View All Verified</span>

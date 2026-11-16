@@ -207,7 +207,7 @@ export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [],
         { label: 'Staff & Governance', href: '/admin?tab=staff', icon: Briefcase },
         { label: 'Four-Eyes Approvals', href: '/admin?tab=approvals', icon: FileCheck2 },
         { label: 'System Audit Trail', href: '/admin?tab=audit', icon: BarChart3 },
-        { label: 'Public Marketplace', href: '/marketplace', icon: Store },
+        { label: 'Public Marketplace', href: '/homes', icon: Store },
       ];
 
     case 'OWNER':
@@ -215,9 +215,9 @@ export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [],
         { label: 'Owner Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { label: 'My Properties', href: '/properties', icon: Home },
         { label: 'Add Property', href: '/landlord/add-property', icon: Building2 },
-        { label: 'Inspection Requests', href: '/inspections', icon: CalendarCheck2, badge: 1 },
+        { label: 'Inspection Requests', href: '/inspections', icon: CalendarCheck2 },
         { label: 'Property Applications', href: '/applications', icon: FileSignature },
-        { label: 'Messages', href: '/messages', icon: MessageSquare, badge: 1 },
+        { label: 'Messages', href: '/messages', icon: MessageSquare },
         { label: 'Financial Records', href: '/financials', icon: BarChart3 },
         { label: 'Marketplace', href: '/marketplace', icon: Store },
       ];
@@ -227,8 +227,8 @@ export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [],
         { label: 'Agent Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { label: 'Authorized Listings', href: '/properties', icon: Home },
         { label: 'Create Listing', href: '/landlord/add-property', icon: Building2 },
-        { label: 'Client Inspections', href: '/inspections', icon: CalendarCheck2, badge: 1 },
-        { label: 'Enquiries', href: '/messages', icon: MessageSquare, badge: 1 },
+        { label: 'Client Inspections', href: '/inspections', icon: CalendarCheck2 },
+        { label: 'Enquiries', href: '/messages', icon: MessageSquare },
         { label: 'Property Applications', href: '/applications', icon: FileSignature },
         { label: 'Market Insights', href: '/marketplace?view=map', icon: MapPin },
         { label: 'Marketplace', href: '/marketplace', icon: Store },
@@ -240,9 +240,9 @@ export function getNavItemsForRole(role: UserRole, staffRoles: StaffRole[] = [],
         { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
         { label: 'Verified Marketplace', href: '/marketplace', icon: Store },
         { label: 'Map & Geo-Search', href: '/marketplace?view=map', icon: MapPin },
-        { label: 'My Inspections', href: '/inspections', icon: CalendarCheck2, badge: 1 },
+        { label: 'My Inspections', href: '/inspections', icon: CalendarCheck2 },
         { label: 'Applications & Offers', href: '/applications', icon: FileText },
-        { label: 'Messages & Enquiries', href: '/messages', icon: MessageSquare, badge: 1 },
+        { label: 'Messages & Enquiries', href: '/messages', icon: MessageSquare },
         { label: 'Saved Favorites', href: '/saved', icon: Heart },
         { label: 'Market Intelligence', href: '/market-intelligence', icon: BarChart3 },
       ];
@@ -288,7 +288,7 @@ export default function AppSidebar() {
   const allNavItems = activeRole === 'ADMIN' && !staffContextLoaded ? [] : getNavItemsForRole(activeRole, staffRoles, staffPermissions);
 
   // Group items into clean operational sections
-  const discoveryHrefs = ['/marketplace', '/saved', '/marketplace?view=map'];
+  const discoveryHrefs = ['/homes', '/marketplace', '/saved', '/marketplace?view=map'];
   const portalHrefs = ['/admin', '/landlord/add-property', '/market-intelligence'];
 
   const discoveryItems = allNavItems.filter((item) =>

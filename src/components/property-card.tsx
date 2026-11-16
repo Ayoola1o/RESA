@@ -3,7 +3,7 @@
 import { useSavedProperty } from '@/hooks/use-saved-property';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Bath, BedDouble, Heart, Maximize2, ShieldCheck, MapPin } from 'lucide-react';
+import { Bath, BedDouble, Building2, Heart, Maximize2, ShieldCheck, MapPin } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PropertyCardProps {
@@ -39,9 +39,9 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
   const areaDisplay = sqft ? `${sqft.toLocaleString()} sqm` : null;
 
   const imageUrl =
-    (property.media && property.media[0]?.url) ||
-    (property.images && property.images[0]) ||
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';
+    property.media?.find((media: { type: string; uploadStatus?: string; url?: string }) =>
+      media.type === 'image' && media.uploadStatus === 'COMPLETED' && media.url
+    )?.url || property.images?.[0];
 
   return (
     <div
@@ -50,14 +50,18 @@ export default function PropertyCard({ property, className = '' }: PropertyCardP
       {/* Image Header with 4:3 Aspect Ratio and Dark Gradient Overlay */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
         <Link href={`/property/${property.id}`} className="block h-full w-full">
-          <Image
+          {imageUrl ? <Image
             alt={property.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             height={300}
             src={imageUrl}
             width={400}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          />
+          /> : (
+            <span className="flex h-full items-center justify-center gap-2 text-sm text-slate-600">
+              <Building2 className="h-5 w-5" /> No listing photo
+            </span>
+          )}
         </Link>
 
         {/* Bottom dark gradient overlay for high-contrast price readability */}
